@@ -28,9 +28,9 @@ type QuickLoginRole = {
 };
 
 const quickLoginRoles: QuickLoginRole[] = [
-  { title: 'Admin', Username: 'Admin', password: 'Admin@123' },
-  { title: 'Employee', Username: 'Employee', password: 'Employee@123' },
-  { title: 'Manager', Username: 'Manager', password: 'Manager@123' },
+  { title: 'Admin', Username: 'john.doe', password: 'Admin@123' },
+  { title: 'Employee', Username: 'michael.brown', password: 'Employee@123' },
+  { title: 'Manager', Username: 'jane.smith', password: 'Manager@123' },
 ];
 
 
@@ -45,10 +45,10 @@ const LoginScreen = ({ setIsLoggedIn }: LoginScreenProps) => {
   const handleLogin = () => {
     const matchedUser = account.find(
       (user) =>
-        user.Username.toLocaleLowerCase === username.toLocaleLowerCase &&
+        user.Username.toLocaleLowerCase() === username.toLocaleLowerCase() &&
         user.PasswordHash === password
     );
-
+    
     if (matchedUser) {
       setUser(matchedUser);
       setIsLoggedIn(true);

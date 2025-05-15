@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPersonCircleQuestion, faUserPlus, faEllipsisV, faInfoCircle, faEdit, faKey, faTimesCircle, faBan, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getUserInitials } from 'utils/userUtils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const account: User[] = accountData;
 
@@ -117,7 +117,9 @@ const AccountScreen = () => {
         user.Email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
         user.Phone.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
         user.Username.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        user.Role.toString().includes(query)
+        (user.Role === 0 && 'admin'.includes(query.toLocaleLowerCase())) ||
+        (user.Role === 1 && 'employee'.includes(query.toLocaleLowerCase())) ||
+        (user.Role === 2 && 'manager'.includes(query.toLocaleLowerCase()))
       );
     }
     setFilteredUsers(filtered);
@@ -133,6 +135,10 @@ const AccountScreen = () => {
     setSearchQuery('');
     filter("");
   };
+
+  useEffect(() => {
+    setFilteredUsers(account);
+  }, [])
 
   return (
     <SafeAreaView className="flex-1 bg-white">

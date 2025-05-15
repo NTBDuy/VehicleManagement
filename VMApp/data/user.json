@@ -1,32 +1,32 @@
 [
-    {
-      "UserId": 1,
-      "Username": "Admin",
-      "PasswordHash": "Admin@123",
-      "FullName": "Admin",
-      "Email": "admin@vms.com",
-      "Phone": "0123456789",
-      "Role": 0,
-      "Status": true
-    },
-    {
-      "UserId": 2,
-      "Username": "Manager",
-      "PasswordHash": "Manager@123",
-      "FullName": "Manager",
-      "Email": "manager@vms.com",
-      "Phone": "0123456798",
-      "Role": 2,
-      "Status": true
-    },
-    {
-      "UserId": 3,
-      "Username": "Employee",
-      "PasswordHash": "Employee@123",
-      "FullName": "Employee",
-      "Email": "Employee@vms.com",
-      "Phone": "0123456978",
-      "Role": 1,
-      "Status": false
-    }
-  ]
+  {
+    "UserId": 1,
+    "Username": "john.doe",
+    "PasswordHash": "Admin@123",
+    "FullName": "John Doe",
+    "Email": "john.doe@vms.com",
+    "Phone": "9876543210",
+    "Role": 0,
+    "Status": true
+  },
+  {
+    "UserId": 2,
+    "Username": "jane.smith",
+    "PasswordHash": "Manager@123",
+    "FullName": "Jane Smith",
+    "Email": "jane.smith@vms.com",
+    "Phone": "9876543211",
+    "Role": 2,
+    "Status": true
+  },
+  {
+    "UserId": 3,
+    "Username": "michael.brown",
+    "PasswordHash": "Employee@123",
+    "FullName": "Michael Brown",
+    "Email": "michael.brown@vms.com",
+    "Phone": "9876543212",
+    "Role": 1,
+    "Status": false
+  }
+]
