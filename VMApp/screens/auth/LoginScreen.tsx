@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import User from 'types/User';
 
@@ -50,11 +51,26 @@ const account: User[] = [
   },
 ];
 
+type QuickLoginRole = {
+  title: string;
+  Username: string;
+  password: string;
+};
+
+const quickLoginRoles: QuickLoginRole[] = [
+  { title: 'Admin', Username: 'Admin', password: 'Admin@123' },
+  { title: 'Employee', Username: 'Employee', password: 'Employee@123' },
+  { title: 'Manager', Username: 'Manager', password: 'Manager@123' },
+];
+
+
 const LoginScreen = ({ setIsLoggedIn }: LoginScreenProps) => {
   const { setUser } = useContext(AuthContext);
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const [activeRole, setActiveRole] = useState<string>('');
 
   const handleLogin = () => {
     const matchedUser = account.find(
@@ -64,12 +80,17 @@ const LoginScreen = ({ setIsLoggedIn }: LoginScreenProps) => {
     );
 
     if (matchedUser) {
-      Alert.alert('Login Successful', `Welcome, ${matchedUser.FullName}!`);
       setUser(matchedUser);
       setIsLoggedIn(true);
     } else {
       Alert.alert('Error', 'Incorrect username or password.');
     }
+  };
+
+  const handleQuickLogin = (role: QuickLoginRole) => {
+    setUsername(role.Username);
+    setPassword(role.password);
+    setActiveRole(role.title);
   };
 
   return (
@@ -103,6 +124,22 @@ const LoginScreen = ({ setIsLoggedIn }: LoginScreenProps) => {
             <TouchableOpacity className="rounded-lg bg-blue-500 py-3" onPress={handleLogin}>
               <Text className="text-center font-bold text-white">Login</Text>
             </TouchableOpacity>
+
+            <View className="mt-6 rounded-2xl border px-4 py-2">
+              <Text className="mb-4">Developer Tool - Quick Login</Text>
+              <View className="mb-2 flex-row justify-between">
+                {quickLoginRoles.map((role, index) => (
+                  <Pressable
+                    key={index}
+                    className={`mx-1 flex-1 rounded-lg px-4 py-3 ${
+                      activeRole === role.title ? 'bg-blue-300' : 'bg-blue-100'
+                    }`}
+                    onPress={() => handleQuickLogin(role)}>
+                    <Text className="text-center font-medium text-blue-800">{role.title}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
