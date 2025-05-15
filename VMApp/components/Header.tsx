@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, TextInput } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faArrowLeft, faMagnifyingGlass, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 interface HeaderProps {
@@ -9,9 +9,24 @@ interface HeaderProps {
   title?: string;
   customTitle?: React.ReactNode;
   rightElement?: React.ReactNode;
+  searchSection?: boolean;
+  searchQuery?: string;
+  handleSearch?: any;
+  placeholder?: string;
+  clearSearch?: any;
 }
 
-const Header = ({ backBtn, title, customTitle, rightElement }: HeaderProps) => {
+const Header = ({
+  backBtn,
+  title,
+  customTitle,
+  rightElement,
+  searchSection,
+  searchQuery,
+  handleSearch,
+  placeholder,
+  clearSearch,
+}: HeaderProps) => {
   const navigation = useNavigation();
 
   return (
@@ -33,6 +48,24 @@ const Header = ({ backBtn, title, customTitle, rightElement }: HeaderProps) => {
 
         {rightElement ? rightElement : <View className="w-8"></View>}
       </View>
+
+      {searchSection && (
+        <View className="flex-row items-center rounded-full bg-white/40 mx-4 px-4 py-3 mb-6 ">
+          <FontAwesomeIcon icon={faMagnifyingGlass} size={16} color="#000" />
+          <TextInput
+            className="ml-3 flex-1 font-bold"
+            placeholder={placeholder}
+            placeholderTextColor="gray"
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+          {searchQuery !== '' && (
+            <Pressable onPress={clearSearch}>
+              <FontAwesomeIcon icon={faXmark} size={16} color="#000" />
+            </Pressable>
+          )}
+        </View>
+      )}
     </View>
   );
 };

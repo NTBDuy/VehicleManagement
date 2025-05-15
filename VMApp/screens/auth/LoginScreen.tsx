@@ -13,43 +13,13 @@ import {
   Pressable,
 } from 'react-native';
 import User from 'types/User';
+import accountData from 'data/user.json';
 
 type LoginScreenProps = {
   setIsLoggedIn: (value: boolean) => void;
 };
 
-const account: User[] = [
-  {
-    UserId: 1,
-    Username: 'Admin',
-    PasswordHash: 'Admin@123',
-    FullName: 'Admin',
-    Email: 'admin@vms.com',
-    Phone: '0123456789',
-    Role: 0,
-    Status: true,
-  },
-  {
-    UserId: 2,
-    Username: 'Manager',
-    PasswordHash: 'Manager@123',
-    FullName: 'Manager',
-    Email: 'manager@vms.com',
-    Phone: '0123456798',
-    Role: 2,
-    Status: true,
-  },
-  {
-    UserId: 2,
-    Username: 'Employee',
-    PasswordHash: 'Employee@123',
-    FullName: 'Employee',
-    Email: 'Employee@vms.com',
-    Phone: '0123456978',
-    Role: 1,
-    Status: true,
-  },
-];
+const account: User[] = accountData;
 
 type QuickLoginRole = {
   title: string;
