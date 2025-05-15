@@ -1,0 +1,40 @@
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faBars, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
+
+interface HeaderProps {
+  backBtn?: boolean;
+  title?: string;
+  customTitle?: React.ReactNode;
+  rightElement?: React.ReactNode;
+}
+
+const Header = ({ backBtn, title, customTitle, rightElement }: HeaderProps) => {
+  const navigation = useNavigation();
+
+  return (
+    <View className="-mt-20 overflow-hidden rounded-b-[40px] bg-blue-300 shadow-md">
+      <View className="mb-6 mt-10 flex-row items-start justify-between px-6 pt-20">
+        {backBtn ? (
+          <Pressable onPress={() => navigation.goBack()} className="rounded-full bg-white p-2">
+            <FontAwesomeIcon icon={faArrowLeft} size={18} />
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            className="rounded-full bg-white p-2">
+            <FontAwesomeIcon icon={faBars} size={18} />
+          </Pressable>
+        )}
+
+        {customTitle ? customTitle : <Text className="text-2xl font-bold">{title}</Text>}
+
+        {rightElement ? rightElement : <View className="w-8"></View>}
+      </View>
+    </View>
+  );
+};
+
+export default Header;

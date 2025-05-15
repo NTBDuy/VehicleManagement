@@ -1,12 +1,10 @@
+import Header from 'components/Header'
 import { View, Text, SafeAreaView } from 'react-native'
-import React from 'react'
 
 const AccountScreen = () => {
   return (
-    <SafeAreaView>
-        <View>
-            <Text>ACCOUNT MANAGEMENT</Text>
-        </View>
+    <SafeAreaView className='flex-1 bg-white'>
+      <Header title='Account Management'/>
     </SafeAreaView>
   )
 }

@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faUser, faUsers, faSignOut, faCar, faCalendarCheck, faGear, faChartArea, faCarSide } from '@fortawesome/free-solid-svg-icons';
 
 import HomeScreen from 'screens/admin/HomeScreen';
+import NotificationScreen from 'screens/admin/NotificationScreen';
 import SettingScreen from 'screens/admin/SettingScreen';
 import AccountScreen from 'screens/admin/AccountScreen';
 import ReportScreen from 'screens/admin/ReportScreen';
@@ -24,6 +25,7 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="AdminHome" component={HomeScreen} />
+      <HomeStack.Screen name='Notification' component={NotificationScreen}/>
     </HomeStack.Navigator>
   );
 }

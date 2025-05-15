@@ -2,12 +2,12 @@ import { View, Text, SafeAreaView } from 'react-native'
 import React from 'react'
 import Header from 'components/Header'
 
-const VehicleScreen = () => {
+const NotificationScreen = () => {
   return (
-    <SafeAreaView className='flex-1 bg-white'>
-      <Header title='Vehicle Management'/>
+    <SafeAreaView>
+        <Header title='Notifications' backBtn/>
     </SafeAreaView>
   )
 }
 
-export default VehicleScreen
+export default NotificationScreen
