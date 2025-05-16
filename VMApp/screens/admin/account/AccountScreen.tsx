@@ -102,6 +102,10 @@ const AccountScreen = () => {
     setModalVisible(true);
   };
 
+  const onAdd = () => {
+    navigation.navigate('AccountAdd');
+  }
+
   const onClose = () => {
     setModalVisible(false);
   };
@@ -151,7 +155,7 @@ const AccountScreen = () => {
       <Header
         title="Account Management"
         rightElement={
-          <Pressable className="rounded-full bg-white p-2" onPress={handlePress}>
+          <Pressable className="rounded-full bg-white p-2" onPress={onAdd}>
             <FontAwesomeIcon icon={faUserPlus} size={18} />
           </Pressable>
         }

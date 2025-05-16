@@ -26,8 +26,10 @@ import RequestScreen from 'screens/admin/RequestScreen';
 import VehicleScreen from 'screens/admin/vehicle/VehicleScreen';
 import AccountDetailScreen from 'screens/admin/account/AccountDetailScreen';
 import AccountEditScreen from 'screens/admin/account/AccountEditScreen';
+import AccountAddScreen from 'screens/admin/account/AccountAddScreen';
 import VehicleDetailScreen from 'screens/admin/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/admin/vehicle/VehicleEditScreen';
+import VehicleAddScreen from 'screens/admin/vehicle/VehicleAddScreen';
 
 import { Alert, View, Text } from 'react-native';
 
@@ -51,6 +53,7 @@ function AccountStackScreen() {
       <AccountStack.Screen name="AccountManagement" component={AccountScreen} />
       <AccountStack.Screen name="AccountDetail" component={AccountDetailScreen} />
       <AccountStack.Screen name='AccountEdit' component={AccountEditScreen}/>
+      <AccountStack.Screen name='AccountAdd' component={AccountAddScreen}/>
     </AccountStack.Navigator>
   );
 }
@@ -61,6 +64,7 @@ function VehicleStackScreen() {
       <VehicleStack.Screen name="VehicleManagement" component={VehicleScreen} />
       <VehicleStack.Screen name="VehicleDetail" component={VehicleDetailScreen} />
       <VehicleStack.Screen name="VehicleEdit" component={VehicleEditScreen} />
+      <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
     </VehicleStack.Navigator>
   );
 }

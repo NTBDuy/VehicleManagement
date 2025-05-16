@@ -154,6 +154,10 @@ const VehicleScreen = () => {
     navigation.navigate('VehicleDetail', { vehicleData: selected });
   };
 
+  const onAdd = () => {
+    navigation.navigate('VehicleAdd');
+  }
+
   const onClose = () => {
     setModalVisible(false);
   };
@@ -167,7 +171,7 @@ const VehicleScreen = () => {
       <Header
         title="Vehicle Management"
         rightElement={
-          <Pressable className="rounded-full bg-white p-2" onPress={handlePress}>
+          <Pressable className="rounded-full bg-white p-2" onPress={onAdd}>
             <FontAwesomeIcon icon={faPlus} size={18} />
           </Pressable>
         }

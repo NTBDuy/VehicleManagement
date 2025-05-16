@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import User from 'types/User';
 import accountData from 'data/user.json';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faCar } from '@fortawesome/free-solid-svg-icons';
 
 type LoginScreenProps = {
   setIsLoggedIn: (value: boolean) => void;
@@ -71,6 +73,9 @@ const LoginScreen = ({ setIsLoggedIn }: LoginScreenProps) => {
         className="flex-1">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View className="flex-1 justify-center px-6 py-8">
+            <View className='mb-4 items-center'>
+              <FontAwesomeIcon icon={faCar} size={48}/>
+            </View>
             <View className="mb-8">
               <Text className="text-center text-3xl font-bold">VMS Login</Text>
             </View>

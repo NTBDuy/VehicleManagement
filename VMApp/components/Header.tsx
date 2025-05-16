@@ -53,7 +53,7 @@ const Header = ({
         <View className="flex-row items-center rounded-full bg-white/40 mx-4 px-4 py-3 mb-6 ">
           <FontAwesomeIcon icon={faMagnifyingGlass} size={16} color="#000" />
           <TextInput
-            className="ml-3 flex-1 font-bold"
+            className="ml-3 flex-1 "
             placeholder={placeholder}
             placeholderTextColor="gray"
             value={searchQuery}
