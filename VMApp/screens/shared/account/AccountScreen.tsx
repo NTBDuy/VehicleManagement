@@ -17,6 +17,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { getUserInitials } from 'utils/userUtils';
 import { useEffect, useState } from 'react';
+import EmptyListComponent from 'components/EmptyListComponent';
 
 const account: User[] = accountData;
 
@@ -86,13 +87,6 @@ const AccountScreen = () => {
     </Pressable>
   );
 
-  const EmptyListComponent = () => (
-    <View className="flex-1 items-center justify-center py-72">
-      <FontAwesomeIcon icon={faPersonCircleQuestion} size={60} color="#6b7280" />
-      <Text className="mt-4 text-lg text-gray-500">No user found!</Text>
-    </View>
-  );
-
   const handlePress = () => {
     Alert.alert('Comming soon!');
   };
@@ -104,7 +98,7 @@ const AccountScreen = () => {
 
   const onAdd = () => {
     navigation.navigate('AccountAdd');
-  }
+  };
 
   const onClose = () => {
     setModalVisible(false);
@@ -166,23 +160,26 @@ const AccountScreen = () => {
         clearSearch={clearSearch}
       />
 
-      <View className="mx-6 mb-52">
+      <View className="flex-1 mx-6 mb-10">
         <FlatList
           data={filteredUsers}
           renderItem={renderUserItem}
           keyExtractor={(item) => item.UserId.toString()}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={EmptyListComponent}
+          ListEmptyComponent={
+            <EmptyListComponent title="No user found!" icon={faPersonCircleQuestion} />
+          }
         />
+      </View>
 
-        <View className="mt-4 flex items-center">
-          <Text className="text-sm font-medium text-gray-500">
+      {account.length > 0 && (
+        <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
+          <Text className="text-center text-sm font-medium text-gray-500">
             Total Users:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredUsers.length}</Text>
           </Text>
         </View>
-      </View>
-
+      )}
       <Modal
         transparent
         visible={modalVisible}

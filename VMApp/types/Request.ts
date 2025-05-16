@@ -1,3 +1,13 @@
+import User from "./User";
+import Vehicle from "./Vehicle";
+
+export enum status {
+    Pending = 0,
+    Approved = 1,
+    Rejected = 2,
+    Cancelled = 3
+}
+
 export default interface Request {
     RequestId: number;
     UserId: number;
@@ -5,6 +15,8 @@ export default interface Request {
     StartTime: string;
     EndTime: string;
     Purpose: string;
-    Status: string;
+    Status: status;
     CreatedAt: string;
+    User?: User;
+    Vehicle?: Vehicle
 }

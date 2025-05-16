@@ -19,6 +19,7 @@ import {
   faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
+import EmptyListComponent from 'components/EmptyListComponent';
 
 const vehicle: Vehicle[] = vehicleData;
 
@@ -102,26 +103,19 @@ const VehicleScreen = () => {
     </Pressable>
   );
 
-  const EmptyListComponent = () => (
-    <View className="flex-1 items-center justify-center py-72">
-      <FontAwesomeIcon icon={faCarBurst} size={60} color="#6b7280" />
-      <Text className="mt-4 text-lg text-gray-500">No vehicle found!</Text>
-    </View>
-  );
-
   const filter = (query: string): void => {
     let filtered = vehicle;
 
     if (query) {
       filtered = filtered.filter(
-        (user) =>
-          user.LicensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          (user.Status === 0 && 'Available'.includes(query.toLocaleLowerCase())) ||
-          (user.Status === 1 && 'InUse'.includes(query.toLocaleLowerCase())) ||
-          (user.Status === 2 && 'UnderMaintenance'.includes(query.toLocaleLowerCase()))
+        (item) =>
+          item.LicensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.Type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.Brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          (item.Status === 0 && 'Available'.includes(query.toLocaleLowerCase())) ||
+          (item.Status === 1 && 'InUse'.includes(query.toLocaleLowerCase())) ||
+          (item.Status === 2 && 'UnderMaintenance'.includes(query.toLocaleLowerCase()))
       );
     }
     setFilteredVehicles(filtered);
@@ -156,7 +150,7 @@ const VehicleScreen = () => {
 
   const onAdd = () => {
     navigation.navigate('VehicleAdd');
-  }
+  };
 
   const onClose = () => {
     setModalVisible(false);
@@ -182,22 +176,24 @@ const VehicleScreen = () => {
         clearSearch={clearSearch}
       />
 
-      <View className="mx-6 mb-52">
+      <View className="mx-6 mb-10 flex-1">
         <FlatList
           data={filteredVehicles}
           renderItem={renderVehicleItem}
           keyExtractor={(item) => item.VehicleId.toString()}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={EmptyListComponent}
+          ListEmptyComponent={<EmptyListComponent title="No vehicle found!" icon={faCarBurst} />}
         />
+      </View>
 
-        <View className="mt-4 flex items-center">
-          <Text className="text-sm font-medium text-gray-500">
+      {vehicle.length > 0 && (
+        <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
+          <Text className="text-center text-sm font-medium text-gray-500">
             Total Vehicle:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredVehicles.length}</Text>
           </Text>
         </View>
-      </View>
+      )}
 
       <Modal
         transparent
@@ -247,10 +243,7 @@ const VehicleScreen = () => {
                 onClose();
               }}>
               <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
-              <Text
-                className="text-lg font-semibold text-red-600">
-                Remove
-              </Text>
+              <Text className="text-lg font-semibold text-red-600">Remove</Text>
             </Pressable>
 
             <Pressable className="flex-row items-center justify-center gap-3" onPress={onClose}>
