@@ -19,6 +19,10 @@ const AccountDetailScreen = () => {
     }
   }
 
+  const onEdit = () => {
+    navigation.navigate("AccountEdit", { userData });
+  }
+
   return (
     <SafeAreaView>
       {/** HEADER */}
@@ -27,7 +31,7 @@ const AccountDetailScreen = () => {
         customTitle={<Text className="text-xl font-bold">Account Detail #{userData.UserId}</Text>}
         rightElement={
           <Pressable
-            onPress={() => navigation.navigate('AccountEdit', { userData })}
+            onPress={onEdit}
             className="rounded-full bg-white p-2">
             <FontAwesomeIcon icon={faEdit} size={18} />
           </Pressable>

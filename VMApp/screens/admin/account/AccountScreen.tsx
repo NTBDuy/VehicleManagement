@@ -31,8 +31,8 @@ const account: User[] = accountData;
 const AccountScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selected, setSelected] = useState<User>();
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   const navigation = useNavigation<any>();
@@ -73,7 +73,7 @@ const AccountScreen = () => {
     );
   };
 
-  const renderUserItem = ({ item }: { item: User }) => (
+  const renderUserItem = ({ item } : { item: User }) => (
     <View className="mt-4 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">{getUserInitials(item.FullName)}</Text>
@@ -152,6 +152,10 @@ const AccountScreen = () => {
     navigation.navigate("AccountDetail", { userData: selected });
   }
 
+  const onEdit = () => {
+    navigation.navigate("AccountEdit", { userData: selected });
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
@@ -209,7 +213,7 @@ const AccountScreen = () => {
             <Pressable
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
-                // onEdit();
+                onEdit();
                 onClose();
               }}>
               <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />

@@ -1,0 +1,182 @@
+[
+    {
+      "VehicleId": 1,
+      "LicensePlate": "ABC1234",
+      "Type": "Sedan",
+      "Brand": "Toyota",
+      "Model": "Camry",
+      "Status": 0,
+      "LastMaintenance": "2025-05-01"
+    },
+    {
+      "VehicleId": 2,
+      "LicensePlate": "XYZ5678",
+      "Type": "SUV",
+      "Brand": "Honda",
+      "Model": "CR-V",
+      "Status": 2,
+      "LastMaintenance": "2025-04-20"
+    },
+    {
+      "VehicleId": 3,
+      "LicensePlate": "LMN3456",
+      "Type": "Truck",
+      "Brand": "Ford",
+      "Model": "F-150",
+      "Status": 0,
+      "LastMaintenance": "2025-03-15"
+    },
+    {
+      "VehicleId": 4,
+      "LicensePlate": "JKL7890",
+      "Type": "Van",
+      "Brand": "Mercedes-Benz",
+      "Model": "Sprinter",
+      "Status": 1,
+      "LastMaintenance": "2025-04-10"
+    },
+    {
+      "VehicleId": 5,
+      "LicensePlate": "QWE1234",
+      "Type": "Sedan",
+      "Brand": "Hyundai",
+      "Model": "Elantra",
+      "Status": 0,
+      "LastMaintenance": "2025-05-05"
+    },
+    {
+      "VehicleId": 6,
+      "LicensePlate": "RTY5678",
+      "Type": "SUV",
+      "Brand": "Chevrolet",
+      "Model": "Tahoe",
+      "Status": 2,
+      "LastMaintenance": "2025-04-25"
+    },
+    {
+      "VehicleId": 7,
+      "LicensePlate": "UIO3456",
+      "Type": "Truck",
+      "Brand": "Ram",
+      "Model": "1500",
+      "Status": 0,
+      "LastMaintenance": "2025-03-30"
+    },
+    {
+      "VehicleId": 8,
+      "LicensePlate": "PAS7890",
+      "Type": "Van",
+      "Brand": "Ford",
+      "Model": "Transit",
+      "Status": 1,
+      "LastMaintenance": "2025-04-15"
+    },
+    {
+      "VehicleId": 9,
+      "LicensePlate": "DFG1234",
+      "Type": "Sedan",
+      "Brand": "Nissan",
+      "Model": "Altima",
+      "Status": 0,
+      "LastMaintenance": "2025-05-08"
+    },
+    {
+      "VehicleId": 10,
+      "LicensePlate": "HJK5678",
+      "Type": "SUV",
+      "Brand": "Jeep",
+      "Model": "Wrangler",
+      "Status": 2,
+      "LastMaintenance": "2025-04-18"
+    },
+    {
+      "VehicleId": 11,
+      "LicensePlate": "BNM3456",
+      "Type": "Truck",
+      "Brand": "GMC",
+      "Model": "Sierra",
+      "Status": 0,
+      "LastMaintenance": "2025-03-20"
+    },
+    {
+      "VehicleId": 12,
+      "LicensePlate": "VBN7890",
+      "Type": "Van",
+      "Brand": "Volkswagen",
+      "Model": "Transporter",
+      "Status": 1,
+      "LastMaintenance": "2025-04-12"
+    },
+    {
+      "VehicleId": 13,
+      "LicensePlate": "WER1234",
+      "Type": "Sedan",
+      "Brand": "Kia",
+      "Model": "Optima",
+      "Status": 0,
+      "LastMaintenance": "2025-05-02"
+    },
+    {
+      "VehicleId": 14,
+      "LicensePlate": "TYU5678",
+      "Type": "SUV",
+      "Brand": "Subaru",
+      "Model": "Outback",
+      "Status": 2,
+      "LastMaintenance": "2025-04-22"
+    },
+    {
+      "VehicleId": 15,
+      "LicensePlate": "IOP3456",
+      "Type": "Truck",
+      "Brand": "Toyota",
+      "Model": "Tundra",
+      "Status": 0,
+      "LastMaintenance": "2025-03-25"
+    },
+    {
+      "VehicleId": 16,
+      "LicensePlate": "ASD7890",
+      "Type": "Van",
+      "Brand": "Nissan",
+      "Model": "NV200",
+      "Status": 1,
+      "LastMaintenance": "2025-04-08"
+    },
+    {
+      "VehicleId": 17,
+      "LicensePlate": "FGH1234",
+      "Type": "Sedan",
+      "Brand": "Mazda",
+      "Model": "Mazda3",
+      "Status": 0,
+      "LastMaintenance": "2025-05-06"
+    },
+    {
+      "VehicleId": 18,
+      "LicensePlate": "JKL5678",
+      "Type": "SUV",
+      "Brand": "BMW",
+      "Model": "X5",
+      "Status": 2,
+      "LastMaintenance": "2025-04-28"
+    },
+    {
+      "VehicleId": 19,
+      "LicensePlate": "ZXC3456",
+      "Type": "Truck",
+      "Brand": "Chevrolet",
+      "Model": "Silverado",
+      "Status": 0,
+      "LastMaintenance": "2025-03-18"
+    },
+    {
+      "VehicleId": 20,
+      "LicensePlate": "QAZ7890",
+      "Type": "Van",
+      "Brand": "Chrysler",
+      "Model": "Pacifica",
+      "Status": 1,
+      "LastMaintenance": "2025-04-05"
+    }
+  ]

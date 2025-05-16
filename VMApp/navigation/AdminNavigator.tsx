@@ -23,7 +23,7 @@ import SettingScreen from 'screens/admin/SettingScreen';
 import AccountScreen from 'screens/admin/account/AccountScreen';
 import ReportScreen from 'screens/admin/ReportScreen';
 import RequestScreen from 'screens/admin/RequestScreen';
-import VehicleScreen from 'screens/admin/VehicleScreen';
+import VehicleScreen from 'screens/admin/vehicle/VehicleScreen';
 import AccountDetailScreen from 'screens/admin/account/AccountDetailScreen';
 import AccountEditScreen from 'screens/admin/account/AccountEditScreen';
 
