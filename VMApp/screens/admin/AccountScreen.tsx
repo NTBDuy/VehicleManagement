@@ -3,7 +3,6 @@ import {
   View,
   Text,
   SafeAreaView,
-  ScrollView,
   FlatList,
   Pressable,
   Alert,
@@ -12,7 +11,17 @@ import {
 import accountData from 'data/user.json';
 import User from 'types/User';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faPersonCircleQuestion, faUserPlus, faEllipsisV, faInfoCircle, faEdit, faKey, faTimesCircle, faBan, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPersonCircleQuestion,
+  faUserPlus,
+  faEllipsisV,
+  faInfoCircle,
+  faEdit,
+  faKey,
+  faTimesCircle,
+  faBan,
+  faCircleCheck,
+} from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getUserInitials } from 'utils/userUtils';
 import { useEffect, useState } from 'react';
@@ -112,14 +121,14 @@ const AccountScreen = () => {
 
     if (query) {
       filtered = filtered.filter(
-      (user) =>
-        user.FullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        user.Email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        user.Phone.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        user.Username.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-        (user.Role === 0 && 'admin'.includes(query.toLocaleLowerCase())) ||
-        (user.Role === 1 && 'employee'.includes(query.toLocaleLowerCase())) ||
-        (user.Role === 2 && 'manager'.includes(query.toLocaleLowerCase()))
+        (user) =>
+          user.FullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.Email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.Phone.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.Username.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          (user.Role === 0 && 'admin'.includes(query.toLocaleLowerCase())) ||
+          (user.Role === 1 && 'employee'.includes(query.toLocaleLowerCase())) ||
+          (user.Role === 2 && 'manager'.includes(query.toLocaleLowerCase()))
       );
     }
     setFilteredUsers(filtered);
@@ -130,15 +139,18 @@ const AccountScreen = () => {
     filter(text);
   };
 
-
   const clearSearch = (): void => {
     setSearchQuery('');
-    filter("");
+    filter('');
   };
 
   useEffect(() => {
     setFilteredUsers(account);
-  }, [])
+  }, []);
+
+  const onViewDetail = () => {
+    navigation.navigate("AccountDetail", { userData: selected });
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -156,7 +168,7 @@ const AccountScreen = () => {
         clearSearch={clearSearch}
       />
 
-      <View className="mx-6">
+      <View className="mx-6 mb-52">
         <FlatList
           data={filteredUsers}
           renderItem={renderUserItem}
@@ -164,6 +176,13 @@ const AccountScreen = () => {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={EmptyListComponent}
         />
+
+        <View className="mt-4 flex items-center">
+          <Text className="text-sm font-medium text-gray-500">
+            Total Users:{' '}
+            <Text className="text-lg font-bold text-gray-800">{filteredUsers.length}</Text>
+          </Text>
+        </View>
       </View>
 
       <Modal
@@ -173,12 +192,14 @@ const AccountScreen = () => {
         onRequestClose={() => setModalVisible(false)}>
         <View className="flex-1 justify-end bg-black/30">
           <View className="rounded-t-2xl bg-white p-6 pb-12">
-            <Text className="mb-6 text-center text-lg font-bold">Options for {selected?.Username}</Text>
+            <Text className="mb-6 text-center text-lg font-bold">
+              Options for {selected?.Username}
+            </Text>
 
             <Pressable
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
-                // onViewDetail();
+                onViewDetail();
                 onClose();
               }}>
               <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
@@ -218,13 +239,13 @@ const AccountScreen = () => {
               />
               <Text
                 className={`text-lg font-semibold ${selected?.Status ? 'text-red-600' : 'text-green-600'}`}>
-                {selected?.Status ? 'In Active' : 'Active'}
+                {selected?.Status ? 'Inactive' : 'Active'}
               </Text>
             </Pressable>
 
             <Pressable className="flex-row items-center justify-center gap-3" onPress={onClose}>
               <FontAwesomeIcon icon={faTimesCircle} size={20} color="#6b7280" />
-              <Text className="text-lg font-semibold text-gray-500">Hủy</Text>
+              <Text className="text-lg font-semibold text-gray-500">Cancel</Text>
             </Pressable>
           </View>
         </View>

@@ -28,5 +28,205 @@
     "Phone": "9876543212",
     "Role": 1,
     "Status": false
+  },
+  {
+    "UserId": 4,
+    "Username": "lisa.jones",
+    "PasswordHash": "Employee@123",
+    "FullName": "Lisa Jones",
+    "Email": "lisa.jones@vms.com",
+    "Phone": "9876543213",
+    "Role": 1,
+    "Status": true
+  },
+  {
+    "UserId": 5,
+    "Username": "david.miller",
+    "PasswordHash": "Manager@123",
+    "FullName": "David Miller",
+    "Email": "david.miller@vms.com",
+    "Phone": "9876543214",
+    "Role": 2,
+    "Status": true
+  },
+  {
+    "UserId": 6,
+    "Username": "susan.wilson",
+    "PasswordHash": "Admin@123",
+    "FullName": "Susan Wilson",
+    "Email": "susan.wilson@vms.com",
+    "Phone": "9876543215",
+    "Role": 0,
+    "Status": false
+  },
+  {
+    "UserId": 7,
+    "Username": "robert.moore",
+    "PasswordHash": "Employee@123",
+    "FullName": "Robert Moore",
+    "Email": "robert.moore@vms.com",
+    "Phone": "9876543216",
+    "Role": 1,
+    "Status": true
+  },
+  {
+    "UserId": 8,
+    "Username": "patricia.taylor",
+    "PasswordHash": "Manager@123",
+    "FullName": "Patricia Taylor",
+    "Email": "patricia.taylor@vms.com",
+    "Phone": "9876543217",
+    "Role": 2,
+    "Status": true
+  },
+  {
+    "UserId": 9,
+    "Username": "james.anderson",
+    "PasswordHash": "Employee@123",
+    "FullName": "James Anderson",
+    "Email": "james.anderson@vms.com",
+    "Phone": "9876543218",
+    "Role": 1,
+    "Status": false
+  },
+  {
+    "UserId": 10,
+    "Username": "mary.thomas",
+    "PasswordHash": "Admin@123",
+    "FullName": "Mary Thomas",
+    "Email": "mary.thomas@vms.com",
+    "Phone": "9876543219",
+    "Role": 0,
+    "Status": true
+  },
+  {
+    "UserId": 11,
+    "Username": "charles.jackson",
+    "PasswordHash": "Manager@123",
+    "FullName": "Charles Jackson",
+    "Email": "charles.jackson@vms.com",
+    "Phone": "9876543220",
+    "Role": 2,
+    "Status": true
+  },
+  {
+    "UserId": 12,
+    "Username": "barbara.white",
+    "PasswordHash": "Employee@123",
+    "FullName": "Barbara White",
+    "Email": "barbara.white@vms.com",
+    "Phone": "9876543221",
+    "Role": 1,
+    "Status": true
+  },
+  {
+    "UserId": 13,
+    "Username": "steven.harris",
+    "PasswordHash": "Admin@123",
+    "FullName": "Steven Harris",
+    "Email": "steven.harris@vms.com",
+    "Phone": "9876543222",
+    "Role": 0,
+    "Status": false
+  },
+  {
+    "UserId": 14,
+    "Username": "linda.martin",
+    "PasswordHash": "Manager@123",
+    "FullName": "Linda Martin",
+    "Email": "linda.martin@vms.com",
+    "Phone": "9876543223",
+    "Role": 2,
+    "Status": true
+  },
+  {
+    "UserId": 15,
+    "Username": "kevin.lee",
+    "PasswordHash": "Employee@123",
+    "FullName": "Kevin Lee",
+    "Email": "kevin.lee@vms.com",
+    "Phone": "9876543224",
+    "Role": 1,
+    "Status": true
+  },
+  {
+    "UserId": 16,
+    "Username": "nancy.walker",
+    "PasswordHash": "Admin@123",
+    "FullName": "Nancy Walker",
+    "Email": "nancy.walker@vms.com",
+    "Phone": "9876543225",
+    "Role": 0,
+    "Status": true
+  },
+  {
+    "UserId": 17,
+    "Username": "paul.hall",
+    "PasswordHash": "Employee@123",
+    "FullName": "Paul Hall",
+    "Email": "paul.hall@vms.com",
+    "Phone": "9876543226",
+    "Role": 1,
+    "Status": false
+  },
+  {
+    "UserId": 18,
+    "Username": "karen.allen",
+    "PasswordHash": "Manager@123",
+    "FullName": "Karen Allen",
+    "Email": "karen.allen@vms.com",
+    "Phone": "9876543227",
+    "Role": 2,
+    "Status": true
+  },
+  {
+    "UserId": 19,
+    "Username": "mark.young",
+    "PasswordHash": "Employee@123",
+    "FullName": "Mark Young",
+    "Email": "mark.young@vms.com",
+    "Phone": "9876543228",
+    "Role": 1,
+    "Status": true
+  },
+  {
+    "UserId": 20,
+    "Username": "betty.king",
+    "PasswordHash": "Admin@123",
+    "FullName": "Betty King",
+    "Email": "betty.king@vms.com",
+    "Phone": "9876543229",
+    "Role": 0,
+    "Status": false
+  },
+  {
+    "UserId": 21,
+    "Username": "ronald.scott",
+    "PasswordHash": "Employee@123",
+    "FullName": "Ronald Scott",
+    "Email": "ronald.scott@vms.com",
+    "Phone": "9876543230",
+    "Role": 1,
+    "Status": true
+  },
+  {
+    "UserId": 22,
+    "Username": "sandra.green",
+    "PasswordHash": "Manager@123",
+    "FullName": "Sandra Green",
+    "Email": "sandra.green@vms.com",
+    "Phone": "9876543231",
+    "Role": 2,
+    "Status": true
+  },
+  {
+    "UserId": 23,
+    "Username": "george.adams",
+    "PasswordHash": "Employee@123",
+    "FullName": "George Adams",
+    "Email": "george.adams@vms.com",
+    "Phone": "9876543232",
+    "Role": 1,
+    "Status": false
   }
 ]

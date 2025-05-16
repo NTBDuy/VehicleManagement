@@ -6,7 +6,16 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHome, faUser, faUsers, faSignOut, faCar, faCalendarCheck, faGear, faChartArea, faCarSide } from '@fortawesome/free-solid-svg-icons';
+import {
+  faHome,
+  faUsers,
+  faSignOut,
+  faCar,
+  faCalendarCheck,
+  faGear,
+  faChartArea,
+  faCarSide,
+} from '@fortawesome/free-solid-svg-icons';
 
 import HomeScreen from 'screens/admin/HomeScreen';
 import NotificationScreen from 'screens/admin/NotificationScreen';
@@ -15,18 +24,29 @@ import AccountScreen from 'screens/admin/AccountScreen';
 import ReportScreen from 'screens/admin/ReportScreen';
 import RequestScreen from 'screens/admin/RequestScreen';
 import VehicleScreen from 'screens/admin/VehicleScreen';
+import AccountDetailScreen from 'screens/admin/AccountDetailScreen';
 
 import { Alert, View, Text } from 'react-native';
 
-const HomeStack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+const HomeStack = createNativeStackNavigator();
+const AccountStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="AdminHome" component={HomeScreen} />
-      <HomeStack.Screen name='Notification' component={NotificationScreen}/>
+      <HomeStack.Screen name="Notification" component={NotificationScreen} />
     </HomeStack.Navigator>
+  );
+}
+
+function AccountStackScreen() {
+  return (
+    <AccountStack.Navigator screenOptions={{ headerShown: false }}>
+      <AccountStack.Screen name="AccountManagement" component={AccountScreen} />
+      <AccountStack.Screen name="AccountDetail" component={AccountDetailScreen} />
+    </AccountStack.Navigator>
   );
 }
 
@@ -95,8 +115,8 @@ export default function AdminNavigator({
       />
 
       <Drawer.Screen
-        name="Account"
-        component={AccountScreen}
+        name="AccountStack"
+        component={AccountStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faUsers} color={color} size={size} />
