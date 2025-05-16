@@ -20,11 +20,12 @@ import {
 import HomeScreen from 'screens/admin/HomeScreen';
 import NotificationScreen from 'screens/admin/NotificationScreen';
 import SettingScreen from 'screens/admin/SettingScreen';
-import AccountScreen from 'screens/admin/AccountScreen';
+import AccountScreen from 'screens/admin/account/AccountScreen';
 import ReportScreen from 'screens/admin/ReportScreen';
 import RequestScreen from 'screens/admin/RequestScreen';
 import VehicleScreen from 'screens/admin/VehicleScreen';
-import AccountDetailScreen from 'screens/admin/AccountDetailScreen';
+import AccountDetailScreen from 'screens/admin/account/AccountDetailScreen';
+import AccountEditScreen from 'screens/admin/account/AccountEditScreen';
 
 import { Alert, View, Text } from 'react-native';
 
@@ -46,6 +47,7 @@ function AccountStackScreen() {
     <AccountStack.Navigator screenOptions={{ headerShown: false }}>
       <AccountStack.Screen name="AccountManagement" component={AccountScreen} />
       <AccountStack.Screen name="AccountDetail" component={AccountDetailScreen} />
+      <AccountStack.Screen name='AccountEdit' component={AccountEditScreen}/>
     </AccountStack.Navigator>
   );
 }

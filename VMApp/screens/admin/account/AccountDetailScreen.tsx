@@ -1,13 +1,23 @@
 import { View, Text, SafeAreaView, Image, Pressable } from 'react-native';
 import Header from 'components/Header';
 import User from 'types/User';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 const AccountDetailScreen = () => {
   const route = useRoute();
   const { userData } = route.params as { userData: User };
+  const navigation = useNavigation<any>();
+
+  const userRole = (role: number) => {
+    switch(role) {
+      case 0: return 'Admin'
+      case 1: return 'Employee'
+      case 2: return 'Manager'
+      default: return 'Undefined'
+    }
+  }
 
   return (
     <SafeAreaView>
@@ -16,7 +26,9 @@ const AccountDetailScreen = () => {
         backBtn
         customTitle={<Text className="text-xl font-bold">Account Detail #{userData.UserId}</Text>}
         rightElement={
-          <Pressable className="rounded-full bg-white p-2">
+          <Pressable
+            onPress={() => navigation.navigate('AccountEdit', { userData })}
+            className="rounded-full bg-white p-2">
             <FontAwesomeIcon icon={faEdit} size={18} />
           </Pressable>
         }
@@ -29,13 +41,13 @@ const AccountDetailScreen = () => {
           <View>
             <Image
               className="mt-4 h-24 w-24 rounded-full border border-white"
-              source={require('../../assets/images/user-default.jpg')}
+              source={require('../../../assets/images/user-default.jpg')}
             />
           </View>
         </View>
 
         {/** Section - thông tin cá nhân */}
-        <View className="mb-4 rounded-lg bg-gray-200 px-2 py-4">
+                <View className="mb-6 rounded-2xl bg-gray-100 p-4 shadow-sm">
           <Text className="mb-4 text-lg font-bold">Personal information</Text>
           <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
             <Text className="text-gray-600">Fullname</Text>
@@ -58,7 +70,7 @@ const AccountDetailScreen = () => {
         </View>
 
         {/** Section - thông tin tài khoản */}
-        <View className="mb-4 rounded-lg bg-gray-200 px-2 py-4">
+                <View className="mb-6 rounded-2xl bg-gray-100 p-4 shadow-sm">
           <Text className="mb-4 text-lg font-bold">Account detail</Text>
           <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
             <Text className="text-gray-600">Username</Text>
@@ -68,7 +80,7 @@ const AccountDetailScreen = () => {
           </View>
           <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
             <Text className="text-gray-600">Role</Text>
-            <Text className="font-semibold text-gray-700">{userData.Role || 'No information'}</Text>
+            <Text className="font-semibold text-gray-700">{userRole(userData.Role) || 'No information'}</Text>
           </View>
           <View className="mb-2 flex-row justify-between">
             <Text className="text-gray-600">Status</Text>
