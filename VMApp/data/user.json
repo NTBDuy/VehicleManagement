@@ -5,7 +5,7 @@
     "PasswordHash": "Admin@123",
     "FullName": "John Doe",
     "Email": "john.doe@vms.com",
-    "Phone": "9876543210",
+    "Phone": "876543210",
     "Role": 0,
     "Status": true
   },
@@ -15,7 +15,7 @@
     "PasswordHash": "Manager@123",
     "FullName": "Jane Smith",
     "Email": "jane.smith@vms.com",
-    "Phone": "9876543211",
+    "Phone": "876543211",
     "Role": 2,
     "Status": true
   },
@@ -25,7 +25,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "Michael Brown",
     "Email": "michael.brown@vms.com",
-    "Phone": "9876543212",
+    "Phone": "876543212",
     "Role": 1,
     "Status": false
   },
@@ -35,7 +35,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "Lisa Jones",
     "Email": "lisa.jones@vms.com",
-    "Phone": "9876543213",
+    "Phone": "876543213",
     "Role": 1,
     "Status": true
   },
@@ -45,7 +45,7 @@
     "PasswordHash": "Manager@123",
     "FullName": "David Miller",
     "Email": "david.miller@vms.com",
-    "Phone": "9876543214",
+    "Phone": "876543214",
     "Role": 2,
     "Status": true
   },
@@ -55,7 +55,7 @@
     "PasswordHash": "Admin@123",
     "FullName": "Susan Wilson",
     "Email": "susan.wilson@vms.com",
-    "Phone": "9876543215",
+    "Phone": "876543215",
     "Role": 0,
     "Status": false
   },
@@ -65,7 +65,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "Robert Moore",
     "Email": "robert.moore@vms.com",
-    "Phone": "9876543216",
+    "Phone": "876543216",
     "Role": 1,
     "Status": true
   },
@@ -75,7 +75,7 @@
     "PasswordHash": "Manager@123",
     "FullName": "Patricia Taylor",
     "Email": "patricia.taylor@vms.com",
-    "Phone": "9876543217",
+    "Phone": "876543217",
     "Role": 2,
     "Status": true
   },
@@ -85,7 +85,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "James Anderson",
     "Email": "james.anderson@vms.com",
-    "Phone": "9876543218",
+    "Phone": "876543218",
     "Role": 1,
     "Status": false
   },
@@ -95,7 +95,7 @@
     "PasswordHash": "Admin@123",
     "FullName": "Mary Thomas",
     "Email": "mary.thomas@vms.com",
-    "Phone": "9876543219",
+    "Phone": "876543219",
     "Role": 0,
     "Status": true
   },
@@ -105,7 +105,7 @@
     "PasswordHash": "Manager@123",
     "FullName": "Charles Jackson",
     "Email": "charles.jackson@vms.com",
-    "Phone": "9876543220",
+    "Phone": "876543220",
     "Role": 2,
     "Status": true
   },
@@ -115,7 +115,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "Barbara White",
     "Email": "barbara.white@vms.com",
-    "Phone": "9876543221",
+    "Phone": "876543221",
     "Role": 1,
     "Status": true
   },
@@ -125,7 +125,7 @@
     "PasswordHash": "Admin@123",
     "FullName": "Steven Harris",
     "Email": "steven.harris@vms.com",
-    "Phone": "9876543222",
+    "Phone": "876543222",
     "Role": 0,
     "Status": false
   },
@@ -135,7 +135,7 @@
     "PasswordHash": "Manager@123",
     "FullName": "Linda Martin",
     "Email": "linda.martin@vms.com",
-    "Phone": "9876543223",
+    "Phone": "876543223",
     "Role": 2,
     "Status": true
   },
@@ -145,7 +145,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "Kevin Lee",
     "Email": "kevin.lee@vms.com",
-    "Phone": "9876543224",
+    "Phone": "876543224",
     "Role": 1,
     "Status": true
   },
@@ -155,7 +155,7 @@
     "PasswordHash": "Admin@123",
     "FullName": "Nancy Walker",
     "Email": "nancy.walker@vms.com",
-    "Phone": "9876543225",
+    "Phone": "876543225",
     "Role": 0,
     "Status": true
   },
@@ -165,7 +165,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "Paul Hall",
     "Email": "paul.hall@vms.com",
-    "Phone": "9876543226",
+    "Phone": "876543226",
     "Role": 1,
     "Status": false
   },
@@ -175,7 +175,7 @@
     "PasswordHash": "Manager@123",
     "FullName": "Karen Allen",
     "Email": "karen.allen@vms.com",
-    "Phone": "9876543227",
+    "Phone": "876543227",
     "Role": 2,
     "Status": true
   },
@@ -185,7 +185,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "Mark Young",
     "Email": "mark.young@vms.com",
-    "Phone": "9876543228",
+    "Phone": "876543228",
     "Role": 1,
     "Status": true
   },
@@ -195,7 +195,7 @@
     "PasswordHash": "Admin@123",
     "FullName": "Betty King",
     "Email": "betty.king@vms.com",
-    "Phone": "9876543229",
+    "Phone": "876543229",
     "Role": 0,
     "Status": false
   },
@@ -205,7 +205,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "Ronald Scott",
     "Email": "ronald.scott@vms.com",
-    "Phone": "9876543230",
+    "Phone": "876543230",
     "Role": 1,
     "Status": true
   },
@@ -215,7 +215,7 @@
     "PasswordHash": "Manager@123",
     "FullName": "Sandra Green",
     "Email": "sandra.green@vms.com",
-    "Phone": "9876543231",
+    "Phone": "876543231",
     "Role": 2,
     "Status": true
   },
@@ -225,7 +225,7 @@
     "PasswordHash": "Employee@123",
     "FullName": "George Adams",
     "Email": "george.adams@vms.com",
-    "Phone": "9876543232",
+    "Phone": "876543232",
     "Role": 1,
     "Status": false
   }

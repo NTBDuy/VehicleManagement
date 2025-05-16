@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBars, faPen, faFileContract, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 import Header from 'components/Header';
+import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 const SettingScreen = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -25,7 +26,7 @@ const SettingScreen = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => v
               source={require('../../assets/images/user-default.jpg')}
             />
             <Text className="mt-4 font-bold">{user?.FullName || 'NO INFORMATION'}</Text>
-            <Text className="mt-2 text-gray-600">{user?.Phone || 'NO INFORMATION'}</Text>
+            <Text className="mt-2 text-gray-600">{formatVietnamPhoneNumber(user!.Phone)}</Text>
           </View>
         }
         rightElement={

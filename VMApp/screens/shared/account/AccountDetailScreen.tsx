@@ -4,6 +4,7 @@ import User from 'types/User';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 const AccountDetailScreen = () => {
   const route = useRoute();
@@ -70,7 +71,7 @@ const AccountDetailScreen = () => {
           <View className="mb-2 flex-row justify-between">
             <Text className="text-gray-600">Phone number</Text>
             <Text className="font-semibold text-gray-700">
-              (+84) {userData.Phone || 'No information'}
+              {formatVietnamPhoneNumber(userData!.Phone)}
             </Text>
           </View>
         </View>
