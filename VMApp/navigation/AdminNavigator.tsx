@@ -1,16 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItem,
-  DrawerItemList,
 } from '@react-navigation/drawer';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faHome,
   faUsers,
-  faSignOut,
-  faCar,
   faCalendarCheck,
   faGear,
   faChartArea,
@@ -18,20 +13,20 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import HomeScreen from 'screens/admin/HomeScreen';
-import NotificationScreen from 'screens/admin/NotificationScreen';
-import SettingScreen from 'screens/admin/SettingScreen';
-import AccountScreen from 'screens/admin/account/AccountScreen';
-import ReportScreen from 'screens/admin/ReportScreen';
-import RequestScreen from 'screens/admin/RequestScreen';
-import VehicleScreen from 'screens/admin/vehicle/VehicleScreen';
-import AccountDetailScreen from 'screens/admin/account/AccountDetailScreen';
-import AccountEditScreen from 'screens/admin/account/AccountEditScreen';
-import AccountAddScreen from 'screens/admin/account/AccountAddScreen';
-import VehicleDetailScreen from 'screens/admin/vehicle/VehicleDetailScreen';
-import VehicleEditScreen from 'screens/admin/vehicle/VehicleEditScreen';
-import VehicleAddScreen from 'screens/admin/vehicle/VehicleAddScreen';
+import NotificationScreen from 'screens/shared/NotificationScreen';
+import SettingScreen from 'screens/shared/SettingScreen';
+import ReportScreen from 'screens/shared/ReportScreen';
+import RequestScreen from 'screens/manager/RequestScreen';
+import AccountScreen from 'screens/shared/account/AccountScreen';
+import AccountDetailScreen from 'screens/shared/account/AccountDetailScreen';
+import AccountEditScreen from 'screens/shared/account/AccountEditScreen';
+import AccountAddScreen from 'screens/shared/account/AccountAddScreen';
+import VehicleScreen from 'screens/shared/vehicle/VehicleScreen';
+import VehicleDetailScreen from 'screens/shared/vehicle/VehicleDetailScreen';
+import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
+import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
 
-import { Alert, View, Text } from 'react-native';
+import SidebarCustom from 'components/SidebarCustom';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -66,50 +61,6 @@ function VehicleStackScreen() {
       <VehicleStack.Screen name="VehicleEdit" component={VehicleEditScreen} />
       <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
     </VehicleStack.Navigator>
-  );
-}
-
-
-function SidebarCustom(props: any) {
-  const { setIsLoggedIn } = props;
-
-  return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-      {/* Header */}
-      <View className="mb-4 items-center justify-center border-b border-gray-200 py-6">
-        <FontAwesomeIcon icon={faCar} size={30} color="#1f2937" />
-        <Text className="mt-2 text-xl font-bold text-gray-800">Vehicle Management</Text>
-      </View>
-
-      {/* Menu items */}
-      <View className="flex-1 px-4">
-        <DrawerItemList {...props} />
-      </View>
-
-      {/* Footer */}
-      <View className="border-t border-gray-200 px-4 pt-4">
-        <DrawerItem
-          label="Log out"
-          labelStyle={{ color: '#ef4444', fontWeight: 'bold' }}
-          icon={({ size }) => <FontAwesomeIcon icon={faSignOut} color={'#ef4444'} size={size} />}
-          onPress={() => {
-            Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
-              {
-                text: 'Sign Out',
-                style: 'destructive',
-                onPress: () => {
-                  setIsLoggedIn(false);
-                },
-              },
-            ]);
-          }}
-        />
-      </View>
-    </DrawerContentScrollView>
   );
 }
 
@@ -154,18 +105,6 @@ export default function AdminNavigator({
             <FontAwesomeIcon icon={faCarSide} color={color} size={size} />
           ),
           title: 'Vehicle Management',
-          headerShown: false,
-        }}
-      />
-
-      <Drawer.Screen
-        name="Request"
-        component={RequestScreen}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <FontAwesomeIcon icon={faCalendarCheck} color={color} size={size} />
-          ),
-          title: 'Request Management',
           headerShown: false,
         }}
       />
