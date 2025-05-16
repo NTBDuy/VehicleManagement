@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, FlatList, Pressable, Alert } from 'react-native';
+import { View, Text, SafeAreaView, FlatList, Pressable, Alert, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Header from 'components/Header';
 import Vehicle from 'types/Vehicle';
@@ -12,13 +12,22 @@ import {
   faTruckPickup,
   faVanShuttle,
   faPlus,
+  faInfoCircle,
+  faEdit,
+  faTrash,
+  faCalendarCheck,
+  faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const vehicle: Vehicle[] = vehicleData;
 
 const VehicleScreen = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selected, setSelected] = useState<Vehicle>();
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigation = useNavigation<any>();
 
   const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
     const getStatusStyle = (status: number) => {
@@ -72,25 +81,25 @@ const VehicleScreen = () => {
   };
 
   const renderVehicleItem = ({ item }: { item: Vehicle }) => (
-    <View className="mt-4 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
+    <Pressable
+      onPress={() => handleOption(item)}
+      className="mt-4 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">
-          <FontAwesomeIcon icon={vehicleType(item.Type)} size={24} color="#3f3f3f" />
+          <FontAwesomeIcon icon={vehicleType(item.Type)} size={24} color="#0d4d87" />
         </Text>
       </View>
       <View className="flex-1">
         <Text className="font-bold">{item.LicensePlate}</Text>
-        <Text className="text-sm">{item.Model}</Text>
+        <Text className="text-sm">
+          {item.Brand} {item.Model}
+        </Text>
       </View>
       <View className="flex-row items-center">
         <View>{renderBadgeVehicleStatus({ status: item.Status })}</View>
-        <View>
-          <Pressable className="m-2" onPress={() => {}}>
-            <FontAwesomeIcon icon={faEllipsisV} />
-          </Pressable>
-        </View>
+        <FontAwesomeIcon icon={faEllipsisV} />
       </View>
-    </View>
+    </Pressable>
   );
 
   const EmptyListComponent = () => (
@@ -136,6 +145,23 @@ const VehicleScreen = () => {
     Alert.alert('Comming soon!');
   };
 
+  const handleOption = (vehicle: Vehicle) => {
+    setSelected(vehicle);
+    setModalVisible(true);
+  };
+
+  const onViewDetail = () => {
+    navigation.navigate('VehicleDetail', { vehicleData: selected });
+  };
+
+  const onClose = () => {
+    setModalVisible(false);
+  };
+
+  const onEdit = () => {
+    navigation.navigate('VehicleEdit', { vehicleData: selected });
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
@@ -168,6 +194,68 @@ const VehicleScreen = () => {
           </Text>
         </View>
       </View>
+
+      <Modal
+        transparent
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}>
+        <View className="flex-1 justify-end bg-black/30">
+          <View className="rounded-t-2xl bg-white p-6 pb-12">
+            <Text className="mb-6 text-center text-lg font-bold">
+              Options for {selected?.LicensePlate}
+            </Text>
+
+            <Pressable
+              className="mb-6 flex-row items-center gap-3"
+              onPress={() => {
+                onViewDetail();
+                onClose();
+              }}>
+              <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
+              <Text className="text-lg font-semibold text-blue-600">Detail</Text>
+            </Pressable>
+
+            <Pressable
+              className="mb-6 flex-row items-center gap-3"
+              onPress={() => {
+                onEdit();
+                onClose();
+              }}>
+              <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />
+              <Text className="text-lg font-semibold text-blue-600">Edit</Text>
+            </Pressable>
+
+            <Pressable
+              className="mb-6 flex-row items-center gap-3"
+              onPress={() => {
+                // onResetPassword();
+                onClose();
+              }}>
+              <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#2563eb" />
+              <Text className="text-lg font-semibold text-blue-600">Schedule Maintenance</Text>
+            </Pressable>
+
+            <Pressable
+              className="mb-6 flex-row items-center gap-3"
+              onPress={() => {
+                // onToggleStatus();
+                onClose();
+              }}>
+              <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
+              <Text
+                className="text-lg font-semibold text-red-600">
+                Remove
+              </Text>
+            </Pressable>
+
+            <Pressable className="flex-row items-center justify-center gap-3" onPress={onClose}>
+              <FontAwesomeIcon icon={faTimesCircle} size={20} color="#6b7280" />
+              <Text className="text-lg font-semibold text-gray-500">Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

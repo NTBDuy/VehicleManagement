@@ -11,17 +11,21 @@ const AccountDetailScreen = () => {
   const navigation = useNavigation<any>();
 
   const userRole = (role: number) => {
-    switch(role) {
-      case 0: return 'Admin'
-      case 1: return 'Employee'
-      case 2: return 'Manager'
-      default: return 'Undefined'
+    switch (role) {
+      case 0:
+        return 'Admin';
+      case 1:
+        return 'Employee';
+      case 2:
+        return 'Manager';
+      default:
+        return 'Undefined';
     }
-  }
+  };
 
   const onEdit = () => {
-    navigation.navigate("AccountEdit", { userData });
-  }
+    navigation.navigate('AccountEdit', { userData });
+  };
 
   return (
     <SafeAreaView>
@@ -30,9 +34,7 @@ const AccountDetailScreen = () => {
         backBtn
         customTitle={<Text className="text-xl font-bold">Account Detail #{userData.UserId}</Text>}
         rightElement={
-          <Pressable
-            onPress={onEdit}
-            className="rounded-full bg-white p-2">
+          <Pressable onPress={onEdit} className="rounded-full bg-white p-2">
             <FontAwesomeIcon icon={faEdit} size={18} />
           </Pressable>
         }
@@ -51,7 +53,7 @@ const AccountDetailScreen = () => {
         </View>
 
         {/** Section - thông tin cá nhân */}
-                <View className="mb-6 rounded-2xl bg-gray-100 p-4 shadow-sm">
+        <View className="mb-6 rounded-2xl bg-gray-100 p-4 shadow-sm">
           <Text className="mb-4 text-lg font-bold">Personal information</Text>
           <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
             <Text className="text-gray-600">Fullname</Text>
@@ -74,7 +76,7 @@ const AccountDetailScreen = () => {
         </View>
 
         {/** Section - thông tin tài khoản */}
-                <View className="mb-6 rounded-2xl bg-gray-100 p-4 shadow-sm">
+        <View className="mb-6 rounded-2xl bg-gray-100 p-4 shadow-sm">
           <Text className="mb-4 text-lg font-bold">Account detail</Text>
           <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
             <Text className="text-gray-600">Username</Text>
@@ -84,7 +86,9 @@ const AccountDetailScreen = () => {
           </View>
           <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
             <Text className="text-gray-600">Role</Text>
-            <Text className="font-semibold text-gray-700">{userRole(userData.Role) || 'No information'}</Text>
+            <Text className="font-semibold text-gray-700">
+              {userRole(userData.Role) || 'No information'}
+            </Text>
           </View>
           <View className="mb-2 flex-row justify-between">
             <Text className="text-gray-600">Status</Text>

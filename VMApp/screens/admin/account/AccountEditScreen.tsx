@@ -131,7 +131,7 @@ const AccountEditScreen = () => {
         {/** Active button */}
         <View className="mt-2 mb-40">
           <Pressable className="items-center rounded-xl bg-blue-500 py-4">
-            <Text className="font-bold text-white">Update account</Text>
+            <Text className="font-bold text-white">Update Account</Text>
           </Pressable>
         </View>
       </ScrollView>

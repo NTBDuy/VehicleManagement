@@ -26,12 +26,15 @@ import RequestScreen from 'screens/admin/RequestScreen';
 import VehicleScreen from 'screens/admin/vehicle/VehicleScreen';
 import AccountDetailScreen from 'screens/admin/account/AccountDetailScreen';
 import AccountEditScreen from 'screens/admin/account/AccountEditScreen';
+import VehicleDetailScreen from 'screens/admin/vehicle/VehicleDetailScreen';
+import VehicleEditScreen from 'screens/admin/vehicle/VehicleEditScreen';
 
 import { Alert, View, Text } from 'react-native';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
 const AccountStack = createNativeStackNavigator();
+const VehicleStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
@@ -51,6 +54,17 @@ function AccountStackScreen() {
     </AccountStack.Navigator>
   );
 }
+
+function VehicleStackScreen() {
+  return (
+    <VehicleStack.Navigator screenOptions={{ headerShown: false }}>
+      <VehicleStack.Screen name="VehicleManagement" component={VehicleScreen} />
+      <VehicleStack.Screen name="VehicleDetail" component={VehicleDetailScreen} />
+      <VehicleStack.Screen name="VehicleEdit" component={VehicleEditScreen} />
+    </VehicleStack.Navigator>
+  );
+}
+
 
 function SidebarCustom(props: any) {
   const { setIsLoggedIn } = props;
@@ -129,8 +143,8 @@ export default function AdminNavigator({
       />
 
       <Drawer.Screen
-        name="Vehicle"
-        component={VehicleScreen}
+        name="VehicleStack"
+        component={VehicleStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCarSide} color={color} size={size} />

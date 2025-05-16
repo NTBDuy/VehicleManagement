@@ -1,13 +1,5 @@
 import Header from 'components/Header';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  FlatList,
-  Pressable,
-  Alert,
-  Modal,
-} from 'react-native';
+import { View, Text, SafeAreaView, FlatList, Pressable, Alert, Modal } from 'react-native';
 import accountData from 'data/user.json';
 import User from 'types/User';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -73,8 +65,10 @@ const AccountScreen = () => {
     );
   };
 
-  const renderUserItem = ({ item } : { item: User }) => (
-    <View className="mt-4 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
+  const renderUserItem = ({ item }: { item: User }) => (
+    <Pressable
+      onPress={() => handleOption(item)}
+      className="mt-4 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">{getUserInitials(item.FullName)}</Text>
       </View>
@@ -84,16 +78,12 @@ const AccountScreen = () => {
       </View>
       <View className="flex-row items-center">
         <View>{renderBadgeUserRole({ role: item.Role })}</View>
-        <View>
-          <Pressable className="m-2" onPress={() => handleOption(item)}>
-            <FontAwesomeIcon icon={faEllipsisV} />
-          </Pressable>
-        </View>
+        <FontAwesomeIcon icon={faEllipsisV} />
       </View>
       <View className="absolute -right-0 -top-1">
         <View className={`h-4 w-4 rounded-full ${item.Status ? 'bg-green-500' : 'bg-gray-400'}`} />
       </View>
-    </View>
+    </Pressable>
   );
 
   const EmptyListComponent = () => (
@@ -149,12 +139,12 @@ const AccountScreen = () => {
   }, []);
 
   const onViewDetail = () => {
-    navigation.navigate("AccountDetail", { userData: selected });
-  }
+    navigation.navigate('AccountDetail', { userData: selected });
+  };
 
   const onEdit = () => {
-    navigation.navigate("AccountEdit", { userData: selected });
-  }
+    navigation.navigate('AccountEdit', { userData: selected });
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
