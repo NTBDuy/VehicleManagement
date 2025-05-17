@@ -23,12 +23,37 @@ import EmptyListComponent from 'components/EmptyListComponent';
 
 const vehicle: Vehicle[] = vehicleData;
 
+type stat = {
+  total: number;
+  available: number;
+  inUse: number;
+  underMaintenance: number;
+};
+
 const VehicleScreen = () => {
+  const initialStat = {
+    total: 0,
+    available: 0,
+    inUse: 0,
+    underMaintenance: 0,
+  };
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selected, setSelected] = useState<Vehicle>();
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const navigation = useNavigation<any>();
+  const [isExpanded, setIsExpanded] = useState(true);
+    const [isSelected, setIsSelected] = useState(false);
+  const [stat, setStat] = useState<stat>(initialStat);
+
+  const countStat = (item: Vehicle[]) => {
+    const total = item.length;
+    const available = item.filter((request) => request.Status === 0).length;
+    const inUse = item.filter((request) => request.Status === 1).length;
+    const underMaintenance = item.filter((request) => request.Status === 2).length;
+    setStat({ total, available, inUse, underMaintenance });
+  };
 
   const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
     const getStatusStyle = (status: number) => {
@@ -81,10 +106,27 @@ const VehicleScreen = () => {
     }
   };
 
+  const StatusCard = ({
+    label,
+    count,
+    bgColor,
+  }: {
+    label: string;
+    count: number;
+    bgColor: string;
+  }) => (
+    <Pressable
+      onPress={() => handleStatus(label)}
+      className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
+      <Text className="text-base font-medium text-white">{label}</Text>
+      <Text className="text-lg font-bold text-white">{count}</Text>
+    </Pressable>
+  );
+
   const renderVehicleItem = ({ item }: { item: Vehicle }) => (
     <Pressable
       onPress={() => handleOption(item)}
-      className="mt-4 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
+      className="mb-4 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">
           <FontAwesomeIcon icon={vehicleType(item.Type)} size={24} color="#0d4d87" />
@@ -103,7 +145,7 @@ const VehicleScreen = () => {
     </Pressable>
   );
 
-  const filter = (query: string): void => {
+  const filter = (query: string, status: string): void => {
     let filtered = vehicle;
 
     if (query) {
@@ -112,28 +154,42 @@ const VehicleScreen = () => {
           item.LicensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
           item.Type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
           item.Brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          (item.Status === 0 && 'Available'.includes(query.toLocaleLowerCase())) ||
-          (item.Status === 1 && 'InUse'.includes(query.toLocaleLowerCase())) ||
-          (item.Status === 2 && 'UnderMaintenance'.includes(query.toLocaleLowerCase()))
+          item.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
       );
     }
+
+    if (status == 'Available') {
+      filtered = filtered.filter((item) => item.Status === 0);
+    } else if (status == 'InUse') {
+      filtered = filtered.filter((item) => item.Status === 1);
+    } else if (status == 'Maintenance') {
+      filtered = filtered.filter((item) => item.Status === 2);
+    }
+
     setFilteredVehicles(filtered);
+  };
+
+  const handleStatus = (status: string) => {
+    filter('', status);
+    setIsSelected(true);
   };
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    filter(text);
+    filter(text, '');
   };
 
   const clearSearch = (): void => {
     setSearchQuery('');
-    filter('');
+    filter('', '');
   };
 
   useEffect(() => {
-    setFilteredVehicles(vehicle);
-  }, []);
+    if(vehicle) {
+      setFilteredVehicles(vehicle);
+      countStat(vehicle);
+    }
+  }, [vehicle]);
 
   const handlePress = () => {
     Alert.alert('Comming soon!');
@@ -177,6 +233,26 @@ const VehicleScreen = () => {
       />
 
       <View className="mx-6 mb-10 flex-1">
+        <View className="mb-4 mt-4 rounded-2xl bg-gray-100 p-4 shadow-sm">
+          <Pressable
+            className="flex-row justify-between"
+            onPress={() => setIsExpanded(!isExpanded)}>
+            <Text className="text-base font-medium text-gray-600">Summary</Text>
+            <Text className="mt-1 text-sm text-blue-500">
+              {isExpanded ? 'Hide details ▲' : 'Show details ▼'}
+            </Text>
+          </Pressable>
+
+          {isExpanded && (
+            <View className="mt-4 flex-row flex-wrap justify-between gap-y-4">
+              <StatusCard label="Total" count={stat.total} bgColor="bg-orange-400" />
+              <StatusCard label="Available" count={stat.available} bgColor="bg-green-500" />
+              <StatusCard label="InUse" count={stat.inUse} bgColor="bg-blue-500" />
+              <StatusCard label="Maintenance" count={stat.underMaintenance} bgColor="bg-gray-500" />
+            </View>
+          )}
+        </View>
+
         <FlatList
           data={filteredVehicles}
           renderItem={renderVehicleItem}
@@ -187,7 +263,7 @@ const VehicleScreen = () => {
       </View>
 
       {vehicle.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
+        <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
           <Text className="text-center text-sm font-medium text-gray-500">
             Total Vehicle:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredVehicles.length}</Text>
@@ -203,7 +279,7 @@ const VehicleScreen = () => {
         <View className="flex-1 justify-end bg-black/30">
           <View className="rounded-t-2xl bg-white p-6 pb-12">
             <Text className="mb-6 text-center text-lg font-bold">
-              Options for {selected?.LicensePlate}
+              Options for plate number #{selected?.LicensePlate}
             </Text>
 
             <Pressable
@@ -213,7 +289,7 @@ const VehicleScreen = () => {
                 onClose();
               }}>
               <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-              <Text className="text-lg font-semibold text-blue-600">Detail</Text>
+              <Text className="text-lg font-semibold text-blue-600">Vehicle details</Text>
             </Pressable>
 
             <Pressable
@@ -222,19 +298,21 @@ const VehicleScreen = () => {
                 onEdit();
                 onClose();
               }}>
-              <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />
-              <Text className="text-lg font-semibold text-blue-600">Edit</Text>
+              <FontAwesomeIcon icon={faEdit} size={20} color="#ca8a04" />
+              <Text className="text-lg font-semibold text-yellow-600">Edit vehicle</Text>
             </Pressable>
 
-            <Pressable
-              className="mb-6 flex-row items-center gap-3"
-              onPress={() => {
-                // onResetPassword();
-                onClose();
-              }}>
-              <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#2563eb" />
-              <Text className="text-lg font-semibold text-blue-600">Schedule Maintenance</Text>
-            </Pressable>
+            {selected?.Status != 2 && (
+              <Pressable
+                className="mb-6 flex-row items-center gap-3"
+                onPress={() => {
+                  // onResetPassword();
+                  onClose();
+                }}>
+                <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#059669" />
+                <Text className="text-lg font-semibold text-emerald-600">Schedule maintenance</Text>
+              </Pressable>
+            )}
 
             <Pressable
               className="mb-6 flex-row items-center gap-3"
@@ -243,12 +321,13 @@ const VehicleScreen = () => {
                 onClose();
               }}>
               <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
-              <Text className="text-lg font-semibold text-red-600">Remove</Text>
+              <Text className="text-lg font-semibold text-red-600">Remove vehicle</Text>
             </Pressable>
 
-            <Pressable className="flex-row items-center justify-center gap-3" onPress={onClose}>
-              <FontAwesomeIcon icon={faTimesCircle} size={20} color="#6b7280" />
-              <Text className="text-lg font-semibold text-gray-500">Cancel</Text>
+            <Pressable
+              className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
+              onPress={onClose}>
+              <Text className="text-lg font-semibold text-white">Close</Text>
             </Pressable>
           </View>
         </View>

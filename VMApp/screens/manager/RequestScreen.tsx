@@ -4,14 +4,18 @@ import {
   SafeAreaView,
   FlatList,
   Pressable,
-  Alert,
-  TouchableOpacity,
+  Modal,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from 'components/Header';
 import Request from 'types/Request';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import {
+  faEllipsisV,
+  faInfoCircle,
+  faCircleXmark,
+  faCircleCheck,
+} from '@fortawesome/free-solid-svg-icons';
 
 import requestData from 'data/request.json';
 import EmptyListComponent from 'components/EmptyListComponent';
@@ -42,6 +46,8 @@ const RequestScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isSelected, setIsSelected] = useState(false);
+  const [selected, setSelected] = useState<Request>();
+  const [modalVisible, setModalVisible] = useState(false);
 
   const StatusCard = ({
     label,
@@ -130,8 +136,9 @@ const RequestScreen = () => {
   };
 
   const renderDataItem = ({ item }: { item: Request }) => (
-    <View
-      className={`mt-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 border-${renderColor(item.Status)}-400`}>
+    <Pressable
+      onPress={() => handleOption(item)}
+      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 border-${renderColor(item.Status)}-400`}>
       <View className="flex-row items-center">
         <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
           <Text className="text-lg font-bold text-white">
@@ -155,8 +162,17 @@ const RequestScreen = () => {
           </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
+
+  const handleOption = (data: Request) => {
+    setSelected(data);
+    setModalVisible(true);
+  };
+
+  const onClose = () => {
+    setModalVisible(false);
+  };
 
   useEffect(() => {
     if (data) countStat(data);
@@ -174,7 +190,7 @@ const RequestScreen = () => {
         clearSearch={clearSearch}
       />
 
-      <View className="flex-1 mx-6 mb-10">
+      <View className="mx-6 mb-10 flex-1">
         <View className="mb-4 mt-4 rounded-2xl bg-gray-100 p-4 shadow-sm">
           <Pressable
             className="flex-row justify-between"
@@ -212,13 +228,81 @@ const RequestScreen = () => {
         />
       </View>
       {data.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
+        <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
           <Text className="text-center text-sm font-medium text-gray-500">
             Total Request:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredRequests.length}</Text>
           </Text>
         </View>
       )}
+
+      <Modal
+        transparent
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}>
+        <View className="flex-1 justify-end bg-black/30">
+          <View className="rounded-t-2xl bg-white p-6 pb-12">
+            <Text className="mb-6 text-center text-lg font-bold">
+              Options for request ID #{selected?.RequestId}
+            </Text>
+
+            <Pressable
+              className="mb-6 flex-row items-center gap-3"
+              onPress={() => {
+                // onViewDetail();
+                // onClose();
+              }}>
+              <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
+              <Text className="text-lg font-semibold text-blue-600">Request details</Text>
+            </Pressable>
+
+            {selected?.Status === 0 && (
+              <>
+                <Pressable
+                  className="mb-6 flex-row items-center gap-3"
+                  onPress={() => {
+                    // onEdit();
+                    onClose();
+                  }}>
+                  <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
+                  <Text className="text-lg font-semibold text-green-600">
+                    Approve and assign a driver
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  className="mb-6 flex-row items-center gap-3"
+                  onPress={() => {
+                    // onResetPassword();
+                    onClose();
+                  }}>
+                  <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
+                  <Text className="text-lg font-semibold text-red-600">Reject the request</Text>
+                </Pressable>
+              </>
+            )}
+
+            {selected?.Status === 1 && (
+              <Pressable
+                className="mb-6 flex-row items-center gap-3"
+                onPress={() => {
+                  // onResetPassword();
+                  onClose();
+                }}>
+                <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
+                <Text className="text-lg font-semibold text-gray-600">Cancel the request</Text>
+              </Pressable>
+            )}
+
+            <Pressable
+              className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
+              onPress={onClose}>
+              <Text className="text-lg font-semibold text-white">Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
