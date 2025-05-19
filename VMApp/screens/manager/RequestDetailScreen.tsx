@@ -1,16 +1,23 @@
 import { View, Text, SafeAreaView, Pressable } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import Header from 'components/HeaderComponent';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Request from 'types/Request';
 import { getUserInitials } from 'utils/userUtils';
 import InfoRow from 'components/InfoRowComponent';
-import { formatDate } from 'utils/datetimeUtils';
+import { formatDate, formatDatetime } from 'utils/datetimeUtils';
+import { useState } from 'react';
+import ApproveModal from 'components/ApproveModalComponent';
+import RejectModal from 'components/RejectModalComponent';
+import CancelModal from 'components/CancelModalComponent';
 
 const RequestDetailScreen = () => {
   const route = useRoute();
   const { requestData } = route.params as { requestData: Request };
+  const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
+  const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
+  /** Component: Badge Vehicle Status */
   const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
     const getStatusStyle = (status: number) => {
       switch (status) {
@@ -47,6 +54,39 @@ const RequestDetailScreen = () => {
         <Text className="text-xs font-medium text-white">{getStatusLabel(status)}</Text>
       </View>
     );
+  };
+
+  const handleApprove = () => {
+    setIsApproveModalVisible(true);
+  };
+
+  const handleReject = () => {
+    setIsRejectModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsCancelModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsApproveModalVisible(false);
+    setIsRejectModalVisible(false);
+    setIsCancelModalVisible(false);
+  };
+
+  const handleApproveConfirm = (driverId: string | null, note: string) => {
+    console.log('Approving request with driver:', driverId, 'and note:', note);
+    handleCloseModal();
+  };
+
+  const handleRejectConfirm = (reason: string) => {
+    console.log('Rejecting request with reason:', reason);
+    handleCloseModal();
+  };
+
+  const handleCancelConfirm = (reason: string) => {
+    console.log('Cancelling request with reason:', reason);
+    handleCloseModal();
   };
 
   return (
@@ -113,13 +153,13 @@ const RequestDetailScreen = () => {
           <View className="mt-4 flex-row justify-between">
             <Pressable
               className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm active:bg-green-700"
-              onPress={() => {}}>
+              onPress={handleApprove}>
               <Text className="font-semibold text-white">Approve</Text>
             </Pressable>
 
             <Pressable
               className="w-[48%] items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
-              onPress={() => {}}>
+              onPress={handleReject}>
               <Text className="font-semibold text-white">Reject</Text>
             </Pressable>
           </View>
@@ -128,13 +168,37 @@ const RequestDetailScreen = () => {
         {requestData.Status === 1 && (
           <View>
             <Pressable
-              className="items-center rounded-xl bg-gray-600 py-4 shadow-sm active:bg-gray-700"
-              onPress={() => {}}>
+              className="items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
+              onPress={handleCancel}>
               <Text className="font-semibold text-white">Cancel</Text>
             </Pressable>
           </View>
         )}
+
+        <View className="mt-4">
+          <Text className="text-right text-sm font-medium text-gray-500">
+            Last updated: {formatDatetime(requestData.CreatedAt)}
+          </Text>
+        </View>
       </View>
+
+      <ApproveModal
+        visible={isApproveModalVisible}
+        onClose={handleCloseModal}
+        onApprove={handleApproveConfirm}
+      />
+
+      <RejectModal
+        visible={isRejectModalVisible}
+        onClose={handleCloseModal}
+        onReject={handleRejectConfirm}
+      />
+
+      <CancelModal
+        visible={isCancelModalVisible}
+        onClose={handleCloseModal}
+        onCancel={handleCancelConfirm}
+      />
     </SafeAreaView>
   );
 };

@@ -15,6 +15,9 @@ import EmptyList from 'components/EmptyListComponent';
 import { getUserInitials } from 'utils/userUtils';
 import { formatDate } from 'utils/datetimeUtils';
 import { useNavigation } from '@react-navigation/native';
+import ApproveModal from 'components/ApproveModalComponent';
+import RejectModal from 'components/RejectModalComponent';
+import CancelModal from 'components/CancelModalComponent';
 
 const requests: Request[] = requestData;
 
@@ -35,14 +38,17 @@ const RequestScreen = () => {
     cancelled: 0,
   };
 
+  const navigation = useNavigation<any>();
   const [requestStat, setRequestStat] = useState<RequestStat>(initialStat);
   const [filteredRequests, setFilteredRequests] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isFiltered, setIsFiltered] = useState(false);
   const [selected, setSelected] = useState<Request>();
-  const [isisModalVisible, setIsisModalVisible] = useState(false);
-  const navigation = useNavigation<any>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
+  const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
   useEffect(() => {
     if (requests) calculateRequestStatistics(requests);
@@ -162,9 +168,9 @@ const RequestScreen = () => {
     filterRequests(text, '');
   };
 
-  const handleRequestOption = (data: Request) => {
+ const handleRequestOption = (data: Request): void => {
     setSelected(data);
-    setIsisModalVisible(true);
+    setIsModalVisible(true);
   };
 
   const handleClearFilters = (): void => {
@@ -175,10 +181,44 @@ const RequestScreen = () => {
 
   const handleViewDetail = () => {
     navigation.navigate('RequestDetail', { requestData: selected });
+    setIsModalVisible(false);
+  };
+
+  const handleApprove = (): void => {
+    setIsModalVisible(false);
+    setIsApproveModalVisible(true);
+  };
+
+  const handleReject = (): void => {
+    setIsModalVisible(false);
+    setIsRejectModalVisible(true);
+  };
+
+  const handleCancel = (): void => {
+    setIsModalVisible(false);
+    setIsCancelModalVisible(true);
   };
 
   const handleCloseModal = () => {
-    setIsisModalVisible(false);
+    setIsModalVisible(false);
+    setIsApproveModalVisible(false);
+    setIsRejectModalVisible(false);
+    setIsCancelModalVisible(false);
+  };
+
+  const handleApproveConfirm = (driverId: string | null, note: string) => {
+    console.log('Approving request with driver:', driverId, 'and note:', note);
+    handleCloseModal();
+  };
+
+  const handleRejectConfirm = (reason: string) => {
+    console.log('Rejecting request with reason:', reason);
+    handleCloseModal();
+  };
+
+  const handleCancelConfirm = (reason: string) => {
+    console.log('Cancelling request with reason:', reason);
+    handleCloseModal();
   };
 
   return (
@@ -241,9 +281,9 @@ const RequestScreen = () => {
 
       <Modal
         transparent
-        visible={isisModalVisible}
+        visible={isModalVisible}
         animationType="slide"
-        onRequestClose={() => setIsisModalVisible(false)}>
+        onRequestClose={handleCloseModal}>
         <View className="flex-1 justify-end bg-black/30">
           <View className="rounded-t-2xl bg-white p-6 pb-12">
             <Text className="mb-6 text-center text-lg font-bold">
@@ -251,11 +291,8 @@ const RequestScreen = () => {
             </Text>
 
             <Pressable
-              className="mb-6 flex-row items-center gap-3"
-              onPress={() => {
-                handleViewDetail();
-                handleCloseModal();
-              }}>
+              className="mb-6 flex-row items-center gap-3 active:opacity-70"
+              onPress={handleViewDetail}>
               <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
               <Text className="text-lg font-semibold text-blue-600">Request details</Text>
             </Pressable>
@@ -263,11 +300,8 @@ const RequestScreen = () => {
             {selected?.Status === 0 && (
               <>
                 <Pressable
-                  className="mb-6 flex-row items-center gap-3"
-                  onPress={() => {
-                    // onEdit();
-                    handleCloseModal();
-                  }}>
+                  className="mb-6 flex-row items-center gap-3 active:opacity-70"
+                  onPress={handleApprove}>
                   <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
                   <Text className="text-lg font-semibold text-green-600">
                     Approve and assign a driver
@@ -275,11 +309,8 @@ const RequestScreen = () => {
                 </Pressable>
 
                 <Pressable
-                  className="mb-6 flex-row items-center gap-3"
-                  onPress={() => {
-                    // onResetPassword();
-                    handleCloseModal();
-                  }}>
+                  className="mb-6 flex-row items-center gap-3 active:opacity-70"
+                  onPress={handleReject}>
                   <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
                   <Text className="text-lg font-semibold text-red-600">Reject the request</Text>
                 </Pressable>
@@ -288,24 +319,39 @@ const RequestScreen = () => {
 
             {selected?.Status === 1 && (
               <Pressable
-                className="mb-6 flex-row items-center gap-3"
-                onPress={() => {
-                  // onResetPassword();
-                  handleCloseModal();
-                }}>
+                className="mb-6 flex-row items-center gap-3 active:opacity-70"
+                onPress={handleCancel}>
                 <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
                 <Text className="text-lg font-semibold text-gray-600">Cancel the request</Text>
               </Pressable>
             )}
 
             <Pressable
-              className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
+              className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3 active:bg-gray-700"
               onPress={handleCloseModal}>
               <Text className="text-lg font-semibold text-white">Close</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
+
+      <ApproveModal
+        visible={isApproveModalVisible}
+        onClose={handleCloseModal}
+        onApprove={handleApproveConfirm}
+      />
+
+      <RejectModal
+        visible={isRejectModalVisible}
+        onClose={handleCloseModal}
+        onReject={handleRejectConfirm}
+      />
+
+      <CancelModal
+        visible={isCancelModalVisible}
+        onClose={handleCloseModal}
+        onCancel={handleCancelConfirm}
+      />
     </SafeAreaView>
   );
 };
