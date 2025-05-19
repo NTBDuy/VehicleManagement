@@ -13,10 +13,10 @@ interface HeaderProps {
   searchQuery?: string;
   handleSearch?: any;
   placeholder?: string;
-  clearSearch?: any;
+  handleClearFilters?: any;
 }
 
-const Header = ({
+const HeaderComponent = ({
   backBtn,
   title,
   customTitle,
@@ -25,7 +25,7 @@ const Header = ({
   searchQuery,
   handleSearch,
   placeholder,
-  clearSearch,
+  handleClearFilters,
 }: HeaderProps) => {
   const navigation = useNavigation();
 
@@ -60,7 +60,7 @@ const Header = ({
             onChangeText={handleSearch}
           />
           {searchQuery !== '' && (
-            <Pressable onPress={clearSearch}>
+            <Pressable onPress={handleClearFilters}>
               <FontAwesomeIcon icon={faXmark} size={16} color="#000" />
             </Pressable>
           )}
@@ -70,4 +70,4 @@ const Header = ({
   );
 };
 
-export default Header;
+export default HeaderComponent;

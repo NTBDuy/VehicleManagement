@@ -1,8 +1,8 @@
-import { View, Text, SafeAreaView, FlatList, Pressable, Alert, Modal } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Header from 'components/Header';
+import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-native';
+import { useEffect, useState } from 'react';
+import HeaderComponent from 'components/HeaderComponent';
 import Vehicle from 'types/Vehicle';
-import vehicleData from 'data/vehicle.json';
+import vehicleData from '../../../data/vehicle.json';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faCarBurst,
@@ -16,14 +16,13 @@ import {
   faEdit,
   faTrash,
   faCalendarCheck,
-  faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import EmptyListComponent from 'components/EmptyListComponent';
 
-const vehicle: Vehicle[] = vehicleData;
+const vehicles: Vehicle[] = vehicleData;
 
-type stat = {
+type VehicleStat = {
   total: number;
   available: number;
   inUse: number;
@@ -38,23 +37,71 @@ const VehicleScreen = () => {
     underMaintenance: 0,
   };
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selected, setSelected] = useState<Vehicle>();
-  const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const navigation = useNavigation<any>();
+  const [vehicleStat, setVehicleStat] = useState<VehicleStat>(initialStat);
+  const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selected, setSelected] = useState<Vehicle>();
+  const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
-    const [isSelected, setIsSelected] = useState(false);
-  const [stat, setStat] = useState<stat>(initialStat);
 
-  const countStat = (item: Vehicle[]) => {
+  useEffect(() => {
+    if (vehicles) {
+      setFilteredVehicles(vehicles);
+      calculateVehicleStatistics(vehicles);
+    }
+  }, [vehicles]);
+
+  /** Func: Statistics */
+  const calculateVehicleStatistics = (item: Vehicle[]) => {
     const total = item.length;
     const available = item.filter((request) => request.Status === 0).length;
     const inUse = item.filter((request) => request.Status === 1).length;
     const underMaintenance = item.filter((request) => request.Status === 2).length;
-    setStat({ total, available, inUse, underMaintenance });
+    setVehicleStat({ total, available, inUse, underMaintenance });
   };
 
+  /** Func: Get icon for each vehicle */
+  const getVehicleTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Sedan':
+        return faCar;
+      case 'SUV':
+        return faCarSide;
+      case 'Truck':
+        return faTruckPickup;
+      case 'Van':
+        return faVanShuttle;
+      default:
+        return faCar;
+    }
+  };
+
+  /** Func: Filter Vehicle */
+  const filterVehicles = (query: string, status: string): void => {
+    let filtered = vehicles;
+
+    if (query) {
+      filtered = filtered.filter(
+        (item) =>
+          item.LicensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.Type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.Brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+      );
+    }
+
+    if (status == 'Available') {
+      filtered = filtered.filter((item) => item.Status === 0);
+    } else if (status == 'InUse') {
+      filtered = filtered.filter((item) => item.Status === 1);
+    } else if (status == 'Maintenance') {
+      filtered = filtered.filter((item) => item.Status === 2);
+    }
+
+    setFilteredVehicles(filtered);
+  };
+  /** Component: Badge Vehicle Status */
   const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
     const getStatusStyle = (status: number) => {
       switch (status) {
@@ -91,21 +138,7 @@ const VehicleScreen = () => {
     );
   };
 
-  const vehicleType = (type: string) => {
-    switch (type) {
-      case 'Sedan':
-        return faCar;
-      case 'SUV':
-        return faCarSide;
-      case 'Truck':
-        return faTruckPickup;
-      case 'Van':
-        return faVanShuttle;
-      default:
-        return faCar;
-    }
-  };
-
+  /** Component: Status Card */
   const StatusCard = ({
     label,
     count,
@@ -116,20 +149,21 @@ const VehicleScreen = () => {
     bgColor: string;
   }) => (
     <Pressable
-      onPress={() => handleStatus(label)}
+      onPress={() => handleStatusFilter(label)}
       className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
       <Text className="text-base font-medium text-white">{label}</Text>
       <Text className="text-lg font-bold text-white">{count}</Text>
     </Pressable>
   );
 
+  /** Component: Vehicle Item */
   const renderVehicleItem = ({ item }: { item: Vehicle }) => (
     <Pressable
-      onPress={() => handleOption(item)}
+      onPress={() => handleVehicleSelection(item)}
       className="mb-4 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">
-          <FontAwesomeIcon icon={vehicleType(item.Type)} size={24} color="#0d4d87" />
+          <FontAwesomeIcon icon={getVehicleTypeIcon(item.Type)} size={24} color="#0d4d87" />
         </Text>
       </View>
       <View className="flex-1">
@@ -145,83 +179,47 @@ const VehicleScreen = () => {
     </Pressable>
   );
 
-  const filter = (query: string, status: string): void => {
-    let filtered = vehicle;
-
-    if (query) {
-      filtered = filtered.filter(
-        (item) =>
-          item.LicensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.Type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.Brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) 
-      );
-    }
-
-    if (status == 'Available') {
-      filtered = filtered.filter((item) => item.Status === 0);
-    } else if (status == 'InUse') {
-      filtered = filtered.filter((item) => item.Status === 1);
-    } else if (status == 'Maintenance') {
-      filtered = filtered.filter((item) => item.Status === 2);
-    }
-
-    setFilteredVehicles(filtered);
-  };
-
-  const handleStatus = (status: string) => {
-    filter('', status);
-    setIsSelected(true);
+  const handleStatusFilter = (status: string) => {
+    filterVehicles('', status);
   };
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    filter(text, '');
+    filterVehicles(text, '');
   };
 
-  const clearSearch = (): void => {
+  const handleClearFilters = (): void => {
     setSearchQuery('');
-    filter('', '');
+    filterVehicles('', '');
   };
 
-  useEffect(() => {
-    if(vehicle) {
-      setFilteredVehicles(vehicle);
-      countStat(vehicle);
-    }
-  }, [vehicle]);
-
-  const handlePress = () => {
-    Alert.alert('Comming soon!');
+  const handleVehicleSelection = (vehicles: Vehicle) => {
+    setSelected(vehicles);
+    setIsModalVisible(true);
   };
 
-  const handleOption = (vehicle: Vehicle) => {
-    setSelected(vehicle);
-    setModalVisible(true);
-  };
-
-  const onViewDetail = () => {
+  const handleViewDetail = () => {
     navigation.navigate('VehicleDetail', { vehicleData: selected });
   };
 
-  const onAdd = () => {
+  const handleAddVehicle = () => {
     navigation.navigate('VehicleAdd');
   };
 
-  const onClose = () => {
-    setModalVisible(false);
+  const handleEditVehicle = () => {
+    navigation.navigate('VehicleEdit', { vehicleData: selected });
   };
 
-  const onEdit = () => {
-    navigation.navigate('VehicleEdit', { vehicleData: selected });
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header
+      <HeaderComponent
         title="Vehicle Management"
         rightElement={
-          <Pressable className="rounded-full bg-white p-2" onPress={onAdd}>
+          <Pressable className="rounded-full bg-white p-2" onPress={handleAddVehicle}>
             <FontAwesomeIcon icon={faPlus} size={18} />
           </Pressable>
         }
@@ -229,7 +227,7 @@ const VehicleScreen = () => {
         searchQuery={searchQuery}
         handleSearch={handleSearch}
         placeholder="Search plate, type or brand ..."
-        clearSearch={clearSearch}
+        handleClearFilters={handleClearFilters}
       />
 
       <View className="mx-6 mb-10 flex-1">
@@ -245,10 +243,14 @@ const VehicleScreen = () => {
 
           {isExpanded && (
             <View className="mt-4 flex-row flex-wrap justify-between gap-y-4">
-              <StatusCard label="Total" count={stat.total} bgColor="bg-orange-400" />
-              <StatusCard label="Available" count={stat.available} bgColor="bg-green-500" />
-              <StatusCard label="InUse" count={stat.inUse} bgColor="bg-blue-500" />
-              <StatusCard label="Maintenance" count={stat.underMaintenance} bgColor="bg-gray-500" />
+              <StatusCard label="Total" count={vehicleStat.total} bgColor="bg-orange-400" />
+              <StatusCard label="Available" count={vehicleStat.available} bgColor="bg-green-500" />
+              <StatusCard label="InUse" count={vehicleStat.inUse} bgColor="bg-blue-500" />
+              <StatusCard
+                label="Maintenance"
+                count={vehicleStat.underMaintenance}
+                bgColor="bg-gray-500"
+              />
             </View>
           )}
         </View>
@@ -258,11 +260,11 @@ const VehicleScreen = () => {
           renderItem={renderVehicleItem}
           keyExtractor={(item) => item.VehicleId.toString()}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<EmptyListComponent title="No vehicle found!" icon={faCarBurst} />}
+          ListEmptyComponent={<EmptyListComponent title="No vehicles found!" icon={faCarBurst} />}
         />
       </View>
 
-      {vehicle.length > 0 && (
+      {vehicles.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
           <Text className="text-center text-sm font-medium text-gray-500">
             Total Vehicle:{' '}
@@ -273,9 +275,9 @@ const VehicleScreen = () => {
 
       <Modal
         transparent
-        visible={modalVisible}
+        visible={isModalVisible}
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)}>
+        onRequestClose={() => setIsModalVisible(false)}>
         <View className="flex-1 justify-end bg-black/30">
           <View className="rounded-t-2xl bg-white p-6 pb-12">
             <Text className="mb-6 text-center text-lg font-bold">
@@ -285,8 +287,8 @@ const VehicleScreen = () => {
             <Pressable
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
-                onViewDetail();
-                onClose();
+                handleViewDetail();
+                handleCloseModal();
               }}>
               <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
               <Text className="text-lg font-semibold text-blue-600">Vehicle details</Text>
@@ -295,11 +297,11 @@ const VehicleScreen = () => {
             <Pressable
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
-                onEdit();
-                onClose();
+                handleEditVehicle();
+                handleCloseModal();
               }}>
               <FontAwesomeIcon icon={faEdit} size={20} color="#ca8a04" />
-              <Text className="text-lg font-semibold text-yellow-600">Edit vehicle</Text>
+              <Text className="text-lg font-semibold text-yellow-600">Edit vehicles</Text>
             </Pressable>
 
             {selected?.Status != 2 && (
@@ -307,7 +309,7 @@ const VehicleScreen = () => {
                 className="mb-6 flex-row items-center gap-3"
                 onPress={() => {
                   // onResetPassword();
-                  onClose();
+                  handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#059669" />
                 <Text className="text-lg font-semibold text-emerald-600">Schedule maintenance</Text>
@@ -318,15 +320,15 @@ const VehicleScreen = () => {
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
                 // onToggleStatus();
-                onClose();
+                handleCloseModal();
               }}>
               <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
-              <Text className="text-lg font-semibold text-red-600">Remove vehicle</Text>
+              <Text className="text-lg font-semibold text-red-600">Remove vehicles</Text>
             </Pressable>
 
             <Pressable
               className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
-              onPress={onClose}>
+              onPress={handleCloseModal}>
               <Text className="text-lg font-semibold text-white">Close</Text>
             </Pressable>
           </View>

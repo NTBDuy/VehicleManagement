@@ -4,7 +4,7 @@ import { View, Text, SafeAreaView, Image, Pressable, Alert } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBars, faPen, faFileContract, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
-import Header from 'components/Header';
+import HeaderComponent from 'components/HeaderComponent';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 const SettingScreen = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) => {
@@ -18,7 +18,7 @@ const SettingScreen = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => v
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/** HEADER */}
-      <Header
+      <HeaderComponent
         customTitle={
           <View className="items-center ">
             <Image

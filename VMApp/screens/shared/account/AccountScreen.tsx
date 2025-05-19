@@ -1,4 +1,4 @@
-import Header from 'components/Header';
+import HeaderComponent from 'components/HeaderComponent';
 import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-native';
 import accountData from 'data/user.json';
 import User from 'types/User';
@@ -17,8 +17,9 @@ import { useNavigation } from '@react-navigation/native';
 import { getUserInitials } from 'utils/userUtils';
 import { useEffect, useState } from 'react';
 import EmptyListComponent from 'components/EmptyListComponent';
+import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
 
-const account: User[] = accountData;
+const accounts: User[] = accountData;
 
 const filterOptions = [
   { id: 3, name: 'All' },
@@ -28,45 +29,41 @@ const filterOptions = [
 ];
 
 const AccountScreen = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selected, setSelected] = useState<User>();
-
+  const navigation = useNavigation<any>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selected, setSelected] = useState<User | null>(null);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [activeFilter, setActiveFilter] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [activeFilter, setActiveFilter] = useState(3);
+  useEffect(() => {
+    setFilteredUsers(accounts);
+  }, []);
 
-  const navigation = useNavigation<any>();
+  /** Func: Search and filter */
+  const filterAccounts = (query: string, role: number): void => {
+    let filtered = accounts;
 
+    if (query) {
+      filtered = filtered.filter(
+        (user) =>
+          user.FullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.Email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.Phone.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.Username.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+      );
+    }
+
+    if (role !== 3) {
+      filtered = filtered.filter((user) => user.Role === role);
+    }
+
+    setFilteredUsers(filtered);
+  };
+
+  /** Component: Badge User Role */
   const renderBadgeUserRole = ({ role }: { role: number }) => {
-    const getRoleStyle = (role: number) => {
-      switch (role) {
-        case 0:
-          return 'bg-red-500';
-        case 1:
-          return 'bg-green-500';
-        case 2:
-          return 'bg-blue-500';
-        default:
-          return 'bg-gray-500';
-      }
-    };
-
-    const getRoleLabel = (role: number) => {
-      switch (role) {
-        case 0:
-          return 'Admin';
-        case 1:
-          return 'Employee';
-        case 2:
-          return 'Manager';
-        default:
-          return 'Unknown';
-      }
-    };
-
     const bgColor = getRoleStyle(role);
-
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
         <Text className="text-xs font-medium text-white">{getRoleLabel(role)}</Text>
@@ -74,6 +71,7 @@ const AccountScreen = () => {
     );
   };
 
+  /** Component: User Item */
   const renderUserItem = ({ item }: { item: User }) => (
     <Pressable
       onPress={() => handleOption(item)}
@@ -97,70 +95,46 @@ const AccountScreen = () => {
 
   const handleOption = (user: User) => {
     setSelected(user);
-    setModalVisible(true);
-  };
-
-  const onAdd = () => {
-    navigation.navigate('AccountAdd');
-  };
-
-  const onClose = () => {
-    setModalVisible(false);
-  };
-
-  const filter = (query: string, role: number): void => {
-    let filtered = account;
-
-    if (query) {
-      filtered = filtered.filter(
-        (user) =>
-          user.FullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Phone.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Username.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-      );
-    }
-
-    if (role !== 3) {
-      filtered = filtered.filter((user) => user.Role === role);
-    }
-
-    setFilteredUsers(filtered);
+    setIsModalVisible(true);
   };
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    filter(text, 3);
+    filterAccounts(text, 3);
   };
-
-  const clearSearch = (): void => {
-    setSearchQuery('');
-    filter('', 3);
-  };
-
-  useEffect(() => {
-    setFilteredUsers(account);
-  }, []);
 
   const handleFilterChange = (role: number): void => {
     setActiveFilter(role);
-    filter(searchQuery, role);
+    filterAccounts(searchQuery, role);
   };
 
-  const onViewDetail = () => {
+  const handleClearFilters = (): void => {
+    setSearchQuery('');
+    filterAccounts('', 3);
+  };
+
+  const handleViewDetail = () => {
     navigation.navigate('AccountDetail', { userData: selected });
   };
 
-  const onEdit = () => {
+  const handleAddUser = () => {
+    navigation.navigate('AccountAdd');
+  };
+
+  const handleEditUser = () => {
     navigation.navigate('AccountEdit', { userData: selected });
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header
+      <HeaderComponent
         title="Account Management"
         rightElement={
-          <Pressable className="rounded-full bg-white p-2" onPress={onAdd}>
+          <Pressable className="rounded-full bg-white p-2" onPress={handleAddUser}>
             <FontAwesomeIcon icon={faUserPlus} size={18} />
           </Pressable>
         }
@@ -168,17 +142,16 @@ const AccountScreen = () => {
         searchQuery={searchQuery}
         handleSearch={handleSearch}
         placeholder="Search username, phone or email ..."
-        clearSearch={clearSearch}
+        handleClearFilters={handleClearFilters}
       />
 
       <View className="mx-6 mb-10 flex-1">
-        <View>
+        <View className="my-4">
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
             data={filterOptions}
             keyExtractor={(item) => item.id.toString()}
-            className="my-4"
             renderItem={({ item }) => (
               <Pressable
                 onPress={() => handleFilterChange(item.id)}
@@ -202,7 +175,7 @@ const AccountScreen = () => {
         />
       </View>
 
-      {account.length > 0 && (
+      {accounts.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
           <Text className="text-center text-sm font-medium text-gray-500">
             Total Users:{' '}
@@ -212,9 +185,9 @@ const AccountScreen = () => {
       )}
       <Modal
         transparent
-        visible={modalVisible}
+        visible={isModalVisible}
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)}>
+        onRequestClose={() => setIsModalVisible(false)}>
         <View className="flex-1 justify-end bg-black/30">
           <View className="rounded-t-2xl bg-white p-6 pb-12">
             <Text className="mb-6 text-center text-lg font-bold">
@@ -224,8 +197,8 @@ const AccountScreen = () => {
             <Pressable
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
-                onViewDetail();
-                onClose();
+                handleViewDetail();
+                handleCloseModal();
               }}>
               <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
               <Text className="text-lg font-semibold text-blue-600">Account details</Text>
@@ -234,8 +207,8 @@ const AccountScreen = () => {
             <Pressable
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
-                onEdit();
-                onClose();
+                handleEditUser();
+                handleCloseModal();
               }}>
               <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />
               <Text className="text-lg font-semibold text-blue-600">Edit profile</Text>
@@ -245,7 +218,7 @@ const AccountScreen = () => {
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
                 // onResetPassword();
-                onClose();
+                handleCloseModal();
               }}>
               <FontAwesomeIcon icon={faKey} size={20} color="#2563eb" />
               <Text className="text-lg font-semibold text-blue-600">Reset password</Text>
@@ -255,7 +228,7 @@ const AccountScreen = () => {
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
                 // onToggleStatus();
-                onClose();
+                handleCloseModal();
               }}>
               <FontAwesomeIcon
                 icon={selected?.Status ? faBan : faCircleCheck}
@@ -270,7 +243,7 @@ const AccountScreen = () => {
 
             <Pressable
               className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
-              onPress={onClose}>
+              onPress={handleCloseModal}>
               <Text className="text-lg font-semibold text-white">Close</Text>
             </Pressable>
           </View>

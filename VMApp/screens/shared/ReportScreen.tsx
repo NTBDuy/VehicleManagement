@@ -1,11 +1,11 @@
 import { View, Text, SafeAreaView } from 'react-native';
 import React from 'react';
-import Header from 'components/Header';
+import HeaderComponent from 'components/HeaderComponent';
 
 const ReportScreen = () => {
   return (
     <SafeAreaView className='flex-1 bg-white'>
-      <Header title='Report and Analysis'/>
+      <HeaderComponent title='Report and Analysis'/>
     </SafeAreaView>
   );
 };

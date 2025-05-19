@@ -1,17 +1,29 @@
 import { View, Text, SafeAreaView, Pressable, TextInput } from 'react-native';
 import React from 'react';
-import Header from 'components/Header';
+import HeaderComponent from 'components/HeaderComponent';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Vihicle from 'types/Vehicle';
+import Vehicle from 'types/Vehicle';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCarBurst,
+  faEllipsisV,
+  faCar,
+  faCarSide,
+  faTruckPickup,
+  faVanShuttle,
+  faPlus,
+  faInfoCircle,
+  faEdit,
+  faTrash,
+  faCalendarCheck,
+} from '@fortawesome/free-solid-svg-icons';
 
 const VehicleDetailScreen = () => {
   const route = useRoute();
-  const { vehicleData } = route.params as { vehicleData: Vihicle };
+  const { vehicleData } = route.params as { vehicleData: Vehicle };
   const navigation = useNavigation<any>();
 
-  const onEdit = () => {
+  const handleEditVehicle = () => {
     navigation.navigate('VehicleEdit', { vehicleData });
   };
 
@@ -51,63 +63,93 @@ const VehicleDetailScreen = () => {
     );
   };
 
+  /** Func: Get icon for each vehicle */
+  const getVehicleTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Sedan':
+        return faCar;
+      case 'SUV':
+        return faCarSide;
+      case 'Truck':
+        return faTruckPickup;
+      case 'Van':
+        return faVanShuttle;
+      default:
+        return faCar;
+    }
+  };
+
   return (
-    <SafeAreaView>
-      <Header
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <HeaderComponent
         backBtn
         title="Vehicle Detail"
         rightElement={
-          <Pressable onPress={onEdit} className="rounded-full bg-white p-2">
+          <Pressable onPress={handleEditVehicle} className="rounded-full bg-white p-2">
             <FontAwesomeIcon icon={faEdit} size={18} />
           </Pressable>
         }
       />
 
       <View className="px-6">
-        <View className="mb-6 mt-4 flex-row items-center justify-between rounded-2xl bg-gray-100 p-4 shadow-sm">
-          <Text className="text-lg font-bold">Vehicle ID #{vehicleData.VehicleId}</Text>
-          <View>{renderBadgeVehicleStatus({ status: vehicleData.Status })}</View>
+        <View className="mb-6 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-blue-50 p-4">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center">
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                  <FontAwesomeIcon
+                    icon={getVehicleTypeIcon(vehicleData.Type)}
+                    size={18}
+                    color="#2563eb"
+                  />
+                </View>
+                <View>
+                  <Text className="text-sm text-gray-500">Vehicle ID #{vehicleData.VehicleId}</Text>
+                  <Text className="text-lg font-bold text-gray-800">
+                    {vehicleData.LicensePlate}
+                  </Text>
+                </View>
+              </View>
+              {renderBadgeVehicleStatus({ status: vehicleData.Status })}
+            </View>
+          </View>
         </View>
 
         {/** Section - thông tin cơ bản */}
-        <View className="mb-6 rounded-2xl bg-gray-100 p-4 shadow-sm">
-          <Text className="mb-4 text-lg font-bold">Vehicle information</Text>
-          <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
-            <Text className="text-gray-600">Plate number</Text>
-            <Text className="font-semibold text-gray-700">
-              {vehicleData.LicensePlate || 'No information'}
-            </Text>
+        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
           </View>
-          <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
-            <Text className="text-gray-600">Type</Text>
-            <Text className="font-semibold text-gray-700">
-              {vehicleData.Type || 'No information'}
-            </Text>
-          </View>
-          <View className="mb-2 flex-row justify-between">
-            <Text className="text-gray-600">Brand & Model</Text>
-            {vehicleData.Brand || vehicleData.Model ? (
-              <Text className="font-semibold text-gray-700">
-                {vehicleData.Brand} {vehicleData.Model}
-              </Text>
-            ) : (
-              <Text className="font-semibold text-gray-700">No information</Text>
-            )}
+
+          <View className="p-4">
+            <InfoRow label="Plate number" value={vehicleData.LicensePlate || 'No information'} />
+            <InfoRow label="Type" value={vehicleData.Type || 'No information'} />
+            <InfoRow
+              label="Brand & Model"
+              value=""
+              valueComponent={
+                vehicleData.Brand || vehicleData.Model ? (
+                  <Text className="font-semibold text-gray-700">
+                    {vehicleData.Brand} {vehicleData.Model}
+                  </Text>
+                ) : (
+                  <Text className="font-semibold text-gray-700">No information</Text>
+                )
+              }
+              isLast
+            />
           </View>
         </View>
 
         {/** Section - lịch bảo dưỡng  */}
-        <View className="mb-6 rounded-2xl bg-gray-100 p-4 shadow-sm">
-          <Text className="mb-4 text-lg font-bold">Maintenance</Text>
-          <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
-            <Text className="text-gray-600">Last time</Text>
-            <Text className="font-semibold text-gray-700">
-              {vehicleData.LastMaintenance || 'No information'}
-            </Text>
+        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">Maintenance</Text>
           </View>
-          <View className="mb-2 flex-row justify-between">
-            <Text className="text-gray-600">Next time</Text>
-            <Text className="font-semibold text-gray-700">Not scheduled</Text>
+
+          <View className="p-4">
+            <InfoRow label="Last time" value={vehicleData.LastMaintenance || 'No information'} />
+            <InfoRow label="Next time" value="Not scheduled" isLast />
           </View>
         </View>
 
@@ -116,5 +158,32 @@ const VehicleDetailScreen = () => {
     </SafeAreaView>
   );
 };
+
+const InfoRow = ({
+  label,
+  value,
+  valueComponent,
+  isLast = false,
+}: {
+  label: string;
+  value: string;
+  valueComponent?: React.ReactNode;
+  isLast?: boolean;
+}) => (
+  <View
+    className={`flex-row justify-between ${!isLast ? 'mb-3 border-b border-gray-100 pb-3' : ''}`}>
+    <Text className="text-gray-600">{label}</Text>
+    {valueComponent || (
+      <Text className="max-w-[60%] text-right font-semibold text-gray-800">{value}</Text>
+    )}
+  </View>
+
+  // <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
+  //             <Text className="text-gray-600">Plate number</Text>
+  //             <Text className="font-semibold text-gray-700">
+  //               {vehicleData.LicensePlate || 'No information'}
+  //             </Text>
+  //           </View>
+);
 
 export default VehicleDetailScreen;

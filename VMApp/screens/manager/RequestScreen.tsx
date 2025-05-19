@@ -1,13 +1,6 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  FlatList,
-  Pressable,
-  Modal,
-} from 'react-native';
+import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-native';
 import { useEffect, useState } from 'react';
-import Header from 'components/Header';
+import HeaderComponent from 'components/HeaderComponent';
 import Request from 'types/Request';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -21,10 +14,11 @@ import requestData from 'data/request.json';
 import EmptyListComponent from 'components/EmptyListComponent';
 import { getUserInitials } from 'utils/userUtils';
 import { formatDate } from 'utils/datetimeUtils';
+import { useNavigation } from '@react-navigation/native';
 
-const data: Request[] = requestData;
+const requests: Request[] = requestData;
 
-type stat = {
+type RequestStat = {
   total: number;
   pending: number;
   approved: number;
@@ -41,57 +35,47 @@ const RequestScreen = () => {
     cancelled: 0,
   };
 
-  const [stat, setStat] = useState<stat>(initialStat);
-  const [filteredRequests, setfilteredRequests] = useState<Request[]>([]);
+  const [requestStat, setRequestStat] = useState<RequestStat>(initialStat);
+  const [filteredRequests, setFilteredRequests] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isSelected, setIsSelected] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(false);
   const [selected, setSelected] = useState<Request>();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [isisModalVisible, setIsisModalVisible] = useState(false);
+  const navigation = useNavigation<any>();
 
-  const StatusCard = ({
-    label,
-    count,
-    bgColor,
-  }: {
-    label: string;
-    count: number;
-    bgColor: string;
-  }) => (
-    <Pressable
-      onPress={() => handleStatus(label)}
-      className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
-      <Text className="text-base font-medium text-white">{label}</Text>
-      <Text className="text-lg font-bold text-white">{count}</Text>
-    </Pressable>
-  );
+  useEffect(() => {
+    if (requests) calculateRequestStatistics(requests);
+    filterRequests('', '');
+  }, [requests]);
 
-  const renderColor = (status: number) => {
+  /** Func: Color by status */
+  const getBorderColorByStatus = (status: number) => {
     switch (status) {
       case 0:
-        return 'orange';
+        return 'border-orange-600';
       case 1:
-        return 'green';
+        return 'border-green-600';
       case 2:
-        return 'red';
+        return 'border-red-600';
       case 3:
-        return 'gray';
-      default:
-        return 'gray';
+        return 'border-gray-600';
     }
   };
 
-  const countStat = (item: Request[]) => {
+  /** Func: Statistics  */
+  const calculateRequestStatistics = (item: Request[]) => {
     const total = item.length;
     const pending = item.filter((request) => request.Status === 0).length;
     const approved = item.filter((request) => request.Status === 1).length;
     const rejected = item.filter((request) => request.Status === 2).length;
     const cancelled = item.filter((request) => request.Status === 3).length;
-    setStat({ total, pending, approved, rejected, cancelled });
+    setRequestStat({ total, pending, approved, rejected, cancelled });
   };
 
-  const filter = (query: string, status: string): void => {
-    let filtered = data;
+  /** Func: Search and filter */
+  const filterRequests = (query: string, status: string): void => {
+    let filtered = requests;
     if (query) {
       filtered = filtered.filter(
         (item) =>
@@ -116,29 +100,32 @@ const RequestScreen = () => {
       filtered = filtered.filter((item) => item.Status === 3);
     }
 
-    setfilteredRequests(filtered);
+    setFilteredRequests(filtered);
   };
 
-  const handleStatus = (status: string) => {
-    filter('', status);
-    setIsSelected(true);
-  };
-
-  const handleSearch = (text: string): void => {
-    setSearchQuery(text);
-    filter(text, '');
-  };
-
-  const clearSearch = (): void => {
-    setSearchQuery('');
-    setIsSelected(false);
-    filter('', '');
-  };
-
-  const renderDataItem = ({ item }: { item: Request }) => (
+  /** Component: Status Filter */
+  const StatusCard = ({
+    label,
+    count,
+    bgColor,
+  }: {
+    label: string;
+    count: number;
+    bgColor: string;
+  }) => (
     <Pressable
-      onPress={() => handleOption(item)}
-      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 border-${renderColor(item.Status)}-400`}>
+      onPress={() => handleStatusFilter(label)}
+      className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
+      <Text className="text-base font-medium text-white">{label}</Text>
+      <Text className="text-lg font-bold text-white">{count}</Text>
+    </Pressable>
+  );
+
+  /** Component: Request Item */
+  const renderRequestItem = ({ item }: { item: Request }) => (
+    <Pressable
+      onPress={() => handleRequestOption(item)}
+      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getBorderColorByStatus(item.Status)}`}>
       <View className="flex-row items-center">
         <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
           <Text className="text-lg font-bold text-white">
@@ -165,29 +152,44 @@ const RequestScreen = () => {
     </Pressable>
   );
 
-  const handleOption = (data: Request) => {
+  const handleStatusFilter = (status: string) => {
+    filterRequests('', status);
+    setIsFiltered(true);
+  };
+
+  const handleSearch = (text: string): void => {
+    setSearchQuery(text);
+    filterRequests(text, '');
+  };
+
+  const handleRequestOption = (data: Request) => {
     setSelected(data);
-    setModalVisible(true);
+    setIsisModalVisible(true);
   };
 
-  const onClose = () => {
-    setModalVisible(false);
+  const handleClearFilters = (): void => {
+    setSearchQuery('');
+    setIsFiltered(false);
+    filterRequests('', '');
   };
 
-  useEffect(() => {
-    if (data) countStat(data);
-    filter('', '');
-  }, [data]);
+  const handleViewDetail = () => {
+    navigation.navigate('RequestDetail', { requestData: selected });
+  };
+
+  const handleCloseModal = () => {
+    setIsisModalVisible(false);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header
+      <HeaderComponent
         title="Request Management"
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
         placeholder="Search username, phone or email ..."
-        clearSearch={clearSearch}
+        handleClearFilters={handleClearFilters}
       />
 
       <View className="mx-6 mb-10 flex-1">
@@ -196,7 +198,8 @@ const RequestScreen = () => {
             className="flex-row justify-between"
             onPress={() => setIsExpanded(!isExpanded)}>
             <Text className="text-base font-medium text-gray-600">
-              Total Request: <Text className="text-xl font-bold text-gray-900">{stat.total}</Text>
+              Total Request:{' '}
+              <Text className="text-xl font-bold text-gray-900">{requestStat.total}</Text>
             </Text>
             <Text className="mt-1 text-sm text-blue-500">
               {isExpanded ? 'Hide details ▲' : 'Show details ▼'}
@@ -205,29 +208,29 @@ const RequestScreen = () => {
 
           {isExpanded && (
             <View className="mt-4 flex-row flex-wrap justify-between gap-y-4">
-              <StatusCard label="Pending" count={stat.pending} bgColor="bg-orange-400" />
-              <StatusCard label="Approved" count={stat.approved} bgColor="bg-green-400" />
-              <StatusCard label="Rejected" count={stat.rejected} bgColor="bg-red-400" />
-              <StatusCard label="Cancelled" count={stat.cancelled} bgColor="bg-gray-400" />
+              <StatusCard label="Pending" count={requestStat.pending} bgColor="bg-orange-400" />
+              <StatusCard label="Approved" count={requestStat.approved} bgColor="bg-green-400" />
+              <StatusCard label="Rejected" count={requestStat.rejected} bgColor="bg-red-400" />
+              <StatusCard label="Cancelled" count={requestStat.cancelled} bgColor="bg-gray-400" />
             </View>
           )}
         </View>
 
-        {isSelected && (
-          <Pressable onPress={clearSearch} className="items-end ps-4">
+        {isFiltered && (
+          <Pressable onPress={handleClearFilters} className="items-end ps-4">
             <Text className="mb-4 text-sm">Clear filter</Text>
           </Pressable>
         )}
 
         <FlatList
           data={filteredRequests}
-          renderItem={renderDataItem}
+          renderItem={renderRequestItem}
           keyExtractor={(item) => item.RequestId.toString()}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={<EmptyListComponent title="No request found!" />}
         />
       </View>
-      {data.length > 0 && (
+      {requests.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
           <Text className="text-center text-sm font-medium text-gray-500">
             Total Request:{' '}
@@ -238,9 +241,9 @@ const RequestScreen = () => {
 
       <Modal
         transparent
-        visible={modalVisible}
+        visible={isisModalVisible}
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)}>
+        onRequestClose={() => setIsisModalVisible(false)}>
         <View className="flex-1 justify-end bg-black/30">
           <View className="rounded-t-2xl bg-white p-6 pb-12">
             <Text className="mb-6 text-center text-lg font-bold">
@@ -250,8 +253,8 @@ const RequestScreen = () => {
             <Pressable
               className="mb-6 flex-row items-center gap-3"
               onPress={() => {
-                // onViewDetail();
-                // onClose();
+                handleViewDetail();
+                handleCloseModal();
               }}>
               <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
               <Text className="text-lg font-semibold text-blue-600">Request details</Text>
@@ -263,7 +266,7 @@ const RequestScreen = () => {
                   className="mb-6 flex-row items-center gap-3"
                   onPress={() => {
                     // onEdit();
-                    onClose();
+                    handleCloseModal();
                   }}>
                   <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
                   <Text className="text-lg font-semibold text-green-600">
@@ -275,7 +278,7 @@ const RequestScreen = () => {
                   className="mb-6 flex-row items-center gap-3"
                   onPress={() => {
                     // onResetPassword();
-                    onClose();
+                    handleCloseModal();
                   }}>
                   <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
                   <Text className="text-lg font-semibold text-red-600">Reject the request</Text>
@@ -288,7 +291,7 @@ const RequestScreen = () => {
                 className="mb-6 flex-row items-center gap-3"
                 onPress={() => {
                   // onResetPassword();
-                  onClose();
+                  handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
                 <Text className="text-lg font-semibold text-gray-600">Cancel the request</Text>
@@ -297,7 +300,7 @@ const RequestScreen = () => {
 
             <Pressable
               className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
-              onPress={onClose}>
+              onPress={handleCloseModal}>
               <Text className="text-lg font-semibold text-white">Close</Text>
             </Pressable>
           </View>

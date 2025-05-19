@@ -25,11 +25,13 @@ import VehicleDetailScreen from 'screens/shared/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
 import SidebarCustom from 'components/SidebarCustom';
+import RequestDetailScreen from 'screens/manager/RequestDetailScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
 const AccountStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
+const RequestStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
@@ -60,6 +62,15 @@ function VehicleStackScreen() {
       <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
     </VehicleStack.Navigator>
   );
+}
+
+function RequestStackScreen() {
+  return (
+    <RequestStack.Navigator screenOptions={{ headerShown: false }}>
+      <RequestStack.Screen name='RequestManagement' component={RequestScreen} />
+      <RequestStack.Screen name='RequestDetail' component={RequestDetailScreen} />
+    </RequestStack.Navigator>
+  )
 }
 
 export default function ManagerNavigator({
@@ -108,8 +119,8 @@ export default function ManagerNavigator({
       />
 
       <Drawer.Screen
-        name="Request"
-        component={RequestScreen}
+        name="RequestStack"
+        component={RequestStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCalendarCheck} color={color} size={size} />
