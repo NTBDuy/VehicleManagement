@@ -1,6 +1,6 @@
 import { View, Text, SafeAreaView, Pressable, TextInput } from 'react-native';
 import React from 'react';
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Vehicle from 'types/Vehicle';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -17,6 +17,7 @@ import {
   faTrash,
   faCalendarCheck,
 } from '@fortawesome/free-solid-svg-icons';
+import InfoRow from 'components/InfoRowComponent';
 
 const VehicleDetailScreen = () => {
   const route = useRoute();
@@ -81,7 +82,7 @@ const VehicleDetailScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <HeaderComponent
+      <Header
         backBtn
         title="Vehicle Detail"
         rightElement={
@@ -158,32 +159,5 @@ const VehicleDetailScreen = () => {
     </SafeAreaView>
   );
 };
-
-const InfoRow = ({
-  label,
-  value,
-  valueComponent,
-  isLast = false,
-}: {
-  label: string;
-  value: string;
-  valueComponent?: React.ReactNode;
-  isLast?: boolean;
-}) => (
-  <View
-    className={`flex-row justify-between ${!isLast ? 'mb-3 border-b border-gray-100 pb-3' : ''}`}>
-    <Text className="text-gray-600">{label}</Text>
-    {valueComponent || (
-      <Text className="max-w-[60%] text-right font-semibold text-gray-800">{value}</Text>
-    )}
-  </View>
-
-  // <View className="mb-2 flex-row justify-between border-b border-gray-300 pb-2">
-  //             <Text className="text-gray-600">Plate number</Text>
-  //             <Text className="font-semibold text-gray-700">
-  //               {vehicleData.LicensePlate || 'No information'}
-  //             </Text>
-  //           </View>
-);
 
 export default VehicleDetailScreen;

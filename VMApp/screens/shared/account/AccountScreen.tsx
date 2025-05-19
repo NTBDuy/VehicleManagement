@@ -1,4 +1,4 @@
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-native';
 import accountData from 'data/user.json';
 import User from 'types/User';
@@ -16,7 +16,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { getUserInitials } from 'utils/userUtils';
 import { useEffect, useState } from 'react';
-import EmptyListComponent from 'components/EmptyListComponent';
+import EmptyList from 'components/EmptyListComponent';
 import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
 
 const accounts: User[] = accountData;
@@ -131,7 +131,7 @@ const AccountScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <HeaderComponent
+      <Header
         title="Account Management"
         rightElement={
           <Pressable className="rounded-full bg-white p-2" onPress={handleAddUser}>
@@ -170,7 +170,7 @@ const AccountScreen = () => {
           keyExtractor={(item) => item.UserId.toString()}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <EmptyListComponent title="No user found!" icon={faPersonCircleQuestion} />
+            <EmptyList title="No user found!" icon={faPersonCircleQuestion} />
           }
         />
       </View>

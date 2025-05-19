@@ -24,7 +24,7 @@ import VehicleScreen from 'screens/shared/vehicle/VehicleScreen';
 import VehicleDetailScreen from 'screens/shared/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
-import SidebarCustom from 'components/SidebarCustom';
+import SidebarCustom from 'components/SidebarComponent';
 import RequestDetailScreen from 'screens/manager/RequestDetailScreen';
 
 const Drawer = createDrawerNavigator();

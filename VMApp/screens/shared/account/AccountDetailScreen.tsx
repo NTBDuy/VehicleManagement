@@ -1,11 +1,12 @@
 import { View, Text, SafeAreaView, Image, Pressable, Alert } from 'react-native';
 import { useState } from 'react';
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import User from 'types/User';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit, faShieldAlt, faUser, faCrown } from '@fortawesome/free-solid-svg-icons';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
+import InfoRow from 'components/InfoRowComponent';
 
 type RoleInfo = {
   label: string;
@@ -24,7 +25,7 @@ const AccountDetailScreen = () => {
   if (!userData) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
-        <HeaderComponent backBtn title="Account Detail" />
+        <Header backBtn title="Account Detail" />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-gray-500">
             No user data available
@@ -122,7 +123,7 @@ const AccountDetailScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/** HEADER */}
-      <HeaderComponent
+      <Header
         backBtn
         customTitle={
           <Text className="text-xl font-bold text-gray-800">
@@ -203,7 +204,7 @@ const AccountDetailScreen = () => {
               label="Username" 
               value={userData.Username || 'Not set'} 
             />
-            <InfoRow 
+            <InfoRow
               label="Role" 
               value={roleInfo.label}
               valueComponent={
@@ -264,26 +265,5 @@ const AccountDetailScreen = () => {
     </SafeAreaView>
   );
 };
-
-const InfoRow = ({ 
-  label, 
-  value, 
-  valueComponent, 
-  isLast = false 
-}: { 
-  label: string; 
-  value: string; 
-  valueComponent?: React.ReactNode;
-  isLast?: boolean;
-}) => (
-  <View className={`flex-row justify-between ${!isLast ? 'border-b border-gray-100 pb-3 mb-3' : ''}`}>
-    <Text className="text-gray-600">{label}</Text>
-    {valueComponent || (
-      <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-        {value}
-      </Text>
-    )}
-  </View>
-);
 
 export default AccountDetailScreen;

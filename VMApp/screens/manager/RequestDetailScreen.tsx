@@ -1,6 +1,6 @@
 import { View, Text, SafeAreaView } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native';
-import HeaderComponent from 'components/HeaderComponent'
+import Header from 'components/HeaderComponent'
 
 const RequestDetailScreen = () => {
   const route = useRoute();
@@ -8,7 +8,7 @@ const RequestDetailScreen = () => {
 
   return (
     <SafeAreaView>
-        <HeaderComponent title='Request detail' backBtn/>
+        <Header title='Request detail' backBtn/>
     </SafeAreaView>
   )
 }

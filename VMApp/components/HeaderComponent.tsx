@@ -16,7 +16,7 @@ interface HeaderProps {
   handleClearFilters?: any;
 }
 
-const HeaderComponent = ({
+const Header = ({
   backBtn,
   title,
   customTitle,
@@ -70,4 +70,4 @@ const HeaderComponent = ({
   );
 };
 
-export default HeaderComponent;
+export default Header;

@@ -1,6 +1,6 @@
 import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-native';
 import { useEffect, useState } from 'react';
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import Request from 'types/Request';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -11,7 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import requestData from 'data/request.json';
-import EmptyListComponent from 'components/EmptyListComponent';
+import EmptyList from 'components/EmptyListComponent';
 import { getUserInitials } from 'utils/userUtils';
 import { formatDate } from 'utils/datetimeUtils';
 import { useNavigation } from '@react-navigation/native';
@@ -183,7 +183,7 @@ const RequestScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <HeaderComponent
+      <Header
         title="Request Management"
         searchSection
         searchQuery={searchQuery}
@@ -227,7 +227,7 @@ const RequestScreen = () => {
           renderItem={renderRequestItem}
           keyExtractor={(item) => item.RequestId.toString()}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<EmptyListComponent title="No request found!" />}
+          ListEmptyComponent={<EmptyList title="No request found!" />}
         />
       </View>
       {requests.length > 0 && (

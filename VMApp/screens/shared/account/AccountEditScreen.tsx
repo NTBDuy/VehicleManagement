@@ -1,12 +1,12 @@
 import { View, Text, SafeAreaView, Pressable, Image, Switch, ScrollView, Alert } from 'react-native';
 import React, { useState } from 'react';
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit, faLock } from '@fortawesome/free-solid-svg-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import User from 'types/User';
 import { TextInput } from 'react-native-gesture-handler';
-import InputFieldComponent from 'components/InputFieldComponent';
+import InputField from 'components/InputFieldComponent';
 
 const AccountEditScreen = () => {
   const route = useRoute();
@@ -137,7 +137,7 @@ const AccountEditScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/** HEADER */}
-      <HeaderComponent
+      <Header
         backBtn
         customTitle={
           <View>
@@ -174,20 +174,20 @@ const AccountEditScreen = () => {
             </Text>
           </View>
           <View className="p-4">
-            <InputFieldComponent
+            <InputField
               label="Full Name"
               value={userData.FullName || ''}
               onChangeText={(text) => updateUserData('FullName', text)}
               error={errors.FullName as string}
             />
-            <InputFieldComponent
+            <InputField
               label="Email"
               value={userData.Email || ''}
               onChangeText={(text) => updateUserData('Email', text)}
               keyboardType="email-address"
               error={errors.Email as string}
             />
-            <InputFieldComponent
+            <InputField
               label="Phone Number"
               value={userData.Phone || ''}
               onChangeText={(text) => updateUserData('Phone', text)}
@@ -206,7 +206,7 @@ const AccountEditScreen = () => {
             </Text>
           </View>
           <View className="p-4">
-            <InputFieldComponent
+            <InputField
               label="Username"
               value={userData.Username || ''}
               onChangeText={(text) => updateUserData('Username', text)}

@@ -9,12 +9,12 @@ import {
   Alert,
 } from 'react-native';
 import { useState } from 'react';
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import User from 'types/User';
 import { TextInput } from 'react-native-gesture-handler';
-import InputFieldComponent from 'components/InputFieldComponent';
+import InputField from 'components/InputFieldComponent';
 
 const AccountCreateScreen = () => {
   const [userData, setUserData] = useState<User>({
@@ -85,7 +85,7 @@ const AccountCreateScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* HEADER */}
-      <HeaderComponent backBtn title="Create New Account" />
+      <Header backBtn title="Create New Account" />
       {/* BODY */}
       <ScrollView className="flex-1 px-6">
         {/* Profile Picture Section */}
@@ -107,20 +107,20 @@ const AccountCreateScreen = () => {
             <Text className="text-lg font-semibold text-gray-800">Personal Information</Text>
           </View>
           <View className="p-4">
-            <InputFieldComponent
+            <InputField
               label="Full Name"
               value={userData.FullName}
               onChangeText={(text) => setUserData({ ...userData, FullName: text })}
               error={errors.FullName}
             />
-            <InputFieldComponent
+            <InputField
               label="Email"
               value={userData.Email}
               onChangeText={(text) => setUserData({ ...userData, Email: text })}
               keyboardType="email-address"
               error={errors.Email}
             />
-            <InputFieldComponent
+            <InputField
               label="Phone Number"
               value={userData.Phone}
               onChangeText={(text) => setUserData({ ...userData, Phone: text })}
@@ -137,13 +137,13 @@ const AccountCreateScreen = () => {
             <Text className="text-lg font-semibold text-gray-800">Account Details</Text>
           </View>
           <View className="p-4">
-            <InputFieldComponent
+            <InputField
               label="Username"
               value={userData.Username}
               onChangeText={(text) => setUserData({ ...userData, Username: text })}
               error={errors.Username}
             />
-            <InputFieldComponent
+            <InputField
               label="Password"
               value={userData.PasswordHash}
               onChangeText={(text) => setUserData({ ...userData, PasswordHash: text })}

@@ -8,7 +8,7 @@ interface EmptyListComponentProps {
   icon?: IconDefinition;
 }
 
-const EmptyListComponent: React.FC<EmptyListComponentProps> = ({
+const EmptyList: React.FC<EmptyListComponentProps> = ({
   title = 'No items found!',
   icon = faQuestion,
 }) => (
@@ -18,4 +18,4 @@ const EmptyListComponent: React.FC<EmptyListComponentProps> = ({
   </View>
 );
 
-export default EmptyListComponent;
+export default EmptyList;

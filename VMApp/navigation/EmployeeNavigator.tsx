@@ -10,7 +10,7 @@ import {
 import HomeScreen from 'screens/employee/HomeScreen';
 import NotificationScreen from 'screens/shared/NotificationScreen';
 import SettingScreen from 'screens/shared/SettingScreen';
-import SidebarCustom from 'components/SidebarCustom';
+import SidebarCustom from 'components/SidebarComponent';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();

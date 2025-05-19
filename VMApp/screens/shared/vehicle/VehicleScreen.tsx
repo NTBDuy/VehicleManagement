@@ -1,6 +1,6 @@
 import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-native';
 import { useEffect, useState } from 'react';
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import Vehicle from 'types/Vehicle';
 import vehicleData from '../../../data/vehicle.json';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -18,7 +18,7 @@ import {
   faCalendarCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
-import EmptyListComponent from 'components/EmptyListComponent';
+import EmptyList from 'components/EmptyListComponent';
 
 const vehicles: Vehicle[] = vehicleData;
 
@@ -216,7 +216,7 @@ const VehicleScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <HeaderComponent
+      <Header
         title="Vehicle Management"
         rightElement={
           <Pressable className="rounded-full bg-white p-2" onPress={handleAddVehicle}>
@@ -260,7 +260,7 @@ const VehicleScreen = () => {
           renderItem={renderVehicleItem}
           keyExtractor={(item) => item.VehicleId.toString()}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<EmptyListComponent title="No vehicles found!" icon={faCarBurst} />}
+          ListEmptyComponent={<EmptyList title="No vehicles found!" icon={faCarBurst} />}
         />
       </View>
 

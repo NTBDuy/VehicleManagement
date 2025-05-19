@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { AuthContext } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
@@ -13,7 +13,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/** HEADER */}
-      <HeaderComponent
+      <Header
         customTitle={<Text className="text-2xl font-bold">Hi {user?.FullName}</Text>}
         rightElement={
           <Pressable 

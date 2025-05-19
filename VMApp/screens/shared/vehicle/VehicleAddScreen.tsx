@@ -1,9 +1,9 @@
 import { View, Text, TextInput, SafeAreaView, Pressable, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import HeaderComponent from 'components/HeaderComponent';
+import Header from 'components/HeaderComponent';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Vehicle from 'types/Vehicle';
-import InputFieldComponent from 'components/InputFieldComponent';
+import InputField from 'components/InputFieldComponent';
 
 const VehicleAddScreen = () => {
   const initialVehicleData = {
@@ -27,7 +27,7 @@ const VehicleAddScreen = () => {
 
   return (
     <SafeAreaView className='flex-1 bg-gray-50'>
-      <HeaderComponent backBtn title="Add New Vehicle" />
+      <Header backBtn title="Add New Vehicle" />
 
       <ScrollView className="px-6">
         {/* Vehicle Information */}
@@ -37,7 +37,7 @@ const VehicleAddScreen = () => {
           </View>
 
           <View className="p-4">
-            <InputFieldComponent
+            <InputField
               label="Plate number"
               value={vehicleData.LicensePlate}
               onChangeText={(text) => setVehicleData({ ...vehicleData, LicensePlate: text })}
@@ -65,12 +65,12 @@ const VehicleAddScreen = () => {
               </View>
             </View>
 
-            <InputFieldComponent
+            <InputField
               label="Brand"
               value={vehicleData.Brand}
               onChangeText={(text) => setVehicleData({ ...vehicleData, Brand: text })}
             />
-            <InputFieldComponent
+            <InputField
               label="Model"
               value={vehicleData.Model}
               onChangeText={(text) => setVehicleData({ ...vehicleData, Model: text })}
