@@ -13,7 +13,7 @@ interface SidebarProps {
   [key: string]: any; 
 }
 
-const SidebarCustom: React.FC<SidebarProps> = (props) => {
+const SidebarComponent: React.FC<SidebarProps> = (props) => {
   const { setIsLoggedIn } = props;
 
   return (
@@ -51,4 +51,4 @@ const SidebarCustom: React.FC<SidebarProps> = (props) => {
   );
 };
 
-export default SidebarCustom;
+export default SidebarComponent;

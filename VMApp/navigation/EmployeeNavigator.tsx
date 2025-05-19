@@ -10,7 +10,7 @@ import {
 import HomeScreen from 'screens/employee/HomeScreen';
 import NotificationScreen from 'screens/shared/NotificationScreen';
 import SettingScreen from 'screens/shared/SettingScreen';
-import SidebarCustom from 'components/SidebarComponent';
+import SidebarComponent from 'components/SidebarComponent';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -32,7 +32,7 @@ export default function EmployeeNavigator({
   return (
     <Drawer.Navigator
       initialRouteName="HomeStack"
-      drawerContent={(props) => <SidebarCustom {...props} setIsLoggedIn={setIsLoggedIn} />}>
+      drawerContent={(props) => <SidebarComponent {...props} setIsLoggedIn={setIsLoggedIn} />}>
       <Drawer.Screen
         name="HomeStack"
         component={HomeStackScreen}
@@ -53,8 +53,8 @@ export default function EmployeeNavigator({
           ),
           title: 'Setting',
           headerShown: false,
-        }}>
-        {() => <SettingScreen setIsLoggedIn={setIsLoggedIn} />}
+        }}
+        component={SettingScreen}>
       </Drawer.Screen>
     </Drawer.Navigator>
   );

@@ -7,9 +7,8 @@ import { useNavigation, DrawerActions } from '@react-navigation/native';
 import Header from 'components/HeaderComponent';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
-const SettingScreen = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => void }) => {
-  const { user, setUser } = useContext(AuthContext);
-  const navigation = useNavigation();
+const SettingScreen = () => {
+  const { user } = useContext(AuthContext);
 
   const handlePress = () => {
     Alert.alert('Comming soon!');
@@ -37,7 +36,7 @@ const SettingScreen = ({ setIsLoggedIn }: { setIsLoggedIn: (value: boolean) => v
       />
 
       {/** BODY */}
-      <View className="px-4">
+      <View className="px-6">
         <Pressable
           className="flex-row items-center border-b border-gray-200 px-2 py-4"
           onPress={handlePress}>

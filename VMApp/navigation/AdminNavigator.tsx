@@ -1,7 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {
-  createDrawerNavigator,
-} from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faHome,
@@ -26,7 +24,7 @@ import VehicleDetailScreen from 'screens/shared/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
 
-import SidebarCustom from 'components/SidebarComponent';
+import SidebarComponent from 'components/SidebarComponent';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -47,8 +45,8 @@ function AccountStackScreen() {
     <AccountStack.Navigator screenOptions={{ headerShown: false }}>
       <AccountStack.Screen name="AccountManagement" component={AccountScreen} />
       <AccountStack.Screen name="AccountDetail" component={AccountDetailScreen} />
-      <AccountStack.Screen name='AccountEdit' component={AccountEditScreen}/>
-      <AccountStack.Screen name='AccountAdd' component={AccountAddScreen}/>
+      <AccountStack.Screen name="AccountEdit" component={AccountEditScreen} />
+      <AccountStack.Screen name="AccountAdd" component={AccountAddScreen} />
     </AccountStack.Navigator>
   );
 }
@@ -72,7 +70,7 @@ export default function AdminNavigator({
   return (
     <Drawer.Navigator
       initialRouteName="HomeStack"
-      drawerContent={(props) => <SidebarCustom {...props} setIsLoggedIn={setIsLoggedIn} />}>
+      drawerContent={(props) => <SidebarComponent {...props} setIsLoggedIn={setIsLoggedIn} />}>
       <Drawer.Screen
         name="HomeStack"
         component={HomeStackScreen}
@@ -129,9 +127,8 @@ export default function AdminNavigator({
           ),
           title: 'Setting',
           headerShown: false,
-        }}>
-        {() => <SettingScreen setIsLoggedIn={setIsLoggedIn} />}
-      </Drawer.Screen>
+        }}
+        component={SettingScreen}></Drawer.Screen>
     </Drawer.Navigator>
   );
 }

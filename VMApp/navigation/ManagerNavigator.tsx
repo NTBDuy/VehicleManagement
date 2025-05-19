@@ -4,7 +4,6 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faHome,
-  faUsers,
   faCalendarCheck,
   faGear,
   faChartArea,
@@ -16,20 +15,15 @@ import NotificationScreen from 'screens/shared/NotificationScreen';
 import SettingScreen from 'screens/shared/SettingScreen';
 import ReportScreen from 'screens/shared/ReportScreen';
 import RequestScreen from 'screens/manager/RequestScreen';
-import AccountScreen from 'screens/shared/account/AccountScreen';
-import AccountDetailScreen from 'screens/shared/account/AccountDetailScreen';
-import AccountEditScreen from 'screens/shared/account/AccountEditScreen';
-import AccountAddScreen from 'screens/shared/account/AccountAddScreen';
 import VehicleScreen from 'screens/shared/vehicle/VehicleScreen';
 import VehicleDetailScreen from 'screens/shared/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
-import SidebarCustom from 'components/SidebarComponent';
+import SidebarComponent from 'components/SidebarComponent';
 import RequestDetailScreen from 'screens/manager/RequestDetailScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
-const AccountStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
 const RequestStack = createNativeStackNavigator();
 
@@ -39,17 +33,6 @@ function HomeStackScreen() {
       <HomeStack.Screen name="ManagerHome" component={HomeScreen} />
       <HomeStack.Screen name="Notification" component={NotificationScreen} />
     </HomeStack.Navigator>
-  );
-}
-
-function AccountStackScreen() {
-  return (
-    <AccountStack.Navigator screenOptions={{ headerShown: false }}>
-      <AccountStack.Screen name="AccountManagement" component={AccountScreen} />
-      <AccountStack.Screen name="AccountDetail" component={AccountDetailScreen} />
-      <AccountStack.Screen name="AccountEdit" component={AccountEditScreen} />
-      <AccountStack.Screen name="AccountAdd" component={AccountAddScreen} />
-    </AccountStack.Navigator>
   );
 }
 
@@ -81,7 +64,7 @@ export default function ManagerNavigator({
   return (
     <Drawer.Navigator
       initialRouteName="HomeStack"
-      drawerContent={(props) => <SidebarCustom {...props} setIsLoggedIn={setIsLoggedIn} />}>
+      drawerContent={(props) => <SidebarComponent {...props} setIsLoggedIn={setIsLoggedIn} />}>
       <Drawer.Screen
         name="HomeStack"
         component={HomeStackScreen}
@@ -90,18 +73,6 @@ export default function ManagerNavigator({
             <FontAwesomeIcon icon={faHome} color={color} size={size} />
           ),
           title: 'Home',
-          headerShown: false,
-        }}
-      />
-
-      <Drawer.Screen
-        name="AccountStack"
-        component={AccountStackScreen}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <FontAwesomeIcon icon={faUsers} color={color} size={size} />
-          ),
-          title: 'Account Management',
           headerShown: false,
         }}
       />
@@ -150,8 +121,8 @@ export default function ManagerNavigator({
           ),
           title: 'Setting',
           headerShown: false,
-        }}>
-        {() => <SettingScreen setIsLoggedIn={setIsLoggedIn} />}
+        }}
+        component={SettingScreen}>
       </Drawer.Screen>
     </Drawer.Navigator>
   );
