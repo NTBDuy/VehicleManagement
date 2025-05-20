@@ -13,7 +13,6 @@ import Header from 'components/HeaderComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import User from 'types/User';
-import { TextInput } from 'react-native-gesture-handler';
 import InputField from 'components/InputFieldComponent';
 
 const AccountCreateScreen = () => {
@@ -29,11 +28,11 @@ const AccountCreateScreen = () => {
   });
 
   const [errors, setErrors] = useState<Partial<User>>({});
-
+  
   const roles = [
     { label: 'Employee', value: 1 },
     { label: 'Manager', value: 2 },
-    { label: 'Admin', value: 3 },
+    { label: 'Admin', value: 0 },
   ];
 
   const validateForm = (): boolean => {

@@ -5,9 +5,7 @@ import Request from 'types/Request';
 import requestData from 'data/request.json';
 import { AuthContext } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {
-  faEllipsisV,
-} from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { formatDate } from 'utils/datetimeUtils';
 import EmptyList from 'components/EmptyListComponent';
 import { getVehicleTypeIcon } from 'utils/vehicleUntils';
@@ -19,21 +17,55 @@ const HistoryBookingScreen = () => {
   const [userRequest, setUserRequest] = useState<Request[]>([]);
   const { user } = useContext(AuthContext);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRequest, setFilteredRequest] = useState<Request[]>([]);
+
   useEffect(() => {
     if (user) {
       getRequestByUserID(user.UserId);
     }
   }, [user]);
 
+  useEffect(() => {
+    filterRequest(searchQuery);
+  }, [userRequest, searchQuery]);
+
+  const filterRequest = (query: string): void => {
+    let filtered = userRequest;
+
+    if (query) {
+      filtered = filtered.filter(
+        (request) =>
+          request.Vehicle?.LicensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          request.Vehicle?.Type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          request.Vehicle?.Brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          request.Vehicle?.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          request.Purpose.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+      );
+    }
+
+    setFilteredRequest(filtered);
+  };
+
+  const handleSearch = (text: string): void => {
+    setSearchQuery(text);
+  };
+
+  const handleClearFilters = (): void => {
+    setSearchQuery('');
+  };
+
   const getRequestByUserID = (userId: number) => {
     const data = requests.filter((request) => request.UserId === userId);
-    return setUserRequest(data);
+    setUserRequest(data);
   };
 
   const renderRequestItem = ({ item }: { item: Request }) => (
     <Pressable
       onPress={() => {}}
-      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getBorderColorByStatus(item.Status)}`}>
+      // className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 border-green-600`}
+      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getBorderColorByStatus(item.Status)}`}
+      >
       <View className="flex-row items-center">
         <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
           <Text className="text-xl font-semibold text-white">
@@ -70,10 +102,17 @@ const HistoryBookingScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="History Booking" />
+      <Header
+        title="History Booking"
+        searchSection
+        searchQuery={searchQuery}
+        handleSearch={handleSearch}
+        placeholder="Search plate, brand, type ..."
+        handleClearFilters={handleClearFilters}
+      />
       <View className="mt-6 px-6">
         <FlatList
-          data={userRequest}
+          data={filteredRequest}
           renderItem={renderRequestItem}
           ListEmptyComponent={<EmptyList title="User never requested vehicle" />}
         />

@@ -19,14 +19,12 @@ const Booking = () => {
     tomorrow.setDate(tomorrow.getDate() + 1);
     return tomorrow.toISOString().split('T')[0];
   });
-  const [purpose, setPurpose] = useState('');
-  const [avaibleVehicle, setAvailbleVehicle] = useState<Vehicle[]>([]);
-
   const [isMultiDayTrip, setIsMultiDayTrip] = useState(false);
-  const [isAssignDriver, setIsAssignDriver] = useState(false);
+  const [avaibleVehicle, setAvailbleVehicle] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>();
-
+  const [purpose, setPurpose] = useState('');
   const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
+  const [isAssignDriver, setIsAssignDriver] = useState(false);
 
   useEffect(() => {
     if (vehicles) {

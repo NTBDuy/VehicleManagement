@@ -12,22 +12,18 @@ const AccountEditScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
   const { userData: initialUserData } = route.params as { userData: User };
-
   const [userData, setUserData] = useState<User>(initialUserData);
   const [errors, setErrors] = useState<Partial<User>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Track changes
   const updateUserData = (field: keyof User, value: any) => {
     setUserData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
-    // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
-
 
   const roles = [
     { label: 'Employee', value: 1 },

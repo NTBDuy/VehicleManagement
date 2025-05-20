@@ -18,8 +18,6 @@ const AccountDetailScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(false);
-
-  // Safety check for route params
   const { userData } = (route.params as { userData?: User }) || {};
 
   if (!userData) {
