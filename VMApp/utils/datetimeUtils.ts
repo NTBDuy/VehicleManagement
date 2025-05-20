@@ -1,8 +1,5 @@
 type DateInput = Date | string | number | null | undefined;
 
-/**
- * Định dạng ngày thành DD/MM/YYYY
- */
 export const formatDate = (input: DateInput): string => {
   if (!input) return '';
 
@@ -38,4 +35,23 @@ export const formatDatetime = (input: DateInput): string => {
   const dateFormatted = formatDate(date);
 
   return `${time} - ${dateFormatted}`;
+};
+
+export const formatDayMonth = (input: DateInput): string => {
+  if (!input) return '';
+
+  const date = new Date(input);
+  if (isNaN(date.getTime())) return '';
+
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  const dayName = days[date.getDay()];
+  const day = date.getDate().toString().padStart(2, '0');
+  const monthName = months[date.getMonth()];
+
+  return `${dayName}, ${day} ${monthName}`;
 };

@@ -23,7 +23,6 @@ const NotificationScreen = () => {
 
   const getNotifcationByUserID = (userId: number) => {
     const data = notifications.filter((notification) => notification.UserId === userId);
-    console.log(data);
     return setUserNotifications(data);
   };
 
