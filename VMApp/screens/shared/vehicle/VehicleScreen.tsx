@@ -19,6 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import EmptyList from 'components/EmptyListComponent';
+import { getVehicleTypeIcon } from 'utils/vehicleUntils';
 
 const vehicles: Vehicle[] = vehicleData;
 
@@ -59,22 +60,6 @@ const VehicleScreen = () => {
     const inUse = item.filter((request) => request.Status === 1).length;
     const underMaintenance = item.filter((request) => request.Status === 2).length;
     setVehicleStat({ total, available, inUse, underMaintenance });
-  };
-
-  /** Func: Get icon for each vehicle */
-  const getVehicleTypeIcon = (type: string) => {
-    switch (type) {
-      case 'Sedan':
-        return faCar;
-      case 'SUV':
-        return faCarSide;
-      case 'Truck':
-        return faTruckPickup;
-      case 'Van':
-        return faVanShuttle;
-      default:
-        return faCar;
-    }
   };
 
   /** Func: Filter Vehicle */

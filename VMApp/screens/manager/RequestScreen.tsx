@@ -12,12 +12,13 @@ import {
 
 import requestData from 'data/request.json';
 import EmptyList from 'components/EmptyListComponent';
-import { getUserInitials } from 'utils/userUtils';
+import { getInitialsFromName } from 'utils/userUtils';
 import { formatDate } from 'utils/datetimeUtils';
 import { useNavigation } from '@react-navigation/native';
 import ApproveModal from 'components/ApproveModalComponent';
 import RejectModal from 'components/RejectModalComponent';
 import CancelModal from 'components/CancelModalComponent';
+import { getBorderColorByStatus } from 'utils/requestUtils';
 
 const requests: Request[] = requestData;
 
@@ -54,20 +55,6 @@ const RequestScreen = () => {
     if (requests) calculateRequestStatistics(requests);
     filterRequests('', '');
   }, [requests]);
-
-  /** Func: Color by status */
-  const getBorderColorByStatus = (status: number) => {
-    switch (status) {
-      case 0:
-        return 'border-orange-600';
-      case 1:
-        return 'border-green-600';
-      case 2:
-        return 'border-red-600';
-      case 3:
-        return 'border-gray-600';
-    }
-  };
 
   /** Func: Statistics  */
   const calculateRequestStatistics = (item: Request[]) => {
@@ -135,7 +122,7 @@ const RequestScreen = () => {
       <View className="flex-row items-center">
         <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
           <Text className="text-lg font-bold text-white">
-            {getUserInitials(item.User?.FullName)}
+            {getInitialsFromName(item.User?.FullName)}
           </Text>
         </View>
 

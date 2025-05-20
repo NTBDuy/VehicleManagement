@@ -8,7 +8,7 @@ import HomeScreen from 'screens/employee/HomeScreen';
 import NotificationScreen from 'screens/shared/NotificationScreen';
 import SettingScreen from 'screens/shared/SettingScreen';
 import SidebarComponent from 'components/SidebarComponent';
-import BookingScreen from 'screens/employee/BookingScreen';
+import BookingScreen from 'screens/shared/BookingScreen';
 import HistoryBookingScreen from 'screens/employee/HistoryBookingScreen';
 
 const Drawer = createDrawerNavigator();

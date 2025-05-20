@@ -2,7 +2,7 @@ import { View, Text, SafeAreaView, Pressable } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Header from 'components/HeaderComponent';
 import Request from 'types/Request';
-import { getUserInitials } from 'utils/userUtils';
+import { getInitialsFromName } from 'utils/userUtils';
 import InfoRow from 'components/InfoRowComponent';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { useState } from 'react';
@@ -99,7 +99,7 @@ const RequestDetailScreen = () => {
               <View className="flex-row items-center">
                 <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                   <Text className="text-lg font-bold text-blue-600">
-                    {getUserInitials(requestData.User?.FullName)}
+                    {getInitialsFromName(requestData.User?.FullName)}
                   </Text>
                 </View>
                 <View>

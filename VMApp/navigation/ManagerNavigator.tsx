@@ -8,6 +8,7 @@ import {
   faGear,
   faChartArea,
   faCarSide,
+  faCalendarPlus
 } from '@fortawesome/free-solid-svg-icons';
 
 import HomeScreen from 'screens/manager/HomeScreen';
@@ -21,11 +22,13 @@ import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
 import SidebarComponent from 'components/SidebarComponent';
 import RequestDetailScreen from 'screens/manager/RequestDetailScreen';
+import BookingScreen from 'screens/shared/BookingScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
 const RequestStack = createNativeStackNavigator();
+const BookingStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
@@ -50,10 +53,18 @@ function VehicleStackScreen() {
 function RequestStackScreen() {
   return (
     <RequestStack.Navigator screenOptions={{ headerShown: false }}>
-      <RequestStack.Screen name='RequestManagement' component={RequestScreen} />
-      <RequestStack.Screen name='RequestDetail' component={RequestDetailScreen} />
+      <RequestStack.Screen name="RequestManagement" component={RequestScreen} />
+      <RequestStack.Screen name="RequestDetail" component={RequestDetailScreen} />
     </RequestStack.Navigator>
-  )
+  );
+}
+
+function BookingStackScreen() {
+  return (
+    <BookingStack.Navigator screenOptions={{ headerShown: false }}>
+      <BookingStack.Screen name="BookingScreen" component={BookingScreen} />
+    </BookingStack.Navigator>
+  );
 }
 
 export default function ManagerNavigator({
@@ -73,6 +84,18 @@ export default function ManagerNavigator({
             <FontAwesomeIcon icon={faHome} color={color} size={size} />
           ),
           title: 'Home',
+          headerShown: false,
+        }}
+      />
+
+      <Drawer.Screen
+        name="BookingStack"
+        component={BookingStackScreen}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faCalendarPlus} color={color} size={size} />
+          ),
+          title: 'Booking',
           headerShown: false,
         }}
       />
@@ -122,8 +145,7 @@ export default function ManagerNavigator({
           title: 'Setting',
           headerShown: false,
         }}
-        component={SettingScreen}>
-      </Drawer.Screen>
+        component={SettingScreen}></Drawer.Screen>
     </Drawer.Navigator>
   );
 }

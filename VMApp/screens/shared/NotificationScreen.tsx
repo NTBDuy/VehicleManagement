@@ -19,7 +19,7 @@ const NotificationScreen = () => {
     if (user) {
       getNotifcationByUserID(user.UserId);
     }
-  }, []);
+  }, [user]);
 
   const getNotifcationByUserID = (userId: number) => {
     const data = notifications.filter((notification) => notification.UserId === userId);

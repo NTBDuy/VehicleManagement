@@ -18,6 +18,7 @@ import {
   faCalendarCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import InfoRow from 'components/InfoRowComponent';
+import { getVehicleTypeIcon } from 'utils/vehicleUntils';
 
 const VehicleDetailScreen = () => {
   const route = useRoute();
@@ -62,22 +63,6 @@ const VehicleDetailScreen = () => {
         <Text className="text-xs font-medium text-white">{getStatusLabel(status)}</Text>
       </View>
     );
-  };
-
-  /** Func: Get icon for each vehicle */
-  const getVehicleTypeIcon = (type: string) => {
-    switch (type) {
-      case 'Sedan':
-        return faCar;
-      case 'SUV':
-        return faCarSide;
-      case 'Truck':
-        return faTruckPickup;
-      case 'Van':
-        return faVanShuttle;
-      default:
-        return faCar;
-    }
   };
 
   return (
