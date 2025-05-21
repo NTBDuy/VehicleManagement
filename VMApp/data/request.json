@@ -7,6 +7,7 @@
     "EndTime": "2025-05-20T12:00:00Z",
     "Purpose": "Business meeting",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-15T09:30:00Z",
     "User": {
       "UserId": 5,
@@ -25,6 +26,7 @@
       "Brand": "Volkswagen",
       "Model": "Transporter",
       "Status": 1,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-12"
     }
   },
@@ -36,6 +38,7 @@
     "EndTime": "2025-05-21T17:00:00Z",
     "Purpose": "Client visit",
     "Status": 0,
+    "isDriverRequired": false,
     "CreatedAt": "2025-05-16T11:20:00Z",
     "User": {
       "UserId": 14,
@@ -54,6 +57,7 @@
       "Brand": "Ram",
       "Model": "1500",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-03-30"
     }
   },
@@ -65,6 +69,7 @@
     "EndTime": "2025-05-22T11:30:00Z",
     "Purpose": "Vehicle maintenance check",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-17T10:00:00Z",
     "User": {
       "UserId": 2,
@@ -83,6 +88,7 @@
       "Brand": "Ford",
       "Model": "F-150",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-03-15"
     }
   },
@@ -94,6 +100,7 @@
     "EndTime": "2025-05-23T18:00:00Z",
     "Purpose": "Airport transfer",
     "Status": 2,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-18T12:45:00Z",
     "User": {
       "UserId": 8,
@@ -112,6 +119,7 @@
       "Brand": "Toyota",
       "Model": "Tundra",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-03-25"
     }
   },
@@ -123,6 +131,7 @@
     "EndTime": "2025-05-24T10:00:00Z",
     "Purpose": "Site inspection",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-19T08:15:00Z",
     "User": {
       "UserId": 1,
@@ -141,6 +150,7 @@
       "Brand": "Chevrolet",
       "Model": "Silverado",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-03-18"}
   },
   {
@@ -151,6 +161,7 @@
     "EndTime": "2025-05-25T15:00:00Z",
     "Purpose": "Conference attendance",
     "Status": 3,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-20T13:00:00Z",
     "User": {
       "UserId": 17,
@@ -169,6 +180,7 @@
       "Brand": "Mercedes-Benz",
       "Model": "Sprinter",
       "Status": 1,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-10"}
   },
   {
@@ -179,6 +191,7 @@
     "EndTime": "2025-05-26T12:30:00Z",
     "Purpose": "Equipment delivery",
     "Status": 0,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-21T09:50:00Z",
     "User": {
       "UserId": 9,
@@ -197,6 +210,7 @@
       "Brand": "GMC",
       "Model": "Sierra",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-03-20"}
   },
   {
@@ -207,6 +221,7 @@
     "EndTime": "2025-05-27T17:00:00Z",
     "Purpose": "Training session",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-22T11:10:00Z",
     "User": {
       "UserId": 12,
@@ -225,6 +240,7 @@
       "Brand": "Chevrolet",
       "Model": "Tahoe",
       "Status": 2,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-25"}
   },
   {
@@ -235,6 +251,7 @@
     "EndTime": "2025-05-28T12:00:00Z",
     "Purpose": "Client meeting",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-23T10:40:00Z",
     "User": {
       "UserId": 4,
@@ -253,6 +270,7 @@
       "Brand": "Nissan",
       "Model": "Altima",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-05-08"}
   },
   {
@@ -263,6 +281,7 @@
     "EndTime": "2025-05-29T16:00:00Z",
     "Purpose": "Product delivery",
     "Status": 2,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-24T14:25:00Z",
     "User": {
       "UserId": 22,
@@ -281,6 +300,7 @@
       "Brand": "Kia",
       "Model": "Optima",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-05-02"}
   },
   {
@@ -291,6 +311,7 @@
     "EndTime": "2025-05-31T11:00:00Z",
     "Purpose": "Team outing",
     "Status": 3,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-26T09:45:00Z",
     "User": {
       "UserId": 19,
@@ -309,6 +330,7 @@
       "Brand": "Chrysler",
       "Model": "Pacifica",
       "Status": 1,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-05"
     }
   },
@@ -320,6 +342,7 @@
     "EndTime": "2025-06-01T18:00:00Z",
     "Purpose": "Client site visit",
     "Status": 0,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-27T12:30:00Z",
     "User": {
       "UserId": 7,
@@ -338,6 +361,7 @@
       "Brand": "Ford",
       "Model": "Transit",
       "Status": 1,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-15"}
   },
   {
@@ -348,6 +372,7 @@
     "EndTime": "2025-06-02T14:00:00Z",
     "Purpose": "Audit",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-28T10:10:00Z",
     "User": {
       "UserId": 20,
@@ -366,6 +391,7 @@
       "Brand": "Hyundai",
       "Model": "Elantra",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-05-05"}
   },
   {
@@ -376,6 +402,7 @@
     "EndTime": "2025-06-03T11:00:00Z",
     "Purpose": "Materials transport",
     "Status": 2,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-29T07:40:00Z",
     "User": {
       "UserId": 3,
@@ -394,6 +421,7 @@
       "Brand": "Toyota",
       "Model": "Camry",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-05-01"}
   },
   {
@@ -404,6 +432,7 @@
     "EndTime": "2025-06-04T17:30:00Z",
     "Purpose": "Staff transfer",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-30T13:00:00Z",
     "User": {
       "UserId": 10,
@@ -422,6 +451,7 @@
       "Brand": "Subaru",
       "Model": "Outback",
       "Status": 2,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-22"}
   },
   {
@@ -432,6 +462,7 @@
     "EndTime": "2025-06-05T12:00:00Z",
     "Purpose": "Conference attendance",
     "Status": 0,
+    "isDriverRequired": true,
     "CreatedAt": "2025-05-31T08:15:00Z",
     "User": {
       "UserId": 16,
@@ -450,6 +481,7 @@
       "Brand": "Mazda",
       "Model": "Mazda3",
       "Status": 0,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-05-06"}
   },
   {
@@ -460,6 +492,7 @@
     "EndTime": "2025-06-06T13:00:00Z",
     "Purpose": "Marketing event",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-06-01T09:00:00Z",
     "User": {
       "UserId": 11,
@@ -478,6 +511,7 @@
       "Brand": "Jeep",
       "Model": "Wrangler",
       "Status": 2,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-18"}
   },
   {
@@ -488,6 +522,7 @@
     "EndTime": "2025-06-07T15:00:00Z",
     "Purpose": "Product launch",
     "Status": 3,
+    "isDriverRequired": true,
     "CreatedAt": "2025-06-02T11:30:00Z",
     "User": {
       "UserId": 23,
@@ -506,6 +541,7 @@
       "Brand": "BMW",
       "Model": "X5",
       "Status": 2,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-28"}
   },
   {
@@ -516,6 +552,7 @@
     "EndTime": "2025-06-08T11:30:00Z",
     "Purpose": "Equipment pickup",
     "Status": 1,
+    "isDriverRequired": true,
     "CreatedAt": "2025-06-03T07:50:00Z",
     "User": {
       "UserId": 13,
@@ -534,6 +571,7 @@
       "Brand": "Nissan",
       "Model": "NV200",
       "Status": 1,
+    "isDriverRequired": true,
       "LastMaintenance": "2025-04-08"}
   }
 ]

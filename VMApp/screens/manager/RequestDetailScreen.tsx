@@ -144,6 +144,7 @@ const RequestDetailScreen = () => {
               }
             />
             <InfoRow label="Purpose" value={requestData.Purpose || 'No information'} />
+            <InfoRow label="Driver required" value={requestData.isDriverRequired ? 'Assign a driver' : 'Drive by self'} />
             <InfoRow label="Request date" value={formatDate(requestData.CreatedAt)} isLast />
           </View>
         </View>
@@ -186,6 +187,8 @@ const RequestDetailScreen = () => {
         visible={isApproveModalVisible}
         onClose={handleCloseModal}
         onApprove={handleApproveConfirm}
+        // isDriverRequired={true}
+        isDriverRequired={requestData.isDriverRequired}
       />
 
       <RejectModal

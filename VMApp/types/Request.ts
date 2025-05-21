@@ -16,6 +16,7 @@ export default interface Request {
     EndTime: string;
     Purpose: string;
     Status: status;
+    isDriverRequired: boolean;
     CreatedAt: string;
     User?: User;
     Vehicle?: Vehicle

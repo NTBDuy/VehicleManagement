@@ -155,7 +155,7 @@ const RequestScreen = () => {
     filterRequests(text, '');
   };
 
- const handleRequestOption = (data: Request): void => {
+  const handleRequestOption = (data: Request): void => {
     setSelected(data);
     setIsModalVisible(true);
   };
@@ -187,6 +187,7 @@ const RequestScreen = () => {
   };
 
   const handleCloseModal = () => {
+    setSelected(undefined);
     setIsModalVisible(false);
     setIsApproveModalVisible(false);
     setIsRejectModalVisible(false);
@@ -291,7 +292,7 @@ const RequestScreen = () => {
                   onPress={handleApprove}>
                   <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
                   <Text className="text-lg font-semibold text-green-600">
-                    Approve and assign a driver
+                    {selected.isDriverRequired ? 'Approve and assign a driver' : 'Approve the request'}
                   </Text>
                 </Pressable>
 
@@ -326,6 +327,7 @@ const RequestScreen = () => {
         visible={isApproveModalVisible}
         onClose={handleCloseModal}
         onApprove={handleApproveConfirm}
+        isDriverRequired={selected?.isDriverRequired ?? false}
       />
 
       <RejectModal

@@ -100,7 +100,7 @@ const RequestConfirm = ({
       </View>
       <View className="mt-4 rounded-2xl bg-white">
         <View className="bg-gray-50 px-4 pb-3">
-          <Text className="text-lg font-semibold text-gray-800">Driver</Text>
+          <Text className="text-lg font-semibold text-gray-800">Driver Required?</Text>
         </View>
         <View className="p-4">
           <View className="mb-2">
