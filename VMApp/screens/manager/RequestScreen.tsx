@@ -12,7 +12,7 @@ import {
 
 import requestData from 'data/request.json';
 import EmptyList from 'components/EmptyListComponent';
-import { getInitialsFromName } from 'utils/userUtils';
+import { getUserInitials } from 'utils/userUtils';
 import { formatDate } from 'utils/datetimeUtils';
 import { useNavigation } from '@react-navigation/native';
 import ApproveModal from 'components/ApproveModalComponent';
@@ -122,7 +122,7 @@ const RequestScreen = () => {
       <View className="flex-row items-center">
         <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
           <Text className="text-lg font-bold text-white">
-            {getInitialsFromName(item.User?.FullName)}
+            {getUserInitials(item.User?.FullName)}
           </Text>
         </View>
 

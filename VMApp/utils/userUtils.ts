@@ -1,4 +1,4 @@
-export const getInitialsFromName = (fullname?: string, email?: string): string => {
+export const getUserInitials = (fullname?: string, email?: string): string => {
   if (fullname && fullname.trim() !== '') {
     const words = fullname.trim().split(' ');
     return words.length >= 2

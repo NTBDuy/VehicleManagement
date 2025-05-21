@@ -14,7 +14,7 @@ import {
   faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
-import { getInitialsFromName } from 'utils/userUtils';
+import { getUserInitials } from 'utils/userUtils';
 import { useEffect, useState } from 'react';
 import EmptyList from 'components/EmptyListComponent';
 import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
@@ -77,7 +77,7 @@ const AccountScreen = () => {
       onPress={() => handleOption(item)}
       className="mb-4 mt-1 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
-        <Text className="text-xl font-semibold text-white">{getInitialsFromName(item.FullName)}</Text>
+        <Text className="text-xl font-semibold text-white">{getUserInitials(item.FullName)}</Text>
       </View>
       <View className="flex-1">
         <Text className="font-bold">{item.FullName}</Text>
