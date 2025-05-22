@@ -11,19 +11,18 @@ import {
   faCalendarPlus
 } from '@fortawesome/free-solid-svg-icons';
 
-import HomeScreen from 'screens/manager/HomeScreen';
-import NotificationScreen from 'screens/shared/NotificationScreen';
-import SettingScreen from 'screens/shared/SettingScreen';
-import ReportScreen from 'screens/shared/ReportScreen';
-import RequestScreen from 'screens/manager/RequestScreen';
-import VehicleScreen from 'screens/shared/vehicle/VehicleScreen';
-import VehicleDetailScreen from 'screens/shared/vehicle/VehicleDetailScreen';
-import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
-import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
+import HomeScreen from 'screens/dashboard/ManagerDashboard';
+import NotificationScreen from 'screens/notification/NotificationScreen';
+import SettingScreen from 'screens/profile/SettingScreen';
+import RequestScreen from 'screens/booking/RequestScreen';
+import VehicleScreen from 'screens/vehicle/VehicleScreen';
+import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
+import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
+import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import SidebarComponent from 'components/SidebarComponent';
-import RequestDetailScreen from 'screens/manager/RequestDetailScreen';
-import BookingScreen from 'screens/shared/BookingScreen';
-import EditProfileScreen from 'screens/shared/EditProfileScreen';
+import RequestDetailScreen from 'screens/booking/RequestDetailScreen';
+import BookingScreen from 'screens/booking/BookingScreen';
+import EditProfileScreen from 'screens/profile/EditProfileScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -131,18 +130,6 @@ export default function ManagerNavigator({
             <FontAwesomeIcon icon={faCalendarCheck} color={color} size={size} />
           ),
           title: 'Request Management',
-          headerShown: false,
-        }}
-      />
-
-      <Drawer.Screen
-        name="Report"
-        component={ReportScreen}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <FontAwesomeIcon icon={faChartArea} color={color} size={size} />
-          ),
-          title: 'Report & Analysis',
           headerShown: false,
         }}
       />

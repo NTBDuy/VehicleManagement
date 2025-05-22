@@ -4,13 +4,13 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faGear, faCalendarPlus, faClockRotateLeft  } from '@fortawesome/free-solid-svg-icons';
 
-import HomeScreen from 'screens/employee/HomeScreen';
-import NotificationScreen from 'screens/shared/NotificationScreen';
-import SettingScreen from 'screens/shared/SettingScreen';
+import HomeScreen from 'screens/dashboard/EmployeeDashboard';
+import NotificationScreen from 'screens/notification/NotificationScreen';
+import SettingScreen from 'screens/profile/SettingScreen';
 import SidebarComponent from 'components/SidebarComponent';
-import BookingScreen from 'screens/shared/BookingScreen';
-import HistoryBookingScreen from 'screens/employee/HistoryBookingScreen';
-import EditProfileScreen from 'screens/shared/EditProfileScreen';
+import BookingScreen from 'screens/booking/BookingScreen';
+import HistoryBookingScreen from 'screens/booking/HistoryBookingScreen';
+import EditProfileScreen from 'screens/profile/EditProfileScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -87,7 +87,7 @@ export default function EmployeeNavigator({
 
       <Drawer.Screen
         name="HistoryStack"
-        component={HistoryBookingScreen}
+        component={HistoryStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />

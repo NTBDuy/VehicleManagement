@@ -10,20 +10,19 @@ import {
   faCarSide,
 } from '@fortawesome/free-solid-svg-icons';
 
-import HomeScreen from 'screens/admin/HomeScreen';
-import NotificationScreen from 'screens/shared/NotificationScreen';
-import SettingScreen from 'screens/shared/SettingScreen';
-import ReportScreen from 'screens/shared/ReportScreen';
-import RequestScreen from 'screens/manager/RequestScreen';
-import AccountScreen from 'screens/admin/account/AccountScreen';
-import AccountDetailScreen from 'screens/admin/account/AccountDetailScreen';
-import AccountEditScreen from 'screens/admin/account/AccountEditScreen';
-import AccountAddScreen from 'screens/admin/account/AccountAddScreen';
-import VehicleScreen from 'screens/shared/vehicle/VehicleScreen';
-import VehicleDetailScreen from 'screens/shared/vehicle/VehicleDetailScreen';
-import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
-import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
-import EditProfileScreen from 'screens/shared/EditProfileScreen';
+import HomeScreen from 'screens/dashboard/AdminDashboard';
+import NotificationScreen from 'screens/notification/NotificationScreen';
+import SettingScreen from 'screens/profile/SettingScreen';
+import RequestScreen from 'screens/booking/RequestScreen';
+import AccountScreen from 'screens/account/AccountScreen';
+import AccountDetailScreen from 'screens/account/AccountDetailScreen';
+import AccountEditScreen from 'screens/account/AccountEditScreen';
+import AccountAddScreen from 'screens/account/AccountAddScreen';
+import VehicleScreen from 'screens/vehicle/VehicleScreen';
+import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
+import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
+import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
+import EditProfileScreen from 'screens/profile/EditProfileScreen';
 
 import SidebarComponent from 'components/SidebarComponent';
 
