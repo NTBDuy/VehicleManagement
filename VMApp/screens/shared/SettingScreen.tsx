@@ -2,17 +2,22 @@ import { AuthContext } from 'contexts/AuthContext';
 import { useContext } from 'react';
 import { View, Text, SafeAreaView, Image, Pressable, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faPen, faFileContract, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { faPen, faFileContract, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation } from '@react-navigation/native';
 import Header from 'components/HeaderComponent';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 const SettingScreen = () => {
   const { user } = useContext(AuthContext);
+  const navigation = useNavigation<any>();
 
   const handlePress = () => {
     Alert.alert('Comming soon!');
   };
+
+  const handleEditProfile = () => {
+    navigation.navigate('EditProfile');
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -29,7 +34,7 @@ const SettingScreen = () => {
           </View>
         }
         rightElement={
-          <Pressable className="rounded-full bg-white p-2" onPress={handlePress}>
+          <Pressable className="rounded-full bg-white p-2" onPress={handleEditProfile}>
             <FontAwesomeIcon icon={faPen} color="#000" size={18} />
           </Pressable>
         }

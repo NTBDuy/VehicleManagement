@@ -15,14 +15,15 @@ import NotificationScreen from 'screens/shared/NotificationScreen';
 import SettingScreen from 'screens/shared/SettingScreen';
 import ReportScreen from 'screens/shared/ReportScreen';
 import RequestScreen from 'screens/manager/RequestScreen';
-import AccountScreen from 'screens/shared/account/AccountScreen';
-import AccountDetailScreen from 'screens/shared/account/AccountDetailScreen';
-import AccountEditScreen from 'screens/shared/account/AccountEditScreen';
-import AccountAddScreen from 'screens/shared/account/AccountAddScreen';
+import AccountScreen from 'screens/admin/account/AccountScreen';
+import AccountDetailScreen from 'screens/admin/account/AccountDetailScreen';
+import AccountEditScreen from 'screens/admin/account/AccountEditScreen';
+import AccountAddScreen from 'screens/admin/account/AccountAddScreen';
 import VehicleScreen from 'screens/shared/vehicle/VehicleScreen';
 import VehicleDetailScreen from 'screens/shared/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/shared/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
+import EditProfileScreen from 'screens/shared/EditProfileScreen';
 
 import SidebarComponent from 'components/SidebarComponent';
 
@@ -30,6 +31,7 @@ const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
 const AccountStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
+const SettingStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
@@ -60,6 +62,15 @@ function VehicleStackScreen() {
       <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
     </VehicleStack.Navigator>
   );
+}
+
+function SettingStackScreen() {
+  return (
+    <SettingStack.Navigator screenOptions={{ headerShown: false }}>
+      <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
+      <SettingStack.Screen name='EditProfile' component={EditProfileScreen} />
+    </SettingStack.Navigator>
+  )
 }
 
 export default function AdminNavigator({
@@ -120,7 +131,7 @@ export default function AdminNavigator({
       />
 
       <Drawer.Screen
-        name="Setting"
+        name="SettingStack"
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faGear} color={color} size={size} />
@@ -128,7 +139,7 @@ export default function AdminNavigator({
           title: 'Setting',
           headerShown: false,
         }}
-        component={SettingScreen}></Drawer.Screen>
+        component={SettingStackScreen}></Drawer.Screen>
     </Drawer.Navigator>
   );
 }

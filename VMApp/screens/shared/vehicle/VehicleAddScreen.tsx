@@ -30,7 +30,6 @@ const VehicleAddScreen = () => {
       <Header backBtn title="Add New Vehicle" />
 
       <ScrollView className="px-6">
-        {/* Vehicle Information */}
         <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
             <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>

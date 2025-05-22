@@ -10,11 +10,13 @@ import SettingScreen from 'screens/shared/SettingScreen';
 import SidebarComponent from 'components/SidebarComponent';
 import BookingScreen from 'screens/shared/BookingScreen';
 import HistoryBookingScreen from 'screens/employee/HistoryBookingScreen';
+import EditProfileScreen from 'screens/shared/EditProfileScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
 const BookingStack = createNativeStackNavigator();
 const HistoryStack = createNativeStackNavigator();
+const SettingStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
@@ -39,6 +41,15 @@ function HistoryStackScreen() {
       <HistoryStack.Screen name="HistoryScreen" component={HistoryBookingScreen} />
     </HistoryStack.Navigator>
   );
+}
+
+function SettingStackScreen() {
+  return (
+    <SettingStack.Navigator screenOptions={{ headerShown: false }}>
+      <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
+      <SettingStack.Screen name='EditProfile' component={EditProfileScreen} />
+    </SettingStack.Navigator>
+  )
 }
 
 export default function EmployeeNavigator({
@@ -87,7 +98,7 @@ export default function EmployeeNavigator({
       />
 
       <Drawer.Screen
-        name="Setting"
+        name="SettingStack"
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faGear} color={color} size={size} />
@@ -95,7 +106,7 @@ export default function EmployeeNavigator({
           title: 'Setting',
           headerShown: false,
         }}
-        component={SettingScreen}></Drawer.Screen>
+        component={SettingStackScreen}></Drawer.Screen>
     </Drawer.Navigator>
   );
 }

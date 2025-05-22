@@ -1,21 +1,10 @@
-import { View, Text, SafeAreaView, Pressable, TextInput } from 'react-native';
-import React from 'react';
+import { View, Text, SafeAreaView, Pressable } from 'react-native';
 import Header from 'components/HeaderComponent';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Vehicle from 'types/Vehicle';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
-  faCarBurst,
-  faEllipsisV,
-  faCar,
-  faCarSide,
-  faTruckPickup,
-  faVanShuttle,
-  faPlus,
-  faInfoCircle,
   faEdit,
-  faTrash,
-  faCalendarCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import InfoRow from 'components/InfoRowComponent';
 import { getVehicleTypeIcon } from 'utils/vehicleUntils';

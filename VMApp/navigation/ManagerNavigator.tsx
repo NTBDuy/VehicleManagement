@@ -23,12 +23,14 @@ import VehicleAddScreen from 'screens/shared/vehicle/VehicleAddScreen';
 import SidebarComponent from 'components/SidebarComponent';
 import RequestDetailScreen from 'screens/manager/RequestDetailScreen';
 import BookingScreen from 'screens/shared/BookingScreen';
+import EditProfileScreen from 'screens/shared/EditProfileScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
 const RequestStack = createNativeStackNavigator();
 const BookingStack = createNativeStackNavigator();
+const SettingStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
@@ -65,6 +67,15 @@ function BookingStackScreen() {
       <BookingStack.Screen name="BookingScreen" component={BookingScreen} />
     </BookingStack.Navigator>
   );
+}
+
+function SettingStackScreen() {
+  return (
+    <SettingStack.Navigator screenOptions={{ headerShown: false }}>
+      <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
+      <SettingStack.Screen name='EditProfile' component={EditProfileScreen} />
+    </SettingStack.Navigator>
+  )
 }
 
 export default function ManagerNavigator({
@@ -137,7 +148,7 @@ export default function ManagerNavigator({
       />
 
       <Drawer.Screen
-        name="Setting"
+        name="SettingStack"
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faGear} color={color} size={size} />
@@ -145,7 +156,7 @@ export default function ManagerNavigator({
           title: 'Setting',
           headerShown: false,
         }}
-        component={SettingScreen}></Drawer.Screen>
+        component={SettingStackScreen}></Drawer.Screen>
     </Drawer.Navigator>
   );
 }
