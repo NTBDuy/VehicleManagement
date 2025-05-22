@@ -95,9 +95,9 @@ const VehicleScreen = () => {
         case 1:
           return 'bg-blue-500';
         case 3:
-          return 'bg-orange-500';
-        default:
           return 'bg-gray-500';
+        default:
+          return 'bg-orange-500';
       }
     };
 
@@ -228,13 +228,13 @@ const VehicleScreen = () => {
 
           {isExpanded && (
             <View className="mt-4 flex-row flex-wrap justify-between gap-y-4">
-              <StatusCard label="Total" count={vehicleStat.total} bgColor="bg-orange-400" />
+              <StatusCard label="Total" count={vehicleStat.total} bgColor="bg-gray-400" />
               <StatusCard label="Available" count={vehicleStat.available} bgColor="bg-green-500" />
               <StatusCard label="InUse" count={vehicleStat.inUse} bgColor="bg-blue-500" />
               <StatusCard
                 label="Maintenance"
                 count={vehicleStat.underMaintenance}
-                bgColor="bg-gray-500"
+                bgColor="bg-orange-500"
               />
             </View>
           )}

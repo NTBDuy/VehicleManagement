@@ -1,28 +1,228 @@
-import { Text, SafeAreaView, Pressable } from 'react-native';
-import { useContext } from 'react';
+import { Text, SafeAreaView, Pressable, ScrollView, View, Dimensions } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import Header from 'components/HeaderComponent';
 import { useNavigation } from '@react-navigation/native';
+import { PieChart, ProgressChart } from 'react-native-chart-kit';
+
+import Header from 'components/HeaderComponent';
+
+import accountData from 'data/user.json';
+import vehicleData from 'data/vehicle.json';
+
+import User from 'types/User';
+import Vehicle from 'types/Vehicle';
+
+const accounts: User[] = accountData;
+const vehicles: Vehicle[] = vehicleData;
+
+type VehicleStat = {
+  total: number;
+  available: number;
+  inUse: number;
+  underMaintenance: number;
+};
+
+type AccountStat = {
+  total: number;
+  employee: number;
+  manager: number;
+  admin: number;
+};
 
 const HomeScreen = () => {
   const { user } = useContext(AuthContext);
   const navigation = useNavigation<any>();
-  
+
+  const [vehicleStat, setVehicleStat] = useState<VehicleStat>({
+    total: 0,
+    available: 0,
+    inUse: 0,
+    underMaintenance: 0,
+  });
+
+  const [accountStat, setAccountStat] = useState<AccountStat>({
+    total: 0,
+    employee: 0,
+    manager: 0,
+    admin: 0,
+  });
+
+  const screenWidth = Dimensions.get('window').width;
+
+  useEffect(() => {
+    if (vehicles) {
+      calculateVehicleStatistics(vehicles);
+      calculateAccountStatistics();
+    }
+  }, [vehicles]);
+
+  const calculateVehicleStatistics = (item: Vehicle[]) => {
+    const total = item.length;
+    const available = item.filter((request) => request.Status === 0).length;
+    const inUse = item.filter((request) => request.Status === 1).length;
+    const underMaintenance = item.filter((request) => request.Status === 2).length;
+    setVehicleStat({ total, available, inUse, underMaintenance });
+  };
+
+  const calculateAccountStatistics = () => {
+    const total = accounts.length;
+    const admin = accounts.filter((account) => account.Role === 0).length;
+    const employee = accounts.filter((account) => account.Role === 1).length;
+    const manager = accounts.filter((account) => account.Role === 2).length;
+
+    setAccountStat({ total, employee, manager, admin });
+  };
+
+  const vehicleChartData = [
+    {
+      name: 'Available',
+      count: vehicleStat.available,
+      color: '#10b981',
+      legendFontColor: '#374151',
+      legendFontSize: 14,
+    },
+    {
+      name: 'In Use',
+      count: vehicleStat.inUse,
+      color: '#3b82f6',
+      legendFontColor: '#374151',
+      legendFontSize: 14,
+    },
+    {
+      name: 'Maintenance',
+      count: vehicleStat.underMaintenance,
+      color: '#ff7a04',
+      legendFontColor: '#374151',
+      legendFontSize: 14,
+    },
+  ].filter((item) => item.count > 0);
+
+  const chartConfig = {
+    backgroundColor: '#ffffff',
+    backgroundGradientFrom: '#ffffff',
+    backgroundGradientTo: '#ffffff',
+    decimalPlaces: 0,
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(55, 65, 81, ${opacity})`,
+    style: {
+      borderRadius: 16,
+    },
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'available':
+        return 'text-green-600';
+      case 'inUse':
+        return 'text-blue-600';
+      case 'underMaintenance':
+        return 'text-orange-600';
+      case 'admin':
+        return 'text-red-600';
+      case 'employee':
+        return 'text-green-600';
+      case 'manager':
+        return 'text-blue-600';
+      default:
+        return 'text-gray-800';
+    }
+  };
+
+  const StatItem = ({
+    label,
+    value,
+    status,
+  }: {
+    label: string;
+    value: number;
+    status?: string;
+  }) => (
+    <View className="flex-row items-center justify-between py-2">
+      <Text className="text-gray-700">{label}</Text>
+      <Text className={`font-semibold ${status ? getStatusColor(status) : 'text-gray-800'}`}>
+        {value}
+      </Text>
+    </View>
+  );
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-gray-50">
       {/** HEADER */}
       <Header
         customTitle={<Text className="text-2xl font-bold">Hi {user?.FullName}</Text>}
         rightElement={
-          <Pressable 
+          <Pressable
             className="rounded-full bg-white p-2"
-            onPress={() => navigation.navigate("Notification")}>
+            onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
           </Pressable>
         }
       />
+
+      {/** BODY */}
+      <ScrollView className="px-6">
+        {/** Section: Account Statistics */}
+        <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">Account Statistics</Text>
+          </View>
+
+          <View className="p-4">
+            <StatItem label="Total Accounts" value={accountStat.total} />
+            <StatItem label="Admin" value={accountStat.admin} status="admin" />
+            <StatItem label="Manager" value={accountStat.manager} status="manager" />
+            <StatItem label="Employee" value={accountStat.employee} status="employee" />
+          </View>
+        </View>
+        
+        {/** Section: Vehicle Statistics */}
+        <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">Vehicle Statistics</Text>
+          </View>
+
+          <View className="p-4">
+            <StatItem label="Total Vehicles" value={vehicleStat.total} />
+            <StatItem label="Available" value={vehicleStat.available} status="available" />
+            <StatItem label="In Use" value={vehicleStat.inUse} status="inUse" />
+            <StatItem
+              label="Under Maintenance"
+              value={vehicleStat.underMaintenance}
+              status="underMaintenance"
+            />
+
+            <View className="my-4 border-t border-gray-200"></View>
+
+            {vehicleStat.total > 0 && vehicleChartData.length > 0 ? (
+              <View className="items-center">
+                <PieChart
+                  data={vehicleChartData}
+                  width={screenWidth - 24}
+                  height={200}
+                  chartConfig={chartConfig}
+                  accessor="count"
+                  backgroundColor="transparent"
+                  paddingLeft="12"
+                  center={[18, 0]}
+                  absolute={false}
+                  hasLegend={true}
+                  style={{
+                    marginVertical: 8,
+                    borderRadius: 16,
+                    paddingRight: '124%',
+                  }}
+                />
+              </View>
+            ) : (
+              <View className="items-center py-8">
+                <Text className="text-center text-gray-500">No vehicle data available</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

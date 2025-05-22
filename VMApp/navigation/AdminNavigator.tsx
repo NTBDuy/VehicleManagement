@@ -119,18 +119,6 @@ export default function AdminNavigator({
       />
 
       <Drawer.Screen
-        name="Report"
-        component={ReportScreen}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <FontAwesomeIcon icon={faChartArea} color={color} size={size} />
-          ),
-          title: 'Report & Analysis',
-          headerShown: false,
-        }}
-      />
-
-      <Drawer.Screen
         name="SettingStack"
         options={{
           drawerIcon: ({ color, size }) => (
