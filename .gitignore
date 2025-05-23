@@ -52,3 +52,48 @@ Thumbs.db
 
 # NativeWind (tailwind output cache)
 .tailwind/
+
+# .NET build
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider IDE
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# ASP.NET Core secrets
+**/secrets.json
+
+# IIS Express
+.vs/
+*.vspscc
+*.vssscc
+
+# Logs
+*.log
+
+# Dotnet tools
+.tools/
+
+# Auto-generated files
+Generated_Code/
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Azure Pipelines
+.azure-pipelines/
+
+# Dotnet environment config
+.env
