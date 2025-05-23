@@ -12,7 +12,7 @@ const InputField = ({
   error,
 }: {
   label: string;
-  value: string;
+  value: string | undefined;
   require?: boolean;
   onChangeText: (text: string) => void;
   placeholder?: string;

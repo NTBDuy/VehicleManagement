@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VMServer.Controllers
 {
@@ -46,14 +47,46 @@ namespace VMServer.Controllers
                 token = token,
                 user = new
                 {
-                    userId = user.UserID,
+                    userID = user.UserID,
                     username = user.Username,
-                    fullname = user.FullName,
-                    phone = user.PhoneNumber,
+                    fullName = user.FullName,
+                    phoneNumber = user.PhoneNumber,
                     email = user.Email,
                     role = user.Role
                 }
             });
+        }
+
+        [HttpGet("user")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _dbContext.Users.ToListAsync();
+            return Ok(users);
+        }
+
+        // PUT: api/user
+        // Cập nhật thông tin người dùng
+        [Authorize]
+        [HttpPut("/api/user/{userId}")]
+        public async Task<IActionResult> UpdateUserInformation(int userId, [FromBody] UpdateUserInformationDTO dto)
+        {
+
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (claimUserId == null || int.Parse(claimUserId) != userId)
+                return Forbid("You are not allowed to update another user's information.");
+
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found!" });
+
+            user.FullName = dto.FullName;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.PhoneNumber;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(user);
         }
 
         private string GenerateJwtToken(User user)
@@ -74,6 +107,7 @@ namespace VMServer.Controllers
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email ?? ""),
             new Claim(ClaimTypes.Role, user.Role.ToString())
+
         }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

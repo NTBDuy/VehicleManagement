@@ -1,4 +1,3 @@
-
 import { View, Text, SafeAreaView, Image, Pressable, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPen, faFileContract, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
@@ -18,7 +17,7 @@ const SettingScreen = () => {
 
   const handleEditProfile = () => {
     navigation.navigate('EditProfile');
-  }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -30,8 +29,10 @@ const SettingScreen = () => {
               className="h-28 w-28 rounded-full border border-white"
               source={require('../../assets/images/user-default.jpg')}
             />
-            <Text className="mt-4 font-bold">{user?.fullname || 'NO INFORMATION'}</Text>
-            <Text className="mt-2 text-gray-600">{formatVietnamPhoneNumber(user!.phone)}</Text>
+            <Text className="mt-4 font-bold">{user?.fullName || 'NO INFORMATION'}</Text>
+            <Text className="mt-2 text-gray-600">
+              {user?.phoneNumber ? formatVietnamPhoneNumber(user.phoneNumber) : 'NO PHONE NUMBER'}
+            </Text>
           </View>
         }
         rightElement={

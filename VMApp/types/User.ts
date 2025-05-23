@@ -5,14 +5,14 @@ export enum role {
 }
 
 export default interface User {
-  UserId: number;
-  Username: string;
-  PasswordHash: string;
-  FullName: string;
-  Email: string;
-  Phone: string;
-  Role: role;
-  Status: boolean;
-  CreateAt?: string;
-  LastUpdateAt?: string;
+  userID: number;
+  username: string;
+  passwordHash: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  role: role;
+  status: boolean;
+  createdAt?: string;
+  lastUpdateAt?: string;
 }

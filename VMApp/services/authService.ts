@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginDTO } from 'types/LoginDTO';
 import { LoginResponse } from 'types/LoginResponse';
-import UserLogged from 'types/UserLogged';
+import User from 'types/User';
 
-const API_BASE_URL = 'http://192.168.2.150:5169/api';
+const API_BASE_URL = 'http://192.168.1.87:5169/api';
 
 export class AuthService {
   private static readonly TOKEN_KEY = 'auth_token';
@@ -43,7 +43,7 @@ export class AuthService {
     return await AsyncStorage.getItem(this.TOKEN_KEY);
   }
 
-  static async getUser(): Promise<UserLogged | null> {
+  static async getUser(): Promise<User | null> {
     const userData = await AsyncStorage.getItem(this.USER_KEY);
     return userData ? JSON.parse(userData) : null;
   }

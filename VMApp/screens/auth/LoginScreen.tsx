@@ -39,33 +39,6 @@ const LoginScreen = () => {
 
   const [activeRole, setActiveRole] = useState<string>('');
 
-  // const handleLogin = async () => {
-  //   try {
-  //     const response = await fetch('http://localhost:5215/api/auth/login', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ username, password }),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Login failed');
-  //     }
-
-  //     const matchedUser = await response.json();
-
-  //     if (matchedUser) {
-  //       setUser(matchedUser);
-  //       setIsLoggedIn(true);
-  //     } else {
-  //       Alert.alert('Error', 'Incorrect username or password.');
-  //     }
-  //   } catch (error: any) {
-  //     Alert.alert('Login Error', error.message);
-  //   }
-  // };
-
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
       Alert.alert('Error', 'Please enter both username and password');
@@ -75,7 +48,6 @@ const LoginScreen = () => {
     setIsLoading(true);
     try {
       await login({ username: username.trim(), password });
-      // Navigation sẽ được handle bởi navigation guard
     } catch (error) {
       Alert.alert('Login Failed', error instanceof Error ? error.message : 'An error occurred');
     } finally {

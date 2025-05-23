@@ -1,9 +1,8 @@
 import { View, Text } from 'react-native';
 import User from 'types/User';
-import UserLogged from 'types/UserLogged';
 
 interface WelcomeSectionProps {
-  user: UserLogged | null;
+  user: User | null;
 }
 
 const WelcomeSection = ({ user }: WelcomeSectionProps) => (
@@ -12,7 +11,7 @@ const WelcomeSection = ({ user }: WelcomeSectionProps) => (
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
           <Text className="text-base font-medium text-gray-600">Welcome back,</Text>
-          <Text className="text-2xl font-bold text-gray-800">{user?.fullname}</Text>
+          <Text className="text-2xl font-bold text-gray-800">{user?.fullName}</Text>
           <Text className="mt-1 text-sm text-gray-500">
             {new Date().toLocaleDateString('en-US', {
               weekday: 'long',

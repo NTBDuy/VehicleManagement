@@ -1,18 +1,26 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthService } from '../services/authService';
 import { LoginDTO } from 'types/LoginDTO';
-import UserLogged from 'types/UserLogged';
+
+import User from 'types/User';
 
 interface AuthContextType {
-  user: UserLogged | null;
+  user: User | null;
   isLoading: boolean;
   login: (credentials: LoginDTO) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
+  setUser: (user: User | null) => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isLoading: false,
+  login: async () => {},
+  logout: async () => {},
+  isAuthenticated: false,
+  setUser: () => {},
+});
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -27,18 +35,22 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<UserLogged | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     checkAuthStatus();
   }, []);
 
+  useEffect(() => {
+    console.log('AuthContext user updated:', user);
+  }, [user]);
+
   const checkAuthStatus = async () => {
     try {
       const savedUser = await AuthService.getUser();
       const isAuth = await AuthService.isAuthenticated();
-      
+
       if (isAuth && savedUser) {
         setUser(savedUser);
       }
@@ -73,11 +85,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     isAuthenticated: user !== null,
+    setUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

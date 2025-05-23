@@ -9,13 +9,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import UserLogged from 'types/UserLogged';
+import { ApiClient } from 'utils/apiClient';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation<any>();
-  const { user } = useAuth();
-
-  const [userData, setUserData] = useState<UserLogged>();
+  const { user, setUser } = useAuth();
+  const [userData, setUserData] = useState<User>();
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [errors, setErrors] = useState<Partial<User>>({});
@@ -30,9 +29,9 @@ const EditProfileScreen = () => {
     if (!user || !userData) return;
 
     const changed =
-      user.fullname !== userData.fullname ||
+      user.fullName !== userData.fullName ||
       user.email !== userData.email ||
-      user.phone !== userData.phone;
+      user.phoneNumber !== userData.phoneNumber;
 
     setHasChanges(changed);
   }, [userData, user]);
@@ -40,20 +39,20 @@ const EditProfileScreen = () => {
   const validateForm = (): boolean => {
     const newErrors: Partial<User> = {};
 
-    if (!userData?.fullname?.trim()) {
-      newErrors.FullName = 'Full name is required' as any;
+    if (!userData?.fullName?.trim()) {
+      newErrors.fullName = 'Full name is required' as any;
     }
 
     if (!userData?.email?.trim()) {
-      newErrors.Email = 'Email is required' as any;
+      newErrors.email = 'email is required' as any;
     } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
-      newErrors.Email = 'Please enter a valid email' as any;
+      newErrors.email = 'Please enter a valid email' as any;
     }
 
-    if (!userData?.phone?.trim()) {
-      newErrors.Phone = 'Phone number is required' as any;
-    } else if (!/^\d{9,10}$/.test(userData.phone.replace(/\s/g, ''))) {
-      newErrors.Phone = 'Please enter a valid phone number' as any;
+    if (!userData?.phoneNumber?.trim()) {
+      newErrors.phoneNumber = 'phoneNumber number is required' as any;
+    } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
+      newErrors.phoneNumber = 'Please enter a valid phoneNumber number' as any;
     }
 
     setErrors(newErrors);
@@ -73,14 +72,24 @@ const EditProfileScreen = () => {
         onPress: async () => {
           setIsLoading(true);
           try {
-            console.log('Updating account:', userData);
+            const data = {
+              fullName: userData?.fullName,
+              email: userData?.email,
+              phoneNumber: userData?.phoneNumber,
+            };
 
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const res = await ApiClient.updateUserProfile(userData!.userID, data);
+            
+            const updatedUser = { ...res };
+
+            setUserData(updatedUser);
+            setUser(updatedUser);
 
             Alert.alert('Success', 'Account updated successfully!', [
               { text: 'OK', onPress: () => navigation.goBack() },
             ]);
           } catch (error) {
+            console.error('Update error:', error);
             Alert.alert('Error', 'Failed to update account. Please try again.');
           } finally {
             setIsLoading(false);
@@ -139,22 +148,22 @@ const EditProfileScreen = () => {
             <View className="p-4">
               <InputField
                 label="Fullname"
-                value={userData?.fullname}
-                onChangeText={(text) => setUserData({ ...userData, fullname: text })}
-                error={errors.FullName as string}
+                value={userData.fullName}
+                onChangeText={(text) => setUserData({ ...userData!, fullName: text })}
+                error={errors.fullName as string}
               />
               <InputField
-                label="Email"
+                label="email"
                 value={userData?.email}
-                onChangeText={(text) => setUserData({ ...userData, email: text })}
-                error={errors.Email as string}
+                onChangeText={(text) => setUserData({ ...userData!, email: text })}
+                error={errors.email as string}
                 keyboardType="email-address"
               />
               <InputField
-                label="Phone Number"
-                value={userData?.phone}
-                onChangeText={(text) => setUserData({ ...userData, phone: text })}
-                error={errors.Phone as string}
+                label="phoneNumber Number"
+                value={userData?.phoneNumber}
+                onChangeText={(text) => setUserData({ ...userData!, phoneNumber: text })}
+                error={errors.phoneNumber as string}
                 placeholder="e.g. 0912345678"
                 keyboardType="phone-pad"
               />
