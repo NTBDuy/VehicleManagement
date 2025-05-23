@@ -154,7 +154,7 @@ const AccountEditScreen = () => {
           <View className="relative">
             <Image
               className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
-              source={require('../../../assets/images/user-default.jpg')}
+              source={require('../../assets/images/user-default.jpg')}
             />
             <Pressable className="absolute bottom-0 right-0 rounded-full border-2 border-white bg-blue-500 p-2">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />

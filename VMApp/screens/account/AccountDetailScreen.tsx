@@ -145,7 +145,7 @@ const AccountDetailScreen = () => {
           <View className="relative">
             <Image
               className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
-              source={require('../../../assets/images/user-default.jpg')}
+              source={require('../../assets/images/user-default.jpg')}
             />
             <View className={`absolute bottom-2 right-2 rounded-full p-2 ${userData.Status ? 'bg-green-500' : 'bg-gray-400'}`}>
               <View className="h-3 w-3 rounded-full bg-white" />

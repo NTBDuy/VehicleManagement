@@ -2,15 +2,11 @@ import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-nati
 import { useEffect, useState } from 'react';
 import Header from 'components/HeaderComponent';
 import Vehicle from 'types/Vehicle';
-import vehicleData from '../../../data/vehicle.json';
+import vehicleData from '../../data/vehicle.json';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faCarBurst,
   faEllipsisV,
-  faCar,
-  faCarSide,
-  faTruckPickup,
-  faVanShuttle,
   faPlus,
   faInfoCircle,
   faEdit,
@@ -31,15 +27,13 @@ type VehicleStat = {
 };
 
 const VehicleScreen = () => {
-  const initialStat = {
+  const navigation = useNavigation<any>();
+  const [vehicleStat, setVehicleStat] = useState<VehicleStat>({
     total: 0,
     available: 0,
     inUse: 0,
     underMaintenance: 0,
-  };
-
-  const navigation = useNavigation<any>();
-  const [vehicleStat, setVehicleStat] = useState<VehicleStat>(initialStat);
+  });
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<Vehicle>();

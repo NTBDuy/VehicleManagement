@@ -4,15 +4,17 @@ import { AuthContext } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
-import { PieChart, ProgressChart } from 'react-native-chart-kit';
+import { PieChart } from 'react-native-chart-kit';
 
 import Header from 'components/HeaderComponent';
+import StatItem from 'components/StatItemComponent';
 
 import accountData from 'data/user.json';
 import vehicleData from 'data/vehicle.json';
 
 import User from 'types/User';
 import Vehicle from 'types/Vehicle';
+import WelcomeSection from 'components/WelcomeSectionComponent';
 
 const accounts: User[] = accountData;
 const vehicles: Vehicle[] = vehicleData;
@@ -111,47 +113,11 @@ const HomeScreen = () => {
     },
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'available':
-        return 'text-green-600';
-      case 'inUse':
-        return 'text-blue-600';
-      case 'underMaintenance':
-        return 'text-orange-600';
-      case 'admin':
-        return 'text-red-600';
-      case 'employee':
-        return 'text-green-600';
-      case 'manager':
-        return 'text-blue-600';
-      default:
-        return 'text-gray-800';
-    }
-  };
-
-  const StatItem = ({
-    label,
-    value,
-    status,
-  }: {
-    label: string;
-    value: number;
-    status?: string;
-  }) => (
-    <View className="flex-row items-center justify-between py-2">
-      <Text className="text-gray-700">{label}</Text>
-      <Text className={`font-semibold ${status ? getStatusColor(status) : 'text-gray-800'}`}>
-        {value}
-      </Text>
-    </View>
-  );
-
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/** HEADER */}
       <Header
-        customTitle={<Text className="text-2xl font-bold">Hi {user?.FullName}</Text>}
+        title="Admin Dashboard"
         rightElement={
           <Pressable
             className="rounded-full bg-white p-2"
@@ -163,6 +129,9 @@ const HomeScreen = () => {
 
       {/** BODY */}
       <ScrollView className="px-6">
+        {/* Welcome Section */}
+        <WelcomeSection user={user} />
+
         {/** Section: Account Statistics */}
         <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
@@ -176,7 +145,7 @@ const HomeScreen = () => {
             <StatItem label="Employee" value={accountStat.employee} status="employee" />
           </View>
         </View>
-        
+
         {/** Section: Vehicle Statistics */}
         <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">

@@ -92,7 +92,7 @@ const AccountCreateScreen = () => {
           <View className="relative">
             <Image
               className="mt-4 h-24 w-24 rounded-full border-2 border-gray-200"
-              source={require('../../../assets/images/user-default.jpg')}
+              source={require('../../assets/images/user-default.jpg')}
             />
             <Pressable className="absolute bottom-0 right-0 rounded-full border-2 border-white bg-blue-500 p-2">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />

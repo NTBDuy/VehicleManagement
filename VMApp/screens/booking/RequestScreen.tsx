@@ -31,16 +31,15 @@ type RequestStat = {
 };
 
 const RequestScreen = () => {
-  const initialStat = {
+  const navigation = useNavigation<any>();
+  const [requestStat, setRequestStat] = useState<RequestStat>({
     total: 0,
     pending: 0,
     approved: 0,
     rejected: 0,
     cancelled: 0,
-  };
-
-  const navigation = useNavigation<any>();
-  const [requestStat, setRequestStat] = useState<RequestStat>(initialStat);
+  });
+  
   const [filteredRequests, setFilteredRequests] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
@@ -292,7 +291,9 @@ const RequestScreen = () => {
                   onPress={handleApprove}>
                   <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
                   <Text className="text-lg font-semibold text-green-600">
-                    {selected.isDriverRequired ? 'Approve and assign a driver' : 'Approve the request'}
+                    {selected.isDriverRequired
+                      ? 'Approve and assign a driver'
+                      : 'Approve the request'}
                   </Text>
                 </Pressable>
 
