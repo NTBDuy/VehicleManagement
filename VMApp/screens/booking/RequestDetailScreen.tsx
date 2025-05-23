@@ -1,24 +1,29 @@
-import { View, Text, SafeAreaView, Pressable } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { View, Text, SafeAreaView, Pressable, Alert } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from 'components/HeaderComponent';
 import Request from 'types/Request';
 import { getUserInitials } from 'utils/userUtils';
 import InfoRow from 'components/InfoRowComponent';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
-import { useState } from 'react';
-import ApproveModal from 'components/ApproveModalComponent';
-import RejectModal from 'components/RejectModalComponent';
-import CancelModal from 'components/CancelModalComponent';
+import { useContext, useState } from 'react';
+import ApproveModal from 'components/modal/ApproveModalComponent';
+import RejectModal from 'components/modal/RejectModalComponent';
+import CancelModal from 'components/modal/CancelModalComponent';
+import { AuthContext } from 'contexts/AuthContext';
 
 const RequestDetailScreen = () => {
+  const { user } = useContext(AuthContext);
+  const navigation = useNavigation<any>();
   const route = useRoute();
   const { requestData } = route.params as { requestData: Request };
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
-  /** Component: Badge Vehicle Status */
-  const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  /** Component: Badge Request Status */
+  const renderBadgeRequestStatus = ({ status }: { status: number }) => {
     const getStatusStyle = (status: number) => {
       switch (status) {
         case 0:
@@ -68,6 +73,29 @@ const RequestDetailScreen = () => {
     setIsCancelModalVisible(true);
   };
 
+  const handleCancelForEmployee = () => {
+    Alert.alert('Cancel Request', 'Are you sure you want to cancel this request?', [
+      { text: 'No', style: 'cancel' },
+      {
+        text: 'Yes, Cancel',
+        onPress: async () => {
+          setIsLoading(true);
+          try {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            Alert.alert('Success', 'This request cancelled successfully!', [
+              { text: 'OK', onPress: () => navigation.goBack() },
+            ]);
+          } catch (error) {
+            Alert.alert('Error', 'Failed to update account. Please try again.');
+          } finally {
+            setIsLoading(false);
+          }
+        },
+      },
+    ]);
+  };
+
   const handleCloseModal = () => {
     setIsApproveModalVisible(false);
     setIsRejectModalVisible(false);
@@ -110,7 +138,7 @@ const RequestDetailScreen = () => {
                   </Text>
                 </View>
               </View>
-              {renderBadgeVehicleStatus({ status: requestData.Status })}
+              {renderBadgeRequestStatus({ status: requestData.Status })}
             </View>
           </View>
         </View>
@@ -144,36 +172,58 @@ const RequestDetailScreen = () => {
               }
             />
             <InfoRow label="Purpose" value={requestData.Purpose || 'No information'} />
-            <InfoRow label="Driver required" value={requestData.isDriverRequired ? 'Assign a driver' : 'Drive by self'} />
+            <InfoRow
+              label="Driver required"
+              value={requestData.isDriverRequired ? 'Assign a driver' : 'Drive by self'}
+            />
             <InfoRow label="Request date" value={formatDate(requestData.CreatedAt)} isLast />
           </View>
         </View>
 
         {/** Action Buttons */}
-        {requestData.Status === 0 && (
-          <View className="mt-4 flex-row justify-between">
-            <Pressable
-              className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm active:bg-green-700"
-              onPress={handleApprove}>
-              <Text className="font-semibold text-white">Approve</Text>
-            </Pressable>
+        {user?.Role === 0 && (
+          <>
+            {requestData.Status === 0 && (
+              <View className="mt-4 flex-row justify-between">
+                <Pressable
+                  className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm active:bg-green-700"
+                  onPress={handleApprove}>
+                  <Text className="font-semibold text-white">Approve</Text>
+                </Pressable>
 
-            <Pressable
-              className="w-[48%] items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
-              onPress={handleReject}>
-              <Text className="font-semibold text-white">Reject</Text>
-            </Pressable>
-          </View>
+                <Pressable
+                  className="w-[48%] items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
+                  onPress={handleReject}>
+                  <Text className="font-semibold text-white">Reject</Text>
+                </Pressable>
+              </View>
+            )}
+
+            {requestData.Status === 1 && (
+              <View>
+                <Pressable
+                  className="items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
+                  onPress={handleCancel}>
+                  <Text className="font-semibold text-white">Cancel</Text>
+                </Pressable>
+              </View>
+            )}
+          </>
         )}
 
-        {requestData.Status === 1 && (
-          <View>
-            <Pressable
-              className="items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
-              onPress={handleCancel}>
-              <Text className="font-semibold text-white">Cancel</Text>
-            </Pressable>
-          </View>
+        {user?.Role === 1 && (
+          <>
+            {(requestData.Status == 0 || requestData.Status == 1) && (
+              <View>
+                <Pressable
+                  className={`items-center rounded-xl py-4 shadow-sm active:bg-gray-700 ${isLoading ? 'bg-gray-500' : 'bg-gray-600 active:bg-gray-700'}`}
+                  onPress={handleCancelForEmployee}
+                  disabled={isLoading}>
+                  <Text className="font-semibold text-white">{isLoading ? 'Canceling...' : 'Cancel'}</Text>
+                </Pressable>
+              </View>
+            )}
+          </>
         )}
 
         <View className="mt-4">
@@ -187,7 +237,6 @@ const RequestDetailScreen = () => {
         visible={isApproveModalVisible}
         onClose={handleCloseModal}
         onApprove={handleApproveConfirm}
-        // isDriverRequired={true}
         isDriverRequired={requestData.isDriverRequired}
       />
 

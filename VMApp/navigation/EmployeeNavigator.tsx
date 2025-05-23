@@ -11,6 +11,7 @@ import SidebarComponent from 'components/SidebarComponent';
 import BookingScreen from 'screens/booking/BookingScreen';
 import HistoryBookingScreen from 'screens/booking/HistoryBookingScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
+import RequestDetailScreen from 'screens/booking/RequestDetailScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -23,6 +24,7 @@ function HomeStackScreen() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="ManagerHome" component={HomeScreen} />
       <HomeStack.Screen name="Notification" component={NotificationScreen} />
+      <HomeStack.Screen name='RequestDetail' component={RequestDetailScreen}/>
     </HomeStack.Navigator>
   );
 }
@@ -39,6 +41,7 @@ function HistoryStackScreen() {
   return (
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
       <HistoryStack.Screen name="HistoryScreen" component={HistoryBookingScreen} />
+      <HistoryStack.Screen name='RequestDetail' component={RequestDetailScreen}/>
     </HistoryStack.Navigator>
   );
 }

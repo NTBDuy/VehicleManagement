@@ -33,7 +33,7 @@ type AccountStat = {
   admin: number;
 };
 
-const HomeScreen = () => {
+const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
   const navigation = useNavigation<any>();
 
@@ -196,4 +196,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default AdminDashboard;

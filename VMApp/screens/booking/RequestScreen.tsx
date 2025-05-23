@@ -15,10 +15,10 @@ import EmptyList from 'components/EmptyListComponent';
 import { getUserInitials } from 'utils/userUtils';
 import { formatDate } from 'utils/datetimeUtils';
 import { useNavigation } from '@react-navigation/native';
-import ApproveModal from 'components/ApproveModalComponent';
-import RejectModal from 'components/RejectModalComponent';
-import CancelModal from 'components/CancelModalComponent';
-import { getBorderColorByStatus } from 'utils/requestUtils';
+import ApproveModal from 'components/modal/ApproveModalComponent';
+import RejectModal from 'components/modal/RejectModalComponent';
+import CancelModal from 'components/modal/CancelModalComponent';
+import { getColorByStatus } from 'utils/requestUtils';
 
 const requests: Request[] = requestData;
 
@@ -117,7 +117,8 @@ const RequestScreen = () => {
   const renderRequestItem = ({ item }: { item: Request }) => (
     <Pressable
       onPress={() => handleRequestOption(item)}
-      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getBorderColorByStatus(item.Status)}`}>
+      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.Status)}`}
+      >
       <View className="flex-row items-center">
         <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
           <Text className="text-lg font-bold text-white">

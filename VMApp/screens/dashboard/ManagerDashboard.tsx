@@ -34,7 +34,7 @@ type VehicleStat = {
   underMaintenance: number;
 };
 
-const HomeScreen = () => {
+const ManagerDashboard = () => {
   const { user } = useContext(AuthContext);
   const navigation = useNavigation<any>();
   const [requestStat, setRequestStat] = useState<RequestStat>({
@@ -256,4 +256,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default ManagerDashboard;

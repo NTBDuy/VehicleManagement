@@ -366,7 +366,7 @@
   },
   {
     "RequestId": 14,
-    "UserId": 20,
+    "UserId": 3,
     "VehicleId": 5,
     "StartTime": "2025-06-02T10:00:00Z",
     "EndTime": "2025-06-02T14:00:00Z",
@@ -375,13 +375,13 @@
     "isDriverRequired": true,
     "CreatedAt": "2025-05-28T10:10:00Z",
     "User": {
-      "UserId": 20,
-      "Username": "betty.king",
-      "PasswordHash": "Admin@123",
-      "FullName": "Betty King",
-      "Email": "betty.king@vms.com",
-      "Phone": "876543229",
-      "Role": 0,
+      "UserId": 3,
+      "Username": "michael.brown",
+      "PasswordHash": "Employee@123",
+      "FullName": "Michael Brown",
+      "Email": "michael.brown@vms.com",
+      "Phone": "876543212",
+      "Role": 1,
       "Status": false
     },
     "Vehicle": {
@@ -456,7 +456,7 @@
   },
   {
     "RequestId": 17,
-    "UserId": 16,
+    "UserId": 3,
     "VehicleId": 17,
     "StartTime": "2025-06-05T08:00:00Z",
     "EndTime": "2025-06-05T12:00:00Z",
@@ -464,15 +464,15 @@
     "Status": 0,
     "isDriverRequired": true,
     "CreatedAt": "2025-05-31T08:15:00Z",
-    "User": {
-      "UserId": 16,
-      "Username": "nancy.walker",
-      "PasswordHash": "Admin@123",
-      "FullName": "Nancy Walker",
-      "Email": "nancy.walker@vms.com",
-      "Phone": "876543225",
-      "Role": 0,
-      "Status": true
+   "User": {
+      "UserId": 3,
+      "Username": "michael.brown",
+      "PasswordHash": "Employee@123",
+      "FullName": "Michael Brown",
+      "Email": "michael.brown@vms.com",
+      "Phone": "876543212",
+      "Role": 1,
+      "Status": false
     },
     "Vehicle": {
       "VehicleId": 17,
@@ -546,22 +546,22 @@
   },
   {
     "RequestId": 20,
-    "UserId": 13,
+    "UserId": 3,
     "VehicleId": 16,
     "StartTime": "2025-06-08T07:30:00Z",
     "EndTime": "2025-06-08T11:30:00Z",
     "Purpose": "Equipment pickup",
-    "Status": 1,
+    "Status": 0,
     "isDriverRequired": true,
     "CreatedAt": "2025-06-03T07:50:00Z",
     "User": {
-      "UserId": 13,
-      "Username": "steven.harris",
-      "PasswordHash": "Admin@123",
-      "FullName": "Steven Harris",
-      "Email": "steven.harris@vms.com",
-      "Phone": "876543222",
-      "Role": 0,
+      "UserId": 3,
+      "Username": "michael.brown",
+      "PasswordHash": "Employee@123",
+      "FullName": "Michael Brown",
+      "Email": "michael.brown@vms.com",
+      "Phone": "876543212",
+      "Role": 1,
       "Status": false
     },
     "Vehicle": {

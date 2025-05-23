@@ -1,4 +1,4 @@
-export const getBorderColorByStatus = (status: number) => {
+export const getColorByStatus = (status: number) => {
   switch (status) {
     case 0:
       return 'border-orange-600';
