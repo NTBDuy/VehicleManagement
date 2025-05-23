@@ -2,7 +2,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHome, faGear, faCalendarPlus, faClockRotateLeft  } from '@fortawesome/free-solid-svg-icons';
+import {
+  faHome,
+  faGear,
+  faCalendarPlus,
+  faClockRotateLeft,
+} from '@fortawesome/free-solid-svg-icons';
 
 import HomeScreen from 'screens/dashboard/EmployeeDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
@@ -22,9 +27,11 @@ const SettingStack = createNativeStackNavigator();
 function HomeStackScreen() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="ManagerHome" component={HomeScreen} />
+      <HomeStack.Screen name="Dashboard" component={HomeScreen} />
       <HomeStack.Screen name="Notification" component={NotificationScreen} />
-      <HomeStack.Screen name='RequestDetail' component={RequestDetailScreen}/>
+      <HomeStack.Screen name="RequestDetail" component={RequestDetailScreen} />
+      <HomeStack.Screen name="BookingStack" component={BookingScreen} />
+      <HomeStack.Screen name="HistoryStack" component={HistoryBookingScreen} />
     </HomeStack.Navigator>
   );
 }
@@ -41,7 +48,7 @@ function HistoryStackScreen() {
   return (
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
       <HistoryStack.Screen name="HistoryScreen" component={HistoryBookingScreen} />
-      <HistoryStack.Screen name='RequestDetail' component={RequestDetailScreen}/>
+      <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
     </HistoryStack.Navigator>
   );
 }
@@ -50,9 +57,9 @@ function SettingStackScreen() {
   return (
     <SettingStack.Navigator screenOptions={{ headerShown: false }}>
       <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
-      <SettingStack.Screen name='EditProfile' component={EditProfileScreen} />
+      <SettingStack.Screen name="EditProfile" component={EditProfileScreen} />
     </SettingStack.Navigator>
-  )
+  );
 }
 
 export default function EmployeeNavigator({

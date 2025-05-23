@@ -2,12 +2,7 @@ import { Text, SafeAreaView, Pressable, ScrollView, View } from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {
-  faBell,
-  faCalendarPlus,
-  faCalendarDays,
-  faEllipsisV,
-} from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCalendarPlus, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 
 import Header from 'components/HeaderComponent';
@@ -16,9 +11,6 @@ import WelcomeSection from 'components/WelcomeSectionComponent';
 import requestData from 'data/request.json';
 
 import Request from 'types/Request';
-import { getVehicleTypeIcon } from 'utils/vehicleUntils';
-import { formatDate } from 'utils/datetimeUtils';
-import { getColorByStatus } from 'utils/requestUtils';
 import RequestItem from 'components/HistoryRequestItem';
 
 const requests: Request[] = requestData;
@@ -85,11 +77,19 @@ const EmployeeDashboard = () => {
           </View>
 
           <View className="flex-row justify-between p-4">
-            <Pressable className="w-[48%] flex-row justify-center rounded-2xl bg-green-500 p-4 active:bg-green-600">
+            <Pressable
+              onPress={() => {
+                navigation.getParent()?.navigate('BookingStack');
+              }}
+              className="w-[48%] flex-row justify-center rounded-2xl bg-green-500 p-4 active:bg-green-600">
               <FontAwesomeIcon icon={faCalendarPlus} color="#fff" />
               <Text className="ml-2 font-bold text-white">Booking Now</Text>
             </Pressable>
-            <Pressable className="w-[48%] flex-row justify-center rounded-2xl bg-gray-500 p-4 active:bg-gray-600">
+            <Pressable
+              onPress={() => {
+                navigation.getParent()?.navigate('HistoryStack');
+              }}
+              className="w-[48%] flex-row justify-center rounded-2xl bg-gray-500 p-4 active:bg-gray-600">
               <FontAwesomeIcon icon={faCalendarDays} color="#fff" />
               <Text className="ml-2 font-bold text-white">History Request</Text>
             </Pressable>
@@ -102,10 +102,10 @@ const EmployeeDashboard = () => {
               <Text className="text-lg font-semibold text-gray-800">Pending</Text>
             </View>
 
-            <View className="p-4 -mb-4">
+            <View className="-mb-4 p-4">
               <View>
                 {stat.pending.slice(0, 3).map((item) => (
-                  <RequestItem item={item} key={item.RequestId}/>
+                  <RequestItem item={item} key={item.RequestId} />
                 ))}
               </View>
             </View>
@@ -118,10 +118,10 @@ const EmployeeDashboard = () => {
               <Text className="text-lg font-semibold text-gray-800">Incoming</Text>
             </View>
 
-            <View className="p-4 -mb-4">
+            <View className="-mb-4 p-4">
               <View>
                 {stat.incoming.slice(0, 3).map((item) => (
-                  <RequestItem item={item}  key={item.RequestId}/>
+                  <RequestItem item={item} key={item.RequestId} />
                 ))}
               </View>
             </View>

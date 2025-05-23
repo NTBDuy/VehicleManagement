@@ -19,6 +19,12 @@ const EditProfileScreen = () => {
   const [errors, setErrors] = useState<Partial<User>>({});
 
   useEffect(() => {
+    if (user) {
+      setUserData(user);
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (!user || !userData) return;
 
     const changed =
@@ -65,7 +71,6 @@ const EditProfileScreen = () => {
         onPress: async () => {
           setIsLoading(true);
           try {
-
             console.log('Updating account:', userData);
 
             await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -154,7 +159,7 @@ const EditProfileScreen = () => {
             </View>
           </View>
           {/** Action Buttons */}
-          <View className="mb-8 mt-4 flex-row justify-between">
+          <View className="mb-8 mt-4 flex-row justify-between items-center">
             <Pressable
               className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
               onPress={handleCancel}
@@ -163,7 +168,7 @@ const EditProfileScreen = () => {
             </Pressable>
 
             <Pressable
-              className={`w-[48%] items-center rounded-xl py-4 shadow-sm ${
+              className={`w-[48%] items-center rounded-xl py-4 border-2 border-blue-300 ${
                 isLoading ? 'bg-gray-400' : 'bg-blue-600 active:bg-blue-700'
               }`}
               onPress={handleUpdate}

@@ -12,4 +12,6 @@ export default interface Vihicle {
   Model: string;
   Status: status;
   LastMaintenance?: string;
+  CreateAt?: string;
+  LastUpdateAt?: string;
 }

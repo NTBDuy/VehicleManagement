@@ -1,0 +1,6 @@
+@VMServer_HostAddress = http://localhost:5215
+
+GET {{VMServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
