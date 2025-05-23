@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using YouMedServer.Models.Entities;
+using VMServer.Models.Entities;
 
 public class AppDbContext : DbContext
 {

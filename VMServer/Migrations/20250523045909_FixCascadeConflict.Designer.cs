@@ -24,7 +24,7 @@ namespace VMServer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Assignment", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Assignment", b =>
                 {
                     b.Property<int>("AssignmentId")
                         .ValueGeneratedOnAdd()
@@ -52,7 +52,7 @@ namespace VMServer.Migrations
                     b.ToTable("Assignments");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Driver", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Driver", b =>
                 {
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
@@ -73,7 +73,7 @@ namespace VMServer.Migrations
                     b.ToTable("Drivers");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.MaintenanceSchedule", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.MaintenanceSchedule", b =>
                 {
                     b.Property<int>("MaintenanceId")
                         .ValueGeneratedOnAdd()
@@ -99,7 +99,7 @@ namespace VMServer.Migrations
                     b.ToTable("MaintenanceSchedules");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Notification", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
                         .ValueGeneratedOnAdd()
@@ -133,7 +133,7 @@ namespace VMServer.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Request", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Request", b =>
                 {
                     b.Property<int>("RequestId")
                         .ValueGeneratedOnAdd()
@@ -176,7 +176,7 @@ namespace VMServer.Migrations
                     b.ToTable("Requests");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.User", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.User", b =>
                 {
                     b.Property<int>("UserID")
                         .ValueGeneratedOnAdd()
@@ -222,7 +222,7 @@ namespace VMServer.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Vehicle", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Vehicle", b =>
                 {
                     b.Property<int>("VehicleId")
                         .ValueGeneratedOnAdd()
@@ -267,15 +267,15 @@ namespace VMServer.Migrations
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Assignment", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Assignment", b =>
                 {
-                    b.HasOne("YouMedServer.Models.Entities.User", "Driver")
+                    b.HasOne("VMServer.Models.Entities.User", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("YouMedServer.Models.Entities.Request", "Request")
+                    b.HasOne("VMServer.Models.Entities.Request", "Request")
                         .WithMany()
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -286,9 +286,9 @@ namespace VMServer.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Driver", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Driver", b =>
                 {
-                    b.HasOne("YouMedServer.Models.Entities.User", "User")
+                    b.HasOne("VMServer.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,9 +297,9 @@ namespace VMServer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.MaintenanceSchedule", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.MaintenanceSchedule", b =>
                 {
-                    b.HasOne("YouMedServer.Models.Entities.Vehicle", "Vehicle")
+                    b.HasOne("VMServer.Models.Entities.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -308,9 +308,9 @@ namespace VMServer.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Notification", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Notification", b =>
                 {
-                    b.HasOne("YouMedServer.Models.Entities.User", "User")
+                    b.HasOne("VMServer.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -319,15 +319,15 @@ namespace VMServer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("YouMedServer.Models.Entities.Request", b =>
+            modelBuilder.Entity("VMServer.Models.Entities.Request", b =>
                 {
-                    b.HasOne("YouMedServer.Models.Entities.User", "User")
+                    b.HasOne("VMServer.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("YouMedServer.Models.Entities.Vehicle", "Vehicle")
+                    b.HasOne("VMServer.Models.Entities.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)

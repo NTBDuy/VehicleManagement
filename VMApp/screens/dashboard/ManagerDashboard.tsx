@@ -1,6 +1,6 @@
 import { Text, SafeAreaView, Pressable, View, ScrollView, Dimensions } from 'react-native';
-import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from 'contexts/AuthContext';
+import { useEffect, useState } from 'react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,7 @@ import vehicleData from 'data/vehicle.json';
 import Request from 'types/Request';
 import Vehicle from 'types/Vehicle';
 import WelcomeSection from 'components/WelcomeSectionComponent';
+import { useAuth } from 'contexts/AuthContext';
 
 const requests: Request[] = requestData;
 const vehicles: Vehicle[] = vehicleData;
@@ -35,7 +36,7 @@ type VehicleStat = {
 };
 
 const ManagerDashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const navigation = useNavigation<any>();
   const [requestStat, setRequestStat] = useState<RequestStat>({
     total: 0,

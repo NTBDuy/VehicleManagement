@@ -1,4 +1,4 @@
-import { AuthContext } from 'contexts/AuthContext';
+import { useAuth } from 'contexts/AuthContext';
 import { useContext, useState } from 'react';
 import {
   View,
@@ -17,10 +17,6 @@ import accountData from 'data/user.json';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
 
-type LoginScreenProps = {
-  setIsLoggedIn: (value: boolean) => void;
-};
-
 const account: User[] = accountData;
 
 type QuickLoginRole = {
@@ -30,32 +26,60 @@ type QuickLoginRole = {
 };
 
 const quickLoginRoles: QuickLoginRole[] = [
-  { title: 'Admin', Username: 'john.doe', password: 'Admin@123' },
-  { title: 'Employee', Username: 'michael.brown', password: 'Employee@123' },
-  { title: 'Manager', Username: 'jane.smith', password: 'Manager@123' },
+  { title: 'Admin', Username: 'john.doe', password: 'P@ssword123' },
+  { title: 'Employee', Username: 'michael.brown', password: 'P@ssword123' },
+  { title: 'Manager', Username: 'jane.smith', password: 'P@ssword123' },
 ];
 
-
-const LoginScreen = ({ setIsLoggedIn }: LoginScreenProps) => {
-  const { setUser } = useContext(AuthContext);
-  
+const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
   const [activeRole, setActiveRole] = useState<string>('');
 
-  const handleLogin = () => {
-    const matchedUser = account.find(
-      (user) =>
-        user.Username.toLocaleLowerCase() === username.toLocaleLowerCase() &&
-        user.PasswordHash === password
-    );
-    
-    if (matchedUser) {
-      setUser(matchedUser);
-      setIsLoggedIn(true);
-    } else {
-      Alert.alert('Error', 'Incorrect username or password.');
+  // const handleLogin = async () => {
+  //   try {
+  //     const response = await fetch('http://localhost:5215/api/auth/login', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ username, password }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('Login failed');
+  //     }
+
+  //     const matchedUser = await response.json();
+
+  //     if (matchedUser) {
+  //       setUser(matchedUser);
+  //       setIsLoggedIn(true);
+  //     } else {
+  //       Alert.alert('Error', 'Incorrect username or password.');
+  //     }
+  //   } catch (error: any) {
+  //     Alert.alert('Login Error', error.message);
+  //   }
+  // };
+
+  const handleLogin = async () => {
+    if (!username.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please enter both username and password');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await login({ username: username.trim(), password });
+      // Navigation sẽ được handle bởi navigation guard
+    } catch (error) {
+      Alert.alert('Login Failed', error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,8 +97,8 @@ const LoginScreen = ({ setIsLoggedIn }: LoginScreenProps) => {
         className="flex-1">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View className="flex-1 justify-center px-6 py-8">
-            <View className='mb-4 items-center'>
-              <FontAwesomeIcon icon={faCar} size={48}/>
+            <View className="mb-4 items-center">
+              <FontAwesomeIcon icon={faCar} size={48} />
             </View>
             <View className="mb-8">
               <Text className="text-center text-3xl font-bold">VMS Login</Text>
@@ -96,8 +120,11 @@ const LoginScreen = ({ setIsLoggedIn }: LoginScreenProps) => {
                 onChangeText={setPassword}
               />
             </View>
-            <TouchableOpacity className="rounded-lg bg-blue-500 py-3" onPress={handleLogin}>
-              <Text className="text-center font-bold text-white">Login</Text>
+            <TouchableOpacity
+              disabled={isLoading}
+              className={`rounded-lg py-3 ${isLoading ? 'bg-gray-500' : 'bg-blue-500'}`}
+              onPress={handleLogin}>
+              <Text className="text-center font-bold text-white"> {isLoading ? 'Logging in...' : 'Login'}</Text>
             </TouchableOpacity>
 
             <View className="mt-6 rounded-2xl border px-4 py-2">

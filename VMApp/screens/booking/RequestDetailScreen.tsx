@@ -9,10 +9,10 @@ import { useContext, useState } from 'react';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
-import { AuthContext } from 'contexts/AuthContext';
+import { useAuth } from 'contexts/AuthContext';
 
 const RequestDetailScreen = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const navigation = useNavigation<any>();
   const route = useRoute();
   const { requestData } = route.params as { requestData: Request };
@@ -181,7 +181,7 @@ const RequestDetailScreen = () => {
         </View>
 
         {/** Action Buttons */}
-        {user?.Role === 0 && (
+        {user?.role === 0 && (
           <>
             {requestData.Status === 0 && (
               <View className="mt-4 flex-row justify-between">
@@ -211,7 +211,7 @@ const RequestDetailScreen = () => {
           </>
         )}
 
-        {user?.Role === 1 && (
+        {user?.role === 1 && (
           <>
             {(requestData.Status == 0 || requestData.Status == 1) && (
               <View>

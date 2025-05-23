@@ -73,14 +73,14 @@ function SettingStackScreen() {
 }
 
 export default function AdminNavigator({
-  setIsLoggedIn,
+  
 }: {
-  setIsLoggedIn: (value: boolean) => void;
+ 
 }) {
   return (
     <Drawer.Navigator
       initialRouteName="HomeStack"
-      drawerContent={(props) => <SidebarComponent {...props} setIsLoggedIn={setIsLoggedIn} />}>
+      drawerContent={(props) => <SidebarComponent {...props} />}>
       <Drawer.Screen
         name="HomeStack"
         component={HomeStackScreen}

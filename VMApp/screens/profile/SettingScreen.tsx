@@ -1,14 +1,15 @@
-import { AuthContext } from 'contexts/AuthContext';
-import { useContext } from 'react';
+
 import { View, Text, SafeAreaView, Image, Pressable, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPen, faFileContract, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import Header from 'components/HeaderComponent';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
+import { useAuth } from 'contexts/AuthContext';
 
 const SettingScreen = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
+
   const navigation = useNavigation<any>();
 
   const handlePress = () => {
@@ -29,8 +30,8 @@ const SettingScreen = () => {
               className="h-28 w-28 rounded-full border border-white"
               source={require('../../assets/images/user-default.jpg')}
             />
-            <Text className="mt-4 font-bold">{user?.FullName || 'NO INFORMATION'}</Text>
-            <Text className="mt-2 text-gray-600">{formatVietnamPhoneNumber(user!.Phone)}</Text>
+            <Text className="mt-4 font-bold">{user?.fullname || 'NO INFORMATION'}</Text>
+            <Text className="mt-2 text-gray-600">{formatVietnamPhoneNumber(user!.phone)}</Text>
           </View>
         }
         rightElement={

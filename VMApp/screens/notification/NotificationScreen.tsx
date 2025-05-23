@@ -3,21 +3,22 @@ import React, { useContext, useEffect, useState } from 'react';
 import Header from 'components/HeaderComponent';
 import notificationData from '../../data/notification.json';
 import Notification from 'types/Notification';
-import { AuthContext } from 'contexts/AuthContext';
+
 import EmptyList from 'components/EmptyListComponent';
 import { formatTime } from 'utils/datetimeUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell, faCarSide, faWarning, faTools, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from 'contexts/AuthContext';
 
 const notifications: Notification[] = notificationData;
 
 const NotificationScreen = () => {
   const [userNotifications, setUserNotifications] = useState<Notification[]>([]);
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
-      getNotifcationByUserID(user.UserId);
+      getNotifcationByUserID(user.userId);
     }
   }, [user]);
 

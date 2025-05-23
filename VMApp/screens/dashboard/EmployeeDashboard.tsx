@@ -1,6 +1,6 @@
 import { Text, SafeAreaView, Pressable, ScrollView, View } from 'react-native';
-import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from 'contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import {  useAuth } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell, faCalendarPlus, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -21,7 +21,7 @@ type employeeDashboardStat = {
 };
 
 const EmployeeDashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const navigation = useNavigation<any>();
 
   const [userRequest, setUserRequest] = useState<Request[]>([]);
@@ -32,7 +32,7 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     if (user) {
-      getRequestByUserID(user.UserId);
+      getRequestByUserID(user.userId);
     }
   }, [user]);
 

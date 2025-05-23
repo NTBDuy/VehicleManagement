@@ -7,14 +7,19 @@ import {
 } from '@react-navigation/drawer';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCar, faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from 'contexts/AuthContext';
 
 interface SidebarProps {
-  setIsLoggedIn: (value: boolean) => void;
+  
   [key: string]: any; 
 }
 
 const SidebarComponent: React.FC<SidebarProps> = (props) => {
-  const { setIsLoggedIn } = props;
+  const { user, logout, isAuthenticated } = useAuth();
+  
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
@@ -41,7 +46,7 @@ const SidebarComponent: React.FC<SidebarProps> = (props) => {
               {
                 text: 'Sign Out',
                 style: 'destructive',
-                onPress: () => setIsLoggedIn(false),
+                onPress: handleLogout
               },
             ]);
           }}

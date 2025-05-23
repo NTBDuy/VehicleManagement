@@ -13,6 +13,6 @@ export default interface User {
   Phone: string;
   Role: role;
   Status: boolean;
-  CreateAt: string;
-  LastUpdateAt: string;
+  CreateAt?: string;
+  LastUpdateAt?: string;
 }

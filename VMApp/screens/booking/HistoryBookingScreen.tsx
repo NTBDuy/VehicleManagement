@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import Header from 'components/HeaderComponent';
 import Request from 'types/Request';
 import requestData from 'data/request.json';
-import { AuthContext } from 'contexts/AuthContext';
+import { useAuth } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { formatDate } from 'utils/datetimeUtils';
@@ -16,7 +16,7 @@ const requests: Request[] = requestData;
 
 const HistoryBookingScreen = () => {
   const [userRequest, setUserRequest] = useState<Request[]>([]);
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRequest, setFilteredRequest] = useState<Request[]>([]);
@@ -32,7 +32,7 @@ const HistoryBookingScreen = () => {
 
   useEffect(() => {
     if (user) {
-      getRequestByUserID(user.UserId);
+      getRequestByUserID(user.userId);
     }
   }, [user]);
 

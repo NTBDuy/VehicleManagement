@@ -1,6 +1,5 @@
 import { Text, SafeAreaView, Pressable, ScrollView, View, Dimensions } from 'react-native';
 import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +14,7 @@ import vehicleData from 'data/vehicle.json';
 import User from 'types/User';
 import Vehicle from 'types/Vehicle';
 import WelcomeSection from 'components/WelcomeSectionComponent';
+import { useAuth } from 'contexts/AuthContext';
 
 const accounts: User[] = accountData;
 const vehicles: Vehicle[] = vehicleData;
@@ -34,7 +34,7 @@ type AccountStat = {
 };
 
 const AdminDashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const navigation = useNavigation<any>();
 
   const [vehicleStat, setVehicleStat] = useState<VehicleStat>({
