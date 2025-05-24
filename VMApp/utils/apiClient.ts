@@ -4,7 +4,7 @@ import Vehicle from 'types/Vehicle';
 import Request from 'types/Request';
 
 export class ApiClient {
-  private static readonly BASE_URL = 'http://192.168.2.150:5169/api';
+  private static readonly BASE_URL = 'http://192.168.1.247:5169/api';
 
   static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers = await AuthService.getAuthHeaders();

@@ -1,5 +1,5 @@
 import { useAuth } from 'contexts/AuthContext';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -12,12 +12,9 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
-import User from 'types/User';
-import accountData from 'data/user.json';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
-
-// const account: User[] = accountData;
+import { showToast } from 'utils/toast';
 
 type QuickLoginRole = {
   title: string;
@@ -41,7 +38,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please enter both username and password');
+      showToast.error('Missing info', 'Please fill in both fields to continue.');
       return;
     }
 
@@ -49,7 +46,7 @@ const LoginScreen = () => {
     try {
       await login({ username: username.trim(), password });
     } catch (error) {
-      Alert.alert('Login Failed', error instanceof Error ? error.message : 'An error occurred');
+      showToast.error('Login Failed', error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +93,10 @@ const LoginScreen = () => {
               disabled={isLoading}
               className={`rounded-lg py-3 ${isLoading ? 'bg-gray-500' : 'bg-blue-500'}`}
               onPress={handleLogin}>
-              <Text className="text-center font-bold text-white"> {isLoading ? 'Logging in...' : 'Login'}</Text>
+              <Text className="text-center font-bold text-white">
+                {' '}
+                {isLoading ? 'Logging in...' : 'Login'}
+              </Text>
             </TouchableOpacity>
 
             <View className="mt-6 rounded-2xl border px-4 py-2">

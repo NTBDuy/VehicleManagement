@@ -200,7 +200,7 @@ const RequestDetailScreen = () => {
             )}
 
             {requestData.status === 1 && (
-              <View>
+              <View className='mt-4'>
                 <Pressable
                   className="items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
                   onPress={handleCancel}>
@@ -214,7 +214,7 @@ const RequestDetailScreen = () => {
         {user?.role === 1 && (
           <>
             {(requestData.status == 0 || requestData.status == 1) && (
-              <View>
+              <View className="mt-4">
                 <Pressable
                   className={`items-center rounded-xl py-4 shadow-sm active:bg-gray-700 ${isLoading ? 'bg-gray-500' : 'bg-gray-600 active:bg-gray-700'}`}
                   onPress={handleCancelForEmployee}

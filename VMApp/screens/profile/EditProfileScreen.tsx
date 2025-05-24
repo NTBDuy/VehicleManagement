@@ -10,6 +10,10 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { ApiClient } from 'utils/apiClient';
+import { UserService } from 'services/userService';
+import CustomToast from 'components/CustomToast';
+import Toast from 'react-native-toast-message';
+import { showToast } from 'utils/toast';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation<any>();
@@ -59,45 +63,68 @@ const EditProfileScreen = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleUpdate = () => {
+  const handleUpdateProfile = async (data: Partial<User>) => {
+    if (!user) return;
     if (!validateForm()) {
-      Alert.alert('Validation Error', 'Please fix the errors above');
+      Toast.show({
+        type: 'error',
+        text1: 'Message',
+        text2: 'You need to fill in all the required fields.',
+        position: 'bottom'
+      });
       return;
     }
-
-    Alert.alert('Update Account', 'Are you sure you want to update information?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Update',
-        onPress: async () => {
-          setIsLoading(true);
-          try {
-            const data = {
-              fullName: userData?.fullName,
-              email: userData?.email,
-              phoneNumber: userData?.phoneNumber,
-            };
-
-            const res = await ApiClient.updateUserProfile(userData!.userId, data);
-            
-            const updatedUser = { ...res };
-
-            setUserData(updatedUser);
-            setUser(updatedUser);
-
-            Alert.alert('Success', 'Account updated successfully!', [
-              { text: 'OK', onPress: () => navigation.goBack() },
-            ]);
-          } catch (error) {
-            console.error('Update error:', error);
-            Alert.alert('Error', 'Failed to update account. Please try again.');
-          } finally {
-            setIsLoading(false);
-          }
-        },
-      },
-    ]);
+    try {
+      setIsLoading(true);
+      const updated = await UserService.updateProfile(user.userId, data);
+      showToast.success('Cập nhật thành công', 'Thông tin đã được lưu');
+      setUser(updated);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update profile');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // const handleUpdate = () => {
+  //   if (!validateForm()) {
+  //     Alert.alert('Validation Error', 'Please fix the errors above');
+  //     return;
+  //   }
+
+  //   Alert.alert('Update Account', 'Are you sure you want to update information?', [
+  //     { text: 'Cancel', style: 'cancel' },
+  //     {
+  //       text: 'Update',
+  //       onPress: async () => {
+  //         setIsLoading(true);
+  //         try {
+  //           const data = {
+  //             fullName: userData?.fullName,
+  //             email: userData?.email,
+  //             phoneNumber: userData?.phoneNumber,
+  //           };
+
+  //           const res = await UserService.updateProfile(userData!.userId, data);
+
+  //           const updatedUser = { ...res };
+
+  //           setUserData(updatedUser);
+  //           setUser(updatedUser);
+
+  //           Alert.alert('Success', 'Account updated successfully!', [
+  //             { text: 'OK', onPress: () => navigation.goBack() },
+  //           ]);
+  //         } catch (error) {
+  //           console.error('Update error:', error);
+  //           Alert.alert('Error', 'Failed to update account. Please try again.');
+  //         } finally {
+  //           setIsLoading(false);
+  //         }
+  //       },
+  //     },
+  //   ]);
+  // };
 
   const handleCancel = () => {
     if (hasChanges) {
@@ -182,7 +209,7 @@ const EditProfileScreen = () => {
               className={`w-[48%] items-center rounded-xl border-2 border-blue-300 py-4 ${
                 isLoading ? 'bg-gray-400' : 'bg-blue-600 active:bg-blue-700'
               }`}
-              onPress={handleUpdate}
+              onPress={() => handleUpdateProfile(userData)}
               disabled={isLoading || !hasChanges}>
               <Text className="font-semibold text-white">
                 {isLoading ? 'Updating...' : 'Update Account'}

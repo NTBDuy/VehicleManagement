@@ -36,7 +36,7 @@ interface StyleConfig {
   shadowColor: string;
 }
 
-export class CustomToast {
+ class CustomToast {
   static readonly TYPES: Record<string, CustomToastType> = {
     SUCCESS: 'success',
     ERROR: 'error',
@@ -50,9 +50,9 @@ export class CustomToast {
   } as const;
 
   static readonly baseConfig = {
-    position: 'top' as ToastPosition,
+    position: 'bottom' as ToastPosition,
     topOffset: 80,
-    bottomOffset: 40,
+    bottomOffset: 60,
     visibilityTime: 4000,
     autoHide: true,
   };
@@ -93,7 +93,7 @@ export class CustomToast {
       type = this.TYPES.INFO,
       title,
       message,
-      position = this.POSITIONS.TOP,
+      position = this.POSITIONS.BOTTOM,
       duration = 4000,
       emoji = null,
       customStyle = {}
@@ -118,6 +118,7 @@ export class CustomToast {
         fontWeight: '700',
         color: style.textColor,
         letterSpacing: 0.2,
+        lineHeight: 20,
         ...(customStyle.titleStyle || {})
       },
       text2Style: {
@@ -125,6 +126,8 @@ export class CustomToast {
         fontWeight: '500',
         color: style.secondaryTextColor,
         marginTop: 2,
+        lineHeight: 18,
+         flexWrap: 'wrap',
         ...(customStyle.messageStyle || {})
       },
       props: {
@@ -134,12 +137,14 @@ export class CustomToast {
           borderLeftWidth: 4,
           borderRadius: 12,
           paddingHorizontal: 16,
-          paddingVertical: 12,
+          paddingVertical: 14,
           shadowColor: style.shadowColor,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.15,
           shadowRadius: 8,
           elevation: 6,
+          minHeight: 70,
+          width: '90%',
           ...(customStyle.containerStyle || {})
         }
       }
@@ -150,7 +155,7 @@ export class CustomToast {
     const {
       title = 'Success!',
       message,
-      position = this.POSITIONS.TOP,
+      position = this.POSITIONS.BOTTOM,
       duration = 4500,
       emoji = '🎉'
     } = config;
@@ -169,7 +174,7 @@ export class CustomToast {
     const {
       title = 'Error',
       message,
-      position = this.POSITIONS.TOP,
+      position = this.POSITIONS.BOTTOM,
       duration = 4000,
       emoji = '⚠️'
     } = config;
@@ -188,7 +193,7 @@ export class CustomToast {
     const {
       title = 'Warning',
       message,
-      position = this.POSITIONS.TOP,
+      position = this.POSITIONS.BOTTOM,
       duration = 3500,
       emoji = '⚠️'
     } = config;
@@ -207,7 +212,7 @@ export class CustomToast {
     const {
       title = 'Info',
       message,
-      position = this.POSITIONS.TOP,
+      position = this.POSITIONS.BOTTOM,
       duration = 3500,
       emoji = 'ℹ️'
     } = config;
@@ -225,7 +230,7 @@ export class CustomToast {
   static showBookingSuccess(vehicleType: string = 'vehicle'): void {
     this.showSuccess({
       title: 'Booking Confirmed!',
-      message: `Your ${vehicleType} reservation has been successfully submitted.`,
+      message: `Your ${vehicleType} reservation \n has been successfully submitted.`,
       duration: 4500
     });
   }
@@ -241,7 +246,7 @@ export class CustomToast {
   static showPurposeRequired(): void {
     this.showWarning({
       title: 'Purpose Required',
-      message: 'Please specify the purpose of your trip to continue.',
+      message: 'Please specify the purpose \n of your trip to continue.',
       emoji: '📝'
     });
   }
@@ -249,7 +254,7 @@ export class CustomToast {
   static showNetworkError(): void {
     this.showError({
       title: 'Connection Error',
-      message: 'Please check your internet connection and try again.',
+      message: 'Please check your \n internet connection and try again.',
       emoji: '🌐'
     });
   }
@@ -280,7 +285,7 @@ export class CustomToast {
 
   static showFormError(errors: string[] = []): void {
     const errorMessage = errors.length > 1 
-      ? `Please fix ${errors.length} errors in the form.`
+      ? `Please fix ${errors.length} errors \n in the form.`
       : errors[0] || 'Please check your form inputs.';
     
     this.showError({

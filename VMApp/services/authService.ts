@@ -1,17 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginRequest } from 'types/LoginRequest';
 import { LoginResponse } from 'types/LoginResponse';
+import { API_CONFIG } from '../config/apiConfig';
 import User from 'types/User';
-
-const API_BASE_URL = 'http://192.168.2.150:5169/api';
+import { showToast } from 'utils/toast';
 
 export class AuthService {
+  protected static readonly BASE_URL = API_CONFIG.BASE_URL;
+
   private static readonly TOKEN_KEY = 'auth_token';
   private static readonly USER_KEY = 'user_data';
 
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${this.BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,6 +27,8 @@ export class AuthService {
       }
 
       const data: LoginResponse = await response.json();
+
+      showToast.success('Login succesfully', `Welcome ${data.user.fullName}!`);
 
       await AsyncStorage.setItem(this.TOKEN_KEY, data.token);
       await AsyncStorage.setItem(this.USER_KEY, JSON.stringify(data.user));
