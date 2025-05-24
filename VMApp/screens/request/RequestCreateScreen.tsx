@@ -7,14 +7,15 @@ import Vehicle from 'types/Vehicle';
 import RequestDatePicker from 'components/RequestDatePicker';
 import RequestVehiclePicker from 'components/RequestVehiclePicker';
 import RequestConfirm from 'components/RequestConfirm';
-import { ApiClient } from 'utils/apiClient';
 import { useAuth } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
-import CustomToast from 'components/CustomToast';
+import { VehicleService } from 'services/vehicleService';
+import { showToast } from 'utils/toast';
+import { RequestService } from 'services/requestService';
 
-const Booking = () => {
-  useAuth();
+const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
@@ -24,6 +25,7 @@ const Booking = () => {
   const [purpose, setPurpose] = useState('');
   const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
   const [isAssignDriver, setIsAssignDriver] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     clearContent();
@@ -37,7 +39,7 @@ const Booking = () => {
   ];
 
   const getAvailbleVehicle = async () => {
-    const data = await ApiClient.getVailableVehicles();
+    const data = await VehicleService.getAvailableVehicles();
     return setAvailbleVehicle(data);
   };
 
@@ -92,39 +94,48 @@ const Booking = () => {
 
   const validateData = (): boolean => {
     if (!selectedVehicle?.vehicleId) {
-      CustomToast.showValidationError('vehicle selection');
+      showToast.error('Action Required', 'Please select a vehicle to continue.');
       setActiveTab(1);
       return false;
     }
-
     if (!selectedPurpose) {
-      CustomToast.showWarning({
-        title: 'Purpose Required',
-        message: 'Please specify the purpose of your trip to continue.',
-        emoji: '📝',
-      });
+      showToast.error('Purpose Required', 'Please specify the purpose of your trip to continue.');
       return false;
     }
-
     if (selectedPurpose === 'Other' && purpose.trim() === '') {
-      CustomToast.showWarning({
-        title: 'Purpose Required',
-        message: 'Please specify the purpose of your trip to continue.',
-        emoji: '📝',
-      });
+      showToast.error('Purpose Required', 'Please specify the purpose of your trip to continue.');
       return false;
     }
-
     return true;
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!validateData()) {
       return;
     }
-    CustomToast.showBookingSuccess('vehicle');
-    clearContent();
-    navigation.getParent()?.navigate('HistoryStack');
+    try {
+      const data = {
+        userId: user?.userId,
+        vehicleId: selectedVehicle?.vehicleId,
+        startTime: startDate,
+        endTime: endDate,
+        purpose: purpose || selectedPurpose,
+        isDriverRequired: isAssignDriver,
+      };
+      setIsLoading(true);
+      const res = await RequestService.createRequest(data);
+      if (res) {
+        showToast.success('All Set!', 'We’ve received your reservation.');
+        clearContent();
+        navigation.getParent()?.navigate('HistoryStack');
+      } else {
+        showToast.error('Failed', 'Reservation could not be submitted.');
+      }
+    } catch (error) {
+      showToast.error('Request Failed', 'We couldn’t complete your reservation. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const clearContent = () => {
@@ -132,6 +143,9 @@ const Booking = () => {
     setSelectedVehicle(undefined);
     setPurpose('');
     setSelectedPurpose(null);
+    setStartDate(new Date().toISOString().split('T')[0]);
+    setEndDate(new Date().toISOString().split('T')[0]);
+    setIsMultiDayTrip(false);
   };
 
   return (
@@ -205,9 +219,10 @@ const Booking = () => {
             </Pressable>
 
             <Pressable
-              className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 active:bg-blue-500"
-              onPress={handleConfirm}>
-              <Text className="text-center text-lg font-bold text-white">Confirm</Text>
+              className={`mt-4 w-[48%] rounded-2xl py-4 ${isLoading ? 'bg-gray-400' : 'bg-blue-400 active:bg-blue-500'}`}
+              onPress={handleConfirm}
+              disabled={isLoading}>
+              <Text className="text-center text-lg font-bold text-white">{isLoading ? 'Confirming ...' : 'Confirm'}</Text>
             </Pressable>
           </View>
         )}
@@ -216,4 +231,4 @@ const Booking = () => {
   );
 };
 
-export default Booking;
+export default RequestCreateScreen;

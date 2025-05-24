@@ -5,9 +5,12 @@ import Request from 'types/Request';
 import { useAuth } from 'contexts/AuthContext';
 import EmptyList from 'components/EmptyListComponent';
 import RequestItem from 'components/HistoryRequestItem';
-import { ApiClient } from 'utils/apiClient';
+import { UserService } from 'services/userService';
 
-const HistoryBookingScreen = () => {
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+
+const RequestHistoryScreen = () => {
   const { user } = useAuth();
   const [userRequest, setUserRequest] = useState<Request[]>([]);
 
@@ -33,6 +36,14 @@ const HistoryBookingScreen = () => {
   useEffect(() => {
     filterRequest(searchQuery, 4);
   }, [userRequest, searchQuery]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        getRequestByUserID(user.userId);
+      }
+    }, [user])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -75,7 +86,7 @@ const HistoryBookingScreen = () => {
 
   const getRequestByUserID = async (userId: number) => {
     try {
-      const data = await ApiClient.getUserRequests(userId);
+      const data = await UserService.getUserRequests(userId);
       return setUserRequest(data);
     } catch (error) {
       console.error(error);
@@ -127,4 +138,4 @@ const HistoryBookingScreen = () => {
   );
 };
 
-export default HistoryBookingScreen;
+export default RequestHistoryScreen;

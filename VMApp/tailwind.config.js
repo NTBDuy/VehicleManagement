@@ -7,4 +7,9 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  safelist: [
+    {
+      pattern: /border-(orange|green|red|gray)-(400|600)/,
+    },
+  ],
 };

@@ -20,7 +20,7 @@ export const showToast = {
       text1: title,
       text2: message,
       visibilityTime: duration,
-      topOffset: 168
+      topOffset: 72
     });
   },
 
@@ -40,7 +40,7 @@ export const showToast = {
       text1: title,
       text2: message,
       visibilityTime: duration,
-      topOffset: 168
+      topOffset: 72
     });
   },
 
@@ -50,7 +50,7 @@ export const showToast = {
       text1: title,
       text2: message,
       visibilityTime: duration,
-      topOffset: 168
+      topOffset: 72
     });
   },
 
@@ -59,7 +59,7 @@ export const showToast = {
       type,
       text1: message,
       visibilityTime: duration,
-      topOffset: 168
+      topOffset: 72
     });
   },
 
@@ -70,7 +70,7 @@ export const showToast = {
       text2: options.message,
       visibilityTime: options.duration || 3000,
       position: options.position || 'top',
-      topOffset: 168
+      topOffset: 72
     });
   },
 

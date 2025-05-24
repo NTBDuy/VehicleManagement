@@ -13,10 +13,10 @@ import HomeScreen from 'screens/dashboard/EmployeeDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
 import SidebarComponent from 'components/SidebarComponent';
-import BookingScreen from 'screens/booking/BookingScreen';
-import HistoryBookingScreen from 'screens/booking/HistoryBookingScreen';
+import BookingScreen from 'screens/request/RequestCreateScreen';
+import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
-import RequestDetailScreen from 'screens/booking/RequestDetailScreen';
+import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();

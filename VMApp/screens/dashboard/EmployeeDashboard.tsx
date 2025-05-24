@@ -10,7 +10,7 @@ import WelcomeSection from 'components/WelcomeSectionComponent';
 
 import Request from 'types/Request';
 import RequestItem from 'components/HistoryRequestItem';
-import { ApiClient } from 'utils/apiClient';
+import { UserService } from 'services/userService';
 
 type employeeDashboardStat = {
   pending: Request[];
@@ -40,7 +40,7 @@ const EmployeeDashboard = () => {
   }, [userRequest]);
 
   const getRequestByUserID = async (userId: number) => {
-    const data = await ApiClient.getUserRequests(userId);
+    const data = await UserService.getUserRequests(userId);
     setUserRequest(data);
   };
 

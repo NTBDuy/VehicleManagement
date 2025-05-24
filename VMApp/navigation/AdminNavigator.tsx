@@ -13,7 +13,7 @@ import {
 import HomeScreen from 'screens/dashboard/AdminDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
-import RequestScreen from 'screens/booking/RequestScreen';
+import RequestScreen from 'screens/request/RequestScreen';
 import AccountScreen from 'screens/account/AccountScreen';
 import AccountDetailScreen from 'screens/account/AccountDetailScreen';
 import AccountEditScreen from 'screens/account/AccountEditScreen';

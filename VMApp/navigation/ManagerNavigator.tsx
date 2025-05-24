@@ -14,14 +14,14 @@ import {
 import HomeScreen from 'screens/dashboard/ManagerDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
-import RequestScreen from 'screens/booking/RequestScreen';
+import RequestScreen from 'screens/request/RequestScreen';
 import VehicleScreen from 'screens/vehicle/VehicleScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import SidebarComponent from 'components/SidebarComponent';
-import RequestDetailScreen from 'screens/booking/RequestDetailScreen';
-import BookingScreen from 'screens/booking/BookingScreen';
+import RequestDetailScreen from 'screens/request/RequestDetailScreen';
+import BookingScreen from 'screens/request/RequestCreateScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
 
 const Drawer = createDrawerNavigator();
