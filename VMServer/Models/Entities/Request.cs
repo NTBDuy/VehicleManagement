@@ -35,6 +35,8 @@ namespace VMServer.Models.Entities
         public bool IsDriverRequired { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        
+        public DateTime LastUpdateAt { get; set; } = DateTime.Now;
 
         public User? User { get; set; }
         public Vehicle? Vehicle { get; set; }

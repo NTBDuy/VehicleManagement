@@ -57,31 +57,6 @@ namespace VMServer.Controllers
             });
         }
 
-        // PUT: api/user
-        // Cập nhật thông tin người dùng
-        [Authorize]
-        [HttpPut("/api/user/{userId}")]
-        public async Task<IActionResult> UpdateUserInformation(int userId, [FromBody] UpdateUserInformationDTO dto)
-        {
-
-            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (claimUserId == null || int.Parse(claimUserId) != userId)
-                return Forbid("You are not allowed to update another user's information.");
-
-            var user = await _dbContext.Users.FindAsync(userId);
-            if (user == null)
-                return NotFound(new { message = "User not found!" });
-
-            user.FullName = dto.FullName;
-            user.Email = dto.Email;
-            user.PhoneNumber = dto.PhoneNumber;
-
-            await _dbContext.SaveChangesAsync();
-
-            return Ok(user);
-        }
-
         private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

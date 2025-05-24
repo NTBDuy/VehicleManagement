@@ -22,7 +22,7 @@ const RequestDetailScreen = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  /** Component: Badge Request Status */
+  /** Component: Badge Request status */
   const renderBadgeRequestStatus = ({ status }: { status: number }) => {
     const getStatusStyle = (status: number) => {
       switch (status) {
@@ -127,18 +127,18 @@ const RequestDetailScreen = () => {
               <View className="flex-row items-center">
                 <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                   <Text className="text-lg font-bold text-blue-600">
-                    {getUserInitials(requestData.User?.FullName)}
+                    {getUserInitials(requestData.user?.fullName)}
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-sm text-gray-500">Request ID #{requestData.RequestId}</Text>
+                  <Text className="text-sm text-gray-500">Request ID #{requestData.requestId}</Text>
                   <Text className="text-lg font-bold text-gray-800">
                     <Text className="text-base font-semibold text-gray-600">From: </Text>
-                    {requestData.User?.FullName}
+                    {requestData.user?.fullName}
                   </Text>
                 </View>
               </View>
-              {renderBadgeRequestStatus({ status: requestData.Status })}
+              {renderBadgeRequestStatus({ status: requestData.status })}
             </View>
           </View>
         </View>
@@ -151,39 +151,39 @@ const RequestDetailScreen = () => {
           </View>
 
           <View className="p-4">
-            <InfoRow label="Request by" value={requestData.User?.FullName || 'No information'} />
+            <InfoRow label="Request by" value={requestData.user?.fullName || 'No information'} />
             <InfoRow
               label="Time"
               value=""
               valueComponent={
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                  {formatDate(requestData.StartTime)} - {formatDate(requestData.EndTime)}
+                  {formatDate(requestData.startTime)} - {formatDate(requestData.endTime)}
                 </Text>
               }
             />
             <InfoRow
-              label="Vehicle"
+              label="vehicle"
               value=""
               valueComponent={
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                  {requestData.Vehicle?.Brand} {requestData.Vehicle?.Model} #
-                  {requestData.Vehicle?.LicensePlate}
+                  {requestData.vehicle?.brand} {requestData.vehicle?.model} #
+                  {requestData.vehicle?.licensePlate}
                 </Text>
               }
             />
-            <InfoRow label="Purpose" value={requestData.Purpose || 'No information'} />
+            <InfoRow label="Purpose" value={requestData.purpose || 'No information'} />
             <InfoRow
               label="Driver required"
               value={requestData.isDriverRequired ? 'Assign a driver' : 'Drive by self'}
             />
-            <InfoRow label="Request date" value={formatDate(requestData.CreatedAt)} isLast />
+            <InfoRow label="Request date" value={formatDate(requestData.createdAt)} isLast />
           </View>
         </View>
 
         {/** Action Buttons */}
         {user?.role === 0 && (
           <>
-            {requestData.Status === 0 && (
+            {requestData.status === 0 && (
               <View className="mt-4 flex-row justify-between">
                 <Pressable
                   className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm active:bg-green-700"
@@ -199,7 +199,7 @@ const RequestDetailScreen = () => {
               </View>
             )}
 
-            {requestData.Status === 1 && (
+            {requestData.status === 1 && (
               <View>
                 <Pressable
                   className="items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
@@ -213,7 +213,7 @@ const RequestDetailScreen = () => {
 
         {user?.role === 1 && (
           <>
-            {(requestData.Status == 0 || requestData.Status == 1) && (
+            {(requestData.status == 0 || requestData.status == 1) && (
               <View>
                 <Pressable
                   className={`items-center rounded-xl py-4 shadow-sm active:bg-gray-700 ${isLoading ? 'bg-gray-500' : 'bg-gray-600 active:bg-gray-700'}`}
@@ -228,7 +228,7 @@ const RequestDetailScreen = () => {
 
         <View className="mt-4">
           <Text className="text-right text-sm font-medium text-gray-500">
-            Last updated: {formatDatetime(requestData.CreatedAt)}
+            Last updated: {formatDatetime(requestData.lastUpdateAt)}
           </Text>
         </View>
       </View>

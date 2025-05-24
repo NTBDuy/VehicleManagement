@@ -1,26 +1,20 @@
-import { View, Text, SafeAreaView, Pressable, FlatList } from 'react-native';
-import { useContext, useEffect, useState } from 'react';
+import { View, Text, SafeAreaView, Pressable, FlatList, RefreshControl } from 'react-native';
+import { useEffect, useState } from 'react';
 import Header from 'components/HeaderComponent';
 import Request from 'types/Request';
-import requestData from 'data/request.json';
 import { useAuth } from 'contexts/AuthContext';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-import { formatDate } from 'utils/datetimeUtils';
 import EmptyList from 'components/EmptyListComponent';
-import { getVehicleTypeIcon } from 'utils/vehicleUntils';
-import { getColorByStatus } from 'utils/requestUtils';
 import RequestItem from 'components/HistoryRequestItem';
-
-const requests: Request[] = requestData;
+import { ApiClient } from 'utils/apiClient';
 
 const HistoryBookingScreen = () => {
-  const [userRequest, setUserRequest] = useState<Request[]>([]);
   const { user } = useAuth();
+  const [userRequest, setUserRequest] = useState<Request[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRequest, setFilteredRequest] = useState<Request[]>([]);
   const [activeFilter, setActiveFilter] = useState(4);
+  const [refreshing, setRefreshing] = useState(false);
 
   const filterOptions = [
     { id: 4, name: 'All' },
@@ -40,22 +34,27 @@ const HistoryBookingScreen = () => {
     filterRequest(searchQuery, 4);
   }, [userRequest, searchQuery]);
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    getRequestByUserID(user!.userId);
+  };
+
   const filterRequest = (query: string, status: number): void => {
     let filtered = userRequest;
 
     if (query) {
       filtered = filtered.filter(
         (request) =>
-          request.Vehicle?.LicensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          request.Vehicle?.Type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          request.Vehicle?.Brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          request.Vehicle?.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          request.Purpose.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+          request.vehicle?.licensePlate?.toLowerCase().includes(query.toLowerCase()) ||
+          request.vehicle?.type?.toLowerCase().includes(query.toLowerCase()) ||
+          request.vehicle?.brand?.toLowerCase().includes(query.toLowerCase()) ||
+          request.vehicle?.model?.toLowerCase().includes(query.toLowerCase()) ||
+          request.purpose.toLowerCase().includes(query.toLowerCase())
       );
     }
 
     if (status != 4) {
-      filtered = filtered.filter((request) => request.Status == status);
+      filtered = filtered.filter((request) => request.status == status);
     }
 
     setFilteredRequest(filtered);
@@ -74,9 +73,16 @@ const HistoryBookingScreen = () => {
     setSearchQuery('');
   };
 
-  const getRequestByUserID = (userId: number) => {
-    const data = requests.filter((request) => request.UserId === userId);
-    setUserRequest(data);
+  const getRequestByUserID = async (userId: number) => {
+    try {
+      const data = await ApiClient.getUserRequests(userId);
+      return setUserRequest(data);
+    } catch (error) {
+      console.error(error);
+      return setUserRequest([]);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const renderRequestItem = ({ item }: { item: Request }) => <RequestItem item={item} />;
@@ -114,6 +120,7 @@ const HistoryBookingScreen = () => {
           data={filteredRequest}
           renderItem={renderRequestItem}
           ListEmptyComponent={<EmptyList title="User never requested vehicle" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         />
       </View>
     </SafeAreaView>

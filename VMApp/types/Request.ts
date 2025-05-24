@@ -1,7 +1,7 @@
 import User from "./User";
 import Vehicle from "./Vehicle";
 
-export enum status {
+export enum Status {
     Pending = 0,
     Approved = 1,
     Rejected = 2,
@@ -15,9 +15,10 @@ export default interface Request {
     startTime: string;
     endTime: string;
     purpose: string;
-    status: status;
+    status: Status;
     isDriverRequired: boolean;
     createdAt: string;
-    User?: User;
-    Vehicle?: Vehicle
+    lastUpdateAt: string;
+    user?: User;
+    vehicle?: Vehicle
 }

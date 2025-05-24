@@ -1,6 +1,7 @@
 import { AuthService } from 'services/authService';
 import User from 'types/User';
 import Vehicle from 'types/Vehicle';
+import Request from 'types/Request';
 
 export class ApiClient {
   private static readonly BASE_URL = 'http://192.168.2.150:5169/api';
@@ -40,5 +41,9 @@ export class ApiClient {
 
   static async getVailableVehicles(): Promise<Vehicle[]> {
     return this.request<Vehicle[]>('/vehicle/available');
+  }
+
+  static async getUserRequests(userId: number): Promise<Request[]> {
+    return this.request<Request[]>(`/user/${userId}/requests`)
   }
 }

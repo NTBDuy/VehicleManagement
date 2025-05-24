@@ -1,6 +1,6 @@
 import { Text, SafeAreaView, Pressable, ScrollView, View } from 'react-native';
 import { useEffect, useState } from 'react';
-import {  useAuth } from 'contexts/AuthContext';
+import { useAuth } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell, faCalendarPlus, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -8,12 +8,9 @@ import { useNavigation } from '@react-navigation/native';
 import Header from 'components/HeaderComponent';
 import WelcomeSection from 'components/WelcomeSectionComponent';
 
-import requestData from 'data/request.json';
-
 import Request from 'types/Request';
 import RequestItem from 'components/HistoryRequestItem';
-
-const requests: Request[] = requestData;
+import { ApiClient } from 'utils/apiClient';
 
 type employeeDashboardStat = {
   pending: Request[];
@@ -42,8 +39,8 @@ const EmployeeDashboard = () => {
     }
   }, [userRequest]);
 
-  const getRequestByUserID = (userId: number) => {
-    const data = requests.filter((request) => request.userId === userId);
+  const getRequestByUserID = async (userId: number) => {
+    const data = await ApiClient.getUserRequests(userId);
     setUserRequest(data);
   };
 

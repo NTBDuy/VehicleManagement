@@ -21,12 +21,12 @@ const RequestItem = ({ item }: RequestItemProps) => {
   return (
     <Pressable
       onPress={() => handleViewDetail(item)}
-      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.Status)}`}>
+      className={`mb-4 mt-1 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.status)}`}>
       <View className="flex-row items-center">
         <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
           <Text className="text-xl font-semibold text-white">
             <FontAwesomeIcon
-              icon={getVehicleTypeIcon(item.Vehicle?.Type || 'Sedan')}
+              icon={getVehicleTypeIcon(item.vehicle?.type || 'Sedan')}
               size={24}
               color="#0d4d87"
             />
@@ -35,16 +35,16 @@ const RequestItem = ({ item }: RequestItemProps) => {
 
         <View className="ml-1 flex-1">
           <Text className="text-base font-semibold text-gray-800">
-            {item.Vehicle?.LicensePlate}
+            {item.vehicle?.licensePlate}
           </Text>
           <Text className="text-sm text-gray-500">
-            {item.Vehicle?.Brand} {item.Vehicle?.Model}
+            {item.vehicle?.brand} {item.vehicle?.model}
           </Text>
         </View>
 
         <View className="mr-4">
-          <Text className="text-xs text-gray-500">Start: {formatDate(item.StartTime)}</Text>
-          <Text className="text-xs text-gray-500">End: {formatDate(item.EndTime)}</Text>
+          <Text className="text-xs text-gray-500">Start: {formatDate(item.startTime)}</Text>
+          <Text className="text-xs text-gray-500">End: {formatDate(item.endTime)}</Text>
         </View>
 
         <View className="items-end">
