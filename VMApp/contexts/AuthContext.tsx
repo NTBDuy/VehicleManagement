@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthService } from '../services/authService';
-import { LoginDTO } from 'types/LoginDTO';
+import { LoginRequest } from 'types/LoginRequest';
 
 import User from 'types/User';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (credentials: LoginDTO) => Promise<void>;
+  login: (credentials: LoginRequest) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   setUser: (user: User | null) => void;
@@ -42,10 +42,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  useEffect(() => {
-    console.log('AuthContext user updated:', user);
-  }, [user]);
-
   const checkAuthStatus = async () => {
     try {
       const savedUser = await AuthService.getUser();
@@ -61,7 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (credentials: LoginDTO) => {
+  const login = async (credentials: LoginRequest) => {
     try {
       const response = await AuthService.login(credentials);
       setUser(response.user);

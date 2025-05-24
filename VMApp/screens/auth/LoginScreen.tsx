@@ -17,7 +17,7 @@ import accountData from 'data/user.json';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
 
-const account: User[] = accountData;
+// const account: User[] = accountData;
 
 type QuickLoginRole = {
   title: string;

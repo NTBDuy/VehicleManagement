@@ -78,7 +78,7 @@ const EditProfileScreen = () => {
               phoneNumber: userData?.phoneNumber,
             };
 
-            const res = await ApiClient.updateUserProfile(userData!.userID, data);
+            const res = await ApiClient.updateUserProfile(userData!.userId, data);
             
             const updatedUser = { ...res };
 

@@ -8,7 +8,7 @@ namespace VMServer.Models.Entities
     public class User
     {
         [Key]
-        public int UserID { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         public required string Username { get; set; }

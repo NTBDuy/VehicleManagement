@@ -4,14 +4,14 @@ export enum status {
   UnderMaintenance = 2
 }
 
-export default interface Vihicle {
-  VehicleId: number;
-  LicensePlate: string;
-  Type: string;
-  Brand: string;
-  Model: string;
-  Status: status;
-  LastMaintenance?: string;
-  CreateAt?: string;
-  LastUpdateAt?: string;
+export default interface Vehicle {
+  vehicleId: number;
+  licensePlate: string;
+  type: string;
+  brand: string;
+  model: string;
+  status: status;
+  lastMaintenance?: string;
+  createAt?: string;
+  lastUpdateAt?: string;
 }

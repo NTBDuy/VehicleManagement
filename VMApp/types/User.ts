@@ -5,7 +5,7 @@ export enum role {
 }
 
 export default interface User {
-  userID: number;
+  userId: number;
   username: string;
   passwordHash: string;
   fullName: string;

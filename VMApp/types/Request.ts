@@ -9,15 +9,15 @@ export enum status {
 }
 
 export default interface Request {
-    RequestId: number;
-    UserId: number;
-    VehicleId: number;
-    StartTime: string;
-    EndTime: string;
-    Purpose: string;
-    Status: status;
+    requestId: number;
+    userId: number;
+    vehicleId: number;
+    startTime: string;
+    endTime: string;
+    purpose: string;
+    status: status;
     isDriverRequired: boolean;
-    CreatedAt: string;
+    createdAt: string;
     User?: User;
     Vehicle?: Vehicle
 }

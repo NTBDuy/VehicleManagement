@@ -1,6 +1,6 @@
 export default interface Assignment {
-    AssignmentId: number;
-    RequestId: number;
-    DriverId: number;
-    Note: string;
+    assignmentId: number;
+    requestId: number;
+    driverId: number;
+    note: string;
 }

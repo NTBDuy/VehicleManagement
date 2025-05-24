@@ -43,13 +43,13 @@ const EmployeeDashboard = () => {
   }, [userRequest]);
 
   const getRequestByUserID = (userId: number) => {
-    const data = requests.filter((request) => request.UserId === userId);
+    const data = requests.filter((request) => request.userId === userId);
     setUserRequest(data);
   };
 
   const statistics = () => {
-    const pending = userRequest.filter((request) => request.Status === 0);
-    const incoming = userRequest.filter((request) => request.Status === 1);
+    const pending = userRequest.filter((request) => request.status === 0);
+    const incoming = userRequest.filter((request) => request.status === 1);
     setStat({ pending, incoming });
   };
 
@@ -105,7 +105,7 @@ const EmployeeDashboard = () => {
             <View className="-mb-4 p-4">
               <View>
                 {stat.pending.slice(0, 3).map((item) => (
-                  <RequestItem item={item} key={item.RequestId} />
+                  <RequestItem item={item} key={item.requestId} />
                 ))}
               </View>
             </View>
@@ -121,7 +121,7 @@ const EmployeeDashboard = () => {
             <View className="-mb-4 p-4">
               <View>
                 {stat.incoming.slice(0, 3).map((item) => (
-                  <RequestItem item={item} key={item.RequestId} />
+                  <RequestItem item={item} key={item.requestId} />
                 ))}
               </View>
             </View>

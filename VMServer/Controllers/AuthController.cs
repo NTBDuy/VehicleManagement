@@ -47,7 +47,7 @@ namespace VMServer.Controllers
                 token = token,
                 user = new
                 {
-                    userID = user.UserID,
+                    userId = user.UserId,
                     username = user.Username,
                     fullName = user.FullName,
                     phoneNumber = user.PhoneNumber,
@@ -55,13 +55,6 @@ namespace VMServer.Controllers
                     role = user.Role
                 }
             });
-        }
-
-        [HttpGet("user")]
-        public async Task<IActionResult> GetAllUsers()
-        {
-            var users = await _dbContext.Users.ToListAsync();
-            return Ok(users);
         }
 
         // PUT: api/user
@@ -103,7 +96,7 @@ namespace VMServer.Controllers
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-            new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email ?? ""),
             new Claim(ClaimTypes.Role, user.Role.ToString())

@@ -4,21 +4,20 @@ import Header from 'components/HeaderComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCalendarDays, faCarSide, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import Vehicle from 'types/Vehicle';
-import vehicleData from '../../data/vehicle.json';
 import RequestDatePicker from 'components/RequestDatePicker';
 import RequestVehiclePicker from 'components/RequestVehiclePicker';
 import RequestConfirm from 'components/RequestConfirm';
-
-const vehicles: Vehicle[] = vehicleData;
+import { ApiClient } from 'utils/apiClient';
+import { useAuth } from 'contexts/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import CustomToast from 'components/CustomToast';
 
 const Booking = () => {
+  useAuth();
+  const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState(0);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
-  });
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [isMultiDayTrip, setIsMultiDayTrip] = useState(false);
   const [avaibleVehicle, setAvailbleVehicle] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>();
@@ -27,10 +26,9 @@ const Booking = () => {
   const [isAssignDriver, setIsAssignDriver] = useState(false);
 
   useEffect(() => {
-    if (vehicles) {
-      getAvailbleVehicle();
-    }
-  }, [vehicles]);
+    clearContent();
+    getAvailbleVehicle();
+  }, []);
 
   const tabs = [
     { id: 0, title: 'Choose Date', icon: faCalendarDays },
@@ -38,8 +36,8 @@ const Booking = () => {
     { id: 2, title: 'Purpose & Confirm', icon: faCalendarCheck },
   ];
 
-  const getAvailbleVehicle = () => {
-    const data = vehicles.filter((item) => item.Status === 0);
+  const getAvailbleVehicle = async () => {
+    const data = await ApiClient.getVailableVehicles();
     return setAvailbleVehicle(data);
   };
 
@@ -81,13 +79,60 @@ const Booking = () => {
       endDate={endDate}
       selectedVehicle={selectedVehicle}
       selectedPurpose={selectedPurpose}
-      setSelectedPurpose={setSelectedPurpose}
+      setSelectedPurpose={(value) => {
+        setSelectedPurpose(value);
+        if (value !== 'Other') setPurpose('');
+      }}
       purpose={purpose}
       setPurpose={setPurpose}
       isAssignDriver={isAssignDriver}
       setIsAssignDriver={setIsAssignDriver}
     />
   );
+
+  const validateData = (): boolean => {
+    if (!selectedVehicle?.vehicleId) {
+      CustomToast.showValidationError('vehicle selection');
+      setActiveTab(1);
+      return false;
+    }
+
+    if (!selectedPurpose) {
+      CustomToast.showWarning({
+        title: 'Purpose Required',
+        message: 'Please specify the purpose of your trip to continue.',
+        emoji: '📝',
+      });
+      return false;
+    }
+
+    if (selectedPurpose === 'Other' && purpose.trim() === '') {
+      CustomToast.showWarning({
+        title: 'Purpose Required',
+        message: 'Please specify the purpose of your trip to continue.',
+        emoji: '📝',
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleConfirm = () => {
+    if (!validateData()) {
+      return;
+    }
+    CustomToast.showBookingSuccess('vehicle');
+    clearContent();
+    navigation.getParent()?.navigate('HistoryStack');
+  };
+
+  const clearContent = () => {
+    setActiveTab(0);
+    setSelectedVehicle(undefined);
+    setPurpose('');
+    setSelectedPurpose(null);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -161,7 +206,7 @@ const Booking = () => {
 
             <Pressable
               className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 active:bg-blue-500"
-              onPress={() => {}}>
+              onPress={handleConfirm}>
               <Text className="text-center text-lg font-bold text-white">Confirm</Text>
             </Pressable>
           </View>

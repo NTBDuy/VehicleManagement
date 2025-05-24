@@ -20,13 +20,13 @@ const RequestVehiclePicker = ({
       className={`mb-4 flex-row items-center rounded-2xl ${selectedVehicle == item ? 'bg-blue-100' : 'bg-gray-100'}  px-2 py-4`}>
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">
-          <FontAwesomeIcon icon={getVehicleTypeIcon(item.Type)} size={24} color="#0d4d87" />
+          <FontAwesomeIcon icon={getVehicleTypeIcon(item.type)} size={24} color="#0d4d87" />
         </Text>
       </View>
       <View className="flex-1">
-        <Text className="font-bold">{item.LicensePlate}</Text>
+        <Text className="font-bold">{item.licensePlate}</Text>
         <Text className="text-sm">
-          {item.Brand} {item.Model}
+          {item.brand} {item.model}
         </Text>
       </View>
     </Pressable>

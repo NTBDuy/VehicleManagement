@@ -31,9 +31,9 @@ const RequestConfirm = ({
 }: ConfirmComponentProps) => {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
-    { label: 'Business trip', value: 'BusinessTrip' },
-    { label: 'External meeting', value: 'ExternalMeeting' },
-    { label: 'Pick up/drop off guests', value: 'Guests' },
+    { label: 'Business trip', value: 'Business Trip' },
+    { label: 'External meeting', value: 'External Meeting' },
+    { label: 'Pick up/drop off guests', value: 'Pick up/drop off guests' },
     { label: 'Other', value: 'Other' },
   ]);
   const toggleSwitchDriver = () => setIsAssignDriver((previousState) => !previousState);
@@ -60,7 +60,7 @@ const RequestConfirm = ({
             value=""
             valueComponent={
               <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                {selectedVehicle?.Brand} {selectedVehicle?.Model} #{selectedVehicle?.LicensePlate}
+                {selectedVehicle?.brand} {selectedVehicle?.model} #{selectedVehicle?.licensePlate}
               </Text>
             }
             isLast
