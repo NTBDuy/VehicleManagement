@@ -108,7 +108,7 @@ const RequestHistoryScreen = () => {
         placeholder="Search plate, brand, type ..."
         handleClearFilters={handleClearFilters}
       />
-      <View className="mx-6">
+      <View className="flex-1 mx-6">
         <View className="my-4">
           <FlatList
             horizontal
@@ -130,7 +130,7 @@ const RequestHistoryScreen = () => {
         <FlatList
           data={filteredRequest}
           renderItem={renderRequestItem}
-          ListEmptyComponent={<EmptyList title="User never requested vehicle" />}
+          ListEmptyComponent={<EmptyList title="User has not requested any vehicles" />}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         />
       </View>

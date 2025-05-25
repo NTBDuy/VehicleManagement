@@ -10,12 +10,15 @@ import ApproveModal from 'components/modal/ApproveModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import { useAuth } from 'contexts/AuthContext';
+import { RequestService } from 'services/requestService';
 
 const RequestDetailScreen = () => {
   const { user } = useAuth();
   const navigation = useNavigation<any>();
   const route = useRoute();
-  const { requestData } = route.params as { requestData: Request };
+  const { requestData: initialRequestData } = route.params as { requestData: Request };
+
+  const [requestData, setRequestData] = useState<Request>(initialRequestData);
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
@@ -102,8 +105,17 @@ const RequestDetailScreen = () => {
     setIsCancelModalVisible(false);
   };
 
-  const handleApproveConfirm = (driverId: string | null, note: string) => {
-    console.log('Approving request with driver:', driverId, 'and note:', note);
+  const handleApproveConfirm = async (driverId: string | null, note: string) => {
+    const assignmentData = { driverId, note };
+
+    const updatedRequest = requestData.isDriverRequired
+      ? await RequestService.approveRequest(requestData.requestId, assignmentData)
+      : await RequestService.approveRequest(requestData.requestId);
+
+    console.log(updatedRequest);
+
+    setRequestData(updatedRequest);
+
     handleCloseModal();
   };
 
@@ -121,11 +133,11 @@ const RequestDetailScreen = () => {
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header title="Request detail" backBtn />
       <View className="px-6">
-        <View className="mb-6 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-blue-50 p-4">
+        <View className="mt-4 mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="p-4 bg-blue-50">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
-                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                <View className="items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-full">
                   <Text className="text-lg font-bold text-blue-600">
                     {getUserInitials(requestData.user?.fullName)}
                   </Text>
@@ -145,8 +157,8 @@ const RequestDetailScreen = () => {
       </View>
 
       <View className="px-6">
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Request Information</Text>
           </View>
 
@@ -181,10 +193,10 @@ const RequestDetailScreen = () => {
         </View>
 
         {/** Action Buttons */}
-        {user?.role === 0 && (
+        {(user?.role === 0 || user?.role === 2) && (
           <>
             {requestData.status === 0 && (
-              <View className="mt-4 flex-row justify-between">
+              <View className="flex-row justify-between mt-4">
                 <Pressable
                   className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm active:bg-green-700"
                   onPress={handleApprove}>
@@ -200,9 +212,9 @@ const RequestDetailScreen = () => {
             )}
 
             {requestData.status === 1 && (
-              <View className='mt-4'>
+              <View className="mt-4">
                 <Pressable
-                  className="items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
+                  className="items-center py-4 bg-red-600 shadow-sm rounded-xl active:bg-red-700"
                   onPress={handleCancel}>
                   <Text className="font-semibold text-white">Cancel</Text>
                 </Pressable>
@@ -219,7 +231,9 @@ const RequestDetailScreen = () => {
                   className={`items-center rounded-xl py-4 shadow-sm active:bg-gray-700 ${isLoading ? 'bg-gray-500' : 'bg-gray-600 active:bg-gray-700'}`}
                   onPress={handleCancelForEmployee}
                   disabled={isLoading}>
-                  <Text className="font-semibold text-white">{isLoading ? 'Canceling...' : 'Cancel'}</Text>
+                  <Text className="font-semibold text-white">
+                    {isLoading ? 'Canceling...' : 'Cancel'}
+                  </Text>
                 </Pressable>
               </View>
             )}
@@ -227,7 +241,7 @@ const RequestDetailScreen = () => {
         )}
 
         <View className="mt-4">
-          <Text className="text-right text-sm font-medium text-gray-500">
+          <Text className="text-sm font-medium text-right text-gray-500">
             Last updated: {formatDatetime(requestData.lastUpdateAt)}
           </Text>
         </View>

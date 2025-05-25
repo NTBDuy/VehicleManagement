@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VMServer.Migrations
 {
     /// <inheritdoc />
-    public partial class FixCascadeConflict : Migration
+    public partial class initDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,12 +15,12 @@ namespace VMServer.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserID = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
@@ -29,7 +29,7 @@ namespace VMServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.UserID);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,20 +56,21 @@ namespace VMServer.Migrations
                 name: "Drivers",
                 columns: table => new
                 {
-                    DriverId = table.Column<int>(type: "int", nullable: false),
+                    DriverId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     LicenseNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LicenseIssuedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    YearsOfExperience = table.Column<int>(type: "int", nullable: false)
+                    YearsOfExperience = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Drivers", x => x.DriverId);
                     table.ForeignKey(
-                        name: "FK_Drivers_Users_DriverId",
-                        column: x => x.DriverId,
+                        name: "FK_Drivers_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -91,7 +92,7 @@ namespace VMServer.Migrations
                         name: "FK_Notifications_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserID",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -113,7 +114,7 @@ namespace VMServer.Migrations
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
                         principalColumn: "VehicleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -129,7 +130,8 @@ namespace VMServer.Migrations
                     Purpose = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     IsDriverRequired = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastUpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -138,14 +140,14 @@ namespace VMServer.Migrations
                         name: "FK_Requests_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Requests_Vehicles_VehicleId",
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
                         principalColumn: "VehicleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -162,17 +164,17 @@ namespace VMServer.Migrations
                 {
                     table.PrimaryKey("PK_Assignments", x => x.AssignmentId);
                     table.ForeignKey(
+                        name: "FK_Assignments_Drivers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Drivers",
+                        principalColumn: "DriverId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Assignments_Requests_RequestId",
                         column: x => x.RequestId,
                         principalTable: "Requests",
                         principalColumn: "RequestId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Assignments_Users_DriverId",
-                        column: x => x.DriverId,
-                        principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -184,6 +186,17 @@ namespace VMServer.Migrations
                 name: "IX_Assignments_RequestId",
                 table: "Assignments",
                 column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Drivers_LicenseNumber",
+                table: "Drivers",
+                column: "LicenseNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Drivers_UserId",
+                table: "Drivers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaintenanceSchedules_VehicleId",
@@ -204,6 +217,24 @@ namespace VMServer.Migrations
                 name: "IX_Requests_VehicleId",
                 table: "Requests",
                 column: "VehicleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Username",
+                table: "Users",
+                column: "Username",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_LicensePlate",
+                table: "Vehicles",
+                column: "LicensePlate",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -213,13 +244,13 @@ namespace VMServer.Migrations
                 name: "Assignments");
 
             migrationBuilder.DropTable(
-                name: "Drivers");
-
-            migrationBuilder.DropTable(
                 name: "MaintenanceSchedules");
 
             migrationBuilder.DropTable(
                 name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "Drivers");
 
             migrationBuilder.DropTable(
                 name: "Requests");

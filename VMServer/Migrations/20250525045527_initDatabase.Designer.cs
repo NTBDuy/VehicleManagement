@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250524050237_updateTableRequest")]
-    partial class updateTableRequest
+    [Migration("20250525045527_initDatabase")]
+    partial class initDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,7 +55,10 @@ namespace VMServer.Migrations
             modelBuilder.Entity("VMServer.Models.Entities.Driver", b =>
                 {
                     b.Property<int>("DriverId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DriverId"));
 
                     b.Property<DateTime>("LicenseIssuedDate")
                         .HasColumnType("datetime2");
@@ -65,10 +68,18 @@ namespace VMServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("YearsOfExperience")
                         .HasColumnType("int");
 
                     b.HasKey("DriverId");
+
+                    b.HasIndex("LicenseNumber")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Drivers");
                 });
@@ -192,7 +203,7 @@ namespace VMServer.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -218,9 +229,15 @@ namespace VMServer.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -267,12 +284,15 @@ namespace VMServer.Migrations
 
                     b.HasKey("VehicleId");
 
+                    b.HasIndex("LicensePlate")
+                        .IsUnique();
+
                     b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("VMServer.Models.Entities.Assignment", b =>
                 {
-                    b.HasOne("VMServer.Models.Entities.User", "Driver")
+                    b.HasOne("VMServer.Models.Entities.Driver", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -293,9 +313,7 @@ namespace VMServer.Migrations
                 {
                     b.HasOne("VMServer.Models.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -305,7 +323,7 @@ namespace VMServer.Migrations
                     b.HasOne("VMServer.Models.Entities.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Vehicle");
@@ -327,13 +345,13 @@ namespace VMServer.Migrations
                     b.HasOne("VMServer.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VMServer.Models.Entities.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");

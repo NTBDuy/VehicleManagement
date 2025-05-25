@@ -6,9 +6,9 @@ import {
   faHome,
   faCalendarCheck,
   faGear,
-  faChartArea,
+  faClockRotateLeft,
   faCarSide,
-  faCalendarPlus
+  faCalendarPlus,
 } from '@fortawesome/free-solid-svg-icons';
 
 import HomeScreen from 'screens/dashboard/ManagerDashboard';
@@ -23,12 +23,14 @@ import SidebarComponent from 'components/SidebarComponent';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 import BookingScreen from 'screens/request/RequestCreateScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
+import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
 const RequestStack = createNativeStackNavigator();
 const BookingStack = createNativeStackNavigator();
+const HistoryStack = createNativeStackNavigator();
 const SettingStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
@@ -68,22 +70,29 @@ function BookingStackScreen() {
   );
 }
 
+function HistoryStackScreen() {
+  return (
+    <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
+      <HistoryStack.Screen name="HistoryScreen" component={HistoryBookingScreen} />
+      <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
+    </HistoryStack.Navigator>
+  );
+}
+
 function SettingStackScreen() {
   return (
     <SettingStack.Navigator screenOptions={{ headerShown: false }}>
       <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
-      <SettingStack.Screen name='EditProfile' component={EditProfileScreen} />
+      <SettingStack.Screen name="EditProfile" component={EditProfileScreen} />
     </SettingStack.Navigator>
-  )
+  );
 }
 
-export default function ManagerNavigator({
-}: {
-}) {
+export default function ManagerNavigator({}: {}) {
   return (
     <Drawer.Navigator
       initialRouteName="HomeStack"
-      drawerContent={(props) => <SidebarComponent {...props}/>}>
+      drawerContent={(props) => <SidebarComponent {...props} />}>
       <Drawer.Screen
         name="HomeStack"
         component={HomeStackScreen}
@@ -109,13 +118,13 @@ export default function ManagerNavigator({
       />
 
       <Drawer.Screen
-        name="VehicleStack"
-        component={VehicleStackScreen}
+        name="HistoryStack"
+        component={HistoryStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
-            <FontAwesomeIcon icon={faCarSide} color={color} size={size} />
+            <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'Vehicle Management',
+          title: 'History',
           headerShown: false,
         }}
       />
@@ -128,6 +137,18 @@ export default function ManagerNavigator({
             <FontAwesomeIcon icon={faCalendarCheck} color={color} size={size} />
           ),
           title: 'Request Management',
+          headerShown: false,
+        }}
+      />
+
+      <Drawer.Screen
+        name="VehicleStack"
+        component={VehicleStackScreen}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faCarSide} color={color} size={size} />
+          ),
+          title: 'Vehicle Management',
           headerShown: false,
         }}
       />

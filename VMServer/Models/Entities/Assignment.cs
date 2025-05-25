@@ -16,11 +16,11 @@ namespace VMServer.Models.Entities
         [ForeignKey("Driver")]
         public int DriverId { get; set; }
 
-        [Required]
         [MaxLength(500)]
-        public string Note { get; set; } = null!;
+        public string? Note { get; set; } = null!;
 
         public Request? Request { get; set; }
-        public User? Driver { get; set; }
+        
+        public Driver? Driver { get; set; }
     }
 }

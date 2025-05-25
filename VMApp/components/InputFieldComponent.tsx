@@ -20,6 +20,8 @@ const InputField = ({
   keyboardType?: 'default' | 'email-address' | 'phone-pad';
   editable?: boolean;
   error?: string;
+  multiline?: boolean;
+  numberOfLines?: number;
 }) => (
   <View className="mb-4">
     <Text className="mb-1 text-sm text-gray-600">

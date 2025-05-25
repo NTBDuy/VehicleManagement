@@ -1,5 +1,14 @@
-import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-native';
-import { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  FlatList,
+  Pressable,
+  Modal,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
 import Header from 'components/HeaderComponent';
 import Request from 'types/Request';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -10,17 +19,16 @@ import {
   faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
 
-import requestData from 'data/request.json';
 import EmptyList from 'components/EmptyListComponent';
 import { getUserInitials } from 'utils/userUtils';
 import { formatDate } from 'utils/datetimeUtils';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import { getColorByStatus } from 'utils/requestUtils';
-
-const requests: Request[] = requestData;
+import { RequestService } from 'services/requestService';
+import { showToast } from 'utils/toast';
 
 type RequestStat = {
   total: number;
@@ -39,29 +47,59 @@ const RequestScreen = () => {
     rejected: 0,
     cancelled: 0,
   });
-  
+
+  const [requests, setRequests] = useState<Request[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isFiltered, setIsFiltered] = useState(false);
+  const [currentStatusFilter, setCurrentStatusFilter] = useState('');
   const [selected, setSelected] = useState<Request>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (requests) calculateRequestStatistics(requests);
-    filterRequests('', '');
+    getRequestsData();
+  }, []);
+
+  useEffect(() => {
+    if (requests.length > 0) {
+      calculateRequestStatistics(requests);
+      filterRequests(searchQuery, currentStatusFilter);
+    }
   }, [requests]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getRequestsData();
+    }, [])
+  );
+
+  const getRequestsData = async () => {
+    try {
+      setIsLoading(true);
+      const data = await RequestService.getAllRequests();
+      return setRequests(data);
+    } catch (error) {
+      console.error(error);
+      return setRequests([]);
+    } finally {
+      setRefreshing(false);
+      setIsLoading(false);
+    }
+  };
 
   /** Func: Statistics  */
   const calculateRequestStatistics = (item: Request[]) => {
     const total = item.length;
-    const pending = item.filter((request) => request.Status === 0).length;
-    const approved = item.filter((request) => request.Status === 1).length;
-    const rejected = item.filter((request) => request.Status === 2).length;
-    const cancelled = item.filter((request) => request.Status === 3).length;
+    const pending = item.filter((request) => request.status === 0).length;
+    const approved = item.filter((request) => request.status === 1).length;
+    const rejected = item.filter((request) => request.status === 2).length;
+    const cancelled = item.filter((request) => request.status === 3).length;
     setRequestStat({ total, pending, approved, rejected, cancelled });
   };
 
@@ -71,25 +109,25 @@ const RequestScreen = () => {
     if (query) {
       filtered = filtered.filter(
         (item) =>
-          item.User?.FullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.User?.Email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.User?.Phone.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.User?.Username.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.Vehicle?.LicensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.Vehicle?.Type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.Vehicle?.Brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.Vehicle?.Model.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+          item.user?.fullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.user?.email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.user?.phoneNumber.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.user?.username.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.vehicle?.licensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.vehicle?.type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.vehicle?.brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          item.vehicle?.model.toLocaleLowerCase().includes(query.toLocaleLowerCase())
       );
     }
 
     if (status == 'Pending') {
-      filtered = filtered.filter((item) => item.Status === 0);
+      filtered = filtered.filter((item) => item.status === 0);
     } else if (status == 'Approved') {
-      filtered = filtered.filter((item) => item.Status === 1);
+      filtered = filtered.filter((item) => item.status === 1);
     } else if (status == 'Rejected') {
-      filtered = filtered.filter((item) => item.Status === 2);
+      filtered = filtered.filter((item) => item.status === 2);
     } else if (status == 'Cancelled') {
-      filtered = filtered.filter((item) => item.Status === 3);
+      filtered = filtered.filter((item) => item.status === 3);
     }
 
     setFilteredRequests(filtered);
@@ -117,23 +155,22 @@ const RequestScreen = () => {
   const renderRequestItem = ({ item }: { item: Request }) => (
     <Pressable
       onPress={() => handleRequestOption(item)}
-      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.Status)}`}
-      >
+      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.status)}`}>
       <View className="flex-row items-center">
-        <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
+        <View className="items-center justify-center w-12 h-12 bg-blue-500 rounded-full">
           <Text className="text-lg font-bold text-white">
-            {getUserInitials(item.User?.FullName)}
+            {getUserInitials(item.user?.fullName)}
           </Text>
         </View>
 
-        <View className="ml-4 flex-1">
-          <Text className="text-base font-semibold text-gray-800">{item.User?.FullName}</Text>
-          <Text className="text-sm text-gray-500">{item.Vehicle?.LicensePlate}</Text>
+        <View className="flex-1 ml-4">
+          <Text className="text-base font-semibold text-gray-800">{item.user?.fullName}</Text>
+          <Text className="text-sm text-gray-500">{item.vehicle?.licensePlate}</Text>
         </View>
 
         <View className="mr-4">
-          <Text className="text-xs text-gray-500">Start: {formatDate(item.StartTime)}</Text>
-          <Text className="text-xs text-gray-500">End: {formatDate(item.EndTime)}</Text>
+          <Text className="text-xs text-gray-500">Start: {formatDate(item.startTime)}</Text>
+          <Text className="text-xs text-gray-500">End: {formatDate(item.endTime)}</Text>
         </View>
 
         <View className="items-end">
@@ -146,13 +183,14 @@ const RequestScreen = () => {
   );
 
   const handleStatusFilter = (status: string) => {
-    filterRequests('', status);
+    setCurrentStatusFilter(status);
+    filterRequests(searchQuery, status);
     setIsFiltered(true);
   };
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    filterRequests(text, '');
+    filterRequests(text, currentStatusFilter);
   };
 
   const handleRequestOption = (data: Request): void => {
@@ -194,9 +232,21 @@ const RequestScreen = () => {
     setIsCancelModalVisible(false);
   };
 
-  const handleApproveConfirm = (driverId: string | null, note: string) => {
-    console.log('Approving request with driver:', driverId, 'and note:', note);
-    handleCloseModal();
+  const onRefresh = () => {
+    setRefreshing(true);
+    getRequestsData();
+  };
+
+  const handleApproveConfirm = async (driverId: string | null, note: string) => {
+    const assignmentData = { driverId, note };
+
+    if (selected!.isDriverRequired) {
+      await RequestService.approveRequest(selected!.requestId, assignmentData);
+    } else {
+      await RequestService.approveRequest(selected!.requestId);
+    }
+
+    await getRequestsData();
   };
 
   const handleRejectConfirm = (reason: string) => {
@@ -220,8 +270,8 @@ const RequestScreen = () => {
         handleClearFilters={handleClearFilters}
       />
 
-      <View className="mx-6 mb-10 flex-1">
-        <View className="mb-4 mt-4 rounded-2xl bg-gray-100 p-4 shadow-sm">
+      <View className="flex-1 mx-6 mb-10">
+        <View className="p-4 mt-4 mb-4 bg-gray-100 shadow-sm rounded-2xl">
           <Pressable
             className="flex-row justify-between"
             onPress={() => setIsExpanded(!isExpanded)}>
@@ -235,7 +285,7 @@ const RequestScreen = () => {
           </Pressable>
 
           {isExpanded && (
-            <View className="mt-4 flex-row flex-wrap justify-between gap-y-4">
+            <View className="flex-row flex-wrap justify-between mt-4 gap-y-4">
               <StatusCard label="Pending" count={requestStat.pending} bgColor="bg-orange-400" />
               <StatusCard label="Approved" count={requestStat.approved} bgColor="bg-green-400" />
               <StatusCard label="Rejected" count={requestStat.rejected} bgColor="bg-red-400" />
@@ -250,17 +300,25 @@ const RequestScreen = () => {
           </Pressable>
         )}
 
-        <FlatList
-          data={filteredRequests}
-          renderItem={renderRequestItem}
-          keyExtractor={(item) => item.RequestId.toString()}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={<EmptyList title="No request found!" />}
-        />
+        {isLoading ? (
+          <View className="items-center justify-center flex-1">
+            <ActivityIndicator size="large" color="#3B82F6" />
+            <Text className="mt-2 text-gray-500">Loading requests...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredRequests}
+            renderItem={renderRequestItem}
+            keyExtractor={(item) => item.requestId.toString()}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={<EmptyList title="No request found!" />}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+        )}
       </View>
       {requests.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
-          <Text className="text-center text-sm font-medium text-gray-500">
+        <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
+          <Text className="text-sm font-medium text-center text-gray-500">
             Total Request:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredRequests.length}</Text>
           </Text>
@@ -272,23 +330,23 @@ const RequestScreen = () => {
         visible={isModalVisible}
         animationType="slide"
         onRequestClose={handleCloseModal}>
-        <View className="flex-1 justify-end bg-black/30">
-          <View className="rounded-t-2xl bg-white p-6 pb-12">
-            <Text className="mb-6 text-center text-lg font-bold">
-              Options for request ID #{selected?.RequestId}
+        <View className="justify-end flex-1 bg-black/30">
+          <View className="p-6 pb-12 bg-white rounded-t-2xl">
+            <Text className="mb-6 text-lg font-bold text-center">
+              Options for request ID #{selected?.requestId}
             </Text>
 
             <Pressable
-              className="mb-6 flex-row items-center gap-3 active:opacity-70"
+              className="flex-row items-center gap-3 mb-6 active:opacity-70"
               onPress={handleViewDetail}>
               <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
               <Text className="text-lg font-semibold text-blue-600">Request details</Text>
             </Pressable>
 
-            {selected?.Status === 0 && (
+            {selected?.status === 0 && (
               <>
                 <Pressable
-                  className="mb-6 flex-row items-center gap-3 active:opacity-70"
+                  className="flex-row items-center gap-3 mb-6 active:opacity-70"
                   onPress={handleApprove}>
                   <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
                   <Text className="text-lg font-semibold text-green-600">
@@ -299,7 +357,7 @@ const RequestScreen = () => {
                 </Pressable>
 
                 <Pressable
-                  className="mb-6 flex-row items-center gap-3 active:opacity-70"
+                  className="flex-row items-center gap-3 mb-6 active:opacity-70"
                   onPress={handleReject}>
                   <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
                   <Text className="text-lg font-semibold text-red-600">Reject the request</Text>
@@ -307,9 +365,9 @@ const RequestScreen = () => {
               </>
             )}
 
-            {selected?.Status === 1 && (
+            {selected?.status === 1 && (
               <Pressable
-                className="mb-6 flex-row items-center gap-3 active:opacity-70"
+                className="flex-row items-center gap-3 mb-6 active:opacity-70"
                 onPress={handleCancel}>
                 <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
                 <Text className="text-lg font-semibold text-gray-600">Cancel the request</Text>
@@ -317,7 +375,7 @@ const RequestScreen = () => {
             )}
 
             <Pressable
-              className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3 active:bg-gray-700"
+              className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg active:bg-gray-700"
               onPress={handleCloseModal}>
               <Text className="text-lg font-semibold text-white">Close</Text>
             </Pressable>
