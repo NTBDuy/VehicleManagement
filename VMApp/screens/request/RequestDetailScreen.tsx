@@ -76,28 +76,28 @@ const RequestDetailScreen = () => {
     setIsCancelModalVisible(true);
   };
 
-  const handleCancelForEmployee = () => {
-    Alert.alert('Cancel Request', 'Are you sure you want to cancel this request?', [
-      { text: 'No', style: 'cancel' },
-      {
-        text: 'Yes, Cancel',
-        onPress: async () => {
-          setIsLoading(true);
-          try {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+  // const handleCancelForEmployee = () => {
+  //   Alert.alert('Cancel Request', 'Are you sure you want to cancel this request?', [
+  //     { text: 'No', style: 'cancel' },
+  //     {
+  //       text: 'Yes, Cancel',
+  //       onPress: async () => {
+  //         setIsLoading(true);
+  //         try {
+  //           await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            Alert.alert('Success', 'This request cancelled successfully!', [
-              { text: 'OK', onPress: () => navigation.goBack() },
-            ]);
-          } catch (error) {
-            Alert.alert('Error', 'Failed to update account. Please try again.');
-          } finally {
-            setIsLoading(false);
-          }
-        },
-      },
-    ]);
-  };
+  //           Alert.alert('Success', 'This request cancelled successfully!', [
+  //             { text: 'OK', onPress: () => navigation.goBack() },
+  //           ]);
+  //         } catch (error) {
+  //           Alert.alert('Error', 'Failed to update account. Please try again.');
+  //         } finally {
+  //           setIsLoading(false);
+  //         }
+  //       },
+  //     },
+  //   ]);
+  // };
 
   const handleCloseModal = () => {
     setIsApproveModalVisible(false);
@@ -215,7 +215,7 @@ const RequestDetailScreen = () => {
             {requestData.status === 1 && (
               <View className="mt-4">
                 <Pressable
-                  className="items-center py-4 bg-red-600 shadow-sm rounded-xl active:bg-red-700"
+                  className="items-center py-4 bg-gray-500 shadow-sm rounded-xl active:bg-gray-700"
                   onPress={handleCancel}>
                   <Text className="font-semibold text-white">Cancel</Text>
                 </Pressable>
@@ -230,7 +230,7 @@ const RequestDetailScreen = () => {
               <View className="mt-4">
                 <Pressable
                   className={`items-center rounded-xl py-4 shadow-sm active:bg-gray-700 ${isLoading ? 'bg-gray-500' : 'bg-gray-600 active:bg-gray-700'}`}
-                  onPress={handleCancelForEmployee}
+                  onPress={handleCancel}
                   disabled={isLoading}>
                   <Text className="font-semibold text-white">
                     {isLoading ? 'Canceling...' : 'Cancel'}

@@ -3,6 +3,7 @@ import { AuthService } from '../services/authService';
 import { LoginRequest } from 'types/LoginRequest';
 
 import User from 'types/User';
+import { showToast } from 'utils/toast';
 
 interface AuthContextType {
   user: User | null;
@@ -69,9 +70,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await AuthService.logout();
+      showToast.success('Logout Successful', 'You have been logged out. See you again soon!');
       setUser(null);
     } catch (error) {
       console.error('Error during logout:', error);
+      showToast.error('Logout Failed', 'Something went wrong. Please try again.');
     }
   };
 

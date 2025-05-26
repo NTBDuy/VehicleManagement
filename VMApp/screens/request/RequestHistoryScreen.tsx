@@ -41,12 +41,14 @@ const RequestHistoryScreen = () => {
     useCallback(() => {
       if (user) {
         getRequestByUserID(user.userId);
+        setActiveFilter(4);
       }
     }, [user])
   );
 
   const onRefresh = () => {
     setRefreshing(true);
+    setActiveFilter(4);
     getRequestByUserID(user!.userId);
   };
 

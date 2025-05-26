@@ -17,7 +17,18 @@ namespace VMServer.Controllers
             _dbContext = dbContext;
         }
 
-        // POST: api/vehicle
+        // GET: api/vehicle
+        [Authorize(Roles = "Administrator, Manager")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllVehicle()
+        {
+            var vehicles = await _dbContext.Vehicles
+                .ToListAsync();
+
+            return Ok(vehicles);
+        }
+
+        // GET: api/vehicle/available
         [Authorize]
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableVehicles()
