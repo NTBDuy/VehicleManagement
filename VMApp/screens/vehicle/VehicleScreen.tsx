@@ -25,6 +25,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import EmptyList from 'components/EmptyListComponent';
 import { getVehicleTypeIcon } from 'utils/vehicleUntils';
 import { VehicleService } from 'services/vehicleService';
+import { showToast } from 'utils/toast';
 
 type VehicleStat = {
   total: number;
@@ -232,6 +233,22 @@ const VehicleScreen = () => {
     getVehiclesData();
   };
 
+  const onRemoveVehicle = async () => {
+    try {
+      if (selected) {
+        await VehicleService.deleteVehicle(selected?.vehicleId);
+        showToast.success(
+          'Vehicle Removed',
+          `Vehicle ID #${selected.vehicleId} was removed successfully.`
+        );
+        getVehiclesData();
+        handleCloseModal();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
@@ -345,8 +362,7 @@ const VehicleScreen = () => {
             <Pressable
               className="flex-row items-center gap-3 mb-6"
               onPress={() => {
-                // onToggleStatus();
-                handleCloseModal();
+                onRemoveVehicle();
               }}>
               <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
               <Text className="text-lg font-semibold text-red-600">Remove vehicles</Text>

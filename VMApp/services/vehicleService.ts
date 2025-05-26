@@ -27,4 +27,11 @@ export class VehicleService extends BaseApiClient {
       body: JSON.stringify(vehicleData),
     });
   }
+
+  // Xóa vehicle 
+  static async deleteVehicle(id: number): Promise<void> {
+    return this.request<void>(`/vehicle/${id}`, {
+      method: 'DELETE',
+    });
+  }
 }

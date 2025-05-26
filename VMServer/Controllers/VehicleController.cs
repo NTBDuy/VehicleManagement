@@ -80,5 +80,19 @@ namespace VMServer.Controllers
             await _dbContext.SaveChangesAsync();
             return Ok(vehicle);
         }
+
+        // DELETE: api/vehicle/{vehicleId}
+        [Authorize(Roles = "Administrator, Manager")]
+        [HttpDelete("{vehicleId}")]
+        public async Task<IActionResult> DeleteVehicle(int vehicleId)
+        {
+            var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null)
+                return NotFound(new { message = $"Vehicle not found with ID #{vehicleId}" });
+
+            _dbContext.Vehicles.Remove(vehicle);
+            await _dbContext.SaveChangesAsync();
+            return Ok(new { message = $"Vehicle with ID #{vehicleId} was removed successfully." });
+        }
     }
 }
