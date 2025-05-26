@@ -239,24 +239,26 @@ const RequestScreen = () => {
 
   const handleApproveConfirm = async (driverId: string | null, note: string) => {
     const assignmentData = { driverId, note };
-
+    
     if (selected!.isDriverRequired) {
       await RequestService.approveRequest(selected!.requestId, assignmentData);
     } else {
       await RequestService.approveRequest(selected!.requestId);
     }
-
+    
     await getRequestsData();
   };
 
-  const handleRejectConfirm = (reason: string) => {
-    console.log('Rejecting request with reason:', reason);
-    handleCloseModal();
+  const handleRejectConfirm = async (reason: string) => {
+    const reasonData = { reason };
+    await RequestService.rejectRequest(selected!.requestId, reasonData);
+    await getRequestsData();
   };
 
-  const handleCancelConfirm = (reason: string) => {
-    console.log('Cancelling request with reason:', reason);
-    handleCloseModal();
+  const handleCancelConfirm = async (reason: string) => {
+    const reasonData = { reason };
+    await RequestService.cancelRequest(selected!.requestId, reasonData);
+    await getRequestsData();
   };
 
   return (

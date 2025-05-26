@@ -19,6 +19,7 @@ export default interface Request {
     isDriverRequired: boolean;
     createdAt: string;
     lastUpdateAt: string;
+    cancellationReason?: string;
     user?: User;
     vehicle?: Vehicle
 }

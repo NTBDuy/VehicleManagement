@@ -1,4 +1,4 @@
-import { Text, SafeAreaView, Pressable, View, ScrollView, Dimensions } from 'react-native';
+import { Text, SafeAreaView, Pressable, View, ScrollView, Dimensions, TextInput } from 'react-native';
 import { useEffect, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -36,6 +36,7 @@ type VehicleStat = {
 };
 
 const ManagerDashboard = () => {
+  const [test, setTest] = useState('')
   const { user } = useAuth();
   const navigation = useNavigation<any>();
   const [requestStat, setRequestStat] = useState<RequestStat>({
@@ -153,7 +154,7 @@ const ManagerDashboard = () => {
         title="Manager Dashboard"
         rightElement={
           <Pressable
-            className="rounded-full bg-white p-2"
+            className="p-2 bg-white rounded-full"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
           </Pressable>
@@ -164,10 +165,9 @@ const ManagerDashboard = () => {
       <ScrollView className="px-6">
         {/* Welcome Section */}
         <WelcomeSection user={user}/>
-
         {/** Section: Request Statistics */}
-        <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Request Statistics</Text>
           </View>
 
@@ -208,8 +208,8 @@ const ManagerDashboard = () => {
         </View>
 
         {/** Section: Vehicle Statistics */}
-        <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Vehicle Statistics</Text>
           </View>
 

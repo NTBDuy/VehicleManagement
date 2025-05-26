@@ -23,7 +23,6 @@ const RequestCreateScreen = () => {
   const [avaibleVehicle, setAvailbleVehicle] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>();
   const [purpose, setPurpose] = useState('');
-  const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
   const [isAssignDriver, setIsAssignDriver] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -80,11 +79,6 @@ const RequestCreateScreen = () => {
       startDate={startDate}
       endDate={endDate}
       selectedVehicle={selectedVehicle}
-      selectedPurpose={selectedPurpose}
-      setSelectedPurpose={(value) => {
-        setSelectedPurpose(value);
-        if (value !== 'Other') setPurpose('');
-      }}
       purpose={purpose}
       setPurpose={setPurpose}
       isAssignDriver={isAssignDriver}
@@ -98,11 +92,7 @@ const RequestCreateScreen = () => {
       setActiveTab(1);
       return false;
     }
-    if (!selectedPurpose) {
-      showToast.error('Purpose Required', 'Please specify the purpose of your trip to continue.');
-      return false;
-    }
-    if (selectedPurpose === 'Other' && purpose.trim() === '') {
+    if (purpose.trim() === '') {
       showToast.error('Purpose Required', 'Please specify the purpose of your trip to continue.');
       return false;
     }
@@ -119,7 +109,7 @@ const RequestCreateScreen = () => {
         vehicleId: selectedVehicle?.vehicleId,
         startTime: startDate,
         endTime: endDate,
-        purpose: purpose || selectedPurpose,
+        purpose: purpose,
         isDriverRequired: isAssignDriver,
       };
       setIsLoading(true);
@@ -142,7 +132,6 @@ const RequestCreateScreen = () => {
     setActiveTab(0);
     setSelectedVehicle(undefined);
     setPurpose('');
-    setSelectedPurpose(null);
     setStartDate(new Date().toISOString().split('T')[0]);
     setEndDate(new Date().toISOString().split('T')[0]);
     setIsMultiDayTrip(false);
@@ -151,7 +140,7 @@ const RequestCreateScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header title="Booking" />
-      <View className="mt-4 flex-1 px-6">
+      <View className="flex-1 px-6 mt-4">
         <View className="mb-4 overflow-hidden rounded-2xl">
           <View className="flex-row">
             {tabs.map((tab) => (
@@ -184,15 +173,15 @@ const RequestCreateScreen = () => {
             ))}
           </View>
         </View>
-        <View className="mb-24 flex-1">{renderTabContent()}</View>
+        <View className="flex-1 mb-24">{renderTabContent()}</View>
       </View>
 
-      <View className="absolute bottom-0 left-0 right-0 bg-gray-50 px-6 pb-12">
+      <View className="absolute bottom-0 left-0 right-0 px-6 pb-12 bg-gray-50">
         {activeTab === 0 && (
           <Pressable
-            className="mt-4 w-full rounded-2xl bg-blue-400 py-4 active:bg-blue-500"
+            className="w-full py-4 mt-4 bg-blue-400 rounded-2xl active:bg-blue-500"
             onPress={() => setActiveTab(activeTab + 1)}>
-            <Text className="text-center text-lg font-bold text-white">Next</Text>
+            <Text className="text-lg font-bold text-center text-white">Next</Text>
           </Pressable>
         )}
         {activeTab === 1 && (
@@ -200,13 +189,13 @@ const RequestCreateScreen = () => {
             <Pressable
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 active:bg-gray-500"
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">Back</Text>
+              <Text className="text-lg font-bold text-center text-white">Back</Text>
             </Pressable>
 
             <Pressable
               className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 active:bg-blue-500"
               onPress={() => setActiveTab(activeTab + 1)}>
-              <Text className="text-center text-lg font-bold text-white">Next</Text>
+              <Text className="text-lg font-bold text-center text-white">Next</Text>
             </Pressable>
           </View>
         )}
@@ -215,14 +204,16 @@ const RequestCreateScreen = () => {
             <Pressable
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 active:bg-gray-500"
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">Back</Text>
+              <Text className="text-lg font-bold text-center text-white">Back</Text>
             </Pressable>
 
             <Pressable
               className={`mt-4 w-[48%] rounded-2xl py-4 ${isLoading ? 'bg-gray-400' : 'bg-blue-400 active:bg-blue-500'}`}
               onPress={handleConfirm}
               disabled={isLoading}>
-              <Text className="text-center text-lg font-bold text-white">{isLoading ? 'Confirming ...' : 'Confirm'}</Text>
+              <Text className="text-lg font-bold text-center text-white">
+                {isLoading ? 'Confirming ...' : 'Confirm'}
+              </Text>
             </Pressable>
           </View>
         )}

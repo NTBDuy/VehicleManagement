@@ -10,6 +10,8 @@ const InputField = ({
   keyboardType = 'default',
   editable = true,
   error,
+  multiline,
+  numberOfLines,
 }: {
   label: string;
   value: string | undefined;
@@ -43,7 +45,10 @@ const InputField = ({
       keyboardType={keyboardType}
       editable={editable}
       autoCapitalize={keyboardType === 'email-address' ? 'none' : 'words'}
+      multiline={multiline}
+      numberOfLines={numberOfLines}
     />
+
     {error && <Text className="mt-1 text-xs text-red-500">{error}</Text>}
   </View>
 );

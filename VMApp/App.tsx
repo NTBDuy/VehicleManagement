@@ -1,3 +1,4 @@
+import { KeyboardAvoidingView, Platform } from 'react-native';
 import AppContent from 'navigation/AppNavigator';
 import './global.css';
 import { AuthProvider } from 'contexts/AuthContext';
@@ -6,9 +7,15 @@ import { toastConfig } from 'config/toastConfig';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-      <Toast config={toastConfig} />
-    </AuthProvider>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <AuthProvider>
+        <AppContent />
+        <Toast config={toastConfig} />
+      </AuthProvider>
+    </KeyboardAvoidingView>
   );
 }
+
+

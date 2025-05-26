@@ -112,20 +112,21 @@ const RequestDetailScreen = () => {
       ? await RequestService.approveRequest(requestData.requestId, assignmentData)
       : await RequestService.approveRequest(requestData.requestId);
 
-    console.log(updatedRequest);
-
     setRequestData(updatedRequest);
-
     handleCloseModal();
   };
 
-  const handleRejectConfirm = (reason: string) => {
-    console.log('Rejecting request with reason:', reason);
+   const handleRejectConfirm = async (reason: string) => {
+    const reasonData = { reason };
+    const updatedRequest = await RequestService.rejectRequest(requestData.requestId, reasonData);
+    setRequestData(updatedRequest);
     handleCloseModal();
   };
 
-  const handleCancelConfirm = (reason: string) => {
-    console.log('Cancelling request with reason:', reason);
+  const handleCancelConfirm = async (reason: string) => {
+    const reasonData = { reason };
+    const updatedRequest = await RequestService.cancelRequest(requestData.requestId, reasonData);
+    setRequestData(updatedRequest);
     handleCloseModal();
   };
 

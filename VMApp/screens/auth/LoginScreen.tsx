@@ -60,63 +60,58 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? -240 : 0}
-        className="flex-1">
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-          <View className="flex-1 justify-center px-6 py-8">
-            <View className="mb-4 items-center">
-              <FontAwesomeIcon icon={faCar} size={48} />
-            </View>
-            <View className="mb-8">
-              <Text className="text-center text-3xl font-bold">VMS Login</Text>
-            </View>
-            <View className="mb-4">
-              <TextInput
-                className="rounded-lg border border-gray-300 px-4 py-2"
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
-              />
-            </View>
-            <View className="mb-6">
-              <TextInput
-                className="rounded-lg border border-gray-300 px-4 py-2"
-                placeholder="Password"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </View>
-            <TouchableOpacity
-              disabled={isLoading}
-              className={`rounded-lg py-3 ${isLoading ? 'bg-gray-500' : 'bg-blue-500'}`}
-              onPress={handleLogin}>
-              <Text className="text-center font-bold text-white">
-                {' '}
-                {isLoading ? 'Logging in...' : 'Login'}
-              </Text>
-            </TouchableOpacity>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        <View className="justify-center flex-1 px-6 py-8">
+          <View className="items-center mb-4">
+            <FontAwesomeIcon icon={faCar} size={48} />
+          </View>
+          <View className="mb-8">
+            <Text className="text-3xl font-bold text-center">VMS Login</Text>
+          </View>
+          <View className="mb-4">
+            <TextInput
+              className="px-4 py-2 border border-gray-300 rounded-lg"
+              placeholder="Username"
+              value={username}
+              onChangeText={setUsername}
+            />
+          </View>
+          <View className="mb-6">
+            <TextInput
+              className="px-4 py-2 border border-gray-300 rounded-lg"
+              placeholder="Password"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+          </View>
+          <TouchableOpacity
+            disabled={isLoading}
+            className={`rounded-lg py-3 ${isLoading ? 'bg-gray-500' : 'bg-blue-500'}`}
+            onPress={handleLogin}>
+            <Text className="font-bold text-center text-white">
+              {' '}
+              {isLoading ? 'Logging in...' : 'Login'}
+            </Text>
+          </TouchableOpacity>
 
-            <View className="mt-6 rounded-2xl border px-4 py-2">
-              <Text className="mb-4">Developer Tool - Quick Login</Text>
-              <View className="mb-2 flex-row justify-between">
-                {quickLoginRoles.map((role, index) => (
-                  <Pressable
-                    key={index}
-                    className={`mx-1 flex-1 rounded-lg px-4 py-3 ${
-                      activeRole === role.title ? 'bg-blue-300' : 'bg-blue-100'
-                    }`}
-                    onPress={() => handleQuickLogin(role)}>
-                    <Text className="text-center font-medium text-blue-800">{role.title}</Text>
-                  </Pressable>
-                ))}
-              </View>
+          <View className="px-4 py-2 mt-6 border rounded-2xl">
+            <Text className="mb-4">Developer Tool - Quick Login</Text>
+            <View className="flex-row justify-between mb-2">
+              {quickLoginRoles.map((role, index) => (
+                <Pressable
+                  key={index}
+                  className={`mx-1 flex-1 rounded-lg px-4 py-3 ${
+                    activeRole === role.title ? 'bg-blue-300' : 'bg-blue-100'
+                  }`}
+                  onPress={() => handleQuickLogin(role)}>
+                  <Text className="font-medium text-center text-blue-800">{role.title}</Text>
+                </Pressable>
+              ))}
             </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

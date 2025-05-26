@@ -18,7 +18,7 @@ namespace VMServer.Controllers
         }
         // GET: apo/requests
         [Authorize(Roles = "Administrator, Manager")]
-        [HttpGet("/api/requests")]
+        [HttpGet]
         public async Task<IActionResult> GetAllRequests()
         {
             var requests = await _dbContext.Requests
@@ -59,15 +59,15 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/request/{requestId}/approve
-        [Authorize]
+        [Authorize(Roles = "Manager")]
         [HttpPut("{requestId}/approve")]
         public async Task<IActionResult> ApproveRequest(int requestId, [FromBody] ApproveDTO? dto)
         {
             var request = await _dbContext.Requests
-                    .Include(r => r.User)
-                    .Include(r => r.Vehicle)
-                    .FirstOrDefaultAsync(r => r.RequestId == requestId);
-                    
+                .Include(r => r.User)
+                .Include(r => r.Vehicle)
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
             if (request == null)
                 return NotFound(new { message = $"Request not found with ID #{requestId}" });
 
@@ -88,6 +88,52 @@ namespace VMServer.Controllers
             }
 
             request.Status = RequestStatus.Approved;
+            request.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(request);
+        }
+
+        // PUT: api/request/{requestId}/cancel
+        [Authorize]
+        [HttpPut("{requestId}/cancel")]
+        public async Task<IActionResult> CancelRequest(int requestId, [FromBody] ReasonDTO dto)
+        {
+            var request = await _dbContext.Requests
+                .Include(r => r.User)
+                .Include(r => r.Vehicle)
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            request.CancellationReason = dto.Reason;
+            request.Status = RequestStatus.Cancelled;
+            request.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(request);
+        }
+
+        // PUT: api/request/{requestId}/reject
+        [Authorize(Roles = "Manager")]
+        [HttpPut("{requestId}/reject")]
+        public async Task<IActionResult> RejectRequest(int requestId, [FromBody] ReasonDTO dto)
+        {
+            var request = await _dbContext.Requests
+                .Include(r => r.User)
+                .Include(r => r.Vehicle)
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            request.CancellationReason = dto.Reason;
+            request.Status = RequestStatus.Rejected;
+            request.LastUpdateAt = DateTime.Now;
+
             await _dbContext.SaveChangesAsync();
 
             return Ok(request);

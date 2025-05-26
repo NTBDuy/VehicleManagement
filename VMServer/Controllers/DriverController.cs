@@ -19,7 +19,7 @@ namespace VMServer.Controllers
 
         // GET: api/driver
         [Authorize(Roles = "Administrator, Manager")]
-        [HttpGet("/api/drivers")]
+        [HttpGet]
         public async Task<IActionResult> GetDrivers()
         {
             var drivers = await _dbContext.Drivers.ToListAsync();

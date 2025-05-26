@@ -4,7 +4,7 @@ import Request from '../types/Request';
 export class RequestService extends BaseApiClient {
   // Lấy tất cả requests
   static async getAllRequests(): Promise<Request[]> {
-    return this.request<Request[]>('/requests');
+    return this.request<Request[]>('/request');
   }
 
   // Tạo request mới
@@ -20,6 +20,22 @@ export class RequestService extends BaseApiClient {
     return this.request<Request>(`/request/${id}/approve`, {
       method: 'PUT',
       body: approvalData ? JSON.stringify(approvalData) : undefined,
+    });
+  }
+
+  // Cancel request
+  static async cancelRequest(id: number, reason: any): Promise<Request> {
+    return this.request<Request>(`/request/${id}/cancel`, {
+      method: 'PUT',
+      body: JSON.stringify(reason),
+    });
+  }
+
+  // Reject request
+  static async rejectRequest(id: number, reason: any): Promise<Request> {
+    return this.request<Request>(`/request/${id}/reject`, {
+      method: 'PUT',
+      body: JSON.stringify(reason),
     });
   }
 }
