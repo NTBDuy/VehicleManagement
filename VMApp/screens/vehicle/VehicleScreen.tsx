@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Header from 'components/HeaderComponent';
 import Vehicle from 'types/Vehicle';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -21,7 +21,7 @@ import {
   faTrash,
   faCalendarCheck,
 } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import EmptyList from 'components/EmptyListComponent';
 import { getVehicleTypeIcon } from 'utils/vehicleUntils';
 import { VehicleService } from 'services/vehicleService';
@@ -60,6 +60,12 @@ const VehicleScreen = () => {
       calculateVehicleStatistics(vehicles);
     }
   }, [vehicles]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getVehiclesData();
+    }, [])
+  );
 
   const getVehiclesData = async () => {
     try {
@@ -225,7 +231,7 @@ const VehicleScreen = () => {
     setRefreshing(true);
     getVehiclesData();
   };
-  
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header

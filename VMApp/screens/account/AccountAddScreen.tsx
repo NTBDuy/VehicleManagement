@@ -17,14 +17,14 @@ import InputField from 'components/InputFieldComponent';
 
 const AccountCreateScreen = () => {
   const [userData, setUserData] = useState<User>({
-    UserId: 0,
-    FullName: '',
-    Email: '',
-    Phone: '',
-    Username: '',
-    PasswordHash: '',
-    Role: 1,
-    Status: true,
+    userId: 0,
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    username: '',
+    passwordHash: '',
+    role: 1,
+    status: true,
   });
 
   const [errors, setErrors] = useState<Partial<User>>({});
@@ -38,32 +38,32 @@ const AccountCreateScreen = () => {
   const validateForm = (): boolean => {
     const newErrors: Partial<User> = {};
 
-    if (!userData.FullName.trim()) {
-      newErrors.FullName = 'Full name is required';
+    if (!userData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
     }
 
-    if (!userData.Email.trim()) {
-      newErrors.Email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(userData.Email)) {
-      newErrors.Email = 'Please enter a valid email';
+    if (!userData.email.trim()) {
+      newErrors.email = 'email is required';
+    } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      newErrors.email = 'Please enter a valid email';
     }
 
-    if (!userData.Phone.trim()) {
-      newErrors.Phone = 'Phone number is required';
-    } else if (!/^\d{9,10}$/.test(userData.Phone.replace(/\s/g, ''))) {
-      newErrors.Phone = 'Please enter a valid phone number';
+    if (!userData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'phoneNumber number is required';
+    } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
+      newErrors.phoneNumber = 'Please enter a valid phoneNumber number';
     }
 
-    if (!userData.Username.trim()) {
-      newErrors.Username = 'Username is required';
-    } else if (userData.Username.length < 3) {
-      newErrors.Username = 'Username must be at least 3 characters';
+    if (!userData.username.trim()) {
+      newErrors.username = 'username is required';
+    } else if (userData.username.length < 3) {
+      newErrors.username = 'username must be at least 3 characters';
     }
 
-    if (!userData.PasswordHash.trim()) {
-      newErrors.PasswordHash = 'Password is required';
-    } else if (userData.PasswordHash.length < 6) {
-      newErrors.PasswordHash = 'Password must be at least 6 characters';
+    if (!userData.passwordHash.trim()) {
+      newErrors.passwordHash = 'Password is required';
+    } else if (userData.passwordHash.length < 6) {
+      newErrors.passwordHash = 'Password must be at least 6 characters';
     }
 
     setErrors(newErrors);
@@ -88,78 +88,78 @@ const AccountCreateScreen = () => {
       {/* BODY */}
       <ScrollView className="flex-1 px-6">
         {/* Profile Picture Section */}
-        <View className="mb-6 items-center">
+        <View className="items-center mb-6">
           <View className="relative">
             <Image
-              className="mt-4 h-24 w-24 rounded-full border-2 border-gray-200"
+              className="w-24 h-24 mt-4 border-2 border-gray-200 rounded-full"
               source={require('../../assets/images/user-default.jpg')}
             />
-            <Pressable className="absolute bottom-0 right-0 rounded-full border-2 border-white bg-blue-500 p-2">
+            <Pressable className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
             </Pressable>
           </View>
         </View>
 
         {/* Personal Information Section */}
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Personal Information</Text>
           </View>
           <View className="p-4">
             <InputField
               label="Full Name"
-              value={userData.FullName}
-              onChangeText={(text) => setUserData({ ...userData, FullName: text })}
-              error={errors.FullName}
+              value={userData.fullName}
+              onChangeText={(text) => setUserData({ ...userData, fullName: text })}
+              error={errors.fullName}
             />
             <InputField
-              label="Email"
-              value={userData.Email}
-              onChangeText={(text) => setUserData({ ...userData, Email: text })}
+              label="email"
+              value={userData.email}
+              onChangeText={(text) => setUserData({ ...userData, email: text })}
               keyboardType="email-address"
-              error={errors.Email}
+              error={errors.email}
             />
             <InputField
-              label="Phone Number"
-              value={userData.Phone}
-              onChangeText={(text) => setUserData({ ...userData, Phone: text })}
+              label="phoneNumber Number"
+              value={userData.phoneNumber}
+              onChangeText={(text) => setUserData({ ...userData, phoneNumber: text })}
               placeholder="e.g. 0912345678"
               keyboardType="phone-pad"
-              error={errors.Phone}
+              error={errors.phoneNumber}
             />
           </View>
         </View>
 
         {/* Account Details Section */}
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Account Details</Text>
           </View>
           <View className="p-4">
             <InputField
-              label="Username"
-              value={userData.Username}
-              onChangeText={(text) => setUserData({ ...userData, Username: text })}
-              error={errors.Username}
+              label="username"
+              value={userData.username}
+              onChangeText={(text) => setUserData({ ...userData, username: text })}
+              error={errors.username}
             />
             <InputField
               label="Password"
-              value={userData.PasswordHash}
-              onChangeText={(text) => setUserData({ ...userData, PasswordHash: text })}
+              value={userData.passwordHash}
+              onChangeText={(text) => setUserData({ ...userData, passwordHash: text })}
               secureTextEntry
-              error={errors.PasswordHash}
+              error={errors.passwordHash}
             />
             <View className="mb-4">
               <Text className="mb-2 text-sm text-gray-600">
-                Role <Text className="text-red-500">*</Text>
+                role <Text className="text-red-500">*</Text>
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {roles.map((role) => {
-                  const isSelected = userData.Role === role.value;
+                  const isSelected = userData.role === role.value;
                   return (
                     <Pressable
                       key={role.value}
-                      onPress={() => setUserData({ ...userData, Role: role.value })}
+                      onPress={() => setUserData({ ...userData, role: role.value })}
                       className={`min-w-[30%] flex-1 items-center rounded-xl border-2 px-4 py-3 ${
                         isSelected ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'
                       }`}>
@@ -175,17 +175,17 @@ const AccountCreateScreen = () => {
               </View>
             </View>
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm text-gray-600">Account Status</Text>
+              <Text className="text-sm text-gray-600">Account status</Text>
               <View className="flex-row items-center">
                 <Text
-                  className={`mr-2 text-sm ${userData.Status ? 'text-green-600' : 'text-gray-500'}`}>
-                  {userData.Status ? 'Active' : 'Inactive'}
+                  className={`mr-2 text-sm ${userData.status ? 'text-green-600' : 'text-gray-500'}`}>
+                  {userData.status ? 'Active' : 'Inactive'}
                 </Text>
                 <Switch
-                  value={userData.Status}
-                  onValueChange={(value) => setUserData({ ...userData, Status: value })}
+                  value={userData.status}
+                  onValueChange={(value) => setUserData({ ...userData, status: value })}
                   trackColor={{ false: '#e5e7eb', true: '#10b981' }}
-                  thumbColor={userData.Status ? '#fff' : '#f9fafb'}
+                  thumbColor={userData.status ? '#fff' : '#f9fafb'}
                 />
               </View>
             </View>
@@ -193,9 +193,9 @@ const AccountCreateScreen = () => {
         </View>
 
         {/* Action Button */}
-        <View className="mb-8 mt-4">
+        <View className="mt-4 mb-8">
           <Pressable
-            className="items-center rounded-xl bg-blue-600 py-4 shadow-sm active:bg-blue-700"
+            className="items-center py-4 bg-blue-600 shadow-sm rounded-xl active:bg-blue-700"
             onPress={handleCreateAccount}>
             <Text className="text-lg font-semibold text-white">Create Account</Text>
           </Pressable>

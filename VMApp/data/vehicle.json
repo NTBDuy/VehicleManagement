@@ -1,182 +1,182 @@
 [
     {
-      "VehicleId": 1,
-      "LicensePlate": "ABC1234",
-      "Type": "Sedan",
-      "Brand": "Toyota",
-      "Model": "Camry",
-      "Status": 0,
-      "LastMaintenance": "2025-05-01"
+      "vehicleId": 1,
+      "licensePlate": "ABC1234",
+      "type": "Sedan",
+      "brand": "Toyota",
+      "model": "Camry",
+      "status": 0,
+      "lastMaintenance": "2025-05-01"
     },
     {
-      "VehicleId": 2,
-      "LicensePlate": "XYZ5678",
-      "Type": "SUV",
-      "Brand": "Honda",
-      "Model": "CR-V",
-      "Status": 2,
-      "LastMaintenance": "2025-04-20"
+      "vehicleId": 2,
+      "licensePlate": "XYZ5678",
+      "type": "SUV",
+      "brand": "Honda",
+      "model": "CR-V",
+      "status": 2,
+      "lastMaintenance": "2025-04-20"
     },
     {
-      "VehicleId": 3,
-      "LicensePlate": "LMN3456",
-      "Type": "Truck",
-      "Brand": "Ford",
-      "Model": "F-150",
-      "Status": 0,
-      "LastMaintenance": "2025-03-15"
+      "vehicleId": 3,
+      "licensePlate": "LMN3456",
+      "type": "Truck",
+      "brand": "Ford",
+      "model": "F-150",
+      "status": 0,
+      "lastMaintenance": "2025-03-15"
     },
     {
-      "VehicleId": 4,
-      "LicensePlate": "JKL7890",
-      "Type": "Van",
-      "Brand": "Mercedes-Benz",
-      "Model": "Sprinter",
-      "Status": 1,
-      "LastMaintenance": "2025-04-10"
+      "vehicleId": 4,
+      "licensePlate": "JKL7890",
+      "type": "Van",
+      "brand": "Mercedes-Benz",
+      "model": "Sprinter",
+      "status": 1,
+      "lastMaintenance": "2025-04-10"
     },
     {
-      "VehicleId": 5,
-      "LicensePlate": "QWE1234",
-      "Type": "Sedan",
-      "Brand": "Hyundai",
-      "Model": "Elantra",
-      "Status": 0,
-      "LastMaintenance": "2025-05-05"
+      "vehicleId": 5,
+      "licensePlate": "QWE1234",
+      "type": "Sedan",
+      "brand": "Hyundai",
+      "model": "Elantra",
+      "status": 0,
+      "lastMaintenance": "2025-05-05"
     },
     {
-      "VehicleId": 6,
-      "LicensePlate": "RTY5678",
-      "Type": "SUV",
-      "Brand": "Chevrolet",
-      "Model": "Tahoe",
-      "Status": 2,
-      "LastMaintenance": "2025-04-25"
+      "vehicleId": 6,
+      "licensePlate": "RTY5678",
+      "type": "SUV",
+      "brand": "Chevrolet",
+      "model": "Tahoe",
+      "status": 2,
+      "lastMaintenance": "2025-04-25"
     },
     {
-      "VehicleId": 7,
-      "LicensePlate": "UIO3456",
-      "Type": "Truck",
-      "Brand": "Ram",
-      "Model": "1500",
-      "Status": 0,
-      "LastMaintenance": "2025-03-30"
+      "vehicleId": 7,
+      "licensePlate": "UIO3456",
+      "type": "Truck",
+      "brand": "Ram",
+      "model": "1500",
+      "status": 0,
+      "lastMaintenance": "2025-03-30"
     },
     {
-      "VehicleId": 8,
-      "LicensePlate": "PAS7890",
-      "Type": "Van",
-      "Brand": "Ford",
-      "Model": "Transit",
-      "Status": 1,
-      "LastMaintenance": "2025-04-15"
+      "vehicleId": 8,
+      "licensePlate": "PAS7890",
+      "type": "Van",
+      "brand": "Ford",
+      "model": "Transit",
+      "status": 1,
+      "lastMaintenance": "2025-04-15"
     },
     {
-      "VehicleId": 9,
-      "LicensePlate": "DFG1234",
-      "Type": "Sedan",
-      "Brand": "Nissan",
-      "Model": "Altima",
-      "Status": 0,
-      "LastMaintenance": "2025-05-08"
+      "vehicleId": 9,
+      "licensePlate": "DFG1234",
+      "type": "Sedan",
+      "brand": "Nissan",
+      "model": "Altima",
+      "status": 0,
+      "lastMaintenance": "2025-05-08"
     },
     {
-      "VehicleId": 10,
-      "LicensePlate": "HJK5678",
-      "Type": "SUV",
-      "Brand": "Jeep",
-      "Model": "Wrangler",
-      "Status": 2,
-      "LastMaintenance": "2025-04-18"
+      "vehicleId": 10,
+      "licensePlate": "HJK5678",
+      "type": "SUV",
+      "brand": "Jeep",
+      "model": "Wrangler",
+      "status": 2,
+      "lastMaintenance": "2025-04-18"
     },
     {
-      "VehicleId": 11,
-      "LicensePlate": "BNM3456",
-      "Type": "Truck",
-      "Brand": "GMC",
-      "Model": "Sierra",
-      "Status": 0,
-      "LastMaintenance": "2025-03-20"
+      "vehicleId": 11,
+      "licensePlate": "BNM3456",
+      "type": "Truck",
+      "brand": "GMC",
+      "model": "Sierra",
+      "status": 0,
+      "lastMaintenance": "2025-03-20"
     },
     {
-      "VehicleId": 12,
-      "LicensePlate": "VBN7890",
-      "Type": "Van",
-      "Brand": "Volkswagen",
-      "Model": "Transporter",
-      "Status": 1,
-      "LastMaintenance": "2025-04-12"
+      "vehicleId": 12,
+      "licensePlate": "VBN7890",
+      "type": "Van",
+      "brand": "Volkswagen",
+      "model": "Transporter",
+      "status": 1,
+      "lastMaintenance": "2025-04-12"
     },
     {
-      "VehicleId": 13,
-      "LicensePlate": "WER1234",
-      "Type": "Sedan",
-      "Brand": "Kia",
-      "Model": "Optima",
-      "Status": 0,
-      "LastMaintenance": "2025-05-02"
+      "vehicleId": 13,
+      "licensePlate": "WER1234",
+      "type": "Sedan",
+      "brand": "Kia",
+      "model": "Optima",
+      "status": 0,
+      "lastMaintenance": "2025-05-02"
     },
     {
-      "VehicleId": 14,
-      "LicensePlate": "TYU5678",
-      "Type": "SUV",
-      "Brand": "Subaru",
-      "Model": "Outback",
-      "Status": 2,
-      "LastMaintenance": "2025-04-22"
+      "vehicleId": 14,
+      "licensePlate": "TYU5678",
+      "type": "SUV",
+      "brand": "Subaru",
+      "model": "Outback",
+      "status": 2,
+      "lastMaintenance": "2025-04-22"
     },
     {
-      "VehicleId": 15,
-      "LicensePlate": "IOP3456",
-      "Type": "Truck",
-      "Brand": "Toyota",
-      "Model": "Tundra",
-      "Status": 0,
-      "LastMaintenance": "2025-03-25"
+      "vehicleId": 15,
+      "licensePlate": "IOP3456",
+      "type": "Truck",
+      "brand": "Toyota",
+      "model": "Tundra",
+      "status": 0,
+      "lastMaintenance": "2025-03-25"
     },
     {
-      "VehicleId": 16,
-      "LicensePlate": "ASD7890",
-      "Type": "Van",
-      "Brand": "Nissan",
-      "Model": "NV200",
-      "Status": 1,
-      "LastMaintenance": "2025-04-08"
+      "vehicleId": 16,
+      "licensePlate": "ASD7890",
+      "type": "Van",
+      "brand": "Nissan",
+      "model": "NV200",
+      "status": 1,
+      "lastMaintenance": "2025-04-08"
     },
     {
-      "VehicleId": 17,
-      "LicensePlate": "FGH1234",
-      "Type": "Sedan",
-      "Brand": "Mazda",
-      "Model": "Mazda3",
-      "Status": 0,
-      "LastMaintenance": "2025-05-06"
+      "vehicleId": 17,
+      "licensePlate": "FGH1234",
+      "type": "Sedan",
+      "brand": "Mazda",
+      "model": "Mazda3",
+      "status": 0,
+      "lastMaintenance": "2025-05-06"
     },
     {
-      "VehicleId": 18,
-      "LicensePlate": "JKL5678",
-      "Type": "SUV",
-      "Brand": "BMW",
-      "Model": "X5",
-      "Status": 2,
-      "LastMaintenance": "2025-04-28"
+      "vehicleId": 18,
+      "licensePlate": "JKL5678",
+      "type": "SUV",
+      "brand": "BMW",
+      "model": "X5",
+      "status": 2,
+      "lastMaintenance": "2025-04-28"
     },
     {
-      "VehicleId": 19,
-      "LicensePlate": "ZXC3456",
-      "Type": "Truck",
-      "Brand": "Chevrolet",
-      "Model": "Silverado",
-      "Status": 0,
-      "LastMaintenance": "2025-03-18"
+      "vehicleId": 19,
+      "licensePlate": "ZXC3456",
+      "type": "Truck",
+      "brand": "Chevrolet",
+      "model": "Silverado",
+      "status": 0,
+      "lastMaintenance": "2025-03-18"
     },
     {
-      "VehicleId": 20,
-      "LicensePlate": "QAZ7890",
-      "Type": "Van",
-      "Brand": "Chrysler",
-      "Model": "Pacifica",
-      "Status": 1,
-      "LastMaintenance": "2025-04-05"
+      "vehicleId": 20,
+      "licensePlate": "QAZ7890",
+      "type": "Van",
+      "brand": "Chrysler",
+      "model": "Pacifica",
+      "status": 1,
+      "lastMaintenance": "2025-04-05"
     }
   ]

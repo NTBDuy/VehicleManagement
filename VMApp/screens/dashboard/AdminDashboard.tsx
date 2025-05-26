@@ -62,17 +62,17 @@ const AdminDashboard = () => {
 
   const calculateVehicleStatistics = (item: Vehicle[]) => {
     const total = item.length;
-    const available = item.filter((request) => request.Status === 0).length;
-    const inUse = item.filter((request) => request.Status === 1).length;
-    const underMaintenance = item.filter((request) => request.Status === 2).length;
+    const available = item.filter((request) => request.status === 0).length;
+    const inUse = item.filter((request) => request.status === 1).length;
+    const underMaintenance = item.filter((request) => request.status === 2).length;
     setVehicleStat({ total, available, inUse, underMaintenance });
   };
 
   const calculateAccountStatistics = () => {
     const total = accounts.length;
-    const admin = accounts.filter((account) => account.Role === 0).length;
-    const employee = accounts.filter((account) => account.Role === 1).length;
-    const manager = accounts.filter((account) => account.Role === 2).length;
+    const admin = accounts.filter((account) => account.role === 0).length;
+    const employee = accounts.filter((account) => account.role === 1).length;
+    const manager = accounts.filter((account) => account.role === 2).length;
 
     setAccountStat({ total, employee, manager, admin });
   };

@@ -34,26 +34,26 @@ const AccountEditScreen = () => {
   const validateForm = (): boolean => {
     const newErrors: Partial<User> = {};
 
-    if (!userData.FullName?.trim()) {
-      newErrors.FullName = 'Full name is required' as any;
+    if (!userData.fullName?.trim()) {
+      newErrors.fullName = 'Full name is required' as any;
     }
 
-    if (!userData.Email?.trim()) {
-      newErrors.Email = 'Email is required' as any;
-    } else if (!/\S+@\S+\.\S+/.test(userData.Email)) {
-      newErrors.Email = 'Please enter a valid email' as any;
+    if (!userData.email?.trim()) {
+      newErrors.email = 'Email is required' as any;
+    } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      newErrors.email = 'Please enter a valid email' as any;
     }
 
-    if (!userData.Phone?.trim()) {
-      newErrors.Phone = 'Phone number is required' as any;
-    } else if (!/^\d{9,10}$/.test(userData.Phone.replace(/\s/g, ''))) {
-      newErrors.Phone = 'Please enter a valid phone number' as any;
+    if (!userData.phoneNumber?.trim()) {
+      newErrors.phoneNumber = 'Phone number is required' as any;
+    } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
+      newErrors.phoneNumber = 'Please enter a valid phone number' as any;
     }
 
-    if (!userData.Username?.trim()) {
-      newErrors.Username = 'Username is required' as any;
-    } else if (userData.Username.length < 3) {
-      newErrors.Username = 'Username must be at least 3 characters' as any;
+    if (!userData.username?.trim()) {
+      newErrors.username = 'Username is required' as any;
+    } else if (userData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters' as any;
     }
 
     setErrors(newErrors);
@@ -99,7 +99,7 @@ const AccountEditScreen = () => {
   const handleResetPassword = () => {
     Alert.alert(
       'Reset Password',
-      `Reset password for ${userData.FullName || userData.Username}?`,
+      `Reset password for ${userData.fullName || userData.username}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         { 
@@ -107,7 +107,7 @@ const AccountEditScreen = () => {
           style: 'destructive',
           onPress: () => {
             // TODO: Implement password reset
-            console.log('Reset password for user:', userData.UserId);
+            console.log('Reset password for user:', userData.userId);
             Alert.alert('Success', 'Password reset link has been sent to user email');
           }
         }
@@ -138,7 +138,7 @@ const AccountEditScreen = () => {
         customTitle={
           <View>
             <Text className="text-xl font-bold text-gray-800">
-              Edit Account #{userData.UserId}
+              Edit Account #{userData.userId}
             </Text>
             {hasChanges && (
               <Text className="text-xs text-orange-600">Unsaved changes</Text>
@@ -150,21 +150,21 @@ const AccountEditScreen = () => {
       {/** BODY */}
       <ScrollView className="flex-1 px-6">
         {/** Profile Picture */}
-        <View className="mb-6 items-center">
+        <View className="items-center mb-6">
           <View className="relative">
             <Image
-              className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
+              className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
               source={require('../../assets/images/user-default.jpg')}
             />
-            <Pressable className="absolute bottom-0 right-0 rounded-full border-2 border-white bg-blue-500 p-2">
+            <Pressable className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
             </Pressable>
           </View>
         </View>
 
         {/* Personal Information Section */}
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">
               Personal Information
             </Text>
@@ -172,31 +172,31 @@ const AccountEditScreen = () => {
           <View className="p-4">
             <InputField
               label="Full Name"
-              value={userData.FullName || ''}
-              onChangeText={(text) => updateUserData('FullName', text)}
-              error={errors.FullName as string}
+              value={userData.fullName || ''}
+              onChangeText={(text) => updateUserData('fullName', text)}
+              error={errors.fullName as string}
             />
             <InputField
               label="Email"
-              value={userData.Email || ''}
-              onChangeText={(text) => updateUserData('Email', text)}
+              value={userData.email || ''}
+              onChangeText={(text) => updateUserData('email', text)}
               keyboardType="email-address"
-              error={errors.Email as string}
+              error={errors.email as string}
             />
             <InputField
               label="Phone Number"
-              value={userData.Phone || ''}
-              onChangeText={(text) => updateUserData('Phone', text)}
+              value={userData.phoneNumber || ''}
+              onChangeText={(text) => updateUserData('phoneNumber', text)}
               placeholder="e.g. 0912345678"
               keyboardType="phone-pad"
-              error={errors.Phone as string}
+              error={errors.phoneNumber as string}
             />
           </View>
         </View>
 
         {/* Account Details Section */}
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">
               Account Details
             </Text>
@@ -204,9 +204,9 @@ const AccountEditScreen = () => {
           <View className="p-4">
             <InputField
               label="Username"
-              value={userData.Username || ''}
-              onChangeText={(text) => updateUserData('Username', text)}
-              error={errors.Username as string}
+              value={userData.username || ''}
+              onChangeText={(text) => updateUserData('username', text)}
+              error={errors.username as string}
             />
 
             <View className="mb-4">
@@ -215,11 +215,11 @@ const AccountEditScreen = () => {
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {roles.map((role) => {
-                  const isSelected = userData.Role === role.value;
+                  const isSelected = userData.role === role.value;
                   return (
                     <Pressable
                       key={role.value}
-                      onPress={() => updateUserData('Role', role.value)}
+                      onPress={() => updateUserData('role', role.value)}
                       className={`flex-1 min-w-[30%] items-center rounded-xl border-2 px-4 py-3 ${
                         isSelected 
                           ? 'border-blue-500 bg-blue-500' 
@@ -239,14 +239,14 @@ const AccountEditScreen = () => {
             <View className="flex-row items-center justify-between">
               <Text className="text-sm text-gray-600">Account Status</Text>
               <View className="flex-row items-center">
-                <Text className={`mr-2 text-sm ${userData.Status ? 'text-green-600' : 'text-gray-500'}`}>
-                  {userData.Status ? 'Active' : 'Inactive'}
+                <Text className={`mr-2 text-sm ${userData.status ? 'text-green-600' : 'text-gray-500'}`}>
+                  {userData.status ? 'Active' : 'Inactive'}
                 </Text>
                 <Switch
-                  value={userData.Status}
-                  onValueChange={(value) => updateUserData('Status', value)}
+                  value={userData.status}
+                  onValueChange={(value) => updateUserData('status', value)}
                   trackColor={{ false: '#e5e7eb', true: '#10b981' }}
-                  thumbColor={userData.Status ? '#fff' : '#f9fafb'}
+                  thumbColor={userData.status ? '#fff' : '#f9fafb'}
                 />
               </View>
             </View>
@@ -254,15 +254,15 @@ const AccountEditScreen = () => {
         </View>
 
         {/** Password Section */}
-        <View className="mb-6 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">
               Security
             </Text>
           </View>
           <View className="p-4">
             <Pressable 
-              className="flex-row items-center rounded-xl border border-gray-300 bg-gray-50 px-4 py-3"
+              className="flex-row items-center px-4 py-3 border border-gray-300 rounded-xl bg-gray-50"
               onPress={handleResetPassword}
             >
               <FontAwesomeIcon icon={faLock} size={16} color="#6b7280" />
@@ -273,7 +273,7 @@ const AccountEditScreen = () => {
         </View>
 
         {/** Action Buttons */}
-        <View className="mb-8 mt-4 flex-row justify-between">
+        <View className="flex-row justify-between mt-4 mb-8">
           <Pressable 
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}

@@ -24,7 +24,7 @@ const AccountDetailScreen = () => {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
         <Header backBtn title="Account Detail" />
-        <View className="flex-1 items-center justify-center px-6">
+        <View className="items-center justify-center flex-1 px-6">
           <Text className="text-center text-gray-500">
             No user data available
           </Text>
@@ -69,7 +69,7 @@ const AccountDetailScreen = () => {
   const handleResetPassword = () => {
     Alert.alert(
       'Reset Password',
-      `Are you sure you want to reset password for ${userData.FullName || userData.Username}?`,
+      `Are you sure you want to reset password for ${userData.fullName || userData.username}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         { 
@@ -77,7 +77,7 @@ const AccountDetailScreen = () => {
           style: 'destructive',
           onPress: () => {
             // TODO: Implement password reset logic
-            console.log('Reset password for user:', userData.UserId);
+            console.log('Reset password for user:', userData.userId);
             Alert.alert('Success', 'Password reset link has been sent to user email');
           }
         }
@@ -86,22 +86,22 @@ const AccountDetailScreen = () => {
   };
 
   const handleToggleStatus = async () => {
-    const action = userData.Status ? 'deactivate' : 'activate';
-    const actionText = userData.Status ? 'Deactivate' : 'Activate';
+    const action = userData.status ? 'deactivate' : 'activate';
+    const actionText = userData.status ? 'Deactivate' : 'Activate';
     
     Alert.alert(
       `${actionText} Account`,
-      `Are you sure you want to ${action} ${userData.FullName || userData.Username}?`,
+      `Are you sure you want to ${action} ${userData.fullName || userData.username}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         { 
           text: actionText, 
-          style: userData.Status ? 'destructive' : 'default',
+          style: userData.status ? 'destructive' : 'default',
           onPress: async () => {
             setIsLoading(true);
             try {
               // TODO: Implement status toggle API call
-              console.log(`${actionText} user:`, userData.UserId);
+              console.log(`${actionText} user:`, userData.userId);
               Alert.alert('Success', `Account has been ${action}d successfully`);
               // Navigate back to refresh the list
               navigation.goBack();
@@ -116,7 +116,7 @@ const AccountDetailScreen = () => {
     );
   };
 
-  const roleInfo = getRoleInfo(userData.Role);
+  const roleInfo = getRoleInfo(userData.role);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -125,13 +125,13 @@ const AccountDetailScreen = () => {
         backBtn
         customTitle={
           <Text className="text-xl font-bold text-gray-800">
-            Account #{userData.UserId}
+            Account #{userData.userId}
           </Text>
         }
         rightElement={
           <Pressable 
             onPress={handleEdit} 
-            className="rounded-full bg-white p-2 shadow-sm"
+            className="p-2 bg-white rounded-full shadow-sm"
           >
             <FontAwesomeIcon icon={faEdit} size={18} color="#374151" />
           </Pressable>
@@ -141,20 +141,20 @@ const AccountDetailScreen = () => {
       {/** BODY */}
       <View className="flex-1 px-6">
         {/** Profile Picture */}
-        <View className="mb-4 items-center">
+        <View className="items-center mb-4">
           <View className="relative">
             <Image
-              className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
+              className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
               source={require('../../assets/images/user-default.jpg')}
             />
-            <View className={`absolute bottom-2 right-2 rounded-full p-2 ${userData.Status ? 'bg-green-500' : 'bg-gray-400'}`}>
-              <View className="h-3 w-3 rounded-full bg-white" />
+            <View className={`absolute bottom-2 right-2 rounded-full p-2 ${userData.status ? 'bg-green-500' : 'bg-gray-400'}`}>
+              <View className="w-3 h-3 bg-white rounded-full" />
             </View>
           </View>
           <Text className="mt-3 text-xl font-bold text-gray-800">
-            {userData.FullName || userData.Username || 'No Name'}
+            {userData.fullName || userData.username || 'No Name'}
           </Text>
-          <View className="mt-1 flex-row items-center">
+          <View className="flex-row items-center mt-1">
             <FontAwesomeIcon 
               icon={roleInfo.icon} 
               size={14} 
@@ -167,8 +167,8 @@ const AccountDetailScreen = () => {
         </View>
 
         {/** Personal Information Section */}
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">
               Personal Information
             </Text>
@@ -176,23 +176,23 @@ const AccountDetailScreen = () => {
           <View className="p-4">
             <InfoRow 
               label="Full Name" 
-              value={userData.FullName || 'Not provided'} 
+              value={userData.fullName || 'Not provided'} 
             />
             <InfoRow 
               label="Email" 
-              value={userData.Email || 'Not provided'} 
+              value={userData.email || 'Not provided'} 
             />
             <InfoRow 
               label="Phone Number" 
-              value={userData.Phone ? formatVietnamPhoneNumber(userData.Phone) : 'Not provided'}
+              value={userData.phoneNumber ? formatVietnamPhoneNumber(userData.phoneNumber) : 'Not provided'}
               isLast 
             />
           </View>
         </View>
 
         {/** Account Details Section */}
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">
               Account Details
             </Text>
@@ -200,7 +200,7 @@ const AccountDetailScreen = () => {
           <View className="p-4">
             <InfoRow 
               label="Username" 
-              value={userData.Username || 'Not set'} 
+              value={userData.username || 'Not set'} 
             />
             <InfoRow
               label="Role" 
@@ -222,9 +222,9 @@ const AccountDetailScreen = () => {
               label="Status" 
               value=""
               valueComponent={
-                <View className={`rounded-full px-3 py-1 ${userData.Status ? 'bg-green-100' : 'bg-gray-100'}`}>
-                  <Text className={`text-sm font-medium ${userData.Status ? 'text-green-800' : 'text-gray-600'}`}>
-                    {userData.Status ? 'Active' : 'Inactive'}
+                <View className={`rounded-full px-3 py-1 ${userData.status ? 'bg-green-100' : 'bg-gray-100'}`}>
+                  <Text className={`text-sm font-medium ${userData.status ? 'text-green-800' : 'text-gray-600'}`}>
+                    {userData.status ? 'Active' : 'Inactive'}
                   </Text>
                 </View>
               }
@@ -234,7 +234,7 @@ const AccountDetailScreen = () => {
         </View>
 
         {/** Action Buttons */}
-        <View className="mt-4 flex-row justify-between">
+        <View className="flex-row justify-between mt-4">
           <Pressable 
             className="w-[48%] items-center rounded-xl bg-blue-600 py-4 shadow-sm active:bg-blue-700"
             onPress={handleResetPassword}
@@ -247,7 +247,7 @@ const AccountDetailScreen = () => {
           
           <Pressable 
             className={`w-[48%] items-center rounded-xl py-4 shadow-sm ${
-              userData.Status 
+              userData.status 
                 ? 'bg-red-600 active:bg-red-700' 
                 : 'bg-green-600 active:bg-green-700'
             }`}
@@ -255,7 +255,7 @@ const AccountDetailScreen = () => {
             disabled={isLoading}
           >
             <Text className="font-semibold text-white">
-              {userData.Status ? 'Deactivate' : 'Activate'}
+              {userData.status ? 'Deactivate' : 'Activate'}
             </Text>
           </Pressable>
         </View>

@@ -47,21 +47,21 @@ const AccountScreen = () => {
     if (query) {
       filtered = filtered.filter(
         (user) =>
-          user.FullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Phone.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.Username.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+          user.fullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.phoneNumber.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          user.username.toLocaleLowerCase().includes(query.toLocaleLowerCase())
       );
     }
 
     if (role !== 3) {
-      filtered = filtered.filter((user) => user.Role === role);
+      filtered = filtered.filter((user) => user.role === role);
     }
 
     setFilteredUsers(filtered);
   };
 
-  /** Component: Badge User Role */
+  /** Component: Badge User role */
   const renderBadgeUserRole = ({ role }: { role: number }) => {
     const bgColor = getRoleStyle(role);
     return (
@@ -77,18 +77,18 @@ const AccountScreen = () => {
       onPress={() => handleOption(item)}
       className="mb-4 mt-1 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
-        <Text className="text-xl font-semibold text-white">{getUserInitials(item.FullName)}</Text>
+        <Text className="text-xl font-semibold text-white">{getUserInitials(item.fullName)}</Text>
       </View>
       <View className="flex-1">
-        <Text className="font-bold">{item.FullName}</Text>
-        <Text className="text-sm">{item.Username}</Text>
+        <Text className="font-bold">{item.fullName}</Text>
+        <Text className="text-sm">{item.username}</Text>
       </View>
       <View className="flex-row items-center">
-        <View>{renderBadgeUserRole({ role: item.Role })}</View>
+        <View>{renderBadgeUserRole({ role: item.role })}</View>
         <FontAwesomeIcon icon={faEllipsisV} />
       </View>
       <View className="absolute -right-0 -top-1">
-        <View className={`h-4 w-4 rounded-full ${item.Status ? 'bg-green-500' : 'bg-gray-400'}`} />
+        <View className={`h-4 w-4 rounded-full ${item.status ? 'bg-green-500' : 'bg-gray-400'}`} />
       </View>
     </Pressable>
   );
@@ -167,7 +167,7 @@ const AccountScreen = () => {
         <FlatList
           data={filteredUsers}
           renderItem={renderUserItem}
-          keyExtractor={(item) => item.UserId.toString()}
+          keyExtractor={(item) => item.userId.toString()}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <EmptyList title="No user found!" icon={faPersonCircleQuestion} />
@@ -191,7 +191,7 @@ const AccountScreen = () => {
         <View className="flex-1 justify-end bg-black/30">
           <View className="rounded-t-2xl bg-white p-6 pb-12">
             <Text className="mb-6 text-center text-lg font-bold">
-              Options for #{selected?.Username}
+              Options for #{selected?.username}
             </Text>
 
             <Pressable
@@ -231,13 +231,13 @@ const AccountScreen = () => {
                 handleCloseModal();
               }}>
               <FontAwesomeIcon
-                icon={selected?.Status ? faBan : faCircleCheck}
+                icon={selected?.status ? faBan : faCircleCheck}
                 size={20}
-                color={selected?.Status ? '#dc2626' : '#16a34a'}
+                color={selected?.status ? '#dc2626' : '#16a34a'}
               />
               <Text
-                className={`text-lg font-semibold ${selected?.Status ? 'text-red-600' : 'text-green-600'}`}>
-                {selected?.Status ? 'Deactivate user' : 'Activate user'}
+                className={`text-lg font-semibold ${selected?.status ? 'text-red-600' : 'text-green-600'}`}>
+                {selected?.status ? 'Deactivate user' : 'Activate user'}
               </Text>
             </Pressable>
 

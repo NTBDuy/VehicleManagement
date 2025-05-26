@@ -191,7 +191,7 @@ const ManagerDashboard = () => {
     <SafeAreaView className="flex-1 bg-gray-50">
       {/** HEADER */}
       <Header
-        // customTitle={<Text className="text-2xl font-bold">Hi {user?.FullName}</Text>}
+        // customTitle={<Text className="text-2xl font-bold">Hi {user?.fullName}</Text>}
         title="Manager Dashboard"
         rightElement={
           <Pressable

@@ -11,4 +11,20 @@ export class VehicleService extends BaseApiClient {
   static async getAvailableVehicles(): Promise<Vehicle[]> {
     return this.request<Vehicle[]>('/vehicle/available');
   }
+
+  // Tạo mới xe
+  static async createVehicle(vehicleData: Partial<Vehicle>): Promise<Vehicle> {
+    return this.request<Vehicle>('/vehicle', {
+      method: 'POST',
+      body: JSON.stringify(vehicleData),
+    });
+  }
+
+  // Cập nhật thông tin xe
+  static async updateVehicle(id: number, vehicleData: Partial<Vehicle>): Promise<Vehicle> {
+    return this.request<Vehicle>(`/vehicle/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(vehicleData),
+    });
+  }
 }

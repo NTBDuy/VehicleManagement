@@ -23,7 +23,7 @@ const NotificationScreen = () => {
   }, [user]);
 
   const getNotifcationByUserID = (userId: number) => {
-    const data = notifications.filter((notification) => notification.UserId === userId);
+    const data = notifications.filter((notification) => notification.userId === userId);
     return setUserNotifications(data);
   };
 
@@ -76,7 +76,7 @@ const NotificationScreen = () => {
       }`}
       activeOpacity={0.7}>
       <View className="flex-row items-start">
-        <NotificationIcon type={item.Type} />
+        <NotificationIcon type={item.type} />
 
         <View className="ml-3 flex-1">
           <Text className="mb-3 text-base leading-6 text-gray-800">{item.Message}</Text>

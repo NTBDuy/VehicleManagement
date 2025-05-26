@@ -60,52 +60,52 @@ const VehicleDetailScreen = () => {
         backBtn
         title="Vehicle Detail"
         rightElement={
-          <Pressable onPress={handleEditVehicle} className="rounded-full bg-white p-2">
+          <Pressable onPress={handleEditVehicle} className="p-2 bg-white rounded-full">
             <FontAwesomeIcon icon={faEdit} size={18} />
           </Pressable>
         }
       />
 
       <View className="px-6">
-        <View className="mb-6 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-blue-50 p-4">
+        <View className="mt-4 mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="p-4 bg-blue-50">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
-                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                <View className="items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-full">
                   <FontAwesomeIcon
-                    icon={getVehicleTypeIcon(vehicleData.Type)}
+                    icon={getVehicleTypeIcon(vehicleData.type)}
                     size={18}
                     color="#2563eb"
                   />
                 </View>
                 <View>
-                  <Text className="text-sm text-gray-500">Vehicle ID #{vehicleData.VehicleId}</Text>
+                  <Text className="text-sm text-gray-500">Vehicle ID #{vehicleData.vehicleId}</Text>
                   <Text className="text-lg font-bold text-gray-800">
-                    {vehicleData.LicensePlate}
+                    {vehicleData.licensePlate}
                   </Text>
                 </View>
               </View>
-              {renderBadgeVehicleStatus({ status: vehicleData.Status })}
+              {renderBadgeVehicleStatus({ status: vehicleData.status })}
             </View>
           </View>
         </View>
 
         {/** Section - thông tin cơ bản */}
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
           </View>
 
           <View className="p-4">
-            <InfoRow label="Plate number" value={vehicleData.LicensePlate || 'No information'} />
-            <InfoRow label="Type" value={vehicleData.Type || 'No information'} />
+            <InfoRow label="Plate number" value={vehicleData.licensePlate || 'No information'} />
+            <InfoRow label="type" value={vehicleData.type || 'No information'} />
             <InfoRow
               label="Brand & Model"
               value=""
               valueComponent={
-                vehicleData.Brand || vehicleData.Model ? (
+                vehicleData.brand || vehicleData.model ? (
                   <Text className="font-semibold text-gray-700">
-                    {vehicleData.Brand} {vehicleData.Model}
+                    {vehicleData.brand} {vehicleData.model}
                   </Text>
                 ) : (
                   <Text className="font-semibold text-gray-700">No information</Text>
@@ -117,13 +117,13 @@ const VehicleDetailScreen = () => {
         </View>
 
         {/** Section - lịch bảo dưỡng  */}
-        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Maintenance</Text>
           </View>
 
           <View className="p-4">
-            <InfoRow label="Last time" value={vehicleData.LastMaintenance || 'No information'} />
+            <InfoRow label="Last time" value={vehicleData.lastMaintenance || 'No information'} />
             <InfoRow label="Next time" value="Not scheduled" isLast />
           </View>
         </View>

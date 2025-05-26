@@ -4,6 +4,7 @@ using VMServer.Models.DTOs;
 using VMServer.Models.Entities;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 namespace VMServer.Controllers
 {
@@ -38,6 +39,46 @@ namespace VMServer.Controllers
                 .ToListAsync();
 
             return Ok(availableVehicles);
+        }
+
+        // POST: api/vehicle
+        [Authorize(Roles = "Administrator, Manager")]
+        [HttpPost]
+        public async Task<IActionResult> CreateNewVehicle([FromBody] VehicleDTO dto)
+        {
+            var newVehicle = new Vehicle
+            {
+                LicensePlate = dto.LicensePlate,
+                Type = dto.Type,
+                Brand = dto.Brand,
+                Model = dto.Model,
+                Status = Status.Available,
+                CreatedAt = DateTime.Now,
+                LastUpdateAt = DateTime.Now
+            };
+
+            _dbContext.Vehicles.Add(newVehicle);
+            await _dbContext.SaveChangesAsync();
+            return Ok(newVehicle);
+        }
+
+        // PUT: api/vehicle/{vehicleId}
+        [Authorize(Roles = "Administrator, Manager")]
+        [HttpPut("{vehicleId}")]
+        public async Task<IActionResult> UpdateVehicle(int vehicleId, [FromBody] VehicleDTO dto)
+        {
+            var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null)
+                return NotFound(new { message = $"Vehicle not found with ID #{vehicleId}" });
+
+            vehicle.LicensePlate = dto.LicensePlate;
+            vehicle.Type = dto.Type;
+            vehicle.Brand = dto.Brand;
+            vehicle.Model = dto.Model;
+            vehicle.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+            return Ok(vehicle);
         }
     }
 }

@@ -1,91 +1,91 @@
 [
   {
     "NotificationId": 1,
-    "UserId": 1,
+    "userId": 1,
     "User": {
-      "UserId": 1,
-      "Username": "john.doe",
+      "userId": 1,
+      "username": "john.doe",
       "PasswordHash": "Admin@123",
-      "FullName": "John Doe",
-      "Email": "john.doe@vms.com",
-      "Phone": "876543210",
-      "Role": 0,
-      "Status": true
+      "fullName": "John Doe",
+      "email": "john.doe@vms.com",
+      "phoneNumber": "876543210",
+      "role": 0,
+      "status": true
     },
     "Message": "Yêu cầu đặt xe của bạn cho ngày 24/05 đã được chấp thuận.",
-    "Type": "RequestApproved",
+    "type": "RequestApproved",
     "CreatedAt": "2025-05-19T09:00:00Z",
     "IsRead": false
   },
   {
     "NotificationId": 2,
-    "UserId": 2,
+    "userId": 2,
     "User": {
-      "UserId": 2,
-      "Username": "jane.smith",
+      "userId": 2,
+      "username": "jane.smith",
       "PasswordHash": "Manager@123",
-      "FullName": "Jane Smith",
-      "Email": "jane.smith@vms.com",
-      "Phone": "876543211",
-      "Role": 2,
-      "Status": true
+      "fullName": "Jane Smith",
+      "email": "jane.smith@vms.com",
+      "phoneNumber": "876543211",
+      "role": 2,
+      "status": true
     },
     "Message": "Xe Ford F-150 đã được lên lịch kiểm tra bảo dưỡng ngày 22/05.",
-    "Type": "MaintenanceScheduled",
+    "type": "MaintenanceScheduled",
     "CreatedAt": "2025-05-18T14:20:00Z",
     "IsRead": true
   },
   {
     "NotificationId": 3,
-    "UserId": 3,
+    "userId": 3,
     "User": {
-      "UserId": 3,
-      "Username": "michael.brown",
+      "userId": 3,
+      "username": "michael.brown",
       "PasswordHash": "Employee@123",
-      "FullName": "Michael Brown",
-      "Email": "michael.brown@vms.com",
-      "Phone": "876543212",
-      "Role": 1,
-      "Status": false
+      "fullName": "Michael Brown",
+      "email": "michael.brown@vms.com",
+      "phoneNumber": "876543212",
+      "role": 1,
+      "status": false
     },
     "Message": "Tài khoản của bạn hiện đang bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.",
-    "Type": "AccountDeactivated",
+    "type": "AccountDeactivated",
     "CreatedAt": "2025-05-19T07:30:00Z",
     "IsRead": false
   },
   {
     "NotificationId": 4,
-    "UserId": 2,
+    "userId": 2,
     "User": {
-      "UserId": 2,
-      "Username": "jane.smith",
+      "userId": 2,
+      "username": "jane.smith",
       "PasswordHash": "Manager@123",
-      "FullName": "Jane Smith",
-      "Email": "jane.smith@vms.com",
-      "Phone": "876543211",
-      "Role": 2,
-      "Status": true
+      "fullName": "Jane Smith",
+      "email": "jane.smith@vms.com",
+      "phoneNumber": "876543211",
+      "role": 2,
+      "status": true
     },
     "Message": "Yêu cầu đặt xe ngày 22/05 của bạn đã được duyệt.",
-    "Type": "RequestApproved",
+    "type": "RequestApproved",
     "CreatedAt": "2025-05-17T12:00:00Z",
     "IsRead": true
   },
   {
     "NotificationId": 5,
-    "UserId": 1,
+    "userId": 1,
     "User": {
-      "UserId": 1,
-      "Username": "john.doe",
+      "userId": 1,
+      "username": "john.doe",
       "PasswordHash": "Admin@123",
-      "FullName": "John Doe",
-      "Email": "john.doe@vms.com",
-      "Phone": "876543210",
-      "Role": 0,
-      "Status": true
+      "fullName": "John Doe",
+      "email": "john.doe@vms.com",
+      "phoneNumber": "876543210",
+      "role": 0,
+      "status": true
     },
     "Message": "Xe Chevrolet Silverado sẽ được sử dụng cho lịch trình ngày 24/05.",
-    "Type": "VehicleAssigned",
+    "type": "VehicleAssigned",
     "CreatedAt": "2025-05-19T08:00:00Z",
     "IsRead": true
   }
