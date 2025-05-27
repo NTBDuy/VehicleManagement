@@ -105,11 +105,11 @@ const VehicleScreen = () => {
       );
     }
 
-    if (status == 'Available') {
+    if (status === 'Available') {
       filtered = filtered.filter((item) => item.status === 0);
-    } else if (status == 'InUse') {
+    } else if (status === 'InUse') {
       filtered = filtered.filter((item) => item.status === 1);
-    } else if (status == 'Maintenance') {
+    } else if (status === 'Maintenance') {
       filtered = filtered.filter((item) => item.status === 2);
     }
 
@@ -347,7 +347,7 @@ const VehicleScreen = () => {
               <Text className="text-lg font-semibold text-yellow-600">Edit vehicles</Text>
             </Pressable>
 
-            {selected?.status != 2 && (
+            {selected?.status !== 2 && (
               <Pressable
                 className="flex-row items-center gap-3 mb-6"
                 onPress={() => {

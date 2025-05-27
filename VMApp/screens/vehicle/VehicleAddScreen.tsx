@@ -1,7 +1,7 @@
-import { View, Text, TextInput, SafeAreaView, Pressable, ScrollView } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import { View, Text, SafeAreaView, Pressable, ScrollView } from 'react-native';
+import { useCallback, useState } from 'react';
 import Header from 'components/HeaderComponent';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Vehicle from 'types/Vehicle';
 import InputField from 'components/InputFieldComponent';
 import { showToast } from 'utils/toast';

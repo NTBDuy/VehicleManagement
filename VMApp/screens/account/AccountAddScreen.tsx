@@ -1,22 +1,16 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Pressable,
-  Image,
-  Switch,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import { useState } from 'react';
+import { View, Text, SafeAreaView, Pressable, Image, Switch, ScrollView } from 'react-native';
+import { useCallback, useState } from 'react';
 import Header from 'components/HeaderComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import User from 'types/User';
 import InputField from 'components/InputFieldComponent';
+import { showToast } from 'utils/toast';
+import { AccountService } from 'services/accountService';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 const AccountCreateScreen = () => {
-  const [userData, setUserData] = useState<User>({
+  const initialUserData = {
     userId: 0,
     fullName: '',
     email: '',
@@ -25,10 +19,19 @@ const AccountCreateScreen = () => {
     passwordHash: '',
     role: 1,
     status: true,
-  });
+  };
 
+  const navigation = useNavigation<any>();
+  const [userData, setUserData] = useState<User>(initialUserData);
   const [errors, setErrors] = useState<Partial<User>>({});
-  
+  const [isLoading, setIsLoading] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      setUserData(initialUserData);
+    }, [])
+  );
+
   const roles = [
     { label: 'Employee', value: 1 },
     { label: 'Manager', value: 2 },
@@ -54,31 +57,25 @@ const AccountCreateScreen = () => {
       newErrors.phoneNumber = 'Please enter a valid phoneNumber number';
     }
 
-    if (!userData.username.trim()) {
-      newErrors.username = 'username is required';
-    } else if (userData.username.length < 3) {
-      newErrors.username = 'username must be at least 3 characters';
-    }
-
-    if (!userData.passwordHash.trim()) {
-      newErrors.passwordHash = 'Password is required';
-    } else if (userData.passwordHash.length < 6) {
-      newErrors.passwordHash = 'Password must be at least 6 characters';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = async () => {
     if (!validateForm()) {
-      Alert.alert('Validation Error', 'Please fix the errors above');
+      showToast.error('Validation Error', 'Please fix the errors above');
       return;
     }
-
-    // TODO: Implement API call to create account
-    console.log('Creating account with data:', userData);
-    Alert.alert('Success', 'Account created successfully!');
+    try {
+      setIsLoading(true);
+      const data = await AccountService.createAccount(userData);
+      showToast.success('Success', 'Vehicle created successfully!');
+      navigation.navigate('AccountDetail', { userData: data });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -113,14 +110,14 @@ const AccountCreateScreen = () => {
               error={errors.fullName}
             />
             <InputField
-              label="email"
+              label="Email"
               value={userData.email}
               onChangeText={(text) => setUserData({ ...userData, email: text })}
               keyboardType="email-address"
               error={errors.email}
             />
             <InputField
-              label="phoneNumber Number"
+              label="Phone Number"
               value={userData.phoneNumber}
               onChangeText={(text) => setUserData({ ...userData, phoneNumber: text })}
               placeholder="e.g. 0912345678"
@@ -136,22 +133,22 @@ const AccountCreateScreen = () => {
             <Text className="text-lg font-semibold text-gray-800">Account Details</Text>
           </View>
           <View className="p-4">
-            <InputField
-              label="username"
-              value={userData.username}
-              onChangeText={(text) => setUserData({ ...userData, username: text })}
-              error={errors.username}
-            />
-            <InputField
-              label="Password"
-              value={userData.passwordHash}
-              onChangeText={(text) => setUserData({ ...userData, passwordHash: text })}
-              secureTextEntry
-              error={errors.passwordHash}
-            />
+            <View className="p-4 mb-6 border border-blue-200 rounded-2xl bg-blue-50">
+              <View className="flex-row items-center">
+                <FontAwesomeIcon icon={faCircleInfo} size={24} color="#1e40af" />
+                <View className="flex-1 ml-4">
+                  <Text className="mb-1 font-semibold text-blue-800">
+                    Username and password will be automatically generated
+                  </Text>
+                  <Text className="text-sm text-blue-600">
+                    Default password will be: P@ssword123
+                  </Text>
+                </View>
+              </View>
+            </View>
             <View className="mb-4">
               <Text className="mb-2 text-sm text-gray-600">
-                role <Text className="text-red-500">*</Text>
+                Role <Text className="text-red-500">*</Text>
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {roles.map((role) => {
@@ -195,9 +192,12 @@ const AccountCreateScreen = () => {
         {/* Action Button */}
         <View className="mt-4 mb-8">
           <Pressable
-            className="items-center py-4 bg-blue-600 shadow-sm rounded-xl active:bg-blue-700"
+            className={`items-center rounded-xl py-4 shadow-sm ${isLoading ? 'bg-gray-500' : 'bg-blue-600 active:bg-blue-700'}`}
+            disabled={isLoading}
             onPress={handleCreateAccount}>
-            <Text className="text-lg font-semibold text-white">Create Account</Text>
+            <Text className="text-lg font-semibold text-white">
+              {isLoading ? 'Creating...' : 'Create Account'}
+            </Text>
           </Pressable>
         </View>
       </ScrollView>

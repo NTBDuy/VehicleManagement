@@ -2,9 +2,14 @@ import { BaseApiClient } from './baseApiClient';
 import Vehicle from '../types/Vehicle';
 
 export class VehicleService extends BaseApiClient {
-  // Lấy danh sách xe 
+  // Lấy danh sách xe
   static async getAllVehicles(): Promise<Vehicle[]> {
     return this.request<Vehicle[]>('/vehicle');
+  }
+
+  // Lấy thông tin chi tiết xe
+  static async getVehicleById(id: number): Promise<Vehicle> {
+    return this.request<Vehicle>(`/vehicle/${id}`);
   }
 
   // Lấy danh sách xe available
@@ -28,7 +33,7 @@ export class VehicleService extends BaseApiClient {
     });
   }
 
-  // Xóa vehicle 
+  // Xóa vehicle
   static async deleteVehicle(id: number): Promise<void> {
     return this.request<void>(`/vehicle/${id}`, {
       method: 'DELETE',

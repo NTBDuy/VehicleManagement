@@ -1,18 +1,40 @@
-import { View, Text, SafeAreaView, Pressable } from 'react-native';
+import { View, Text, SafeAreaView, Pressable, ActivityIndicator } from 'react-native';
 import Header from 'components/HeaderComponent';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import Vehicle from 'types/Vehicle';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {
-  faEdit,
-} from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import InfoRow from 'components/InfoRowComponent';
 import { getVehicleTypeIcon } from 'utils/vehicleUntils';
+import { useCallback, useState } from 'react';
+import { VehicleService } from 'services/vehicleService';
+import { formatDate } from 'utils/datetimeUtils';
 
 const VehicleDetailScreen = () => {
   const route = useRoute();
-  const { vehicleData } = route.params as { vehicleData: Vehicle };
+  const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
   const navigation = useNavigation<any>();
+
+  const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchVehicleData = async () => {
+    try {
+      setIsLoading(true);
+      const updatedData = await VehicleService.getVehicleById(vehicleData.vehicleId);
+      setVehicleData(updatedData);
+    } catch (error) {
+      console.log('Error fetching vehicle data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchVehicleData();
+    }, [vehicleData.vehicleId])
+  );
 
   const handleEditVehicle = () => {
     navigation.navigate('VehicleEdit', { vehicleData });
@@ -66,70 +88,79 @@ const VehicleDetailScreen = () => {
         }
       />
 
-      <View className="px-6">
-        <View className="mt-4 mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="p-4 bg-blue-50">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center">
-                <View className="items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-full">
-                  <FontAwesomeIcon
-                    icon={getVehicleTypeIcon(vehicleData.type)}
-                    size={18}
-                    color="#2563eb"
-                  />
+      {isLoading ? (
+        <View className="items-center justify-center flex-1">
+          <ActivityIndicator size="large" color="#3B82F6" />
+          <Text className="mt-2 text-gray-500">Loading vehicle details...</Text>
+        </View>
+      ) : (
+        <View className="px-6">
+          <View className="mt-4 mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
+            <View className="p-4 bg-blue-50">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center">
+                  <View className="items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-full">
+                    <FontAwesomeIcon
+                      icon={getVehicleTypeIcon(vehicleData.type)}
+                      size={18}
+                      color="#2563eb"
+                    />
+                  </View>
+                  <View>
+                    <Text className="text-sm text-gray-500">
+                      Vehicle ID #{vehicleData.vehicleId}
+                    </Text>
+                    <Text className="text-lg font-bold text-gray-800">
+                      {vehicleData.licensePlate}
+                    </Text>
+                  </View>
                 </View>
-                <View>
-                  <Text className="text-sm text-gray-500">Vehicle ID #{vehicleData.vehicleId}</Text>
-                  <Text className="text-lg font-bold text-gray-800">
-                    {vehicleData.licensePlate}
-                  </Text>
-                </View>
+                {renderBadgeVehicleStatus({ status: vehicleData.status })}
               </View>
-              {renderBadgeVehicleStatus({ status: vehicleData.status })}
             </View>
           </View>
+
+          {/** Section - thông tin cơ bản */}
+          <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+            <View className="px-4 py-3 bg-gray-50">
+              <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
+            </View>
+
+            <View className="p-4">
+              <InfoRow label="Plate number" value={vehicleData.licensePlate || 'No information'} />
+              <InfoRow label="Type" value={vehicleData.type || 'No information'} />
+              <InfoRow
+                label="Brand & Model"
+                value=""
+                valueComponent={
+                  vehicleData.brand || vehicleData.model ? (
+                    <Text className="font-semibold text-gray-700">
+                      {vehicleData.brand} {vehicleData.model}
+                    </Text>
+                  ) : (
+                    <Text className="font-semibold text-gray-700">No information</Text>
+                  )
+                }
+                isLast
+              />
+            </View>
+          </View>
+
+          {/** Section - lịch bảo dưỡng  */}
+          <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+            <View className="px-4 py-3 bg-gray-50">
+              <Text className="text-lg font-semibold text-gray-800">Maintenance</Text>
+            </View>
+
+            <View className="p-4">
+              <InfoRow label="Last time" value={formatDate(vehicleData.lastMaintenance) || 'No information'} />
+              <InfoRow label="Next time" value="Not scheduled" isLast />
+            </View>
+          </View>
+
+          {/** Section - thống kê */}
         </View>
-
-        {/** Section - thông tin cơ bản */}
-        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
-          </View>
-
-          <View className="p-4">
-            <InfoRow label="Plate number" value={vehicleData.licensePlate || 'No information'} />
-            <InfoRow label="type" value={vehicleData.type || 'No information'} />
-            <InfoRow
-              label="Brand & Model"
-              value=""
-              valueComponent={
-                vehicleData.brand || vehicleData.model ? (
-                  <Text className="font-semibold text-gray-700">
-                    {vehicleData.brand} {vehicleData.model}
-                  </Text>
-                ) : (
-                  <Text className="font-semibold text-gray-700">No information</Text>
-                )
-              }
-              isLast
-            />
-          </View>
-        </View>
-
-        {/** Section - lịch bảo dưỡng  */}
-        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Maintenance</Text>
-          </View>
-
-          <View className="p-4">
-            <InfoRow label="Last time" value={vehicleData.lastMaintenance || 'No information'} />
-            <InfoRow label="Next time" value="Not scheduled" isLast />
-          </View>
-        </View>
-
-        {/** Section - thống kê */}
-      </View>
+      )}
     </SafeAreaView>
   );
 };

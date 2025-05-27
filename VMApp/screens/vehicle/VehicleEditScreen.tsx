@@ -1,21 +1,30 @@
-import { View, Text, TextInput, SafeAreaView, Pressable, ScrollView } from 'react-native';
+import { View, Text, SafeAreaView, Pressable, ScrollView, Alert } from 'react-native';
 import React, { useState } from 'react';
 import Header from 'components/HeaderComponent';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Vihicle from 'types/Vehicle';
 import Vehicle from 'types/Vehicle';
 import InputField from 'components/InputFieldComponent';
 import { showToast } from 'utils/toast';
 import { VehicleService } from 'services/vehicleService';
 
 const VehicleEditScreen = () => {
+  const navigation = useNavigation<any>();
   const route = useRoute();
-  const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vihicle };
+  const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
 
   const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
   const [errors, setErrors] = useState<Partial<Vehicle>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
+  const updateVehicleData = (field: keyof Vehicle, value: any) => {
+    setVehicleData((prev) => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+  
   const types = [
     { label: 'Sedan', value: 'Sedan' },
     { label: 'SUV', value: 'SUV' },
@@ -46,20 +55,44 @@ const VehicleEditScreen = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleUpdateVehicle = async () => {
+  const handleUpdateVehicle = () => {
     if (!validateForm()) {
       showToast.error('Validation Error', 'Please fix the errors above');
       return;
     }
-    try {
-      setIsLoading(true);
-      const data = await VehicleService.updateVehicle(vehicleData.vehicleId, vehicleData);
-      showToast.success('Success', 'Vehicle updated successfully!');
-      setVehicleData(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
+    Alert.alert('Update Vehicle', 'Are you sure you want to update this vehicle?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Update',
+        onPress: async () => {
+          setIsLoading(true);
+          try {
+            setIsLoading(true);
+            const data = await VehicleService.updateVehicle(vehicleData.vehicleId, vehicleData);
+            setVehicleData(data);
+            showToast.success('Success', 'Vehicle updated successfully!');
+          } catch (error) {
+            console.log(error);
+          } finally {
+            setIsLoading(false);
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleCancel = () => {
+    if (hasChanges) {
+      Alert.alert(
+        'Discard Changes',
+        'You have unsaved changes. Are you sure you want to discard them?',
+        [
+          { text: 'Keep Editing', style: 'cancel' },
+          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+        ]
+      );
+    } else {
+      navigation.goBack();
     }
   };
 
@@ -83,7 +116,7 @@ const VehicleEditScreen = () => {
             <InputField
               label="Plate number"
               value={vehicleData.licensePlate}
-              onChangeText={(text) => setVehicleData({ ...vehicleData, licensePlate: text })}
+              onChangeText={(text) => updateVehicleData('licensePlate', text)}
               error={errors.licensePlate}
             />
 
@@ -97,7 +130,7 @@ const VehicleEditScreen = () => {
                   return (
                     <Pressable
                       key={type.value}
-                      onPress={() => setVehicleData({ ...vehicleData, type: type.value })}
+                      onPress={() => updateVehicleData('type', type.value)}
                       className={`w-[24%] items-center rounded-xl border px-4 py-2 ${
                         isFilterApplied ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'
                       }`}>
@@ -114,24 +147,30 @@ const VehicleEditScreen = () => {
             <InputField
               label="Brand"
               value={vehicleData.brand}
-              onChangeText={(text) => setVehicleData({ ...vehicleData, brand: text })}
+              onChangeText={(text) => updateVehicleData('brand', text)}
               error={errors.brand}
             />
             <InputField
               label="Model"
               value={vehicleData.model}
-              onChangeText={(text) => setVehicleData({ ...vehicleData, model: text })}
+              onChangeText={(text) => updateVehicleData('model', text)}
               error={errors.model}
             />
           </View>
         </View>
 
         {/** Active button */}
-        <View className="mt-2 mb-40">
+        <View className="flex-row justify-between mt-2 mb-40">
+          <Pressable
+            className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
+            onPress={handleCancel}
+            disabled={isLoading}>
+            <Text className="font-semibold text-gray-700">Cancel</Text>
+          </Pressable>
           <Pressable
             onPress={handleUpdateVehicle}
             disabled={isLoading}
-            className={`items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 active:bg-blue-700'}`}>
+            className={`w-[48%] items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 active:bg-blue-700'}`}>
             <Text className="font-bold text-white">
               {isLoading ? 'Updating ...' : 'Update Vehicle'}
             </Text>

@@ -1,6 +1,14 @@
 import Header from 'components/HeaderComponent';
-import { View, Text, SafeAreaView, FlatList, Pressable, Modal } from 'react-native';
-import accountData from 'data/user.json';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  FlatList,
+  Pressable,
+  Modal,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
 import User from 'types/User';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
@@ -13,13 +21,12 @@ import {
   faBan,
   faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getUserInitials } from 'utils/userUtils';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import EmptyList from 'components/EmptyListComponent';
 import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
-
-const accounts: User[] = accountData;
+import { AccountService } from 'services/accountService';
 
 const filterOptions = [
   { id: 3, name: 'All' },
@@ -30,15 +37,44 @@ const filterOptions = [
 
 const AccountScreen = () => {
   const navigation = useNavigation<any>();
+  const [accounts, setAccounts] = useState<User[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [activeFilter, setActiveFilter] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setFilteredUsers(accounts);
+    getAccountsData();
   }, []);
+
+  useEffect(() => {
+    if (accounts) {
+      setFilteredUsers(accounts);
+    }
+  }, [accounts]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getAccountsData();
+    }, [])
+  );
+
+  const getAccountsData = async () => {
+    try {
+      setIsLoading(true);
+      const data = await AccountService.getAllAccounts();
+      return setAccounts(data);
+    } catch (error) {
+      console.error(error);
+      return setAccounts([]);
+    } finally {
+      setRefreshing(false);
+      setIsLoading(false);
+    }
+  };
 
   /** Func: Search and filter */
   const filterAccounts = (query: string, role: number): void => {
@@ -75,8 +111,8 @@ const AccountScreen = () => {
   const renderUserItem = ({ item }: { item: User }) => (
     <Pressable
       onPress={() => handleOption(item)}
-      className="mb-4 mt-1 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
-      <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
+      className="flex-row items-center px-2 py-4 mt-1 mb-4 bg-gray-100 rounded-2xl">
+      <View className="items-center justify-center w-12 h-12 ml-2 mr-4 bg-blue-300 rounded-full">
         <Text className="text-xl font-semibold text-white">{getUserInitials(item.fullName)}</Text>
       </View>
       <View className="flex-1">
@@ -129,12 +165,17 @@ const AccountScreen = () => {
     setIsModalVisible(false);
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    getAccountsData();
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
         title="Account Management"
         rightElement={
-          <Pressable className="rounded-full bg-white p-2" onPress={handleAddUser}>
+          <Pressable className="p-2 bg-white rounded-full" onPress={handleAddUser}>
             <FontAwesomeIcon icon={faUserPlus} size={18} />
           </Pressable>
         }
@@ -145,7 +186,7 @@ const AccountScreen = () => {
         handleClearFilters={handleClearFilters}
       />
 
-      <View className="mx-6 mb-10 flex-1">
+      <View className="flex-1 mx-6 mb-10">
         <View className="my-4">
           <FlatList
             horizontal
@@ -164,20 +205,26 @@ const AccountScreen = () => {
             )}
           />
         </View>
-        <FlatList
-          data={filteredUsers}
-          renderItem={renderUserItem}
-          keyExtractor={(item) => item.userId.toString()}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <EmptyList title="No user found!" icon={faPersonCircleQuestion} />
-          }
-        />
+        {isLoading ? (
+          <View className="items-center justify-center flex-1">
+            <ActivityIndicator size="large" color="#3B82F6" />
+            <Text className="mt-2 text-gray-500">Loading accounts...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredUsers}
+            renderItem={renderUserItem}
+            keyExtractor={(item) => item.userId.toString()}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={<EmptyList title="No accounts found!" icon={faPersonCircleQuestion} />}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+        )}
       </View>
 
       {accounts.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
-          <Text className="text-center text-sm font-medium text-gray-500">
+        <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
+          <Text className="text-sm font-medium text-center text-gray-500">
             Total Users:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredUsers.length}</Text>
           </Text>
@@ -188,14 +235,14 @@ const AccountScreen = () => {
         visible={isModalVisible}
         animationType="slide"
         onRequestClose={() => setIsModalVisible(false)}>
-        <View className="flex-1 justify-end bg-black/30">
-          <View className="rounded-t-2xl bg-white p-6 pb-12">
-            <Text className="mb-6 text-center text-lg font-bold">
+        <View className="justify-end flex-1 bg-black/30">
+          <View className="p-6 pb-12 bg-white rounded-t-2xl">
+            <Text className="mb-6 text-lg font-bold text-center">
               Options for #{selected?.username}
             </Text>
 
             <Pressable
-              className="mb-6 flex-row items-center gap-3"
+              className="flex-row items-center gap-3 mb-6"
               onPress={() => {
                 handleViewDetail();
                 handleCloseModal();
@@ -205,7 +252,7 @@ const AccountScreen = () => {
             </Pressable>
 
             <Pressable
-              className="mb-6 flex-row items-center gap-3"
+              className="flex-row items-center gap-3 mb-6"
               onPress={() => {
                 handleEditUser();
                 handleCloseModal();
@@ -215,7 +262,7 @@ const AccountScreen = () => {
             </Pressable>
 
             <Pressable
-              className="mb-6 flex-row items-center gap-3"
+              className="flex-row items-center gap-3 mb-6"
               onPress={() => {
                 // onResetPassword();
                 handleCloseModal();
@@ -225,7 +272,7 @@ const AccountScreen = () => {
             </Pressable>
 
             <Pressable
-              className="mb-6 flex-row items-center gap-3"
+              className="flex-row items-center gap-3 mb-6"
               onPress={() => {
                 // onToggleStatus();
                 handleCloseModal();
@@ -242,7 +289,7 @@ const AccountScreen = () => {
             </Pressable>
 
             <Pressable
-              className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
+              className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg"
               onPress={handleCloseModal}>
               <Text className="text-lg font-semibold text-white">Close</Text>
             </Pressable>

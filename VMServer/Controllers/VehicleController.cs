@@ -29,6 +29,18 @@ namespace VMServer.Controllers
             return Ok(vehicles);
         }
 
+        // GET: api/vehicle/{vehicleId}
+        [Authorize(Roles = "Administrator, Manager")]
+        [HttpGet("{vehicleId}")]
+        public async Task<IActionResult> GetVehicleDetails(int vehicleId)
+        {
+            var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null)
+                return NotFound(new { message = $"Vehicle not found with ID #{vehicleId}" });
+            
+            return Ok(vehicle);
+        }
+
         // GET: api/vehicle/available
         [Authorize]
         [HttpGet("available")]
