@@ -38,6 +38,25 @@ namespace VMServer.Controllers
             return Ok(notifications);
         }
 
+        // GET: api/user/notification/count-unread
+        [Authorize]
+        [HttpGet("notifications/count-unread")]
+        public async Task<IActionResult> GetUserNotificationsUnread()
+        {
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
+
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found!" });
+
+            var count = await _dbContext.Notifications
+                .Where(n => n.UserId == userId && n.IsRead == false)
+                .CountAsync();
+
+            return Ok(count);
+        }
 
         // GET: api/user/requests
         // Lấy danh sách yêu cầu của người dùng

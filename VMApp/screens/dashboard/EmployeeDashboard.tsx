@@ -1,9 +1,9 @@
 import { Text, SafeAreaView, Pressable, ScrollView, View } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from 'contexts/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell, faCalendarPlus, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import Header from 'components/HeaderComponent';
 import WelcomeSection from 'components/WelcomeSectionComponent';
@@ -21,6 +21,7 @@ const EmployeeDashboard = () => {
   const { user } = useAuth();
   const navigation = useNavigation<any>();
 
+  const [notificationCount, setNotificationCount] = useState<number>(0);
   const [userRequest, setUserRequest] = useState<Request[]>([]);
   const [stat, setStat] = useState<employeeDashboardStat>({
     pending: [],
@@ -30,6 +31,7 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     if (user) {
       getRequestByUserID();
+      countUnread();
     }
   }, [user]);
 
@@ -38,6 +40,19 @@ const EmployeeDashboard = () => {
       statistics();
     }
   }, [userRequest]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getRequestByUserID();
+      statistics();
+      countUnread();
+    }, [])
+  );
+
+  const countUnread = async () => {
+    const totalNotifications = await UserService.getUserUnreadNotifications();
+    setNotificationCount(totalNotifications);
+  };
 
   const getRequestByUserID = async () => {
     const data = await UserService.getUserRequests();
@@ -57,9 +72,16 @@ const EmployeeDashboard = () => {
         title="Employee Dashboard"
         rightElement={
           <Pressable
-            className="p-2 bg-white rounded-full"
+            className="relative p-2 bg-white rounded-full"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
+            {notificationCount > 0 && (
+              <View className="absolute -right-2 -top-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500">
+                <Text className="text-xs font-bold text-center text-white">
+                  {notificationCount > 99 ? '99+' : notificationCount}
+                </Text>
+              </View>
+            )}
           </Pressable>
         }
       />

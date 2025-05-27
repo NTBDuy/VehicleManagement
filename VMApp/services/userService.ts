@@ -19,6 +19,11 @@ export class UserService extends BaseApiClient {
 
   // Lấy danh sách thông báo của user
   static async getUserNotifications(): Promise<Notification[]> {
-    return this.request<Notification[]>(`/user/notifications`)
+    return this.request<Notification[]>(`/user/notifications`);
+  }
+
+  
+  static async getUserUnreadNotifications(): Promise<number> {
+    return this.request<number>(`/user/notifications/count-unread`);
   }
 }

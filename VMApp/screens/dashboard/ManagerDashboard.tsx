@@ -25,6 +25,7 @@ import WelcomeSection from 'components/WelcomeSectionComponent';
 import { useAuth } from 'contexts/AuthContext';
 import { RequestService } from 'services/requestService';
 import { VehicleService } from 'services/vehicleService';
+import { UserService } from 'services/userService';
 
 type RequestStat = {
   total: number;
@@ -44,6 +45,7 @@ type VehicleStat = {
 const ManagerDashboard = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [requests, setRequests] = useState<Request[]>([]);
+  const [notificationCount, setNotificationCount] = useState<number>(0);
   const { user } = useAuth();
   const navigation = useNavigation<any>();
   const [requestStat, setRequestStat] = useState<RequestStat>({
@@ -67,6 +69,7 @@ const ManagerDashboard = () => {
 
   useEffect(() => {
     getStatData();
+    countUnread();
   }, []);
 
   useEffect(() => {
@@ -77,8 +80,14 @@ const ManagerDashboard = () => {
   useFocusEffect(
     useCallback(() => {
       getStatData();
+      countUnread();
     }, [])
   );
+
+  const countUnread = async () => {
+    const totalNotifications = await UserService.getUserUnreadNotifications();
+    setNotificationCount(totalNotifications);
+  };
 
   const getStatData = async () => {
     try {
@@ -101,7 +110,7 @@ const ManagerDashboard = () => {
     setRefreshing(true);
     getStatData();
   };
-  
+
   /** Func: Statistics  */
   const calculateRequestStatistics = (item: Request[]) => {
     const total = item.length;
@@ -195,9 +204,16 @@ const ManagerDashboard = () => {
         title="Manager Dashboard"
         rightElement={
           <Pressable
-            className="p-2 bg-white rounded-full"
+            className="relative p-2 bg-white rounded-full"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
+            {notificationCount > 0 && (
+              <View className="absolute -right-2 -top-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500">
+                <Text className="text-xs font-bold text-center text-white">
+                  {notificationCount > 99 ? '99+' : notificationCount}
+                </Text>
+              </View>
+            )}
           </Pressable>
         }
       />

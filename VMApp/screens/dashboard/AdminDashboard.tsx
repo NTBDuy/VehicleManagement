@@ -23,6 +23,7 @@ import WelcomeSection from 'components/WelcomeSectionComponent';
 import { useAuth } from 'contexts/AuthContext';
 import { VehicleService } from 'services/vehicleService';
 import { AccountService } from 'services/accountService';
+import { UserService } from 'services/userService';
 
 type VehicleStat = {
   total: number;
@@ -45,6 +46,7 @@ const AdminDashboard = () => {
   const [accounts, setAccounts] = useState<User[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [notificationCount, setNotificationCount] = useState<number>(0);
 
   const [vehicleStat, setVehicleStat] = useState<VehicleStat>({
     total: 0,
@@ -64,6 +66,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     getStatData();
+    countUnread();
   }, []);
 
   useEffect(() => {
@@ -76,8 +79,14 @@ const AdminDashboard = () => {
   useFocusEffect(
     useCallback(() => {
       getStatData();
+      countUnread();s
     }, [])
   );
+
+  const countUnread = async () => {
+    const totalNotifications = await UserService.getUserUnreadNotifications();
+    setNotificationCount(totalNotifications);
+  };
 
   const getStatData = async () => {
     try {
