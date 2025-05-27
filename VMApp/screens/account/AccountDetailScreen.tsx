@@ -9,6 +9,7 @@ import { formatVietnamPhoneNumber } from 'utils/userUtils';
 import InfoRow from 'components/InfoRowComponent';
 // Import your account service
 import { AccountService } from 'services/accountService';
+import { showToast } from 'utils/toast';
 
 type RoleInfo = {
   label: string;
@@ -25,7 +26,7 @@ const AccountDetailScreen = () => {
 
   const fetchUserData = async () => {
     if (!userData?.userId) return;
-    
+
     try {
       setIsLoading(true);
       const updatedData = await AccountService.getAccountById(userData.userId);
@@ -44,7 +45,7 @@ const AccountDetailScreen = () => {
       }
     }, [userData?.userId])
   );
-  
+
   if (!userData) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
@@ -130,9 +131,8 @@ const AccountDetailScreen = () => {
           onPress: async () => {
             setIsLoading(true);
             try {
-              // await AccountService.toggleUserStatus(userData.userId, !userData.status);
-              Alert.alert('Success', `Account has been ${action}d successfully`);
-              // Refresh dữ liệu sau khi cập nhật status
+              await AccountService.toggleStatus(userData?.userId);
+              showToast.success('Success', `Account has been ${action}d successfully`);
               await fetchUserData();
             } catch (error) {
               console.log('Error toggling status:', error);

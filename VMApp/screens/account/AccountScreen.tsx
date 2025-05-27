@@ -8,6 +8,7 @@ import {
   Modal,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import User from 'types/User';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -27,6 +28,7 @@ import { useCallback, useEffect, useState } from 'react';
 import EmptyList from 'components/EmptyListComponent';
 import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
 import { AccountService } from 'services/accountService';
+import { showToast } from 'utils/toast';
 
 const filterOptions = [
   { id: 3, name: 'All' },
@@ -170,6 +172,38 @@ const AccountScreen = () => {
     getAccountsData();
   };
 
+  const onToggleStatus = () => {
+    if (selected) {
+      const action = selected.status ? 'deactivate' : 'activate';
+      const actionText = selected.status ? 'Deactivate' : 'Activate';
+
+      Alert.alert(
+        `${actionText} Account`,
+        `Are you sure you want to ${action} ${selected.fullName || selected.username}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: actionText,
+            style: selected.status ? 'destructive' : 'default',
+            onPress: async () => {
+              setIsLoading(true);
+              try {
+                await AccountService.toggleStatus(selected?.userId);
+                showToast.success('Success', 'Account status changed successfully!');
+                getAccountsData();
+                handleCloseModal();
+              } catch (error) {
+                console.log(error);
+              } finally {
+                setIsLoading(false);
+              }
+            },
+          },
+        ]
+      );
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
@@ -216,7 +250,9 @@ const AccountScreen = () => {
             renderItem={renderUserItem}
             keyExtractor={(item) => item.userId.toString()}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={<EmptyList title="No accounts found!" icon={faPersonCircleQuestion} />}
+            ListEmptyComponent={
+              <EmptyList title="No accounts found!" icon={faPersonCircleQuestion} />
+            }
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
         )}
@@ -274,8 +310,7 @@ const AccountScreen = () => {
             <Pressable
               className="flex-row items-center gap-3 mb-6"
               onPress={() => {
-                // onToggleStatus();
-                handleCloseModal();
+                onToggleStatus();
               }}>
               <FontAwesomeIcon
                 icon={selected?.status ? faBan : faCircleCheck}

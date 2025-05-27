@@ -28,10 +28,10 @@ export class AccountService extends BaseApiClient {
     });
   }
 
-  // Xóa tài khoản
-  static async deleteAccount(id: number): Promise<void> {
-    return this.request<void>(`/account/${id}`, {
-      method: 'DELETE',
+  // Thay đổi trạng thái tài khoản
+  static async toggleStatus(id: number): Promise<void> {
+    return this.request<void>(`/account/${id}/toggle-status`, {
+      method: 'PUT',
     });
   }
 }

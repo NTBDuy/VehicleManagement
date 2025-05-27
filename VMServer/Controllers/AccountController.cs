@@ -38,7 +38,7 @@ namespace VMServer.Controllers
             var account = await _dbContext.Users.FindAsync(accountId);
             if (account == null)
                 return NotFound(new { message = $"Account not found with ID #{accountId}" });
-            
+
             return Ok(account);
         }
 
@@ -84,18 +84,21 @@ namespace VMServer.Controllers
             return Ok(account);
         }
 
-        // DELETE: api/account/{accountId}
+        // PUT: api/account/{accountId}/toggle-status
         [Authorize(Roles = "Administrator")]
-        [HttpDelete("{accountId}")]
-        public async Task<IActionResult> DeleteAccount(int accountId)
+        [HttpPut("{accountId}/toggle-status")]
+        public async Task<IActionResult> ToggleAccountStatus(int accountId)
         {
             var account = await _dbContext.Users.FindAsync(accountId);
             if (account == null)
                 return NotFound(new { message = $"Account not found with ID #{accountId}" });
 
-            _dbContext.Users.Remove(account);
+            account.Status = !account.Status;
+
             await _dbContext.SaveChangesAsync();
-            return Ok(new { message = $"Account with ID #{accountId} was removed successfully." });
+            return Ok(new { message = $"Account with ID #{accountId} has been toggled status successfully." });
         }
+
+        
     }
 }
