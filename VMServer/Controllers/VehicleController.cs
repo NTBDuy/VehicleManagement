@@ -37,7 +37,7 @@ namespace VMServer.Controllers
             var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
             if (vehicle == null)
                 return NotFound(new { message = $"Vehicle not found with ID #{vehicleId}" });
-            
+
             return Ok(vehicle);
         }
 
@@ -51,6 +51,39 @@ namespace VMServer.Controllers
                 .ToListAsync();
 
             return Ok(availableVehicles);
+        }
+
+        // GET: api/vehicle/{vehicleId}/schedule
+        [Authorize]
+        [HttpGet("{vehicleId}/schedule")]
+        public async Task<IActionResult> GetVehicleSchedule(int vehicleId)
+        {
+            var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null)
+                return NotFound(new { message = $"Vehicle not found with ID #{vehicleId}" });
+
+            var schedules = await _dbContext.Requests
+                .Include(r => r.User)
+                .Where(r => r.VehicleId == vehicleId && r.Status == RequestStatus.Approved)
+                .OrderByDescending(r => r.StartTime)
+                .ToListAsync();
+
+            return Ok(schedules);
+        }
+
+        [HttpGet("{vehicleId}/schedule-maintenance")]
+        public async Task<IActionResult> GetScheduleMaintenance(int vehicleId)
+        {
+            var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null)
+                return NotFound(new { message = "Vehicle not found." });
+
+            var nextMaintenance = await _dbContext.MaintenanceSchedules
+                .FirstOrDefaultAsync(m => m.VehicleId == vehicleId);
+            if (nextMaintenance == null)
+                return NotFound(new { message = "This vehicle does not have a scheduled maintenance." });
+
+            return Ok(nextMaintenance);
         }
 
         // POST: api/vehicle
@@ -72,6 +105,29 @@ namespace VMServer.Controllers
             _dbContext.Vehicles.Add(newVehicle);
             await _dbContext.SaveChangesAsync();
             return Ok(newVehicle);
+        }
+
+        [HttpPost("{vehicleId}/schedule-maintenance")]
+        public async Task<IActionResult> ScheduleMaintenance(int vehicleId, [FromBody] MaintenanceScheduleDTO dto)
+        {
+            var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null)
+                return NotFound(new { message = "Vehicle not found!" });
+
+            var newSchedule = new MaintenanceSchedule
+            {
+                VehicleId = vehicleId,
+                ScheduledDate = dto.ScheduledDate,
+                Description = dto.Description
+            };
+
+            _dbContext.MaintenanceSchedules.Add(newSchedule);
+            await _dbContext.SaveChangesAsync(); 
+
+            vehicle.NextMaintenanceId = newSchedule.MaintenanceId;
+            vehicle.NextMaintenance = dto.ScheduledDate;
+            await _dbContext.SaveChangesAsync();
+            return Ok(newSchedule);
         }
 
         // PUT: api/vehicle/{vehicleId}

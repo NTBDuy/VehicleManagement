@@ -4,16 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faHome,
   faUsers,
-  faCalendarCheck,
+  faCalendarPlus,
   faGear,
-  faChartArea,
+  faClockRotateLeft,
   faCarSide,
 } from '@fortawesome/free-solid-svg-icons';
 
 import HomeScreen from 'screens/dashboard/AdminDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
-import RequestScreen from 'screens/request/RequestScreen';
 import AccountScreen from 'screens/account/AccountScreen';
 import AccountDetailScreen from 'screens/account/AccountDetailScreen';
 import AccountEditScreen from 'screens/account/AccountEditScreen';
@@ -23,21 +22,26 @@ import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
+import NewRequest from 'screens/request/RequestCreateScreen';
+import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
+import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 
 import SidebarComponent from 'components/SidebarComponent';
 
 const Drawer = createDrawerNavigator();
-const HomeStack = createNativeStackNavigator();
+const DashboardStack = createNativeStackNavigator();
 const AccountStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
 const SettingStack = createNativeStackNavigator();
+const NewRequestStack = createNativeStackNavigator();
+const HistoryStack = createNativeStackNavigator();
 
-function HomeStackScreen() {
+function DashboardStackScreen() {
   return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="AdminHome" component={HomeScreen} />
-      <HomeStack.Screen name="Notification" component={NotificationScreen} />
-    </HomeStack.Navigator>
+    <DashboardStack.Navigator screenOptions={{ headerShown: false }}>
+      <DashboardStack.Screen name="AdminHome" component={HomeScreen} />
+      <DashboardStack.Screen name="Notification" component={NotificationScreen} />
+    </DashboardStack.Navigator>
   );
 }
 
@@ -67,29 +71,66 @@ function SettingStackScreen() {
   return (
     <SettingStack.Navigator screenOptions={{ headerShown: false }}>
       <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
-      <SettingStack.Screen name='EditProfile' component={EditProfileScreen} />
+      <SettingStack.Screen name="EditProfile" component={EditProfileScreen} />
     </SettingStack.Navigator>
-  )
+  );
 }
 
-export default function AdminNavigator({
-  
-}: {
- 
-}) {
+function NewRequestStackScreen() {
+  return (
+    <NewRequestStack.Navigator screenOptions={{ headerShown: false }}>
+      <NewRequestStack.Screen name="NewRequest" component={NewRequest} />
+    </NewRequestStack.Navigator>
+  );
+}
+
+function HistoryStackScreen() {
+  return (
+    <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
+      <HistoryStack.Screen name="HistoryScreen" component={HistoryBookingScreen} />
+      <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
+    </HistoryStack.Navigator>
+  );
+}
+
+export default function AdminNavigator() {
   return (
     <Drawer.Navigator
-      initialRouteName="HomeStack"
-      drawerContent={(props) => <SidebarComponent {...props} />}>
+      initialRouteName="DashboardStack"
+      drawerContent={(props) => <SidebarComponent {...props} />}
+      screenOptions={{
+        headerShown: false,
+      }}>
       <Drawer.Screen
-        name="HomeStack"
-        component={HomeStackScreen}
+        name="DashboardStack"
+        component={DashboardStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faHome} color={color} size={size} />
           ),
-          title: 'Home',
-          headerShown: false,
+          title: 'Dashboard',
+        }}
+      />
+
+      <Drawer.Screen
+        name="NewRequestStack"
+        component={NewRequestStackScreen}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faCalendarPlus} color={color} size={size} />
+          ),
+          title: 'New Request',
+        }}
+      />
+
+      <Drawer.Screen
+        name="HistoryStack"
+        component={HistoryStackScreen}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
+          ),
+          title: 'History Request',
         }}
       />
 
@@ -101,7 +142,6 @@ export default function AdminNavigator({
             <FontAwesomeIcon icon={faUsers} color={color} size={size} />
           ),
           title: 'Account Management',
-          headerShown: false,
         }}
       />
 
@@ -113,20 +153,19 @@ export default function AdminNavigator({
             <FontAwesomeIcon icon={faCarSide} color={color} size={size} />
           ),
           title: 'Vehicle Management',
-          headerShown: false,
         }}
       />
 
       <Drawer.Screen
         name="SettingStack"
+        component={SettingStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faGear} color={color} size={size} />
           ),
           title: 'Setting',
-          headerShown: false,
         }}
-        component={SettingStackScreen}></Drawer.Screen>
+      />
     </Drawer.Navigator>
   );
 }

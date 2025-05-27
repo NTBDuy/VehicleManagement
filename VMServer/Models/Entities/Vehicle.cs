@@ -32,9 +32,16 @@ namespace VMServer.Models.Entities
         public Status Status { get; set; }
 
         public DateTime? LastMaintenance { get; set; }
+        
+        public DateTime? NextMaintenance { get; set; }
+
+        [ForeignKey("MaintenanceSchedule")]
+        public int? NextMaintenanceId { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime LastUpdateAt { get; set; } = DateTime.Now;
+
+        // public MaintenanceSchedule? MaintenanceSchedule { get; set; }
     }
 }

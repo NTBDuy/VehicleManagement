@@ -17,7 +17,7 @@ import Driver from 'types/Driver';
 import { showToast } from 'utils/toast';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-import { sendNotification } from 'services/notificationService';
+
 
 interface ApproveModalProps {
   visible: boolean;

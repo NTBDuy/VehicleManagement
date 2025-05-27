@@ -98,7 +98,7 @@ const EmployeeDashboard = () => {
           <View className="flex-row justify-between p-4">
             <Pressable
               onPress={() => {
-                navigation.getParent()?.navigate('BookingStack');
+                navigation.getParent()?.navigate('NewRequestStack');
               }}
               className="w-[48%] flex-row justify-center rounded-2xl bg-green-500 p-4 active:bg-green-600">
               <FontAwesomeIcon icon={faCalendarPlus} color="#fff" />

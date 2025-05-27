@@ -36,6 +36,10 @@ namespace VMServer.Controllers
             if (user == null)
                 return Unauthorized(new { message = "Invalid credentials." });
 
+            if (!user.Status)
+                return StatusCode(423, new { message = "The account has been deactivate. Please contact the Admin." });
+
+
             var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
             if (passwordVerificationResult == PasswordVerificationResult.Failed)
                 return Unauthorized(new { message = "Invalid credentials." });

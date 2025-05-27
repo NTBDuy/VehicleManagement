@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, Pressable, FlatList, RefreshControl } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Header from 'components/HeaderComponent';
 import Request from 'types/Request';
 import { useAuth } from 'contexts/AuthContext';
@@ -8,7 +8,6 @@ import RequestItem from 'components/HistoryRequestItem';
 import { UserService } from 'services/userService';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
 
 const RequestHistoryScreen = () => {
   const { user } = useAuth();
@@ -66,8 +65,8 @@ const RequestHistoryScreen = () => {
       );
     }
 
-    if (status != 4) {
-      filtered = filtered.filter((request) => request.status == status);
+    if (status !== 4) {
+      filtered = filtered.filter((request) => request.status === status);
     }
 
     setFilteredRequest(filtered);

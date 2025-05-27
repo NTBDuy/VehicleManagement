@@ -21,24 +21,25 @@ import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import SidebarComponent from 'components/SidebarComponent';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
-import BookingScreen from 'screens/request/RequestCreateScreen';
+import NewRequest from 'screens/request/RequestCreateScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
 import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
+import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
 
 const Drawer = createDrawerNavigator();
-const HomeStack = createNativeStackNavigator();
+const DashboardStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
 const RequestStack = createNativeStackNavigator();
-const BookingStack = createNativeStackNavigator();
+const NewRequestStack = createNativeStackNavigator();
 const HistoryStack = createNativeStackNavigator();
 const SettingStack = createNativeStackNavigator();
 
-function HomeStackScreen() {
+function DashboardStackScreen() {
   return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="ManagerHome" component={HomeScreen} />
-      <HomeStack.Screen name="Notification" component={NotificationScreen} />
-    </HomeStack.Navigator>
+    <DashboardStack.Navigator screenOptions={{ headerShown: false }}>
+      <DashboardStack.Screen name="ManagerHome" component={HomeScreen} />
+      <DashboardStack.Screen name="Notification" component={NotificationScreen} />
+    </DashboardStack.Navigator>
   );
 }
 
@@ -49,6 +50,7 @@ function VehicleStackScreen() {
       <VehicleStack.Screen name="VehicleDetail" component={VehicleDetailScreen} />
       <VehicleStack.Screen name="VehicleEdit" component={VehicleEditScreen} />
       <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
+      <RequestStack.Screen name="ScheduleMaintenance" component={ScheduleMaintenance} />
     </VehicleStack.Navigator>
   );
 }
@@ -62,11 +64,11 @@ function RequestStackScreen() {
   );
 }
 
-function BookingStackScreen() {
+function NewRequestStackScreen() {
   return (
-    <BookingStack.Navigator screenOptions={{ headerShown: false }}>
-      <BookingStack.Screen name="BookingScreen" component={BookingScreen} />
-    </BookingStack.Navigator>
+    <NewRequestStack.Navigator screenOptions={{ headerShown: false }}>
+      <NewRequestStack.Screen name="NewRequest" component={NewRequest} />
+    </NewRequestStack.Navigator>
   );
 }
 
@@ -88,31 +90,31 @@ function SettingStackScreen() {
   );
 }
 
-export default function ManagerNavigator({}: {}) {
+export default function ManagerNavigator() {
   return (
     <Drawer.Navigator
-      initialRouteName="HomeStack"
+      initialRouteName="DashboardStack"
       drawerContent={(props) => <SidebarComponent {...props} />}>
       <Drawer.Screen
-        name="HomeStack"
-        component={HomeStackScreen}
+        name="DashboardStack"
+        component={DashboardStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faHome} color={color} size={size} />
           ),
-          title: 'Home',
+          title: 'Dashboard',
           headerShown: false,
         }}
       />
 
       <Drawer.Screen
-        name="BookingStack"
-        component={BookingStackScreen}
+        name="NewRequestStack"
+        component={NewRequestStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCalendarPlus} color={color} size={size} />
           ),
-          title: 'Booking',
+          title: 'New Request',
           headerShown: false,
         }}
       />
@@ -124,7 +126,7 @@ export default function ManagerNavigator({}: {}) {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'History',
+          title: 'History Request',
           headerShown: false,
         }}
       />

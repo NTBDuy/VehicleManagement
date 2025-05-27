@@ -1,6 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faHome,
@@ -13,34 +12,34 @@ import HomeScreen from 'screens/dashboard/EmployeeDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
 import SidebarComponent from 'components/SidebarComponent';
-import BookingScreen from 'screens/request/RequestCreateScreen';
+import NewRequest from 'screens/request/RequestCreateScreen';
 import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 
 const Drawer = createDrawerNavigator();
-const HomeStack = createNativeStackNavigator();
-const BookingStack = createNativeStackNavigator();
+const DashboardStack = createNativeStackNavigator();
+const NewRequestStack = createNativeStackNavigator();
 const HistoryStack = createNativeStackNavigator();
 const SettingStack = createNativeStackNavigator();
 
-function HomeStackScreen() {
+function DashboardStackScreen() {
   return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="Dashboard" component={HomeScreen} />
-      <HomeStack.Screen name="Notification" component={NotificationScreen} />
-      <HomeStack.Screen name="RequestDetail" component={RequestDetailScreen} />
-      <HomeStack.Screen name="BookingStack" component={BookingScreen} />
-      <HomeStack.Screen name="HistoryStack" component={HistoryBookingScreen} />
-    </HomeStack.Navigator>
+    <DashboardStack.Navigator screenOptions={{ headerShown: false }}>
+      <DashboardStack.Screen name="Dashboard" component={HomeScreen} />
+      <DashboardStack.Screen name="Notification" component={NotificationScreen} />
+      <DashboardStack.Screen name="RequestDetail" component={RequestDetailScreen} />
+      <DashboardStack.Screen name="NewRequestStack" component={NewRequest} />
+      <DashboardStack.Screen name="HistoryStack" component={HistoryBookingScreen} />
+    </DashboardStack.Navigator>
   );
 }
 
-function BookingStackScreen() {
+function NewRequestStackScreen() {
   return (
-    <BookingStack.Navigator screenOptions={{ headerShown: false }}>
-      <BookingStack.Screen name="BookingScreen" component={BookingScreen} />
-    </BookingStack.Navigator>
+    <NewRequestStack.Navigator screenOptions={{ headerShown: false }}>
+      <NewRequestStack.Screen name="NewRequest" component={NewRequest} />
+    </NewRequestStack.Navigator>
   );
 }
 
@@ -62,35 +61,31 @@ function SettingStackScreen() {
   );
 }
 
-export default function EmployeeNavigator({
- 
-}: {
-
-}) {
+export default function EmployeeNavigator() {
   return (
     <Drawer.Navigator
-      initialRouteName="HomeStack"
-      drawerContent={(props) => <SidebarComponent {...props}/>}>
+      initialRouteName="DashboardStack"
+      drawerContent={(props) => <SidebarComponent {...props} />}>
       <Drawer.Screen
-        name="HomeStack"
-        component={HomeStackScreen}
+        name="DashboardStack"
+        component={DashboardStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faHome} color={color} size={size} />
           ),
-          title: 'Home',
+          title: 'Dashboard',
           headerShown: false,
         }}
       />
 
       <Drawer.Screen
-        name="BookingStack"
-        component={BookingStackScreen}
+        name="NewRequestStack"
+        component={NewRequestStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCalendarPlus} color={color} size={size} />
           ),
-          title: 'Booking',
+          title: 'New Request',
           headerShown: false,
         }}
       />
@@ -102,7 +97,7 @@ export default function EmployeeNavigator({
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'History',
+          title: 'History Request',
           headerShown: false,
         }}
       />

@@ -1,5 +1,6 @@
 import { BaseApiClient } from './baseApiClient';
 import Vehicle from '../types/Vehicle';
+import MaintenanceSchedule from 'types/MaintenanceSchedule';
 
 export class VehicleService extends BaseApiClient {
   // Lấy danh sách xe
@@ -17,11 +18,22 @@ export class VehicleService extends BaseApiClient {
     return this.request<Vehicle[]>('/vehicle/available');
   }
 
+  static async getVehicleSchedule(id: number): Promise<Request[]> {
+    return this.request<Request[]>(`/vehicle/${id}/schedule`);
+  }
+
   // Tạo mới xe
   static async createVehicle(vehicleData: Partial<Vehicle>): Promise<Vehicle> {
     return this.request<Vehicle>('/vehicle', {
       method: 'POST',
       body: JSON.stringify(vehicleData),
+    });
+  }
+
+  static async scheduleMaintenance(id: number, scheduleData: any): Promise<MaintenanceSchedule> {
+    return this.request<MaintenanceSchedule>(`/vehicle/${id}/schedule-maintenance`, {
+      method: 'POST',
+      body: JSON.stringify(scheduleData),
     });
   }
 

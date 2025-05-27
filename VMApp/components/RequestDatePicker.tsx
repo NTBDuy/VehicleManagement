@@ -70,7 +70,7 @@ const RequestDatePicker = ({
   return (
     <View className="px-2">
       <View className="mb-4">
-        <View className="mb-1 flex-row items-center">
+        <View className="flex-row items-center mb-1">
           <Switch
             trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
             thumbColor={isMultiDayTrip ? '#fff' : '#f3f4f6'}

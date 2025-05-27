@@ -29,6 +29,24 @@ namespace VMServer.Controllers
             return Ok(requests);
         }
 
+        [HttpGet("{requestId}/assignment")]
+        public async Task<IActionResult> GetAssignmentDetails(int requestId)
+        {
+            var request = await _dbContext.Requests.FindAsync(requestId);
+            if (request == null)
+                return NotFound(new { message = "Request not found!" });
+
+            var assignment = await _dbContext.Assignments
+                .Where(a => a.RequestId == requestId)
+                .Include(a => a.Driver)
+                .FirstOrDefaultAsync();
+
+            if (assignment == null)
+                return NotFound(new { message = "Assignment not found!" });
+
+            return Ok(assignment);
+        }
+
         // POST: api/request
         [Authorize]
         [HttpPost]
@@ -122,7 +140,7 @@ namespace VMServer.Controllers
             if (request == null)
                 return NotFound(new { message = $"Request not found with ID #{requestId}" });
 
-            request.CancellationReason = dto.Reason;
+            request.CancelOrRejectReason = dto.Reason;
             request.Status = RequestStatus.Cancelled;
             request.LastUpdateAt = DateTime.Now;
 
@@ -153,7 +171,7 @@ namespace VMServer.Controllers
             if (request == null)
                 return NotFound(new { message = $"Request not found with ID #{requestId}" });
 
-            request.CancellationReason = dto.Reason;
+            request.CancelOrRejectReason = dto.Reason;
             request.Status = RequestStatus.Rejected;
             request.LastUpdateAt = DateTime.Now;
 

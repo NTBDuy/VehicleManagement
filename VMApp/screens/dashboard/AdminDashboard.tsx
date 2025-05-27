@@ -79,7 +79,7 @@ const AdminDashboard = () => {
   useFocusEffect(
     useCallback(() => {
       getStatData();
-      countUnread();s
+      countUnread();
     }, [])
   );
 

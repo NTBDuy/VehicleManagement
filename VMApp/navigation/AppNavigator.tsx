@@ -1,7 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from 'contexts/AuthContext';
-import { useContext } from 'react';
 
 import AuthNavigator from './AuthNavigator';
 import AdminNavigator from './AdminNavigator';

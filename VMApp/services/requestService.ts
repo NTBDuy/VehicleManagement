@@ -1,10 +1,15 @@
 import { BaseApiClient } from './baseApiClient';
 import Request from '../types/Request';
+import Assignment from 'types/Assignment';
 
 export class RequestService extends BaseApiClient {
   // Lấy tất cả requests
   static async getAllRequests(): Promise<Request[]> {
     return this.request<Request[]>('/request');
+  }
+
+  static async getAssignmentDetails(id: number): Promise<Assignment> {
+    return this.request<Assignment>(`/request/${id}/assignment`)
   }
 
   // Tạo request mới

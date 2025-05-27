@@ -1,0 +1,197 @@
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Pressable,
+  ActivityIndicator,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import Header from 'components/HeaderComponent';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import Vehicle from 'types/Vehicle';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import InfoRow from 'components/InfoRowComponent';
+import { getVehicleTypeIcon } from 'utils/vehicleUntils';
+import { useCallback, useState } from 'react';
+import { VehicleService } from 'services/vehicleService';
+import { formatDate } from 'utils/datetimeUtils';
+import { Calendar, DateData } from 'react-native-calendars';
+import InputField from 'components/InputFieldComponent';
+import Assignment from 'types/Assignment';
+import { showToast } from 'utils/toast';
+
+const ScheduleMaintenance = () => {
+  const route = useRoute();
+  const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
+  const navigation = useNavigation<any>();
+
+  const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [description, setDescription] = useState('');
+  const [errors, setErrors] = useState<Partial<Assignment>>({});
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const markedDates = {
+    [selectedDate]: {
+      selected: true,
+      selectedColor: '#3b82f6',
+      selectedTextColor: '#ffffff',
+    },
+  };
+
+  const handleDayPress = (day: DateData) => {
+    setSelectedDate(day.dateString);
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Partial<Assignment> = {};
+
+    if (!description.trim()) {
+      newErrors.note = 'Description is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSchedule = async () => {
+    if (!validateForm()) {
+      showToast.error('Validation Error', 'Please fix the errors above');
+      return;
+    }
+
+    Alert.alert('Confirm Schedule', 'Are you sure you want to schedule this maintenance?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Confirm',
+        onPress: async () => {
+          setIsLoading(true);
+          try {
+            await VehicleService.scheduleMaintenance(vehicleData.vehicleId, {
+              scheduledDate: selectedDate,
+              description: description.trim(),
+            });
+
+            showToast.success('Scheduled', 'Maintenance scheduled successfully!');
+            navigation.goBack();
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
+          }
+        },
+      },
+    ]);
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <Header title="Schedule Maintenance" backBtn />
+
+      {isLoading ? (
+        <View className="items-center justify-center flex-1">
+          <ActivityIndicator size="large" color="#3B82F6" />
+          <Text className="mt-2 text-gray-500">Loading vehicle details...</Text>
+        </View>
+      ) : (
+        <ScrollView>
+          <View className="px-6">
+            {/** Section - thông tin cơ bản */}
+            <View className="mt-4 mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+              <View className="px-4 py-3 bg-gray-50">
+                <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
+              </View>
+
+              <View className="p-4">
+                <InfoRow
+                  label="Plate number"
+                  value={vehicleData.licensePlate || 'No information'}
+                />
+                <InfoRow label="Type" value={vehicleData.type || 'No information'} />
+                <InfoRow
+                  label="Brand & Model"
+                  value=""
+                  valueComponent={
+                    vehicleData.brand || vehicleData.model ? (
+                      <Text className="font-semibold text-gray-700">
+                        {vehicleData.brand} {vehicleData.model}
+                      </Text>
+                    ) : (
+                      <Text className="font-semibold text-gray-700">No information</Text>
+                    )
+                  }
+                />
+                <InfoRow
+                  label="Last maintenance"
+                  value={formatDate(vehicleData.lastMaintenance) || 'No information'}
+                  isLast
+                />
+              </View>
+            </View>
+
+            <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
+              <View className="px-4 py-3 bg-gray-50">
+                <Text className="text-lg font-semibold text-gray-800">
+                  Schedule next maintenance
+                </Text>
+              </View>
+              <View className="p-4">
+                <Calendar
+                  markingType="dot"
+                  markedDates={markedDates}
+                  onDayPress={handleDayPress}
+                  theme={{
+                    textSectionTitleColor: '#94a3b8',
+                    selectedDayBackgroundColor: '#3b82f6',
+                    selectedDayTextColor: '#ffffff',
+                    todayTextColor: '#3b82f6',
+                    arrowColor: '#3b82f6',
+                    selectedDotColor: '#fff',
+                  }}
+                  minDate={today}
+                  style={{
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                  }}
+                />
+
+                {/* Display selected date */}
+                <View className="p-3 mt-4 rounded-lg bg-blue-50">
+                  <Text className="text-sm text-gray-600">Selected maintenance date:</Text>
+                  <Text className="text-lg font-semibold text-blue-600">
+                    {formatDate(selectedDate) || selectedDate}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+              <View className="px-4 py-3 bg-gray-50">
+                <InputField
+                  label="Description"
+                  value={description}
+                  onChangeText={setDescription}
+                  multiline
+                  numberOfLines={3}
+                  error={errors.note}
+                />
+              </View>
+            </View>
+
+            <Pressable className="p-4 mb-6 bg-blue-600 rounded-xl" onPress={handleSchedule}>
+              <Text className="text-lg font-semibold text-center text-white">
+                Schedule Maintenance
+              </Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      )}
+    </SafeAreaView>
+  );
+};
+
+export default ScheduleMaintenance;

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250527094847_updateVehicleTable")]
+    partial class updateVehicleTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -280,9 +283,6 @@ namespace VMServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("NextMaintenance")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("NextMaintenanceId")
                         .HasColumnType("int");
 
@@ -298,6 +298,10 @@ namespace VMServer.Migrations
 
                     b.HasIndex("LicensePlate")
                         .IsUnique();
+
+                    b.HasIndex("NextMaintenanceId")
+                        .IsUnique()
+                        .HasFilter("[NextMaintenanceId] IS NOT NULL");
 
                     b.ToTable("Vehicles");
                 });
@@ -360,6 +364,15 @@ namespace VMServer.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("VMServer.Models.Entities.Vehicle", b =>
+                {
+                    b.HasOne("VMServer.Models.Entities.MaintenanceSchedule", "MaintenanceSchedule")
+                        .WithOne()
+                        .HasForeignKey("VMServer.Models.Entities.Vehicle", "NextMaintenanceId");
+
+                    b.Navigation("MaintenanceSchedule");
                 });
 #pragma warning restore 612, 618
         }

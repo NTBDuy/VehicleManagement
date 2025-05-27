@@ -12,6 +12,8 @@ export default interface Vehicle {
   model: string;
   status: status;
   lastMaintenance?: string;
+  nextMaintenance?: string;
+  nextMaintenanceId?: number;
   createAt?: string;
   lastUpdateAt?: string;
 }

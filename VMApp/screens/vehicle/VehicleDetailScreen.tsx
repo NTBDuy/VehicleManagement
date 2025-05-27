@@ -153,12 +153,29 @@ const VehicleDetailScreen = () => {
             </View>
 
             <View className="p-4">
-              <InfoRow label="Last time" value={formatDate(vehicleData.lastMaintenance) || 'No information'} />
-              <InfoRow label="Next time" value="Not scheduled" isLast />
+              <InfoRow
+                label="Last time"
+                value={formatDate(vehicleData.lastMaintenance) || 'No information'}
+              />
+              <InfoRow
+                label="Next time"
+                value={formatDate(vehicleData.nextMaintenance) || 'Not scheduled'}
+                isLast
+              />
+
+              {(!vehicleData.nextMaintenanceId && vehicleData.status !== 2) && (
+                <View className="justify-end mt-4">
+                  <Pressable
+                    className="py-3 bg-blue-500 shadow-sm w-px-4 rounded-xl active:bg-blue-600"
+                    onPress={() => {
+                      navigation.navigate('ScheduleMaintenance', { vehicleData });
+                    }}>
+                    <Text className="font-semibold text-center text-white">Schedule Now</Text>
+                  </Pressable>
+                </View>
+              )}
             </View>
           </View>
-
-          {/** Section - thống kê */}
         </View>
       )}
     </SafeAreaView>

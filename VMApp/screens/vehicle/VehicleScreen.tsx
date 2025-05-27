@@ -224,6 +224,10 @@ const VehicleScreen = () => {
     navigation.navigate('VehicleEdit', { vehicleData: selected });
   };
 
+  const handleSchedule = () => {
+    navigation.navigate('ScheduleMaintenance', { vehicleData: selected });
+  };
+
   const handleCloseModal = () => {
     setIsModalVisible(false);
   };
@@ -347,11 +351,11 @@ const VehicleScreen = () => {
               <Text className="text-lg font-semibold text-yellow-600">Edit vehicles</Text>
             </Pressable>
 
-            {selected?.status !== 2 && (
+            {selected?.status !== 2 && selected?.nextMaintenanceId == null && (
               <Pressable
                 className="flex-row items-center gap-3 mb-6"
                 onPress={() => {
-                  // onResetPassword();
+                  handleSchedule();
                   handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#059669" />

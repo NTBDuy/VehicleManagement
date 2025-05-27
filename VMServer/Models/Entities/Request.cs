@@ -38,7 +38,7 @@ namespace VMServer.Models.Entities
         
         public DateTime LastUpdateAt { get; set; } = DateTime.Now;
 
-        public string? CancellationReason { get; set; }
+        public string? CancelOrRejectReason { get; set; }
 
         public User? User { get; set; }
         public Vehicle? Vehicle { get; set; }
