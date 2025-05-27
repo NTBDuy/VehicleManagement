@@ -18,7 +18,7 @@ namespace VMServer.Controllers
         }
 
         // POST: api/notification
-        [Authorize]
+        // [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateNewNotification([FromBody] NotificationDTO dto)
         {

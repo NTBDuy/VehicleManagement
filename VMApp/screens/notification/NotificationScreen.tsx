@@ -15,7 +15,15 @@ import Notification from 'types/Notification';
 import EmptyList from 'components/EmptyListComponent';
 import { formatTime } from 'utils/datetimeUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBell, faCarSide, faWarning, faTools, faCheck, faListCheck } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBell,
+  faCarSide,
+  faWarning,
+  faTools,
+  faCheck,
+  faListCheck,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from 'contexts/AuthContext';
 import { UserService } from 'services/userService';
 import { NotificationService } from 'services/notificationService';
@@ -50,14 +58,22 @@ const NotificationScreen = () => {
   const NotificationIcon = ({ type }: { type: string }) => {
     const getIconConfig = () => {
       switch (type) {
+        case 'SendRequestSuccess':
+          return { bgColor: 'bg-purple-500', icon: faCarSide };
         case 'RequestApproved':
           return { bgColor: 'bg-green-500', icon: faCheck };
+        case 'RequestRejected':
+          return { bgColor: 'bg-red-500', icon: faXmark };
+        case 'RequestCancelled':
+          return { bgColor: 'bg-orange-500', icon: faXmark };
+        case 'NewRequestSubmitted':
+          return { bgColor: 'bg-orange-500', icon: faCarSide };
         case 'MaintenanceScheduled':
           return { bgColor: 'bg-blue-500', icon: faTools };
         case 'AccountDeactivated':
           return { bgColor: 'bg-red-500', icon: faWarning };
-        case 'VehicleAssigned':
-          return { bgColor: 'bg-purple-500', icon: faCarSide };
+        case 'System':
+          return { bgColor: 'bg-gray-500', icon: faBell };
         default:
           return { bgColor: 'bg-gray-500', icon: faBell };
       }
@@ -76,14 +92,22 @@ const NotificationScreen = () => {
 
   const getBorderColor = (type: string) => {
     switch (type) {
+      case 'SendRequestSuccess':
+        return 'border-l-purple-500';
       case 'RequestApproved':
         return 'border-l-green-500';
+      case 'RequestRejected':
+        return 'border-l-red-500';
+      case 'RequestCancelled':
+        return 'border-l-orange-500';
+      case 'NewRequestSubmitted':
+        return 'border-l-orange-500';
       case 'MaintenanceScheduled':
         return 'border-l-blue-500';
       case 'AccountDeactivated':
         return 'border-l-red-500';
-      case 'VehicleAssigned':
-        return 'border-l-purple-500';
+      case 'System':
+        return 'border-l-gray-500';
       default:
         return 'border-l-gray-500';
     }
@@ -104,26 +128,25 @@ const NotificationScreen = () => {
       console.error('Failed to mark notification as read:', error);
     }
   };
+
   const handleMakeAllRead = async () => {
     const unreadNotifications = userNotifications.filter((n) => !n.isRead);
     if (unreadNotifications.length === 0) return;
 
     try {
-      await Promise.all(
-        unreadNotifications.map((notification) =>
-          NotificationService.makeRead(notification.notificationId)
-        )
-      );
+      await NotificationService.makeAllRead();
+
       setUserNotifications((prevNotifications) =>
         prevNotifications.map((n) => ({ ...n, isRead: true }))
       );
+
       showToast.success('Success', 'All notifications marked as read.');
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
       showToast.error('Error', 'Failed to mark all as read.');
     }
   };
-  
+
   const onRefresh = () => {
     setRefreshing(true);
     getNotificationsByUser();

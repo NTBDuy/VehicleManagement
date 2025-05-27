@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
 import { RequestService } from 'services/requestService';
+import { NotificationService, sendNotification } from 'services/notificationService';
 
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
@@ -20,7 +21,7 @@ const RequestCreateScreen = () => {
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [isMultiDayTrip, setIsMultiDayTrip] = useState(false);
-  const [avaibleVehicle, setAvailbleVehicle] = useState<Vehicle[]>([]);
+  const [availableVehicle, setAvailableVehicle] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>();
   const [purpose, setPurpose] = useState('');
   const [isAssignDriver, setIsAssignDriver] = useState(false);
@@ -39,7 +40,7 @@ const RequestCreateScreen = () => {
 
   const getAvailbleVehicle = async () => {
     const data = await VehicleService.getAvailableVehicles();
-    return setAvailbleVehicle(data);
+    return setAvailableVehicle(data);
   };
 
   const renderTabContent = () => {
@@ -68,7 +69,7 @@ const RequestCreateScreen = () => {
 
   const renderVehicleComponent = () => (
     <RequestVehiclePicker
-      avaibleVehicle={avaibleVehicle}
+      availableVehicle={availableVehicle}
       setSelectedVehicle={setSelectedVehicle}
       selectedVehicle={selectedVehicle}
     />
@@ -100,11 +101,10 @@ const RequestCreateScreen = () => {
   };
 
   const handleConfirm = async () => {
-    if (!validateData()) {
-      return;
-    }
+    if (!validateData()) return;
     try {
-      const data = {
+      setIsLoading(true);
+      const requestData = {
         userId: user?.userId,
         vehicleId: selectedVehicle?.vehicleId,
         startTime: startDate,
@@ -112,9 +112,8 @@ const RequestCreateScreen = () => {
         purpose: purpose,
         isDriverRequired: isAssignDriver,
       };
-      setIsLoading(true);
-      const res = await RequestService.createRequest(data);
-      if (res) {
+      const response = await RequestService.createRequest(requestData);
+      if (response) {
         showToast.success('All Set!', 'We’ve received your reservation.');
         clearContent();
         navigation.getParent()?.navigate('HistoryStack');
@@ -122,6 +121,7 @@ const RequestCreateScreen = () => {
         showToast.error('Failed', 'Reservation could not be submitted.');
       }
     } catch (error) {
+      console.error('Reservation error:', error);
       showToast.error('Request Failed', 'We couldn’t complete your reservation. Please try again.');
     } finally {
       setIsLoading(false);

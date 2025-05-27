@@ -1,20 +1,20 @@
-import { View, Text, SafeAreaView, Pressable, Alert } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { View, Text, SafeAreaView, Pressable } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import Header from 'components/HeaderComponent';
 import Request from 'types/Request';
 import { getUserInitials } from 'utils/userUtils';
 import InfoRow from 'components/InfoRowComponent';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import { useAuth } from 'contexts/AuthContext';
 import { RequestService } from 'services/requestService';
+import { sendNotification } from 'services/notificationService';
 
 const RequestDetailScreen = () => {
   const { user } = useAuth();
-  const navigation = useNavigation<any>();
   const route = useRoute();
   const { requestData: initialRequestData } = route.params as { requestData: Request };
 
@@ -22,8 +22,6 @@ const RequestDetailScreen = () => {
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
-
-  const [isLoading, setIsLoading] = useState(false);
 
   /** Component: Badge Request status */
   const renderBadgeRequestStatus = ({ status }: { status: number }) => {
@@ -76,29 +74,6 @@ const RequestDetailScreen = () => {
     setIsCancelModalVisible(true);
   };
 
-  // const handleCancelForEmployee = () => {
-  //   Alert.alert('Cancel Request', 'Are you sure you want to cancel this request?', [
-  //     { text: 'No', style: 'cancel' },
-  //     {
-  //       text: 'Yes, Cancel',
-  //       onPress: async () => {
-  //         setIsLoading(true);
-  //         try {
-  //           await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //           Alert.alert('Success', 'This request cancelled successfully!', [
-  //             { text: 'OK', onPress: () => navigation.goBack() },
-  //           ]);
-  //         } catch (error) {
-  //           Alert.alert('Error', 'Failed to update account. Please try again.');
-  //         } finally {
-  //           setIsLoading(false);
-  //         }
-  //       },
-  //     },
-  //   ]);
-  // };
-
   const handleCloseModal = () => {
     setIsApproveModalVisible(false);
     setIsRejectModalVisible(false);
@@ -116,7 +91,7 @@ const RequestDetailScreen = () => {
     handleCloseModal();
   };
 
-   const handleRejectConfirm = async (reason: string) => {
+  const handleRejectConfirm = async (reason: string) => {
     const reasonData = { reason };
     const updatedRequest = await RequestService.rejectRequest(requestData.requestId, reasonData);
     setRequestData(updatedRequest);
@@ -226,15 +201,12 @@ const RequestDetailScreen = () => {
 
         {user?.role === 1 && (
           <>
-            {(requestData.status == 0 || requestData.status == 1) && (
+            {(requestData.status === 0 || requestData.status === 1) && (
               <View className="mt-4">
                 <Pressable
-                  className={`items-center rounded-xl py-4 shadow-sm active:bg-gray-700 ${isLoading ? 'bg-gray-500' : 'bg-gray-600 active:bg-gray-700'}`}
-                  onPress={handleCancel}
-                  disabled={isLoading}>
-                  <Text className="font-semibold text-white">
-                    {isLoading ? 'Canceling...' : 'Cancel'}
-                  </Text>
+                  className={`items-center rounded-xl bg-gray-600 py-4 shadow-sm active:bg-gray-700 `}
+                  onPress={handleCancel}>
+                  <Text className="font-semibold text-white">Cancel</Text>
                 </Pressable>
               </View>
             )}

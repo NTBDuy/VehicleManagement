@@ -239,13 +239,13 @@ const RequestScreen = () => {
 
   const handleApproveConfirm = async (driverId: string | null, note: string) => {
     const assignmentData = { driverId, note };
-    
+
     if (selected!.isDriverRequired) {
       await RequestService.approveRequest(selected!.requestId, assignmentData);
     } else {
       await RequestService.approveRequest(selected!.requestId);
     }
-    
+
     await getRequestsData();
   };
 
@@ -385,24 +385,28 @@ const RequestScreen = () => {
         </View>
       </Modal>
 
-      <ApproveModal
-        visible={isApproveModalVisible}
-        onClose={handleCloseModal}
-        onApprove={handleApproveConfirm}
-        isDriverRequired={selected?.isDriverRequired ?? false}
-      />
+      {selected && (
+        <>
+          <ApproveModal
+            visible={isApproveModalVisible}
+            onClose={handleCloseModal}
+            onApprove={handleApproveConfirm}
+            isDriverRequired={selected.isDriverRequired}
+          />
 
-      <RejectModal
-        visible={isRejectModalVisible}
-        onClose={handleCloseModal}
-        onReject={handleRejectConfirm}
-      />
+          <RejectModal
+            visible={isRejectModalVisible}
+            onClose={handleCloseModal}
+            onReject={handleRejectConfirm}
+          />
 
-      <CancelModal
-        visible={isCancelModalVisible}
-        onClose={handleCloseModal}
-        onCancel={handleCancelConfirm}
-      />
+          <CancelModal
+            visible={isCancelModalVisible}
+            onClose={handleCloseModal}
+            onCancel={handleCancelConfirm}
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 };

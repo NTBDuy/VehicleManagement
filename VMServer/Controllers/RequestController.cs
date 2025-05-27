@@ -53,6 +53,10 @@ namespace VMServer.Controllers
                 Status = RequestStatus.Pending
             };
 
+            await SendNotificationToRole(UserRole.Manager,
+     "A new vehicle request has been submitted and needs approval.",
+     "NewRequestSubmitted");
+
             _dbContext.Requests.Add(newRequest);
             await _dbContext.SaveChangesAsync();
 
@@ -91,6 +95,15 @@ namespace VMServer.Controllers
             request.Status = RequestStatus.Approved;
             request.LastUpdateAt = DateTime.Now;
 
+            var newNotifications = new Notification
+            {
+                UserId = request.UserId,
+                Message = "Your vehicle reservation has been approved.",
+                Type = "RequestApproved",
+            };
+
+            _dbContext.Notifications.Add(newNotifications);
+
             await _dbContext.SaveChangesAsync();
 
             return Ok(request);
@@ -112,6 +125,15 @@ namespace VMServer.Controllers
             request.CancellationReason = dto.Reason;
             request.Status = RequestStatus.Cancelled;
             request.LastUpdateAt = DateTime.Now;
+
+            var newNotifications = new Notification
+            {
+                UserId = request.UserId,
+                Message = "Your vehicle reservation has been cancelled.",
+                Type = "RequestCancelled",
+            };
+
+            _dbContext.Notifications.Add(newNotifications);
 
             await _dbContext.SaveChangesAsync();
 
@@ -135,9 +157,35 @@ namespace VMServer.Controllers
             request.Status = RequestStatus.Rejected;
             request.LastUpdateAt = DateTime.Now;
 
+            var newNotifications = new Notification
+            {
+                UserId = request.UserId,
+                Message = "Your vehicle reservation has been rejected.",
+                Type = "RequestRejected",
+            };
+
+            _dbContext.Notifications.Add(newNotifications);
+
             await _dbContext.SaveChangesAsync();
 
             return Ok(request);
         }
+
+        private async Task SendNotificationToRole(UserRole role, string message, string type)
+        {
+            var users = await _dbContext.Users
+                .Where(u => u.Role == role)
+                .ToListAsync();
+
+            var notifications = users.Select(user => new Notification
+            {
+                UserId = user.UserId,
+                Message = message,
+                Type = type,
+            }).ToList();
+
+            _dbContext.Notifications.AddRange(notifications);
+        }
+
     }
 }
