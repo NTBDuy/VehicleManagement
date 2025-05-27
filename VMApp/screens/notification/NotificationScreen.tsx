@@ -1,30 +1,50 @@
-import { View, Text, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+  Pressable,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Header from 'components/HeaderComponent';
-import notificationData from '../../data/notification.json';
 import Notification from 'types/Notification';
 
 import EmptyList from 'components/EmptyListComponent';
 import { formatTime } from 'utils/datetimeUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBell, faCarSide, faWarning, faTools, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCarSide, faWarning, faTools, faCheck, faListCheck } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from 'contexts/AuthContext';
-
-const notifications: Notification[] = notificationData;
+import { UserService } from 'services/userService';
+import { NotificationService } from 'services/notificationService';
+import { showToast } from 'utils/toast';
 
 const NotificationScreen = () => {
-  const [userNotifications, setUserNotifications] = useState<Notification[]>([]);
   const { user } = useAuth();
+
+  const [userNotifications, setUserNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (user) {
-      getNotifcationByUserID(user.userId);
+      getNotificationsByUser();
     }
   }, [user]);
 
-  const getNotifcationByUserID = (userId: number) => {
-    const data = notifications.filter((notification) => notification.userId === userId);
-    return setUserNotifications(data);
+  const getNotificationsByUser = async () => {
+    try {
+      setIsLoading(true);
+      const data = await UserService.getUserNotifications();
+      setUserNotifications(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setRefreshing(false);
+      setIsLoading(false);
+    }
   };
 
   const NotificationIcon = ({ type }: { type: string }) => {
@@ -69,20 +89,61 @@ const NotificationScreen = () => {
     }
   };
 
+  const handleMakeRead = async (notification: Notification) => {
+    if (notification.isRead) return;
+
+    try {
+      await NotificationService.makeRead(notification.notificationId);
+      setUserNotifications((prevNotifications) =>
+        prevNotifications.map((n) =>
+          n.notificationId === notification.notificationId ? { ...n, isRead: true } : n
+        )
+      );
+      showToast.success('Success', 'Notification marked as read.');
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
+  };
+  const handleMakeAllRead = async () => {
+    const unreadNotifications = userNotifications.filter((n) => !n.isRead);
+    if (unreadNotifications.length === 0) return;
+
+    try {
+      await Promise.all(
+        unreadNotifications.map((notification) =>
+          NotificationService.makeRead(notification.notificationId)
+        )
+      );
+      setUserNotifications((prevNotifications) =>
+        prevNotifications.map((n) => ({ ...n, isRead: true }))
+      );
+      showToast.success('Success', 'All notifications marked as read.');
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+      showToast.error('Error', 'Failed to mark all as read.');
+    }
+  };
+  
+  const onRefresh = () => {
+    setRefreshing(true);
+    getNotificationsByUser();
+  };
+
   const renderNotificationItem = ({ item }: { item: Notification }) => (
     <TouchableOpacity
-      className={`mb-3 rounded-xl border-l-4 bg-white p-4 ${getBorderColor(item.Type)} shadow-sm ${
-        !item.IsRead ? 'bg-slate-50' : ''
+      onPress={() => handleMakeRead(item)}
+      className={`mb-3 rounded-xl border-l-4 bg-white p-4 ${getBorderColor(item.type)} shadow-sm ${
+        !item.isRead ? 'bg-slate-50' : ''
       }`}
       activeOpacity={0.7}>
       <View className="flex-row items-start">
         <NotificationIcon type={item.type} />
 
-        <View className="ml-3 flex-1">
-          <Text className="mb-3 text-base leading-6 text-gray-800">{item.Message}</Text>
+        <View className="flex-1 ml-3">
+          <Text className="mb-3 text-base leading-6 text-gray-800">{item.message}</Text>
           <View className="flex-row items-center justify-between">
-            <Text className="text-xs text-gray-400">{formatTime(item.CreatedAt)}</Text>
-            {!item.IsRead && (
+            <Text className="text-xs text-gray-400">{formatTime(item.createdAt)}</Text>
+            {!item.isRead && (
               <View className="flex-row items-center">
                 <View className="mr-1.5 h-2 w-2 rounded-full bg-blue-500" />
                 <Text className="text-xs font-semibold text-blue-600">Unread</Text>
@@ -95,18 +156,34 @@ const NotificationScreen = () => {
   );
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="Notifications" backBtn />
+      <Header
+        title="Notifications"
+        backBtn
+        rightElement={
+          <Pressable onPress={handleMakeAllRead} className="p-2 bg-white rounded-full shadow-sm">
+            <FontAwesomeIcon icon={faListCheck} size={18} color="#374151" />
+          </Pressable>
+        }
+      />
 
-      <View className="mx-6 flex-1">
-        <FlatList
-          data={userNotifications}
-          keyExtractor={(item) => item.NotificationId.toString()}
-          renderItem={renderNotificationItem}
-          ListEmptyComponent={<EmptyList title="User do not have any notification yet!" />}
-          showsVerticalScrollIndicator={false}
-          contentContainerClassName="py-4"
-        />
-      </View>
+      {isLoading ? (
+        <View className="items-center justify-center flex-1">
+          <ActivityIndicator size="large" color="#3B82F6" />
+          <Text className="mt-2 text-gray-500">Loading notifications...</Text>
+        </View>
+      ) : (
+        <View className="flex-1 mx-6">
+          <FlatList
+            data={userNotifications}
+            keyExtractor={(item) => item.notificationId.toString()}
+            renderItem={renderNotificationItem}
+            ListEmptyComponent={<EmptyList title="User do not have any notification yet!" />}
+            showsVerticalScrollIndicator={false}
+            contentContainerClassName="py-4"
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };

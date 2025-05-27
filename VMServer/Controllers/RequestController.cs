@@ -24,6 +24,7 @@ namespace VMServer.Controllers
             var requests = await _dbContext.Requests
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
+                .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
             return Ok(requests);
         }

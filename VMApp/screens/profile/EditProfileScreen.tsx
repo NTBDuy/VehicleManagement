@@ -74,7 +74,7 @@ const EditProfileScreen = () => {
     }
     try {
       setIsLoading(true);
-      const updated = await UserService.updateProfile(user.userId, data);
+      const updated = await UserService.updateProfile(data);
       showToast.success('Saved!', 'Your info has been updated.');
       setUser(updated);
     } catch (error) {
@@ -113,20 +113,20 @@ const EditProfileScreen = () => {
 
       {userData ? (
         <ScrollView className="px-6">
-          <View className="mb-4 items-center">
+          <View className="items-center mb-4">
             <View className="relative">
               <Image
-                className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
+                className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
                 source={require('../../assets/images/user-default.jpg')}
               />
-              <Pressable className="absolute bottom-0 right-0 rounded-full border-2 border-white bg-blue-500 p-2">
+              <Pressable className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
                 <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
               </Pressable>
             </View>
           </View>
 
-          <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-            <View className="bg-gray-50 px-4 py-3">
+          <View className="mt-4 mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
+            <View className="px-4 py-3 bg-gray-50">
               <Text className="text-lg font-semibold text-gray-800">User Information</Text>
             </View>
 
@@ -155,7 +155,7 @@ const EditProfileScreen = () => {
             </View>
           </View>
           {/** Action Buttons */}
-          <View className="mb-8 mt-4 flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between mt-4 mb-8">
             <Pressable
               className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
               onPress={handleCancel}

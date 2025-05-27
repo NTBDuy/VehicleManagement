@@ -17,16 +17,37 @@ namespace VMServer.Controllers
             _dbContext = dbContext;
         }
 
-        // GET: api/user/{userId}/requests
-        // Lấy danh sách yêu cầu của người dùng
+        // GET: api/user/notification
         [Authorize]
-        [HttpGet("{userId}/requests")]
-        public async Task<IActionResult> GetRequestsByUser(int userId)
+        [HttpGet("notifications")]
+        public async Task<IActionResult> GetUserNotifications()
         {
             var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
 
-            if (claimUserId == null || int.Parse(claimUserId) != userId)
-                return Forbid("You are not allowed to get another user's requests.");
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found!" });
+
+            var notifications = await _dbContext.Notifications
+                .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.CreatedAt)
+                .ToListAsync();
+
+            return Ok(notifications);
+        }
+
+
+        // GET: api/user/requests
+        // Lấy danh sách yêu cầu của người dùng
+        [Authorize]
+        [HttpGet("requests")]
+        public async Task<IActionResult> GetUserRequests()
+        {
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
 
             var user = await _dbContext.Users.FindAsync(userId);
             if (user == null)
@@ -35,22 +56,21 @@ namespace VMServer.Controllers
             var requests = await _dbContext.Requests
                 .Where(r => r.UserId == userId)
                 .Include(r => r.Vehicle)
+                .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
 
             return Ok(requests);
         }
 
-        // PUT: api/user/{userId}
+        // PUT: api/user/information
         // Cập nhật thông tin người dùng
         [Authorize]
-        [HttpPut("{userId}")]
-        public async Task<IActionResult> UpdateUserInformation(int userId, [FromBody] UpdateUserInformationDTO dto)
+        [HttpPut("information")]
+        public async Task<IActionResult> UpdateUserInformation([FromBody] UpdateUserInformationDTO dto)
         {
-
             var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (claimUserId == null || int.Parse(claimUserId) != userId)
-                return Forbid("You are not allowed to update another user's information.");
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
 
             var user = await _dbContext.Users.FindAsync(userId);
             if (user == null)

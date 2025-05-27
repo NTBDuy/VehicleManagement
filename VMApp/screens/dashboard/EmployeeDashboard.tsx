@@ -29,7 +29,7 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     if (user) {
-      getRequestByUserID(user.userId);
+      getRequestByUserID();
     }
   }, [user]);
 
@@ -39,8 +39,8 @@ const EmployeeDashboard = () => {
     }
   }, [userRequest]);
 
-  const getRequestByUserID = async (userId: number) => {
-    const data = await UserService.getUserRequests(userId);
+  const getRequestByUserID = async () => {
+    const data = await UserService.getUserRequests();
     setUserRequest(data);
   };
 
@@ -57,7 +57,7 @@ const EmployeeDashboard = () => {
         title="Employee Dashboard"
         rightElement={
           <Pressable
-            className="rounded-full bg-white p-2"
+            className="p-2 bg-white rounded-full"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
           </Pressable>
@@ -68,8 +68,8 @@ const EmployeeDashboard = () => {
         {/* Welcome Section */}
         <WelcomeSection user={user} />
 
-        <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <View className="bg-gray-50 px-4 py-3">
+        <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+          <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Quick Actions</Text>
           </View>
 
@@ -94,12 +94,12 @@ const EmployeeDashboard = () => {
         </View>
 
         {stat.pending.length > 0 && (
-          <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-            <View className="bg-gray-50 px-4 py-3">
+          <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+            <View className="px-4 py-3 bg-gray-50">
               <Text className="text-lg font-semibold text-gray-800">Pending</Text>
             </View>
 
-            <View className="-mb-4 p-4">
+            <View className="p-4 -mb-4">
               <View>
                 {stat.pending.slice(0, 3).map((item) => (
                   <RequestItem item={item} key={item.requestId} />
@@ -110,12 +110,12 @@ const EmployeeDashboard = () => {
         )}
 
         {stat.incoming.length > 0 && (
-          <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-            <View className="bg-gray-50 px-4 py-3">
+          <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+            <View className="px-4 py-3 bg-gray-50">
               <Text className="text-lg font-semibold text-gray-800">Incoming</Text>
             </View>
 
-            <View className="-mb-4 p-4">
+            <View className="p-4 -mb-4">
               <View>
                 {stat.incoming.slice(0, 3).map((item) => (
                   <RequestItem item={item} key={item.requestId} />

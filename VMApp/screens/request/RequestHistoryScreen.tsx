@@ -29,7 +29,7 @@ const RequestHistoryScreen = () => {
 
   useEffect(() => {
     if (user) {
-      getRequestByUserID(user.userId);
+      getRequestByUserID();
     }
   }, [user]);
 
@@ -40,7 +40,7 @@ const RequestHistoryScreen = () => {
   useFocusEffect(
     useCallback(() => {
       if (user) {
-        getRequestByUserID(user.userId);
+        getRequestByUserID();
         setActiveFilter(4);
       }
     }, [user])
@@ -49,7 +49,7 @@ const RequestHistoryScreen = () => {
   const onRefresh = () => {
     setRefreshing(true);
     setActiveFilter(4);
-    getRequestByUserID(user!.userId);
+    getRequestByUserID();
   };
 
   const filterRequest = (query: string, status: number): void => {
@@ -86,9 +86,9 @@ const RequestHistoryScreen = () => {
     setSearchQuery('');
   };
 
-  const getRequestByUserID = async (userId: number) => {
+  const getRequestByUserID = async () => {
     try {
-      const data = await UserService.getUserRequests(userId);
+      const data = await UserService.getUserRequests();
       return setUserRequest(data);
     } catch (error) {
       console.error(error);
