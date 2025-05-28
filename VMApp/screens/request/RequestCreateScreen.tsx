@@ -1,18 +1,19 @@
-import { View, Text, SafeAreaView, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
-import Header from 'components/HeaderComponent';
+import { View, Text, SafeAreaView, Pressable } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCalendarDays, faCarSide, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
-import Vehicle from 'types/Vehicle';
-import RequestDatePicker from 'components/RequestDatePicker';
-import RequestVehiclePicker from 'components/RequestVehiclePicker';
-import RequestConfirm from 'components/RequestConfirm';
 import { useAuth } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { VehicleService } from 'services/vehicleService';
-import { showToast } from 'utils/toast';
 import { RequestService } from 'services/requestService';
-import { NotificationService, sendNotification } from 'services/notificationService';
+import { showToast } from 'utils/toast';
+
+import Vehicle from 'types/Vehicle';
+
+import Header from 'components/HeaderComponent';
+import RequestConfirm from 'components/RequestConfirm';
+import RequestDatePicker from 'components/RequestDatePicker';
+import RequestVehiclePicker from 'components/RequestVehiclePicker';
 
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
@@ -29,7 +30,7 @@ const RequestCreateScreen = () => {
 
   useEffect(() => {
     clearContent();
-    getAvailbleVehicle();
+     getAvailableVehicle();
   }, []);
 
   const tabs = [
@@ -38,7 +39,7 @@ const RequestCreateScreen = () => {
     { id: 2, title: 'Purpose & Confirm', icon: faCalendarCheck },
   ];
 
-  const getAvailbleVehicle = async () => {
+  const  getAvailableVehicle = async () => {
     const data = await VehicleService.getAvailableVehicles();
     return setAvailableVehicle(data);
   };

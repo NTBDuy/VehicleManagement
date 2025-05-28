@@ -1,13 +1,39 @@
-import { View, Text, SafeAreaView } from 'react-native'
-import React from 'react'
-import Header from 'components/HeaderComponent'
+import { useEffect, useState } from 'react';
+import { View, Text, SafeAreaView } from 'react-native';
+import { VehicleService } from 'services/vehicleService';
+
+import MaintenanceSchedule from 'types/MaintenanceSchedule';
+
+import Header from 'components/HeaderComponent';
+import LoadingData from 'components/LoadingData';
 
 const MaintenanceManagement = () => {
-  return (
-    <SafeAreaView>
-        <Header title='Maintenance Management'/>
-    </SafeAreaView>
-  )
-}
+  const [maintenance, setMaintenance] = useState<MaintenanceSchedule[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-export default MaintenanceManagement
+  useEffect(() => {
+    fetchMaintenanceList();
+  }, []);
+
+  const fetchMaintenanceList = async () => {
+    try {
+      setIsLoading(true);
+      const response = await VehicleService.getAllMaintenance();
+      setMaintenance(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <Header title="Maintenance Management" />
+
+      {isLoading ? <LoadingData /> : <View></View>}
+    </SafeAreaView>
+  );
+};
+
+export default MaintenanceManagement;

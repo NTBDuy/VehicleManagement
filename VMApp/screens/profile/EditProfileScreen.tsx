@@ -1,17 +1,17 @@
+import { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, Image, Pressable, Alert } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import Header from 'components/HeaderComponent';
-
-import InputField from 'components/InputFieldComponent';
-import User from 'types/User';
-import ErrorComponent from 'components/ErrorComponent';
+import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { UserService } from 'services/userService';
-import Toast from 'react-native-toast-message';
 import { showToast } from 'utils/toast';
+
+import User from 'types/User';
+
+import Header from 'components/HeaderComponent';
+import InputField from 'components/InputFieldComponent';
+import ErrorComponent from 'components/ErrorComponent';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation<any>();
@@ -64,21 +64,16 @@ const EditProfileScreen = () => {
   const handleUpdateProfile = async (data: Partial<User>) => {
     if (!user) return;
     if (!validateForm()) {
-      Toast.show({
-        type: 'error',
-        text1: 'Message',
-        text2: 'You need to fill in all the required fields.',
-        position: 'bottom',
-      });
+      showToast.error('Validation Error', 'Please fix the errors above');
       return;
     }
     try {
       setIsLoading(true);
       const updated = await UserService.updateProfile(data);
-      showToast.success('Saved!', 'Your info has been updated.');
       setUser(updated);
+      showToast.success('Saved!', 'Your info has been updated.');
     } catch (error) {
-      showToast.error('Profile Update Failed', 'Unable to save changes.');
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +149,7 @@ const EditProfileScreen = () => {
               />
             </View>
           </View>
-          {/** Action Buttons */}
+          
           <View className="flex-row items-center justify-between mt-4 mb-8">
             <Pressable
               className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"

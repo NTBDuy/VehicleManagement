@@ -1,17 +1,18 @@
-import { View, Text, SafeAreaView, Pressable, ScrollView, Alert } from 'react-native';
-import React, { useState } from 'react';
-import Header from 'components/HeaderComponent';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Vehicle from 'types/Vehicle';
-import InputField from 'components/InputFieldComponent';
-import { showToast } from 'utils/toast';
+import { useState } from 'react';
+import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
+import { showToast } from 'utils/toast';
+
+import Vehicle from 'types/Vehicle';
+
+import Header from 'components/HeaderComponent';
+import InputField from 'components/InputFieldComponent';
 
 const VehicleEditScreen = () => {
-  const navigation = useNavigation<any>();
   const route = useRoute();
+  const navigation = useNavigation<any>();
   const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
-
   const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
   const [errors, setErrors] = useState<Partial<Vehicle>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,7 @@ const VehicleEditScreen = () => {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
-  
+
   const types = [
     { label: 'Sedan', value: 'Sedan' },
     { label: 'SUV', value: 'SUV' },
@@ -106,7 +107,6 @@ const VehicleEditScreen = () => {
       />
 
       <ScrollView className="px-6">
-        {/* Vehicle Information */}
         <View className="mt-4 mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
           <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
@@ -159,7 +159,6 @@ const VehicleEditScreen = () => {
           </View>
         </View>
 
-        {/** Active button */}
         <View className="flex-row justify-between mt-2 mb-40">
           <Pressable
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"

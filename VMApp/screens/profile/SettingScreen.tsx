@@ -1,16 +1,16 @@
 import { View, Text, SafeAreaView, Image, Pressable, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPen, faFileContract, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation } from '@react-navigation/native';
-import Header from 'components/HeaderComponent';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 import { useAuth } from 'contexts/AuthContext';
 
+import Header from 'components/HeaderComponent';
+
 const SettingScreen = () => {
-  const { user } = useAuth();
-
   const navigation = useNavigation<any>();
-
+  const { user } = useAuth();
+  
   const handlePress = () => {
     Alert.alert('Comming soon!');
   };
@@ -26,7 +26,7 @@ const SettingScreen = () => {
         customTitle={
           <View className="items-center ">
             <Image
-              className="h-28 w-28 rounded-full border border-white"
+              className="border border-white rounded-full h-28 w-28"
               source={require('../../assets/images/user-default.jpg')}
             />
             <Text className="mt-4 font-bold">{user?.fullName || 'NO INFORMATION'}</Text>
@@ -36,7 +36,7 @@ const SettingScreen = () => {
           </View>
         }
         rightElement={
-          <Pressable className="rounded-full bg-white p-2" onPress={handleEditProfile}>
+          <Pressable className="p-2 bg-white rounded-full" onPress={handleEditProfile}>
             <FontAwesomeIcon icon={faPen} color="#000" size={18} />
           </Pressable>
         }
@@ -45,7 +45,7 @@ const SettingScreen = () => {
       {/** BODY */}
       <View className="px-6">
         <Pressable
-          className="flex-row items-center border-b border-gray-200 px-2 py-4"
+          className="flex-row items-center px-2 py-4 border-b border-gray-200"
           onPress={handlePress}>
           <FontAwesomeIcon icon={faFileContract} size={24} color="#4b5563" />
           <Text className="ml-2 text-gray-600">Terms and Conditions</Text>

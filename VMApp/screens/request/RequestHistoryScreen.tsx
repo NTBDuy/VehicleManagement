@@ -1,22 +1,55 @@
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { View, Text, SafeAreaView, Pressable, FlatList, RefreshControl } from 'react-native';
-import { useEffect, useState, useCallback } from 'react';
-import Header from 'components/HeaderComponent';
-import Request from 'types/Request';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import EmptyList from 'components/EmptyListComponent';
-import RequestItem from 'components/HistoryRequestItem';
 import { UserService } from 'services/userService';
 
-import { useFocusEffect } from '@react-navigation/native';
+import Request from 'types/Request';
+
+import Header from 'components/HeaderComponent';
+import EmptyList from 'components/EmptyListComponent';
+import RequestItem from 'components/HistoryRequestItem';
 
 const RequestHistoryScreen = () => {
   const { user } = useAuth();
   const [userRequest, setUserRequest] = useState<Request[]>([]);
-
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredRequest, setFilteredRequest] = useState<Request[]>([]);
   const [activeFilter, setActiveFilter] = useState(4);
   const [refreshing, setRefreshing] = useState(false);
+  const [currentStatusFilter, setCurrentStatusFilter] = useState<number>();
+
+  const filteredRequest = useMemo(() => {
+    let filtered = [...userRequest];
+    const q = searchQuery.toLowerCase();
+
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (request) =>
+          request.vehicle?.licensePlate?.toLowerCase().includes(q) ||
+          request.vehicle?.type?.toLowerCase().includes(q) ||
+          request.vehicle?.brand?.toLowerCase().includes(q) ||
+          request.vehicle?.model?.toLowerCase().includes(q) ||
+          request.purpose.toLowerCase().includes(q)
+      );
+    }
+
+    switch (currentStatusFilter) {
+      case 0:
+        filtered = filtered.filter((request) => request.status === 0);
+        break;
+      case 1:
+        filtered = filtered.filter((request) => request.status === 1);
+        break;
+      case 2:
+        filtered = filtered.filter((request) => request.status === 2);
+        break;
+      case 3:
+        filtered = filtered.filter((request) => request.status === 3);
+        break;
+    }
+
+    return filtered;
+  }, [userRequest, searchQuery, currentStatusFilter]);
 
   const filterOptions = [
     { id: 4, name: 'All' },
@@ -27,14 +60,8 @@ const RequestHistoryScreen = () => {
   ];
 
   useEffect(() => {
-    if (user) {
-      getRequestByUserID();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    filterRequest(searchQuery, 4);
-  }, [userRequest, searchQuery]);
+    setCurrentStatusFilter(activeFilter);
+  }, [userRequest, searchQuery, activeFilter]);
 
   useFocusEffect(
     useCallback(() => {
@@ -45,40 +72,19 @@ const RequestHistoryScreen = () => {
     }, [user])
   );
 
-  const onRefresh = () => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
     setActiveFilter(4);
     getRequestByUserID();
-  };
-
-  const filterRequest = (query: string, status: number): void => {
-    let filtered = userRequest;
-
-    if (query) {
-      filtered = filtered.filter(
-        (request) =>
-          request.vehicle?.licensePlate?.toLowerCase().includes(query.toLowerCase()) ||
-          request.vehicle?.type?.toLowerCase().includes(query.toLowerCase()) ||
-          request.vehicle?.brand?.toLowerCase().includes(query.toLowerCase()) ||
-          request.vehicle?.model?.toLowerCase().includes(query.toLowerCase()) ||
-          request.purpose.toLowerCase().includes(query.toLowerCase())
-      );
-    }
-
-    if (status !== 4) {
-      filtered = filtered.filter((request) => request.status === status);
-    }
-
-    setFilteredRequest(filtered);
-  };
+  }, []);
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
   };
 
-  const handleFilterChange = (role: number): void => {
-    setActiveFilter(role);
-    filterRequest(searchQuery, role);
+  const handleFilterChange = (status: number): void => {
+    setActiveFilter(status);
+    setCurrentStatusFilter(status);
   };
 
   const handleClearFilters = (): void => {

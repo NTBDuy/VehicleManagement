@@ -75,6 +75,16 @@ namespace VMServer.Controllers
             return Ok(schedules);
         }
 
+        // GET: api/vehicle/maintenance
+        // Lấy tẩt cả lịch bảo dưỡng
+        [Authorize]
+        [HttpGet("maintenance")]
+        public async Task<IActionResult> GetAllMaintenance()
+        {
+            var maintenance = await _dbContext.MaintenanceSchedules.ToListAsync();
+            return Ok(maintenance);
+        }
+
         // GET: api/vehicle/{vehicleId}/maintenance/schedule
         // Lấy thông tin lịch bảo dưỡng sắp đến
         [Authorize]

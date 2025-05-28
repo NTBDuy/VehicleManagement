@@ -16,7 +16,7 @@ namespace VMServer.Controllers
         {
             _dbContext = dbContext;
         }
-        // GET: api/requests
+        // GET: api/request
         // Lấy danh sách toàn bộ yêu cầu
         [Authorize(Roles = "Administrator, Manager")]
         [HttpGet]

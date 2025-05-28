@@ -23,6 +23,11 @@ export class VehicleService extends BaseApiClient {
     return this.request<Request[]>(`/vehicle/${id}/schedule`);
   }
 
+  // Lấy tất cả lịch bảo dưỡng
+  static async getAllMaintenance(): Promise<MaintenanceSchedule[]> {
+    return this.request<MaintenanceSchedule[]>('/vehicle/maintenance');
+  }
+
   // Tạo mới phương tiện
   static async createVehicle(vehicleData: Partial<Vehicle>): Promise<Vehicle> {
     return this.request<Vehicle>('/vehicle', {

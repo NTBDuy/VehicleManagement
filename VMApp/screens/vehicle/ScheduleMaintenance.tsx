@@ -1,26 +1,18 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Pressable,
-  ActivityIndicator,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import Header from 'components/HeaderComponent';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import Vehicle from 'types/Vehicle';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import InfoRow from 'components/InfoRowComponent';
-import { getVehicleTypeIcon } from 'utils/vehicleUntils';
-import { useCallback, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useState } from 'react';
+import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Calendar, DateData } from 'react-native-calendars';
 import { VehicleService } from 'services/vehicleService';
 import { formatDate } from 'utils/datetimeUtils';
-import { Calendar, DateData } from 'react-native-calendars';
-import InputField from 'components/InputFieldComponent';
-import Assignment from 'types/Assignment';
 import { showToast } from 'utils/toast';
+
+import Assignment from 'types/Assignment';
+import Vehicle from 'types/Vehicle';
+
+import Header from 'components/HeaderComponent';
+import InfoRow from 'components/InfoRowComponent';
+import InputField from 'components/InputFieldComponent';
+import LoadingData from 'components/LoadingData';
 
 const ScheduleMaintenance = () => {
   const route = useRoute();
@@ -93,14 +85,10 @@ const ScheduleMaintenance = () => {
       <Header title="Schedule Maintenance" backBtn />
 
       {isLoading ? (
-        <View className="items-center justify-center flex-1">
-          <ActivityIndicator size="large" color="#3B82F6" />
-          <Text className="mt-2 text-gray-500">Loading vehicle details...</Text>
-        </View>
+        <LoadingData />
       ) : (
         <ScrollView>
           <View className="px-6">
-            {/** Section - thông tin cơ bản */}
             <View className="mt-4 mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
               <View className="px-4 py-3 bg-gray-50">
                 <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
@@ -159,7 +147,6 @@ const ScheduleMaintenance = () => {
                   }}
                 />
 
-                {/* Display selected date */}
                 <View className="p-3 mt-4 rounded-lg bg-blue-50">
                   <Text className="text-sm text-gray-600">Selected maintenance date:</Text>
                   <Text className="text-lg font-semibold text-blue-600">

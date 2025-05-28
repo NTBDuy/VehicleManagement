@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Pressable, View, Text } from 'react-native';
 import { formatDate } from 'utils/datetimeUtils';
 import { getColorByStatus } from 'utils/requestUtils';
-import { getVehicleTypeIcon } from 'utils/vehicleUntils';
+import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import Request from 'types/Request';
 import { useNavigation } from '@react-navigation/native';

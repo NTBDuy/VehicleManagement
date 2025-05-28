@@ -1,23 +1,24 @@
+import { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, Pressable, ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import Header from 'components/HeaderComponent';
-import Request from 'types/Request';
+import { useAuth } from 'contexts/AuthContext';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
-import InfoRow from 'components/InfoRowComponent';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
-import { useEffect, useState } from 'react';
+import { RequestService } from 'services/requestService';
+
+import Assignment from 'types/Assignment';
+import Request from 'types/Request';
+
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
-import { useAuth } from 'contexts/AuthContext';
-import { RequestService } from 'services/requestService';
-import Assignment from 'types/Assignment';
+import InfoRow from 'components/InfoRowComponent';
+import Header from 'components/HeaderComponent';
 
 const RequestDetailScreen = () => {
-  const { user } = useAuth();
   const route = useRoute();
+  const { user } = useAuth();
   const { requestData: initialRequestData } = route.params as { requestData: Request };
-
   const [requestData, setRequestData] = useState<Request>(initialRequestData);
   const [assignmentData, setAssignmentData] = useState<Assignment | null>(null);
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
@@ -38,7 +39,7 @@ const RequestDetailScreen = () => {
       console.log(error);
     }
   };
-  /** Component: Badge Request status */
+
   const renderBadgeRequestStatus = ({ status }: { status: number }) => {
     const getStatusStyle = (status: number) => {
       switch (status) {
@@ -229,7 +230,6 @@ const RequestDetailScreen = () => {
             </View>
           )}
 
-          {/** Action Buttons */}
           {(user?.role === 0 || user?.role === 2) && (
             <>
               {requestData.status === 0 && (

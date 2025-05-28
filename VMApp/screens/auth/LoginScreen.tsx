@@ -1,4 +1,3 @@
-import { useAuth } from 'contexts/AuthContext';
 import { useState } from 'react';
 import {
   View,
@@ -6,14 +5,12 @@ import {
   SafeAreaView,
   TextInput,
   TouchableOpacity,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Pressable,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from 'contexts/AuthContext';
 import { showToast } from 'utils/toast';
 
 type QuickLoginRole = {

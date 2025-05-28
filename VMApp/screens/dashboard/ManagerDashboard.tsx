@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from 'react';
 import {
   Text,
   SafeAreaView,
@@ -5,27 +6,24 @@ import {
   View,
   ScrollView,
   Dimensions,
-  TextInput,
-  ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { useCallback, useEffect, useState } from 'react';
-
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { PieChart } from 'react-native-chart-kit';
-
-import Header from 'components/HeaderComponent';
-import StatItem from 'components/StatItemComponent';
-
-import Request from 'types/Request';
-import Vehicle from 'types/Vehicle';
-import WelcomeSection from 'components/WelcomeSectionComponent';
 import { useAuth } from 'contexts/AuthContext';
 import { RequestService } from 'services/requestService';
 import { VehicleService } from 'services/vehicleService';
 import { UserService } from 'services/userService';
+
+import Request from 'types/Request';
+import Vehicle from 'types/Vehicle';
+
+import Header from 'components/HeaderComponent';
+import StatItem from 'components/StatItemComponent';
+import WelcomeSection from 'components/WelcomeSectionComponent';
+import LoadingData from 'components/LoadingData';
 
 type RequestStat = {
   total: number;
@@ -43,11 +41,14 @@ type VehicleStat = {
 };
 
 const ManagerDashboard = () => {
+  const navigation = useNavigation<any>();
+  const screenWidth = Dimensions.get('window').width;
+  const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [requests, setRequests] = useState<Request[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState<number>(0);
-  const { user } = useAuth();
-  const navigation = useNavigation<any>();
   const [requestStat, setRequestStat] = useState<RequestStat>({
     total: 0,
     pending: 0,
@@ -63,15 +64,6 @@ const ManagerDashboard = () => {
     underMaintenance: 0,
   });
 
-  const screenWidth = Dimensions.get('window').width;
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    getStatData();
-    countUnread();
-  }, []);
-
   useEffect(() => {
     if (requests) calculateRequestStatistics(requests);
     if (vehicles) calculateVehicleStatistics(vehicles);
@@ -85,9 +77,14 @@ const ManagerDashboard = () => {
   );
 
   const countUnread = async () => {
+  try {
     const totalNotifications = await UserService.getUserUnreadNotifications();
     setNotificationCount(totalNotifications);
-  };
+  } catch (error) {
+    console.error('Failed to get notifications:', error);
+    setNotificationCount(0);
+  }
+};
 
   const getStatData = async () => {
     try {
@@ -200,7 +197,6 @@ const ManagerDashboard = () => {
     <SafeAreaView className="flex-1 bg-gray-50">
       {/** HEADER */}
       <Header
-        // customTitle={<Text className="text-2xl font-bold">Hi {user?.fullName}</Text>}
         title="Manager Dashboard"
         rightElement={
           <Pressable
@@ -222,15 +218,10 @@ const ManagerDashboard = () => {
       <ScrollView
         className="px-6"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-        {/* Welcome Section */}
-        <WelcomeSection user={user} />
-        {/** Section: Request Statistics */}
+         {user && <WelcomeSection user={user} />}
 
         {isLoading ? (
-          <View className="items-center justify-center flex-1">
-            <ActivityIndicator size="large" color="#3B82F6" />
-            <Text className="mt-2 text-gray-500">Loading data...</Text>
-          </View>
+          <LoadingData />
         ) : (
           <View>
             <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
@@ -268,13 +259,12 @@ const ManagerDashboard = () => {
                   </View>
                 ) : (
                   <View className="items-center py-8">
-                    <Text className="text-center text-gray-500">No vehicle data available</Text>
+                    <Text className="text-center text-gray-500">No request data available</Text>
                   </View>
                 )}
               </View>
             </View>
 
-            {/** Section: Vehicle Statistics */}
             <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
               <View className="px-4 py-3 bg-gray-50">
                 <Text className="text-lg font-semibold text-gray-800">Vehicle Statistics</Text>
@@ -289,9 +279,7 @@ const ManagerDashboard = () => {
                   value={vehicleStat.underMaintenance}
                   status="underMaintenance"
                 />
-
                 <View className="my-4 border-t border-gray-200"></View>
-
                 {vehicleStat.total > 0 && vehicleChartData.length > 0 ? (
                   <View className="items-center">
                     <PieChart

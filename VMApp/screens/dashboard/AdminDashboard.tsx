@@ -6,24 +6,24 @@ import {
   View,
   Dimensions,
   RefreshControl,
-  ActivityIndicator,
 } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { PieChart } from 'react-native-chart-kit';
-
-import Header from 'components/HeaderComponent';
-import StatItem from 'components/StatItemComponent';
-
-import User from 'types/User';
-import Vehicle from 'types/Vehicle';
-import WelcomeSection from 'components/WelcomeSectionComponent';
 import { useAuth } from 'contexts/AuthContext';
 import { VehicleService } from 'services/vehicleService';
 import { AccountService } from 'services/accountService';
 import { UserService } from 'services/userService';
+
+import User from 'types/User';
+import Vehicle from 'types/Vehicle';
+
+import Header from 'components/HeaderComponent';
+import StatItem from 'components/StatItemComponent';
+import WelcomeSection from 'components/WelcomeSectionComponent';
+import LoadingData from 'components/LoadingData';
 
 type VehicleStat = {
   total: number;
@@ -65,16 +65,14 @@ const AdminDashboard = () => {
   const screenWidth = Dimensions.get('window').width;
 
   useEffect(() => {
-    getStatData();
-    countUnread();
-  }, []);
-
-  useEffect(() => {
     if (vehicles) {
       calculateVehicleStatistics(vehicles);
-      calculateAccountStatistics();
     }
   }, [vehicles]);
+
+  useEffect(() => {
+    calculateAccountStatistics();
+  }, [accounts]);
 
   useFocusEffect(
     useCallback(() => {
@@ -84,9 +82,14 @@ const AdminDashboard = () => {
   );
 
   const countUnread = async () => {
+  try {
     const totalNotifications = await UserService.getUserUnreadNotifications();
     setNotificationCount(totalNotifications);
-  };
+  } catch (error) {
+    console.error('Failed to get notifications:', error);
+    setNotificationCount(0);
+  }
+};
 
   const getStatData = async () => {
     try {
@@ -170,9 +173,16 @@ const AdminDashboard = () => {
         title="Admin Dashboard"
         rightElement={
           <Pressable
-            className="p-2 bg-white rounded-full"
+            className="relative p-2 bg-white rounded-full"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
+            {notificationCount > 0 && (
+              <View className="absolute -right-2 -top-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500">
+                <Text className="text-xs font-bold text-center text-white">
+                  {notificationCount > 99 ? '99+' : notificationCount}
+                </Text>
+              </View>
+            )}
           </Pressable>
         }
       />
@@ -181,17 +191,12 @@ const AdminDashboard = () => {
       <ScrollView
         className="px-6"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-        {/* Welcome Section */}
-        <WelcomeSection user={user} />
+        {user && <WelcomeSection user={user} />}
 
         {isLoading ? (
-          <View className="items-center justify-center flex-1">
-            <ActivityIndicator size="large" color="#3B82F6" />
-            <Text className="mt-2 text-gray-500">Loading data...</Text>
-          </View>
+          <LoadingData />
         ) : (
           <View>
-            {/** Section: Account Statistics */}
             <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
               <View className="px-4 py-3 bg-gray-50">
                 <Text className="text-lg font-semibold text-gray-800">Account Statistics</Text>
@@ -205,7 +210,6 @@ const AdminDashboard = () => {
               </View>
             </View>
 
-            {/** Section: Vehicle Statistics */}
             <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
               <View className="px-4 py-3 bg-gray-50">
                 <Text className="text-lg font-semibold text-gray-800">Vehicle Statistics</Text>
@@ -220,9 +224,7 @@ const AdminDashboard = () => {
                   value={vehicleStat.underMaintenance}
                   status="underMaintenance"
                 />
-
                 <View className="my-4 border-t border-gray-200"></View>
-
                 {vehicleStat.total > 0 && vehicleChartData.length > 0 ? (
                   <View className="items-center">
                     <PieChart
@@ -239,7 +241,7 @@ const AdminDashboard = () => {
                       style={{
                         marginVertical: 8,
                         borderRadius: 16,
-                        paddingRight: '124%',
+                        paddingRight: 420,
                       }}
                     />
                   </View>

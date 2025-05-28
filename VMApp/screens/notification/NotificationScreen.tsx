@@ -1,19 +1,13 @@
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
   SafeAreaView,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
   RefreshControl,
   Pressable,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Header from 'components/HeaderComponent';
-import Notification from 'types/Notification';
-
-import EmptyList from 'components/EmptyListComponent';
-import { formatTime } from 'utils/datetimeUtils';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faBell,
@@ -27,11 +21,17 @@ import {
 import { useAuth } from 'contexts/AuthContext';
 import { UserService } from 'services/userService';
 import { NotificationService } from 'services/notificationService';
+import { formatTime } from 'utils/datetimeUtils';
 import { showToast } from 'utils/toast';
+
+import Notification from 'types/Notification';
+
+import Header from 'components/HeaderComponent';
+import EmptyList from 'components/EmptyListComponent';
+import LoadingData from 'components/LoadingData';
 
 const NotificationScreen = () => {
   const { user } = useAuth();
-
   const [userNotifications, setUserNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -190,10 +190,7 @@ const NotificationScreen = () => {
       />
 
       {isLoading ? (
-        <View className="items-center justify-center flex-1">
-          <ActivityIndicator size="large" color="#3B82F6" />
-          <Text className="mt-2 text-gray-500">Loading notifications...</Text>
-        </View>
+        <LoadingData />
       ) : (
         <View className="flex-1 mx-6">
           <FlatList

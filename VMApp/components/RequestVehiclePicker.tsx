@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { View, Text, FlatList, Pressable } from 'react-native';
 import Vehicle from 'types/Vehicle';
-import { getVehicleTypeIcon } from 'utils/vehicleUntils';
+import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 interface VehiclePickerComponentProps {
   availableVehicle: Vehicle[];

@@ -1,11 +1,13 @@
-import { View, Text, SafeAreaView, Pressable, ScrollView } from 'react-native';
-import { useCallback, useState } from 'react';
-import Header from 'components/HeaderComponent';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import Vehicle from 'types/Vehicle';
-import InputField from 'components/InputFieldComponent';
-import { showToast } from 'utils/toast';
+import { useCallback, useState } from 'react';
+import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
+import { showToast } from 'utils/toast';
+
+import Vehicle from 'types/Vehicle';
+
+import Header from 'components/HeaderComponent';
+import InputField from 'components/InputFieldComponent';
 
 const VehicleAddScreen = () => {
   const initialVehicleData = {
@@ -102,7 +104,7 @@ const VehicleAddScreen = () => {
                 {types.map((type) => {
                   const isFilterApplied = vehicleData.type
                     ? vehicleData.type === type.value
-                    : type.value == 'Sedan';
+                    : type.value === 'Sedan';
                   return (
                     <Pressable
                       key={type.value}
@@ -135,7 +137,6 @@ const VehicleAddScreen = () => {
           </View>
         </View>
 
-        {/** Active button */}
         <View className="mt-2 mb-40">
           <Pressable
             onPress={handleAddVehicle}

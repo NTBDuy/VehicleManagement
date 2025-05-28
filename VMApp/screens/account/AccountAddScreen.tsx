@@ -1,13 +1,15 @@
-import { View, Text, SafeAreaView, Pressable, Image, Switch, ScrollView } from 'react-native';
 import { useCallback, useState } from 'react';
-import Header from 'components/HeaderComponent';
+import { View, Text, SafeAreaView, Pressable, Image, Switch, ScrollView } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-import User from 'types/User';
-import InputField from 'components/InputFieldComponent';
-import { showToast } from 'utils/toast';
 import { AccountService } from 'services/accountService';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { showToast } from 'utils/toast';
+
+import User from 'types/User';
+
+import InputField from 'components/InputFieldComponent';
+import Header from 'components/HeaderComponent';
 
 const AccountCreateScreen = () => {
   const initialUserData = {
@@ -31,7 +33,7 @@ const AccountCreateScreen = () => {
       setUserData(initialUserData);
     }, [])
   );
-
+  
   const roles = [
     { label: 'Employee', value: 1 },
     { label: 'Manager', value: 2 },
@@ -54,7 +56,7 @@ const AccountCreateScreen = () => {
     if (!userData.phoneNumber.trim()) {
       newErrors.phoneNumber = 'phoneNumber number is required';
     } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = 'Please enter a valid phoneNumber number';
+      newErrors.phoneNumber = 'Please enter a valid phone number';
     }
 
     setErrors(newErrors);
@@ -69,7 +71,7 @@ const AccountCreateScreen = () => {
     try {
       setIsLoading(true);
       const data = await AccountService.createAccount(userData);
-      showToast.success('Success', 'Vehicle created successfully!');
+      showToast.success('Success', 'Account created successfully!');
       navigation.navigate('AccountDetail', { userData: data });
     } catch (error) {
       console.log(error);

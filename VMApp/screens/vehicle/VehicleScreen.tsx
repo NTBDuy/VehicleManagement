@@ -1,66 +1,73 @@
 import {
-  View,
-  Text,
-  SafeAreaView,
-  FlatList,
-  Pressable,
-  Modal,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
-import { useCallback, useEffect, useState } from 'react';
-import Header from 'components/HeaderComponent';
-import Vehicle from 'types/Vehicle';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {
-  faCarBurst,
-  faEllipsisV,
-  faPlus,
-  faInfoCircle,
-  faEdit,
-  faTrash,
   faCalendarCheck,
+  faCarBurst,
+  faEdit,
+  faEllipsisV,
+  faInfoCircle,
+  faPlus,
+  faTrash,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import EmptyList from 'components/EmptyListComponent';
-import { getVehicleTypeIcon } from 'utils/vehicleUntils';
+import { useCallback, useMemo, useState } from 'react';
+import { FlatList, Modal, Pressable, RefreshControl, SafeAreaView, Text, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
+import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
-type VehicleStat = {
-  total: number;
-  available: number;
-  inUse: number;
-  underMaintenance: number;
-};
+import Vehicle from 'types/Vehicle';
+
+import EmptyList from 'components/EmptyListComponent';
+import Header from 'components/HeaderComponent';
+import LoadingData from 'components/LoadingData';
 
 const VehicleScreen = () => {
   const navigation = useNavigation<any>();
-  const [vehicleStat, setVehicleStat] = useState<VehicleStat>({
-    total: 0,
-    available: 0,
-    inUse: 0,
-    underMaintenance: 0,
-  });
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<Vehicle>();
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentStatusFilter, setCurrentStatusFilter] = useState('');
 
-  useEffect(() => {
-    getVehiclesData();
-  }, []);
-
-  useEffect(() => {
-    if (vehicles) {
-      setFilteredVehicles(vehicles);
-      calculateVehicleStatistics(vehicles);
-    }
+  const vehicleStat = useMemo(() => {
+    const total = vehicles.length;
+    const available = vehicles.filter((request) => request.status === 0).length;
+    const inUse = vehicles.filter((request) => request.status === 1).length;
+    const underMaintenance = vehicles.filter((request) => request.status === 2).length;
+    return { total, available, inUse, underMaintenance };
   }, [vehicles]);
+
+  const filteredVehicles = useMemo(() => {
+    let filtered = [...vehicles];
+    const q = searchQuery.toLowerCase();
+
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (item) =>
+          item.licensePlate.toLowerCase().includes(q) ||
+          item.type.toLocaleLowerCase().toLowerCase().includes(q) ||
+          item.brand.toLocaleLowerCase().toLowerCase().includes(q) ||
+          item.model.toLocaleLowerCase().toLowerCase().includes(q)
+      );
+    }
+
+    switch (currentStatusFilter) {
+      case 'Available':
+        filtered = filtered.filter((item) => item.status === 0);
+        break;
+      case 'InUse':
+        filtered = filtered.filter((item) => item.status === 1);
+        break;
+      case 'Maintenance':
+        filtered = filtered.filter((item) => item.status === 2);
+        break;
+    }
+
+    return filtered;
+  }, [vehicles, searchQuery, currentStatusFilter]);
 
   useFocusEffect(
     useCallback(() => {
@@ -82,40 +89,6 @@ const VehicleScreen = () => {
     }
   };
 
-  /** Func: Statistics */
-  const calculateVehicleStatistics = (item: Vehicle[]) => {
-    const total = item.length;
-    const available = item.filter((request) => request.status === 0).length;
-    const inUse = item.filter((request) => request.status === 1).length;
-    const underMaintenance = item.filter((request) => request.status === 2).length;
-    setVehicleStat({ total, available, inUse, underMaintenance });
-  };
-
-  /** Func: Filter Vehicle */
-  const filterVehicles = (query: string, status: string): void => {
-    let filtered = vehicles;
-
-    if (query) {
-      filtered = filtered.filter(
-        (item) =>
-          item.licensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.model.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-      );
-    }
-
-    if (status === 'Available') {
-      filtered = filtered.filter((item) => item.status === 0);
-    } else if (status === 'InUse') {
-      filtered = filtered.filter((item) => item.status === 1);
-    } else if (status === 'Maintenance') {
-      filtered = filtered.filter((item) => item.status === 2);
-    }
-
-    setFilteredVehicles(filtered);
-  };
-  /** Component: Badge Vehicle status */
   const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
     const getStatusStyle = (status: number) => {
       switch (status) {
@@ -152,7 +125,6 @@ const VehicleScreen = () => {
     );
   };
 
-  /** Component: status Card */
   const StatusCard = ({
     label,
     count,
@@ -194,17 +166,17 @@ const VehicleScreen = () => {
   );
 
   const handleStatusFilter = (status: string) => {
-    filterVehicles('', status);
+    setCurrentStatusFilter(status);
   };
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    filterVehicles(text, '');
+    setCurrentStatusFilter('');
   };
 
   const handleClearFilters = (): void => {
     setSearchQuery('');
-    filterVehicles('', '');
+    setCurrentStatusFilter('');
   };
 
   const handleVehicleSelection = (vehicles: Vehicle) => {
@@ -295,10 +267,7 @@ const VehicleScreen = () => {
         </View>
 
         {isLoading ? (
-          <View className="items-center justify-center flex-1">
-            <ActivityIndicator size="large" color="#3B82F6" />
-            <Text className="mt-2 text-gray-500">Loading vehicles...</Text>
-          </View>
+          <LoadingData text="vehicles" />
         ) : (
           <FlatList
             data={filteredVehicles}

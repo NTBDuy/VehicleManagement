@@ -1,16 +1,6 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  FlatList,
-  Pressable,
-  Modal,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
-import { useCallback, useEffect, useState } from 'react';
-import Header from 'components/HeaderComponent';
-import Request from 'types/Request';
+import { useCallback, useMemo, useState } from 'react';
+import { View, Text, SafeAreaView, FlatList, Pressable, Modal, RefreshControl } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faEllipsisV,
@@ -18,38 +8,23 @@ import {
   faCircleXmark,
   faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
-
-import EmptyList from 'components/EmptyListComponent';
 import { getUserInitials } from 'utils/userUtils';
 import { formatDate } from 'utils/datetimeUtils';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { getColorByStatus } from 'utils/requestUtils';
+import { RequestService } from 'services/requestService';
+
+import Request from 'types/Request';
+
+import Header from 'components/HeaderComponent';
+import LoadingData from 'components/LoadingData';
+import EmptyList from 'components/EmptyListComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
-import { getColorByStatus } from 'utils/requestUtils';
-import { RequestService } from 'services/requestService';
-import { showToast } from 'utils/toast';
-
-type RequestStat = {
-  total: number;
-  pending: number;
-  approved: number;
-  rejected: number;
-  cancelled: number;
-};
 
 const RequestScreen = () => {
   const navigation = useNavigation<any>();
-  const [requestStat, setRequestStat] = useState<RequestStat>({
-    total: 0,
-    pending: 0,
-    approved: 0,
-    rejected: 0,
-    cancelled: 0,
-  });
-
   const [requests, setRequests] = useState<Request[]>([]);
-  const [filteredRequests, setFilteredRequests] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isFiltered, setIsFiltered] = useState(false);
@@ -62,16 +37,50 @@ const RequestScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    getRequestsData();
-  }, []);
-
-  useEffect(() => {
-    if (requests.length > 0) {
-      calculateRequestStatistics(requests);
-      filterRequests(searchQuery, currentStatusFilter);
-    }
+  const requestStat = useMemo(() => {
+    const total = requests.length;
+    const pending = requests.filter((r) => r.status === 0).length;
+    const approved = requests.filter((r) => r.status === 1).length;
+    const rejected = requests.filter((r) => r.status === 2).length;
+    const cancelled = requests.filter((r) => r.status === 3).length;
+    return { total, pending, approved, rejected, cancelled };
   }, [requests]);
+
+  const filteredRequests = useMemo(() => {
+    let filtered = [...requests];
+    const q = searchQuery.toLowerCase();
+
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (item) =>
+          item.user?.fullName.toLowerCase().includes(q) ||
+          item.user?.email.toLowerCase().includes(q) ||
+          item.user?.phoneNumber.toLowerCase().includes(q) ||
+          item.user?.username.toLowerCase().includes(q) ||
+          item.vehicle?.licensePlate.toLowerCase().includes(q) ||
+          item.vehicle?.type.toLowerCase().includes(q) ||
+          item.vehicle?.brand.toLowerCase().includes(q) ||
+          item.vehicle?.model.toLowerCase().includes(q)
+      );
+    }
+
+    switch (currentStatusFilter) {
+      case 'Pending':
+        filtered = filtered.filter((item) => item.status === 0);
+        break;
+      case 'Approved':
+        filtered = filtered.filter((item) => item.status === 1);
+        break;
+      case 'Rejected':
+        filtered = filtered.filter((item) => item.status === 2);
+        break;
+      case 'Cancelled':
+        filtered = filtered.filter((item) => item.status === 3);
+        break;
+    }
+
+    return filtered;
+  }, [requests, searchQuery, currentStatusFilter]);
 
   useFocusEffect(
     useCallback(() => {
@@ -86,54 +95,12 @@ const RequestScreen = () => {
       return setRequests(data);
     } catch (error) {
       console.error(error);
-      return setRequests([]);
     } finally {
       setRefreshing(false);
       setIsLoading(false);
     }
   };
 
-  /** Func: Statistics  */
-  const calculateRequestStatistics = (item: Request[]) => {
-    const total = item.length;
-    const pending = item.filter((request) => request.status === 0).length;
-    const approved = item.filter((request) => request.status === 1).length;
-    const rejected = item.filter((request) => request.status === 2).length;
-    const cancelled = item.filter((request) => request.status === 3).length;
-    setRequestStat({ total, pending, approved, rejected, cancelled });
-  };
-
-  /** Func: Search and filter */
-  const filterRequests = (query: string, status: string): void => {
-    let filtered = requests;
-    if (query) {
-      filtered = filtered.filter(
-        (item) =>
-          item.user?.fullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.user?.email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.user?.phoneNumber.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.user?.username.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.vehicle?.licensePlate.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.vehicle?.type.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.vehicle?.brand.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          item.vehicle?.model.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-      );
-    }
-
-    if (status == 'Pending') {
-      filtered = filtered.filter((item) => item.status === 0);
-    } else if (status == 'Approved') {
-      filtered = filtered.filter((item) => item.status === 1);
-    } else if (status == 'Rejected') {
-      filtered = filtered.filter((item) => item.status === 2);
-    } else if (status == 'Cancelled') {
-      filtered = filtered.filter((item) => item.status === 3);
-    }
-
-    setFilteredRequests(filtered);
-  };
-
-  /** Component: Status Filter */
   const StatusCard = ({
     label,
     count,
@@ -151,7 +118,6 @@ const RequestScreen = () => {
     </Pressable>
   );
 
-  /** Component: Request Item */
   const renderRequestItem = ({ item }: { item: Request }) => (
     <Pressable
       onPress={() => handleRequestOption(item)}
@@ -184,13 +150,11 @@ const RequestScreen = () => {
 
   const handleStatusFilter = (status: string) => {
     setCurrentStatusFilter(status);
-    filterRequests(searchQuery, status);
     setIsFiltered(true);
   };
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    filterRequests(text, currentStatusFilter);
   };
 
   const handleRequestOption = (data: Request): void => {
@@ -200,8 +164,8 @@ const RequestScreen = () => {
 
   const handleClearFilters = (): void => {
     setSearchQuery('');
+    setCurrentStatusFilter('');
     setIsFiltered(false);
-    filterRequests('', '');
   };
 
   const handleViewDetail = () => {
@@ -303,10 +267,7 @@ const RequestScreen = () => {
         )}
 
         {isLoading ? (
-          <View className="items-center justify-center flex-1">
-            <ActivityIndicator size="large" color="#3B82F6" />
-            <Text className="mt-2 text-gray-500">Loading requests...</Text>
-          </View>
+          <LoadingData />
         ) : (
           <FlatList
             data={filteredRequests}

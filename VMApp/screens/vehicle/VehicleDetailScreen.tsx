@@ -1,14 +1,17 @@
-import { View, Text, SafeAreaView, Pressable, ActivityIndicator } from 'react-native';
-import Header from 'components/HeaderComponent';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import Vehicle from 'types/Vehicle';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import InfoRow from 'components/InfoRowComponent';
-import { getVehicleTypeIcon } from 'utils/vehicleUntils';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
+import { Pressable, SafeAreaView, Text, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { formatDate } from 'utils/datetimeUtils';
+import { getVehicleTypeIcon } from 'utils/vehicleUtils';
+
+import Vehicle from 'types/Vehicle';
+
+import Header from 'components/HeaderComponent';
+import InfoRow from 'components/InfoRowComponent';
+import LoadingData from 'components/LoadingData';
 
 const VehicleDetailScreen = () => {
   const route = useRoute();
@@ -89,10 +92,7 @@ const VehicleDetailScreen = () => {
       />
 
       {isLoading ? (
-        <View className="items-center justify-center flex-1">
-          <ActivityIndicator size="large" color="#3B82F6" />
-          <Text className="mt-2 text-gray-500">Loading vehicle details...</Text>
-        </View>
+        <LoadingData />
       ) : (
         <View className="px-6">
           <View className="mt-4 mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
@@ -120,7 +120,6 @@ const VehicleDetailScreen = () => {
             </View>
           </View>
 
-          {/** Section - thông tin cơ bản */}
           <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
             <View className="px-4 py-3 bg-gray-50">
               <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
@@ -146,7 +145,6 @@ const VehicleDetailScreen = () => {
             </View>
           </View>
 
-          {/** Section - lịch bảo dưỡng  */}
           <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
             <View className="px-4 py-3 bg-gray-50">
               <Text className="text-lg font-semibold text-gray-800">Maintenance</Text>

@@ -1,4 +1,3 @@
-import Header from 'components/HeaderComponent';
 import {
   View,
   Text,
@@ -6,11 +5,11 @@ import {
   FlatList,
   Pressable,
   Modal,
-  ActivityIndicator,
   RefreshControl,
   Alert,
 } from 'react-native';
-import User from 'types/User';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faPersonCircleQuestion,
@@ -22,13 +21,16 @@ import {
   faBan,
   faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { getUserInitials } from 'utils/userUtils';
-import { useCallback, useEffect, useState } from 'react';
-import EmptyList from 'components/EmptyListComponent';
-import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
 import { AccountService } from 'services/accountService';
+import { getUserInitials } from 'utils/userUtils';
+import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
 import { showToast } from 'utils/toast';
+
+import User from 'types/User';
+
+import Header from 'components/HeaderComponent';
+import LoadingData from 'components/LoadingData';
+import EmptyList from 'components/EmptyListComponent';
 
 const filterOptions = [
   { id: 3, name: 'All' },
@@ -47,10 +49,6 @@ const AccountScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    getAccountsData();
-  }, []);
 
   useEffect(() => {
     if (accounts) {
@@ -240,10 +238,7 @@ const AccountScreen = () => {
           />
         </View>
         {isLoading ? (
-          <View className="items-center justify-center flex-1">
-            <ActivityIndicator size="large" color="#3B82F6" />
-            <Text className="mt-2 text-gray-500">Loading accounts...</Text>
-          </View>
+          <LoadingData />
         ) : (
           <FlatList
             data={filteredUsers}

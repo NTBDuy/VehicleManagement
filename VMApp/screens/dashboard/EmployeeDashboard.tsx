@@ -1,16 +1,16 @@
+import { useCallback, useState } from 'react';
 import { Text, SafeAreaView, Pressable, ScrollView, View } from 'react-native';
-import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from 'contexts/AuthContext';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell, faCalendarPlus, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useAuth } from 'contexts/AuthContext';
+import { UserService } from 'services/userService';
+
+import Request from 'types/Request';
 
 import Header from 'components/HeaderComponent';
 import WelcomeSection from 'components/WelcomeSectionComponent';
-
-import Request from 'types/Request';
 import RequestItem from 'components/HistoryRequestItem';
-import { UserService } from 'services/userService';
 
 type employeeDashboardStat = {
   pending: Request[];
@@ -18,28 +18,14 @@ type employeeDashboardStat = {
 };
 
 const EmployeeDashboard = () => {
-  const { user } = useAuth();
   const navigation = useNavigation<any>();
-
+  const { user } = useAuth();
   const [notificationCount, setNotificationCount] = useState<number>(0);
   const [userRequest, setUserRequest] = useState<Request[]>([]);
   const [stat, setStat] = useState<employeeDashboardStat>({
     pending: [],
     incoming: [],
   });
-
-  useEffect(() => {
-    if (user) {
-      getRequestByUserID();
-      countUnread();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (userRequest.length > 0) {
-      statistics();
-    }
-  }, [userRequest]);
 
   useFocusEffect(
     useCallback(() => {
@@ -50,9 +36,14 @@ const EmployeeDashboard = () => {
   );
 
   const countUnread = async () => {
+  try {
     const totalNotifications = await UserService.getUserUnreadNotifications();
     setNotificationCount(totalNotifications);
-  };
+  } catch (error) {
+    console.error('Failed to get notifications:', error);
+    setNotificationCount(0);
+  }
+};
 
   const getRequestByUserID = async () => {
     const data = await UserService.getUserRequests();
@@ -87,8 +78,7 @@ const EmployeeDashboard = () => {
       />
 
       <ScrollView className="px-6">
-        {/* Welcome Section */}
-        <WelcomeSection user={user} />
+         {user && <WelcomeSection user={user} />}
 
         <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
           <View className="px-4 py-3 bg-gray-50">

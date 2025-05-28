@@ -8,15 +8,17 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import React, { useState } from 'react';
-import Header from 'components/HeaderComponent';
+import { useState } from 'react';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit, faLock, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import User from 'types/User';
-import InputField from 'components/InputFieldComponent';
 import { AccountService } from 'services/accountService';
 import { showToast } from 'utils/toast';
+
+import User from 'types/User';
+
+import Header from 'components/HeaderComponent';
+import InputField from 'components/InputFieldComponent';
 
 const AccountEditScreen = () => {
   const route = useRoute();
@@ -91,6 +93,7 @@ const AccountEditScreen = () => {
     ]);
   };
 
+  // Phát triển sau - Coming Soon!
   const handleResetPassword = () => {
     Alert.alert('Reset Password', `Reset password for ${userData.fullName || userData.username}?`, [
       { text: 'Cancel', style: 'cancel' },
@@ -98,7 +101,6 @@ const AccountEditScreen = () => {
         text: 'Reset',
         style: 'destructive',
         onPress: () => {
-          // TODO: Implement password reset
           console.log('Reset password for user:', userData.userId);
           Alert.alert('Success', 'Password reset link has been sent to user email');
         },
@@ -254,7 +256,7 @@ const AccountEditScreen = () => {
           </View>
         </View>
 
-        {/** Action Buttons */}
+        
         <View className="flex-row justify-between mt-4 mb-8">
           <Pressable
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
