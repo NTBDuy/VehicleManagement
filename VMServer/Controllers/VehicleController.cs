@@ -13,12 +13,13 @@ namespace VMServer.Controllers
     public class VehicleController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        public VehicleController(AppDbContext dbContext, IConfiguration configuration)
+        public VehicleController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         // GET: api/vehicle
+        // Lấy danh sách tất cả phương tiện
         [Authorize(Roles = "Administrator, Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllVehicle()
@@ -30,6 +31,7 @@ namespace VMServer.Controllers
         }
 
         // GET: api/vehicle/{vehicleId}
+        // Lấy thông tin chi tiết phương tiện
         [Authorize(Roles = "Administrator, Manager")]
         [HttpGet("{vehicleId}")]
         public async Task<IActionResult> GetVehicleDetails(int vehicleId)
@@ -42,6 +44,7 @@ namespace VMServer.Controllers
         }
 
         // GET: api/vehicle/available
+        // Lấy phương tiện đang khả dụng
         [Authorize]
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableVehicles()
@@ -54,6 +57,7 @@ namespace VMServer.Controllers
         }
 
         // GET: api/vehicle/{vehicleId}/schedule
+        // Lấy yêu cầu (lịch trình) của phương tiện đó
         [Authorize]
         [HttpGet("{vehicleId}/schedule")]
         public async Task<IActionResult> GetVehicleSchedule(int vehicleId)
@@ -71,6 +75,9 @@ namespace VMServer.Controllers
             return Ok(schedules);
         }
 
+        // GET: api/vehicle/{vehicleId}/maintenance/schedule
+        // Lấy thông tin lịch bảo dưỡng sắp đến
+        [Authorize]
         [HttpGet("{vehicleId}/schedule-maintenance")]
         public async Task<IActionResult> GetScheduleMaintenance(int vehicleId)
         {
@@ -87,6 +94,7 @@ namespace VMServer.Controllers
         }
 
         // POST: api/vehicle
+        // Tạo mới phương tiện
         [Authorize(Roles = "Administrator, Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateNewVehicle([FromBody] VehicleDTO dto)
@@ -107,7 +115,10 @@ namespace VMServer.Controllers
             return Ok(newVehicle);
         }
 
-        [HttpPost("{vehicleId}/schedule-maintenance")]
+        // POST: api/vehicle/{vehicleId}/maintenance/schedule
+        // Thêm lịch bảo dưỡng cho phương tiện
+        [Authorize]
+        [HttpPost("{vehicleId}/maintenance/schedule")]
         public async Task<IActionResult> ScheduleMaintenance(int vehicleId, [FromBody] MaintenanceScheduleDTO dto)
         {
             var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
@@ -131,6 +142,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/vehicle/{vehicleId}
+        // Cập nhật thông tin phương tiện
         [Authorize(Roles = "Administrator, Manager")]
         [HttpPut("{vehicleId}")]
         public async Task<IActionResult> UpdateVehicle(int vehicleId, [FromBody] VehicleDTO dto)
@@ -150,6 +162,7 @@ namespace VMServer.Controllers
         }
 
         // DELETE: api/vehicle/{vehicleId}
+        // Xoá phương tiện
         [Authorize(Roles = "Administrator, Manager")]
         [HttpDelete("{vehicleId}")]
         public async Task<IActionResult> DeleteVehicle(int vehicleId)

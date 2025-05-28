@@ -12,11 +12,12 @@ namespace VMServer.Controllers
     public class RequestController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        public RequestController(AppDbContext dbContext, IConfiguration configuration)
+        public RequestController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
-        // GET: apo/requests
+        // GET: api/requests
+        // Lấy danh sách toàn bộ yêu cầu
         [Authorize(Roles = "Administrator, Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllRequests()
@@ -29,6 +30,9 @@ namespace VMServer.Controllers
             return Ok(requests);
         }
 
+        // GET: api/request/{requestId}/assignment
+        // Lấy thông tin gán định tài xế
+        [Authorize]
         [HttpGet("{requestId}/assignment")]
         public async Task<IActionResult> GetAssignmentDetails(int requestId)
         {
@@ -48,6 +52,7 @@ namespace VMServer.Controllers
         }
 
         // POST: api/request
+        // Tạo mới yêu cầu
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> NewRequest([FromBody] CreateNewRequestDTO dto)
@@ -71,9 +76,7 @@ namespace VMServer.Controllers
                 Status = RequestStatus.Pending
             };
 
-            await SendNotificationToRole(UserRole.Manager,
-     "A new vehicle request has been submitted and needs approval.",
-     "NewRequestSubmitted");
+            await SendNotificationToRole(UserRole.Manager, "A new vehicle request has been submitted and needs approval.", "NewRequestSubmitted");
 
             _dbContext.Requests.Add(newRequest);
             await _dbContext.SaveChangesAsync();
@@ -82,6 +85,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/request/{requestId}/approve
+        // Chấp nhận yêu cầu
         [Authorize(Roles = "Manager")]
         [HttpPut("{requestId}/approve")]
         public async Task<IActionResult> ApproveRequest(int requestId, [FromBody] ApproveDTO? dto)
@@ -128,6 +132,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/request/{requestId}/cancel
+        // Huỷ bỏ yêu cầu 
         [Authorize]
         [HttpPut("{requestId}/cancel")]
         public async Task<IActionResult> CancelRequest(int requestId, [FromBody] ReasonDTO dto)
@@ -159,6 +164,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/request/{requestId}/reject
+        // Từ chối yêu cầu
         [Authorize(Roles = "Manager")]
         [HttpPut("{requestId}/reject")]
         public async Task<IActionResult> RejectRequest(int requestId, [FromBody] ReasonDTO dto)
@@ -189,6 +195,7 @@ namespace VMServer.Controllers
             return Ok(request);
         }
 
+        // Gửi thông báo tới Role
         private async Task SendNotificationToRole(UserRole role, string message, string type)
         {
             var users = await _dbContext.Users

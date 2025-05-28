@@ -12,12 +12,13 @@ namespace VMServer.Controllers
     public class DriverController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        public DriverController(AppDbContext dbContext, IConfiguration configuration)
+        public DriverController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         // GET: api/driver
+        // Lấy danh sách tài xế 
         [Authorize(Roles = "Administrator, Manager")]
         [HttpGet]
         public async Task<IActionResult> GetDrivers()

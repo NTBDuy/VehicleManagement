@@ -12,13 +12,14 @@ namespace VMServer.Controllers
     public class NotificationController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        public NotificationController(AppDbContext dbContext, IConfiguration configuration)
+        public NotificationController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         // POST: api/notification
-        // [Authorize]
+        // Thêm mới thông báo
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateNewNotification([FromBody] NotificationDTO dto)
         {
@@ -39,6 +40,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/notification/{notificationId}/mark-read
+        // Đánh dấu thông báo đã đọc 
         [Authorize]
         [HttpPut("{notificationId}/mark-read")]
         public async Task<IActionResult> MarkNotificationAsRead(int notificationId)
@@ -62,6 +64,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/notification/mark-all-read
+        // Đánh dấu đã đọc toàn bộ thông báo 
         [Authorize]
         [HttpPut("mark-all-read")]
         public async Task<IActionResult> MarkAllNotificationsAsRead()

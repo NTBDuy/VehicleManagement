@@ -9,6 +9,7 @@ import {
   faClockRotateLeft,
   faCarSide,
   faCalendarPlus,
+  faTools,
 } from '@fortawesome/free-solid-svg-icons';
 
 import HomeScreen from 'screens/dashboard/ManagerDashboard';
@@ -25,6 +26,7 @@ import NewRequest from 'screens/request/RequestCreateScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
 import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
 import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
+import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();
@@ -33,6 +35,7 @@ const RequestStack = createNativeStackNavigator();
 const NewRequestStack = createNativeStackNavigator();
 const HistoryStack = createNativeStackNavigator();
 const SettingStack = createNativeStackNavigator();
+const MaintenanceStack = createNativeStackNavigator();
 
 function DashboardStackScreen() {
   return (
@@ -87,6 +90,14 @@ function SettingStackScreen() {
       <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
       <SettingStack.Screen name="EditProfile" component={EditProfileScreen} />
     </SettingStack.Navigator>
+  );
+}
+
+function MaintenanceStackScreen() {
+  return (
+    <MaintenanceStack.Navigator>
+      <MaintenanceStack.Screen name="Maintenance" component={MaintenanceManagement} />
+    </MaintenanceStack.Navigator>
   );
 }
 
@@ -152,6 +163,17 @@ export default function ManagerNavigator() {
           ),
           title: 'Vehicle Management',
           headerShown: false,
+        }}
+      />
+
+      <Drawer.Screen
+        name="MaintenanceStack"
+        component={MaintenanceStackScreen}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faTools} color={color} size={size} />
+          ),
+          title: 'Maintenance Management',
         }}
       />
 

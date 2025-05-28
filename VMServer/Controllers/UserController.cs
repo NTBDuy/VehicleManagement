@@ -12,12 +12,13 @@ namespace VMServer.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        public UserController(AppDbContext dbContext, IConfiguration configuration)
+        public UserController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         // GET: api/user/notification
+        // Lấy danh sách thông báo của người dùng
         [Authorize]
         [HttpGet("notifications")]
         public async Task<IActionResult> GetUserNotifications()
@@ -38,7 +39,8 @@ namespace VMServer.Controllers
             return Ok(notifications);
         }
 
-        // GET: api/user/notification/count-unread
+        // GET: api/user/notification/count-unread\
+        // Đếm số lượng thông báo chưa đọc
         [Authorize]
         [HttpGet("notifications/count-unread")]
         public async Task<IActionResult> GetUserNotificationsUnread()

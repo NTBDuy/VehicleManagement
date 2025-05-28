@@ -61,6 +61,7 @@ namespace VMServer.Controllers
             });
         }
 
+        // Tạo Token
         private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

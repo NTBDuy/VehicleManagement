@@ -348,7 +348,7 @@ const VehicleScreen = () => {
                 handleCloseModal();
               }}>
               <FontAwesomeIcon icon={faEdit} size={20} color="#ca8a04" />
-              <Text className="text-lg font-semibold text-yellow-600">Edit vehicles</Text>
+              <Text className="text-lg font-semibold text-yellow-600">Edit vehicle</Text>
             </Pressable>
 
             {selected?.status !== 2 && selected?.nextMaintenanceId == null && (
@@ -369,7 +369,7 @@ const VehicleScreen = () => {
                 onRemoveVehicle();
               }}>
               <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
-              <Text className="text-lg font-semibold text-red-600">Remove vehicles</Text>
+              <Text className="text-lg font-semibold text-red-600">Remove vehicle</Text>
             </Pressable>
 
             <Pressable

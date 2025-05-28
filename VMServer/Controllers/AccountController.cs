@@ -15,13 +15,14 @@ namespace VMServer.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly PasswordHasher<User> _passwordHasher;
-        public AccountController(AppDbContext dbContext, IConfiguration configuration)
+        public AccountController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
             _passwordHasher = new PasswordHasher<User>();
         }
 
         // GET: api/account
+        // Lấy danh sách tài khoản
         [Authorize(Roles = "Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetAllAccounts()
@@ -31,6 +32,7 @@ namespace VMServer.Controllers
         }
 
         // GET: api/account/{accountId}
+        // Lấy thông tin chi tiết tài khoản
         [Authorize(Roles = "Administrator, Manager")]
         [HttpGet("{accountId}")]
         public async Task<IActionResult> GetAccountDetails(int accountId)
@@ -43,6 +45,7 @@ namespace VMServer.Controllers
         }
 
         // POST: api/account
+        // Tạo mới tài khoản
         [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<IActionResult> CreateNewAccount([FromBody] AccountDTO dto)
@@ -66,6 +69,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/account/{accountId}
+        // Cập nhật thông tin tài khoản
         [Authorize(Roles = "Administrator")]
         [HttpPut("{accountId}")]
         public async Task<IActionResult> UpdateAccount(int accountId, [FromBody] AccountDTO dto)
@@ -85,6 +89,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/account/{accountId}/toggle-status
+        // Thay đổi trạng thái tài khoản
         [Authorize(Roles = "Administrator")]
         [HttpPut("{accountId}/toggle-status")]
         public async Task<IActionResult> ToggleAccountStatus(int accountId)

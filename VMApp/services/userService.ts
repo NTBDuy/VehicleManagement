@@ -4,7 +4,7 @@ import Request from '../types/Request';
 import Notification from 'types/Notification';
 
 export class UserService extends BaseApiClient {
-  // Cập nhật profile user
+  // Cập nhật thông tin người dùng
   static async updateProfile(userData: Partial<User>): Promise<User> {
     return this.request<User>(`/user/information`, {
       method: 'PUT',
@@ -12,17 +12,17 @@ export class UserService extends BaseApiClient {
     });
   }
 
-  // Lấy danh sách requests của user
+  // Lấy danh sách requests của người dùng
   static async getUserRequests(): Promise<Request[]> {
     return this.request<Request[]>(`/user/requests`);
   }
 
-  // Lấy danh sách thông báo của user
+  // Lấy danh sách thông báo của người dùng
   static async getUserNotifications(): Promise<Notification[]> {
     return this.request<Notification[]>(`/user/notifications`);
   }
 
-  
+  // Lấy số lượng thông báo chưa đọc
   static async getUserUnreadNotifications(): Promise<number> {
     return this.request<number>(`/user/notifications/count-unread`);
   }
