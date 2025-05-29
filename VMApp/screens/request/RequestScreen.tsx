@@ -1,26 +1,26 @@
-import { useCallback, useMemo, useState } from 'react';
-import { View, Text, SafeAreaView, FlatList, Pressable, Modal, RefreshControl } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
+  faCircleCheck,
+  faCircleXmark,
   faEllipsisV,
   faInfoCircle,
-  faCircleXmark,
-  faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
-import { getUserInitials } from 'utils/userUtils';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useMemo, useState } from 'react';
+import { FlatList, Modal, Pressable, RefreshControl, SafeAreaView, Text, View } from 'react-native';
+import { RequestService } from 'services/requestService';
 import { formatDate } from 'utils/datetimeUtils';
 import { getColorByStatus } from 'utils/requestUtils';
-import { RequestService } from 'services/requestService';
+import { getUserInitials } from 'utils/userUtils';
 
 import Request from 'types/Request';
 
+import EmptyList from 'components/EmptyListComponent';
 import Header from 'components/HeaderComponent';
 import LoadingData from 'components/LoadingData';
-import EmptyList from 'components/EmptyListComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
-import RejectModal from 'components/modal/RejectModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
+import RejectModal from 'components/modal/RejectModalComponent';
 
 const RequestScreen = () => {
   const navigation = useNavigation<any>();

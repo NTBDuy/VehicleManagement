@@ -1,6 +1,6 @@
 import { showToast } from 'utils/toast';
-import { API_CONFIG } from '../config/apiConfig';
-import { AuthService } from './authService';
+import { API_CONFIG } from 'config/apiConfig';
+import { AuthService } from 'services/authService'
 
 export class BaseApiClient {
   protected static readonly BASE_URL = API_CONFIG.BASE_URL;

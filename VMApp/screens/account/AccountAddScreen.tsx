@@ -1,15 +1,15 @@
-import { useCallback, useState } from 'react';
-import { View, Text, SafeAreaView, Pressable, Image, Switch, ScrollView } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { faCircleInfo, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEdit, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
+import { Image, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from 'react-native';
 import { AccountService } from 'services/accountService';
 import { showToast } from 'utils/toast';
 
 import User from 'types/User';
 
-import InputField from 'components/InputFieldComponent';
 import Header from 'components/HeaderComponent';
+import InputField from 'components/InputFieldComponent';
 
 const AccountCreateScreen = () => {
   const initialUserData = {

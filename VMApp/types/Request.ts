@@ -1,5 +1,5 @@
-import User from "./User";
-import Vehicle from "./Vehicle";
+import User from "types/User";
+import Vehicle from "types/Vehicle";
 
 export enum Status {
     Pending = 0,

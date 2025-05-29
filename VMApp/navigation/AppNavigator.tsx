@@ -2,10 +2,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from 'contexts/AuthContext';
 
-import AuthNavigator from './AuthNavigator';
-import AdminNavigator from './AdminNavigator';
-import EmployeeNavigator from './EmployeeNavigator';
-import ManagerNavigator from './ManagerNavigator';
+import AdminNavigator from 'navigation/AdminNavigator';
+import AuthNavigator from 'navigation/AuthNavigator';
+import EmployeeNavigator from 'navigation/EmployeeNavigator';
+import ManagerNavigator from 'navigation/ManagerNavigator';
 
 const RootStack = createNativeStackNavigator();
 

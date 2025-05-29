@@ -1,18 +1,18 @@
-import { View, Text, SafeAreaView, Image, Pressable, Alert } from 'react-native';
-import { useCallback, useState } from 'react';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { faCrown, faEdit, faShieldAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEdit, faShieldAlt, faUser, faCrown } from '@fortawesome/free-solid-svg-icons';
-import { formatVietnamPhoneNumber } from 'utils/userUtils';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
+import { Alert, Image, Pressable, SafeAreaView, Text, View } from 'react-native';
 import { AccountService } from 'services/accountService';
 import { showToast } from 'utils/toast';
+import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 import User from 'types/User';
 
 import Header from 'components/HeaderComponent';
 import InfoRow from 'components/InfoRowComponent';
-import NoDataAvailable from 'components/NoDataAvailable';
 import LoadingData from 'components/LoadingData';
+import NoDataAvailable from 'components/NoDataAvailable';
 
 type RoleInfo = {
   label: string;

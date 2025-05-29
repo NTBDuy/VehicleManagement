@@ -1,32 +1,32 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
-  faHome,
   faCalendarCheck,
-  faGear,
-  faClockRotateLeft,
-  faCarSide,
   faCalendarPlus,
+  faCarSide,
+  faClockRotateLeft,
+  faGear,
+  faHome,
   faTools,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import HomeScreen from 'screens/dashboard/ManagerDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
+import EditProfileScreen from 'screens/profile/EditProfileScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
+import NewRequest from 'screens/request/RequestCreateScreen';
+import RequestDetailScreen from 'screens/request/RequestDetailScreen';
+import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
 import RequestScreen from 'screens/request/RequestScreen';
-import VehicleScreen from 'screens/vehicle/VehicleScreen';
+import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
+import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
+import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
-import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
+import VehicleScreen from 'screens/vehicle/VehicleScreen';
+
 import SidebarComponent from 'components/SidebarComponent';
-import RequestDetailScreen from 'screens/request/RequestDetailScreen';
-import NewRequest from 'screens/request/RequestCreateScreen';
-import EditProfileScreen from 'screens/profile/EditProfileScreen';
-import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
-import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
-import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();

@@ -1,5 +1,5 @@
-import { BaseApiClient } from './baseApiClient';
-import Request from '../types/Request';
+import { BaseApiClient } from 'services/baseApiClient';
+import Request from 'types/Request';
 import Assignment from 'types/Assignment';
 
 export class RequestService extends BaseApiClient {

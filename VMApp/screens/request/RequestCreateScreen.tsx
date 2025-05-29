@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, Pressable } from 'react-native';
+import { faCalendarCheck, faCalendarDays, faCarSide } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCalendarDays, faCarSide, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
-import { VehicleService } from 'services/vehicleService';
+import { useAuth } from 'contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import { Pressable, SafeAreaView, Text, View } from 'react-native';
 import { RequestService } from 'services/requestService';
+import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
 
 import Vehicle from 'types/Vehicle';

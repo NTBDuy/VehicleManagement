@@ -1,5 +1,5 @@
-import { BaseApiClient } from './baseApiClient';
-import User from '../types/User';
+import { BaseApiClient } from 'services/baseApiClient';
+import User from 'types/User';
 
 export class AccountService extends BaseApiClient {
   // Lấy danh sách tài khoản

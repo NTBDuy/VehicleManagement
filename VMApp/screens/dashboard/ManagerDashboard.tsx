@@ -1,29 +1,29 @@
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Text,
-  SafeAreaView,
-  Pressable,
-  View,
-  ScrollView,
   Dimensions,
+  Pressable,
   RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { PieChart } from 'react-native-chart-kit';
-import { useAuth } from 'contexts/AuthContext';
 import { RequestService } from 'services/requestService';
-import { VehicleService } from 'services/vehicleService';
 import { UserService } from 'services/userService';
+import { VehicleService } from 'services/vehicleService';
 
 import Request from 'types/Request';
 import Vehicle from 'types/Vehicle';
 
 import Header from 'components/HeaderComponent';
+import LoadingData from 'components/LoadingData';
 import StatItem from 'components/StatItemComponent';
 import WelcomeSection from 'components/WelcomeSectionComponent';
-import LoadingData from 'components/LoadingData';
 
 type RequestStat = {
   total: number;

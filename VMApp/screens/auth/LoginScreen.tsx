@@ -1,16 +1,16 @@
+import { faCar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useAuth } from 'contexts/AuthContext';
 import { useState } from 'react';
 import {
-  View,
-  Text,
+  Pressable,
   SafeAreaView,
+  ScrollView,
+  Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Pressable,
+  View,
 } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCar } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from 'contexts/AuthContext';
 import { showToast } from 'utils/toast';
 
 type QuickLoginRole = {
@@ -98,6 +98,7 @@ const LoginScreen = () => {
               {quickLoginRoles.map((role, index) => (
                 <Pressable
                   key={index}
+                  disabled={isLoading}
                   className={`mx-1 flex-1 rounded-lg px-4 py-3 ${
                     activeRole === role.title ? 'bg-blue-300' : 'bg-blue-100'
                   }`}

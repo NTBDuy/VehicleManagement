@@ -1,24 +1,24 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  Modal,
-  Pressable,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  Text,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import InputField from 'components/InputFieldComponent';
 import { DriverService } from 'services/driverService';
-import Driver from 'types/Driver';
 import { showToast } from 'utils/toast';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 
+import Driver from 'types/Driver';
 
+import InputField from 'components/InputFieldComponent';
 interface ApproveModalProps {
   visible: boolean;
   onClose: () => void;

@@ -1,33 +1,33 @@
-import { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  FlatList,
-  TouchableOpacity,
-  RefreshControl,
-  Pressable,
-} from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faBell,
   faCarSide,
-  faWarning,
-  faTools,
   faCheck,
   faListCheck,
+  faTools,
+  faWarning,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useAuth } from 'contexts/AuthContext';
-import { UserService } from 'services/userService';
+import { useEffect, useState } from 'react';
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { NotificationService } from 'services/notificationService';
+import { UserService } from 'services/userService';
 import { formatTime } from 'utils/datetimeUtils';
 import { showToast } from 'utils/toast';
 
 import Notification from 'types/Notification';
 
-import Header from 'components/HeaderComponent';
 import EmptyList from 'components/EmptyListComponent';
+import Header from 'components/HeaderComponent';
 import LoadingData from 'components/LoadingData';
 
 const NotificationScreen = () => {

@@ -1,6 +1,6 @@
-import { BaseApiClient } from './baseApiClient';
-import User from '../types/User';
-import Request from '../types/Request';
+import { BaseApiClient } from 'services/baseApiClient';
+import User from 'types/User';
+import Request from 'types/Request';
 import Notification from 'types/Notification';
 
 export class UserService extends BaseApiClient {

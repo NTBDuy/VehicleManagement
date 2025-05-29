@@ -1,4 +1,4 @@
-import User from "./User";
+import User from "types/User";
 
 export default interface Notification {
     notificationId: number;

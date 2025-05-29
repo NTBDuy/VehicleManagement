@@ -1,36 +1,36 @@
 import {
-  View,
-  Text,
-  SafeAreaView,
-  FlatList,
-  Pressable,
-  Modal,
-  RefreshControl,
-  Alert,
-} from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {
-  faPersonCircleQuestion,
-  faUserPlus,
-  faEllipsisV,
-  faInfoCircle,
-  faEdit,
-  faKey,
   faBan,
   faCircleCheck,
+  faEdit,
+  faEllipsisV,
+  faInfoCircle,
+  faKey,
+  faPersonCircleQuestion,
+  faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  Modal,
+  Pressable,
+  RefreshControl,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native';
 import { AccountService } from 'services/accountService';
-import { getUserInitials } from 'utils/userUtils';
 import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
 import { showToast } from 'utils/toast';
+import { getUserInitials } from 'utils/userUtils';
 
 import User from 'types/User';
 
+import EmptyList from 'components/EmptyListComponent';
 import Header from 'components/HeaderComponent';
 import LoadingData from 'components/LoadingData';
-import EmptyList from 'components/EmptyListComponent';
 
 const filterOptions = [
   { id: 3, name: 'All' },

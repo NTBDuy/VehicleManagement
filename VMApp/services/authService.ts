@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_CONFIG } from 'config/apiConfig';
 import { LoginRequest } from 'types/LoginRequest';
 import { LoginResponse } from 'types/LoginResponse';
-import { API_CONFIG } from '../config/apiConfig';
 import User from 'types/User';
 import { showToast } from 'utils/toast';
 

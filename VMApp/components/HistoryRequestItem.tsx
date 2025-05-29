@@ -1,11 +1,12 @@
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { Pressable, View, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Pressable, Text, View } from 'react-native';
 import { formatDate } from 'utils/datetimeUtils';
 import { getColorByStatus } from 'utils/requestUtils';
 import { getVehicleTypeIcon } from 'utils/vehicleUtils';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+
 import Request from 'types/Request';
-import { useNavigation } from '@react-navigation/native';
 
 interface RequestItemProps {
   item: Request;
@@ -23,7 +24,7 @@ const RequestItem = ({ item }: RequestItemProps) => {
       onPress={() => handleViewDetail(item)}
       className={`mb-4 mt-1 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.status)}`}>
       <View className="flex-row items-center">
-        <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
+        <View className="items-center justify-center w-12 h-12 ml-2 mr-4 bg-blue-300 rounded-full">
           <Text className="text-xl font-semibold text-white">
             <FontAwesomeIcon
               icon={getVehicleTypeIcon(item.vehicle?.type || 'Sedan')}
@@ -33,7 +34,7 @@ const RequestItem = ({ item }: RequestItemProps) => {
           </Text>
         </View>
 
-        <View className="ml-1 flex-1">
+        <View className="flex-1 ml-1">
           <Text className="text-base font-semibold text-gray-800">
             {item.vehicle?.licensePlate}
           </Text>

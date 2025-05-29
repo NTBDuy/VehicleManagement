@@ -1,13 +1,6 @@
-// utils/toastConfig.tsx
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BaseToast, ErrorToast, ToastConfigParams } from 'react-native-toast-message';
-
-interface CustomToastProps {
-  text1?: string;
-  text2?: string;
-  onPress?: () => void;
-}
 
 const CustomSuccessToast: React.FC<ToastConfigParams<any>> = ({ text1, text2, onPress }) => (
   <TouchableOpacity 

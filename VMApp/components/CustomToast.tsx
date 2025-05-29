@@ -1,5 +1,5 @@
-import Toast, { ToastPosition } from 'react-native-toast-message';
 import { TextStyle, ViewStyle } from 'react-native';
+import Toast, { ToastPosition } from 'react-native-toast-message';
 
 type ToastType = 'success' | 'error' | 'info';
 type CustomToastType = ToastType | 'warning';
@@ -309,7 +309,7 @@ interface StyleConfig {
 
 export default CustomToast;
 
-export type { ToastConfig, QuickToastConfig, CustomStyle, ToastType };
+export type { CustomStyle, QuickToastConfig, ToastConfig, ToastType };
 
 // Usage Examples:
 

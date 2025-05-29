@@ -1,17 +1,17 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Pressable,
-  Image,
-  Switch,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import { useState } from 'react';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { faCircleInfo, faEdit, faLock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEdit, faLock, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useState } from 'react';
+import {
+  Alert,
+  Image,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 import { AccountService } from 'services/accountService';
 import { showToast } from 'utils/toast';
 

@@ -1,29 +1,29 @@
-import {
-  Text,
-  SafeAreaView,
-  Pressable,
-  ScrollView,
-  View,
-  Dimensions,
-  RefreshControl,
-} from 'react-native';
-import { useCallback, useEffect, useState } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import { PieChart } from 'react-native-chart-kit';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { VehicleService } from 'services/vehicleService';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  Dimensions,
+  Pressable,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
+import { PieChart } from 'react-native-chart-kit';
 import { AccountService } from 'services/accountService';
 import { UserService } from 'services/userService';
+import { VehicleService } from 'services/vehicleService';
 
 import User from 'types/User';
 import Vehicle from 'types/Vehicle';
 
 import Header from 'components/HeaderComponent';
+import LoadingData from 'components/LoadingData';
 import StatItem from 'components/StatItemComponent';
 import WelcomeSection from 'components/WelcomeSectionComponent';
-import LoadingData from 'components/LoadingData';
 
 type VehicleStat = {
   total: number;
@@ -82,14 +82,14 @@ const AdminDashboard = () => {
   );
 
   const countUnread = async () => {
-  try {
-    const totalNotifications = await UserService.getUserUnreadNotifications();
-    setNotificationCount(totalNotifications);
-  } catch (error) {
-    console.error('Failed to get notifications:', error);
-    setNotificationCount(0);
-  }
-};
+    try {
+      const totalNotifications = await UserService.getUserUnreadNotifications();
+      setNotificationCount(totalNotifications);
+    } catch (error) {
+      console.error('Failed to get notifications:', error);
+      setNotificationCount(0);
+    }
+  };
 
   const getStatData = async () => {
     try {
@@ -189,12 +189,14 @@ const AdminDashboard = () => {
 
       {/** BODY */}
       <ScrollView
-        className="px-6"
+        className="flex-1 px-6"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {user && <WelcomeSection user={user} />}
 
         {isLoading ? (
-          <LoadingData />
+          <View className='flex-1 pt-44'>
+            <LoadingData />
+          </View>
         ) : (
           <View>
             <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">

@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, Pressable, ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
-import { formatDate, formatDatetime } from 'utils/datetimeUtils';
+import { useEffect, useState } from 'react';
+import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { RequestService } from 'services/requestService';
+import { formatDate, formatDatetime } from 'utils/datetimeUtils';
+import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
 
 import Assignment from 'types/Assignment';
 import Request from 'types/Request';
 
-import ApproveModal from 'components/modal/ApproveModalComponent';
-import RejectModal from 'components/modal/RejectModalComponent';
-import CancelModal from 'components/modal/CancelModalComponent';
-import InfoRow from 'components/InfoRowComponent';
 import Header from 'components/HeaderComponent';
+import InfoRow from 'components/InfoRowComponent';
+import ApproveModal from 'components/modal/ApproveModalComponent';
+import CancelModal from 'components/modal/CancelModalComponent';
+import RejectModal from 'components/modal/RejectModalComponent';
 
 const RequestDetailScreen = () => {
   const route = useRoute();

@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, Image, Pressable, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import { Alert, Image, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 
 import User from 'types/User';
 
+import ErrorComponent from 'components/ErrorComponent';
 import Header from 'components/HeaderComponent';
 import InputField from 'components/InputFieldComponent';
-import ErrorComponent from 'components/ErrorComponent';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation<any>();

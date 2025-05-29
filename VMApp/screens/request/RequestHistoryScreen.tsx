@@ -1,13 +1,13 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { View, Text, SafeAreaView, Pressable, FlatList, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, Pressable, RefreshControl, SafeAreaView, Text, View } from 'react-native';
 import { UserService } from 'services/userService';
 
 import Request from 'types/Request';
 
-import Header from 'components/HeaderComponent';
 import EmptyList from 'components/EmptyListComponent';
+import Header from 'components/HeaderComponent';
 import RequestItem from 'components/HistoryRequestItem';
 
 const RequestHistoryScreen = () => {

@@ -1,8 +1,9 @@
-import { Switch, View, Text } from 'react-native';
-import InfoRow from './InfoRowComponent';
+import { useState } from 'react';
+import { Switch, Text, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { formatDayMonth } from 'utils/datetimeUtils';
-import { useState } from 'react';
+
+import InfoRow from 'components/InfoRowComponent';
 
 interface DatePickerComponentProps {
   isMultiDayTrip: boolean;

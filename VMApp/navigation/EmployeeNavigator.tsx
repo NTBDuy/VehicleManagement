@@ -1,21 +1,22 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
-  faHome,
-  faGear,
   faCalendarPlus,
   faClockRotateLeft,
+  faGear,
+  faHome,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import HomeScreen from 'screens/dashboard/EmployeeDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
-import SettingScreen from 'screens/profile/SettingScreen';
-import SidebarComponent from 'components/SidebarComponent';
-import NewRequest from 'screens/request/RequestCreateScreen';
-import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
+import SettingScreen from 'screens/profile/SettingScreen';
+import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
+import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
+
+import SidebarComponent from 'components/SidebarComponent';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();

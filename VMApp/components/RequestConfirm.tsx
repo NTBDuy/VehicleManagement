@@ -1,11 +1,12 @@
-import { View, Text, Switch } from 'react-native';
-import React, { useState } from 'react';
-import InfoRow from 'components/InfoRowComponent';
-import { formatDayMonth } from 'utils/datetimeUtils';
-import InputField from 'components/InputFieldComponent';
-import Vehicle from 'types/Vehicle';
-import DropDownPicker from 'react-native-dropdown-picker';
+import React from 'react';
+import { Switch, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { formatDayMonth } from 'utils/datetimeUtils';
+
+import Vehicle from 'types/Vehicle';
+
+import InfoRow from 'components/InfoRowComponent';
+import InputField from 'components/InputFieldComponent';
 
 interface ConfirmComponentProps {
   startDate: string;

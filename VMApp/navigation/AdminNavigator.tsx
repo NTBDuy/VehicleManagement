@@ -1,32 +1,32 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
-  faHome,
-  faUsers,
   faCalendarPlus,
-  faGear,
-  faClockRotateLeft,
   faCarSide,
-  faTools
+  faClockRotateLeft,
+  faGear,
+  faHome,
+  faTools,
+  faUsers
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from 'screens/dashboard/AdminDashboard';
-import NotificationScreen from 'screens/notification/NotificationScreen';
-import SettingScreen from 'screens/profile/SettingScreen';
-import EditProfileScreen from 'screens/profile/EditProfileScreen';
-import AccountScreen from 'screens/account/AccountScreen';
+import AccountAddScreen from 'screens/account/AccountAddScreen';
 import AccountDetailScreen from 'screens/account/AccountDetailScreen';
 import AccountEditScreen from 'screens/account/AccountEditScreen';
-import AccountAddScreen from 'screens/account/AccountAddScreen';
-import VehicleScreen from 'screens/vehicle/VehicleScreen';
+import AccountScreen from 'screens/account/AccountScreen';
+import HomeScreen from 'screens/dashboard/AdminDashboard';
+import NotificationScreen from 'screens/notification/NotificationScreen';
+import EditProfileScreen from 'screens/profile/EditProfileScreen';
+import SettingScreen from 'screens/profile/SettingScreen';
+import NewRequest from 'screens/request/RequestCreateScreen';
+import RequestDetailScreen from 'screens/request/RequestDetailScreen';
+import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
+import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
+import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
-import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
-import NewRequest from 'screens/request/RequestCreateScreen';
-import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
-import RequestDetailScreen from 'screens/request/RequestDetailScreen';
-import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
+import VehicleScreen from 'screens/vehicle/VehicleScreen';
 
 import SidebarComponent from 'components/SidebarComponent';
 

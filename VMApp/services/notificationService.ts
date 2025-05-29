@@ -1,4 +1,4 @@
-import { BaseApiClient } from './baseApiClient';
+import { BaseApiClient } from 'services/baseApiClient';
 
 export class NotificationService extends BaseApiClient {
   // Tạo mới thông báo

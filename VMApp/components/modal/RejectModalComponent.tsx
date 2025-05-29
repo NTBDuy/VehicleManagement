@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  Modal,
-  Pressable,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  Text,
+  TouchableWithoutFeedback,
+  View
 } from 'react-native';
-import InputField from 'components/InputFieldComponent';
 import { showToast } from 'utils/toast';
 
+import InputField from 'components/InputFieldComponent';
 
 interface RejectModalProps {
   visible: boolean;

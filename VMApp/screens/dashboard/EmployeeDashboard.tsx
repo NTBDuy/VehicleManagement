@@ -1,60 +1,66 @@
-import { useCallback, useState } from 'react';
-import { Text, SafeAreaView, Pressable, ScrollView, View } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { faBell, faCalendarDays, faCalendarPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBell, faCalendarPlus, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
+import { useCallback, useMemo, useState } from 'react';
+import { Pressable, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { UserService } from 'services/userService';
 
 import Request from 'types/Request';
 
 import Header from 'components/HeaderComponent';
-import WelcomeSection from 'components/WelcomeSectionComponent';
 import RequestItem from 'components/HistoryRequestItem';
-
-type employeeDashboardStat = {
-  pending: Request[];
-  incoming: Request[];
-};
+import WelcomeSection from 'components/WelcomeSectionComponent';
+import LoadingData from '@/components/LoadingData';
 
 const EmployeeDashboard = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const [notificationCount, setNotificationCount] = useState<number>(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [userRequest, setUserRequest] = useState<Request[]>([]);
-  const [stat, setStat] = useState<employeeDashboardStat>({
-    pending: [],
-    incoming: [],
-  });
+
+  const stat = useMemo(() => {
+    const pending = userRequest.filter((request) => request.status === 0);
+    const incoming = userRequest.filter((request) => request.status === 1);
+    return {pending, incoming};
+  }, [userRequest]);
 
   useFocusEffect(
     useCallback(() => {
       getRequestByUserID();
-      statistics();
       countUnread();
     }, [])
   );
 
   const countUnread = async () => {
-  try {
-    const totalNotifications = await UserService.getUserUnreadNotifications();
-    setNotificationCount(totalNotifications);
-  } catch (error) {
-    console.error('Failed to get notifications:', error);
-    setNotificationCount(0);
-  }
-};
+    try {
+      const totalNotifications = await UserService.getUserUnreadNotifications();
+      setNotificationCount(totalNotifications);
+    } catch (error) {
+      console.error('Failed to get notifications:', error);
+      setNotificationCount(0);
+    }
+  };
 
   const getRequestByUserID = async () => {
-    const data = await UserService.getUserRequests();
-    setUserRequest(data);
+    try {
+      setIsLoading(true);
+      const data = await UserService.getUserRequests();
+      setUserRequest(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
   };
 
-  const statistics = () => {
-    const pending = userRequest.filter((request) => request.status === 0);
-    const incoming = userRequest.filter((request) => request.status === 1);
-    setStat({ pending, incoming });
-  };
+  const onRefresh = () => {
+    setRefreshing(true);
+    getRequestByUserID();
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -77,8 +83,10 @@ const EmployeeDashboard = () => {
         }
       />
 
-      <ScrollView className="px-6">
-         {user && <WelcomeSection user={user} />}
+      <ScrollView
+        className="flex-1 px-6"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        {user && <WelcomeSection user={user} />}
 
         <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
           <View className="px-4 py-3 bg-gray-50">
@@ -105,35 +113,43 @@ const EmployeeDashboard = () => {
           </View>
         </View>
 
-        {stat.pending.length > 0 && (
-          <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-            <View className="px-4 py-3 bg-gray-50">
-              <Text className="text-lg font-semibold text-gray-800">Pending</Text>
-            </View>
-
-            <View className="p-4 -mb-4">
-              <View>
-                {stat.pending.slice(0, 3).map((item) => (
-                  <RequestItem item={item} key={item.requestId} />
-                ))}
-              </View>
-            </View>
+        {isLoading ? (
+          <View>
+            <LoadingData />
           </View>
-        )}
+        ) : (
+          <View>
+            {stat.pending.length > 0 && (
+              <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+                <View className="px-4 py-3 bg-gray-50">
+                  <Text className="text-lg font-semibold text-gray-800">Pending</Text>
+                </View>
 
-        {stat.incoming.length > 0 && (
-          <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-            <View className="px-4 py-3 bg-gray-50">
-              <Text className="text-lg font-semibold text-gray-800">Incoming</Text>
-            </View>
-
-            <View className="p-4 -mb-4">
-              <View>
-                {stat.incoming.slice(0, 3).map((item) => (
-                  <RequestItem item={item} key={item.requestId} />
-                ))}
+                <View className="p-4 -mb-4">
+                  <View>
+                    {stat.pending.slice(0, 3).map((item) => (
+                      <RequestItem item={item} key={item.requestId} />
+                    ))}
+                  </View>
+                </View>
               </View>
-            </View>
+            )}
+
+            {stat.incoming.length > 0 && (
+              <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+                <View className="px-4 py-3 bg-gray-50">
+                  <Text className="text-lg font-semibold text-gray-800">Incoming</Text>
+                </View>
+
+                <View className="p-4 -mb-4">
+                  <View>
+                    {stat.incoming.slice(0, 3).map((item) => (
+                      <RequestItem item={item} key={item.requestId} />
+                    ))}
+                  </View>
+                </View>
+              </View>
+            )}
           </View>
         )}
       </ScrollView>

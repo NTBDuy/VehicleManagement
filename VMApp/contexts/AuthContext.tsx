@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthService } from '../services/authService';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { AuthService } from 'services/authService';
 import { LoginRequest } from 'types/LoginRequest';
+import { showToast } from 'utils/toast';
 
 import User from 'types/User';
-import { showToast } from 'utils/toast';
 
 interface AuthContextType {
   user: User | null;

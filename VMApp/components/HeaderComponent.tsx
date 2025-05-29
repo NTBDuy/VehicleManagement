@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
+import { faArrowLeft, faBars, faMagnifyingGlass, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faArrowLeft, faMagnifyingGlass, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
 
 interface HeaderProps {
   backBtn?: boolean;
@@ -31,15 +31,15 @@ const Header = ({
 
   return (
     <View className="-mt-20 overflow-hidden rounded-b-[40px] bg-blue-300 shadow-md">
-      <View className="mb-6 mt-10 flex-row items-start justify-between px-6 pt-20">
+      <View className="flex-row items-start justify-between px-6 pt-20 mt-10 mb-6">
         {backBtn ? (
-          <Pressable onPress={() => navigation.goBack()} className="rounded-full bg-white p-2">
+          <Pressable onPress={() => navigation.goBack()} className="p-2 bg-white rounded-full">
             <FontAwesomeIcon icon={faArrowLeft} size={18} />
           </Pressable>
         ) : (
           <Pressable
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            className="rounded-full bg-white p-2">
+            className="p-2 bg-white rounded-full">
             <FontAwesomeIcon icon={faBars} size={18} />
           </Pressable>
         )}
@@ -50,10 +50,10 @@ const Header = ({
       </View>
 
       {searchSection && (
-        <View className="flex-row items-center rounded-full bg-white/40 mx-4 px-4 py-3 mb-6 ">
+        <View className="flex-row items-center px-4 py-3 mx-4 mb-6 rounded-full bg-white/40 ">
           <FontAwesomeIcon icon={faMagnifyingGlass} size={16} color="#000" />
           <TextInput
-            className="ml-3 flex-1 "
+            className="flex-1 ml-3 "
             placeholder={placeholder}
             placeholderTextColor="gray"
             value={searchQuery}

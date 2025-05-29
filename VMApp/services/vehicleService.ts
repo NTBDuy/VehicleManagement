@@ -1,5 +1,5 @@
-import { BaseApiClient } from './baseApiClient';
-import Vehicle from '../types/Vehicle';
+import { BaseApiClient } from 'services/baseApiClient';
+import Vehicle from 'types/Vehicle';
 import MaintenanceSchedule from 'types/MaintenanceSchedule';
 
 export class VehicleService extends BaseApiClient {

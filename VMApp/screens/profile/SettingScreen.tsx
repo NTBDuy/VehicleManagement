@@ -1,9 +1,9 @@
-import { View, Text, SafeAreaView, Image, Pressable, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { faFileContract, faPen, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faPen, faFileContract, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { formatVietnamPhoneNumber } from 'utils/userUtils';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
+import { Alert, Image, Pressable, SafeAreaView, Text, View } from 'react-native';
+import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 import Header from 'components/HeaderComponent';
 

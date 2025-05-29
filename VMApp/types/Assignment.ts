@@ -1,4 +1,4 @@
-import Driver from "./Driver";
+import Driver from "types/Driver";
 
 export default interface Assignment {
     assignmentId: number;

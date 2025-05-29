@@ -1,11 +1,8 @@
-import { View, Text, Switch, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { useState } from 'react';
+import { View } from 'react-native';
 import { ScrollView } from 'react-native-virtualized-view';
-import React, { useEffect, useState } from 'react';
-import InfoRow from 'components/InfoRowComponent';
-import { formatDayMonth } from 'utils/datetimeUtils';
+
 import InputField from 'components/InputFieldComponent';
-import Vehicle from 'types/Vehicle';
-import DropDownPicker from 'react-native-dropdown-picker';
 
 interface ConfirmComponentProps {
   startDate: string;
