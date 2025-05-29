@@ -8,10 +8,10 @@ import { UserService } from 'services/userService';
 
 import Request from 'types/Request';
 
+import LoadingData from '@/components/LoadingData';
 import Header from 'components/HeaderComponent';
 import RequestItem from 'components/HistoryRequestItem';
 import WelcomeSection from 'components/WelcomeSectionComponent';
-import LoadingData from '@/components/LoadingData';
 
 const EmployeeDashboard = () => {
   const navigation = useNavigation<any>();

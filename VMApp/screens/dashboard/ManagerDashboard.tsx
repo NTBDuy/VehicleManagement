@@ -2,7 +2,7 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Dimensions,
   Pressable,
@@ -25,21 +25,6 @@ import LoadingData from 'components/LoadingData';
 import StatItem from 'components/StatItemComponent';
 import WelcomeSection from 'components/WelcomeSectionComponent';
 
-type RequestStat = {
-  total: number;
-  pending: number;
-  approved: number;
-  rejected: number;
-  cancelled: number;
-};
-
-type VehicleStat = {
-  total: number;
-  available: number;
-  inUse: number;
-  underMaintenance: number;
-};
-
 const ManagerDashboard = () => {
   const navigation = useNavigation<any>();
   const screenWidth = Dimensions.get('window').width;
@@ -49,25 +34,23 @@ const ManagerDashboard = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState<number>(0);
-  const [requestStat, setRequestStat] = useState<RequestStat>({
-    total: 0,
-    pending: 0,
-    approved: 0,
-    rejected: 0,
-    cancelled: 0,
-  });
 
-  const [vehicleStat, setVehicleStat] = useState<VehicleStat>({
-    total: 0,
-    available: 0,
-    inUse: 0,
-    underMaintenance: 0,
-  });
+  const requestStat = useMemo(() => {
+    const total = requests.length;
+    const pending = requests.filter((request) => request.status === 0).length;
+    const approved = requests.filter((request) => request.status === 1).length;
+    const rejected = requests.filter((request) => request.status === 2).length;
+    const cancelled = requests.filter((request) => request.status === 3).length;
+    return { total, pending, approved, rejected, cancelled };
+  }, [requests]);
 
-  useEffect(() => {
-    if (requests) calculateRequestStatistics(requests);
-    if (vehicles) calculateVehicleStatistics(vehicles);
-  }, [requests, vehicles]);
+  const vehicleStat = useMemo(() => {
+    const total = vehicles.length;
+    const available = vehicles.filter((request) => request.status === 0).length;
+    const inUse = vehicles.filter((request) => request.status === 1).length;
+    const underMaintenance = vehicles.filter((request) => request.status === 2).length;
+    return { total, available, inUse, underMaintenance };
+  }, [vehicles]);
 
   useFocusEffect(
     useCallback(() => {
@@ -77,14 +60,14 @@ const ManagerDashboard = () => {
   );
 
   const countUnread = async () => {
-  try {
-    const totalNotifications = await UserService.getUserUnreadNotifications();
-    setNotificationCount(totalNotifications);
-  } catch (error) {
-    console.error('Failed to get notifications:', error);
-    setNotificationCount(0);
-  }
-};
+    try {
+      const totalNotifications = await UserService.getUserUnreadNotifications();
+      setNotificationCount(totalNotifications);
+    } catch (error) {
+      console.error('Failed to get notifications:', error);
+      setNotificationCount(0);
+    }
+  };
 
   const getStatData = async () => {
     try {
@@ -106,24 +89,6 @@ const ManagerDashboard = () => {
   const onRefresh = () => {
     setRefreshing(true);
     getStatData();
-  };
-
-  /** Func: Statistics  */
-  const calculateRequestStatistics = (item: Request[]) => {
-    const total = item.length;
-    const pending = item.filter((request) => request.status === 0).length;
-    const approved = item.filter((request) => request.status === 1).length;
-    const rejected = item.filter((request) => request.status === 2).length;
-    const cancelled = item.filter((request) => request.status === 3).length;
-    setRequestStat({ total, pending, approved, rejected, cancelled });
-  };
-
-  const calculateVehicleStatistics = (item: Vehicle[]) => {
-    const total = item.length;
-    const available = item.filter((request) => request.status === 0).length;
-    const inUse = item.filter((request) => request.status === 1).length;
-    const underMaintenance = item.filter((request) => request.status === 2).length;
-    setVehicleStat({ total, available, inUse, underMaintenance });
   };
 
   const requestChartData = [
@@ -218,7 +183,7 @@ const ManagerDashboard = () => {
       <ScrollView
         className="px-6"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-         {user && <WelcomeSection user={user} />}
+        {user && <WelcomeSection user={user} />}
 
         {isLoading ? (
           <LoadingData />

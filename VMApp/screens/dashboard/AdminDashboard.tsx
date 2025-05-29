@@ -2,7 +2,7 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Dimensions,
   Pressable,
@@ -24,20 +24,6 @@ import Header from 'components/HeaderComponent';
 import LoadingData from 'components/LoadingData';
 import StatItem from 'components/StatItemComponent';
 import WelcomeSection from 'components/WelcomeSectionComponent';
-
-type VehicleStat = {
-  total: number;
-  available: number;
-  inUse: number;
-  underMaintenance: number;
-};
-
-type AccountStat = {
-  total: number;
-  employee: number;
-  manager: number;
-  admin: number;
-};
 
 const AdminDashboard = () => {
   const { user } = useAuth();
