@@ -2,7 +2,7 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Dimensions,
   Pressable,
@@ -48,31 +48,23 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState<number>(0);
 
-  const [vehicleStat, setVehicleStat] = useState<VehicleStat>({
-    total: 0,
-    available: 0,
-    inUse: 0,
-    underMaintenance: 0,
-  });
-
-  const [accountStat, setAccountStat] = useState<AccountStat>({
-    total: 0,
-    employee: 0,
-    manager: 0,
-    admin: 0,
-  });
-
-  const screenWidth = Dimensions.get('window').width;
-
-  useEffect(() => {
-    if (vehicles) {
-      calculateVehicleStatistics(vehicles);
-    }
+  const vehicleStat = useMemo(() => {
+    const total = vehicles.length;
+    const available = vehicles.filter((request) => request.status === 0).length;
+    const inUse = vehicles.filter((request) => request.status === 1).length;
+    const underMaintenance = vehicles.filter((request) => request.status === 2).length;
+    return { total, available, inUse, underMaintenance };
   }, [vehicles]);
 
-  useEffect(() => {
-    calculateAccountStatistics();
+  const accountStat = useMemo(() => {
+    const total = accounts.length;
+    const admin = accounts.filter((account) => account.role === 0).length;
+    const employee = accounts.filter((account) => account.role === 1).length;
+    const manager = accounts.filter((account) => account.role === 2).length;
+    return { total, employee, manager, admin };
   }, [accounts]);
+
+  const screenWidth = Dimensions.get('window').width;
 
   useFocusEffect(
     useCallback(() => {
@@ -111,23 +103,6 @@ const AdminDashboard = () => {
   const onRefresh = () => {
     setRefreshing(true);
     getStatData();
-  };
-
-  const calculateVehicleStatistics = (item: Vehicle[]) => {
-    const total = item.length;
-    const available = item.filter((request) => request.status === 0).length;
-    const inUse = item.filter((request) => request.status === 1).length;
-    const underMaintenance = item.filter((request) => request.status === 2).length;
-    setVehicleStat({ total, available, inUse, underMaintenance });
-  };
-
-  const calculateAccountStatistics = () => {
-    const total = accounts.length;
-    const admin = accounts.filter((account) => account.role === 0).length;
-    const employee = accounts.filter((account) => account.role === 1).length;
-    const manager = accounts.filter((account) => account.role === 2).length;
-
-    setAccountStat({ total, employee, manager, admin });
   };
 
   const vehicleChartData = [
@@ -194,7 +169,7 @@ const AdminDashboard = () => {
         {user && <WelcomeSection user={user} />}
 
         {isLoading ? (
-          <View className='flex-1 pt-44'>
+          <View className="flex-1 pt-44">
             <LoadingData />
           </View>
         ) : (
