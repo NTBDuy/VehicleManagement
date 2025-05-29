@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -44,16 +44,38 @@ const AccountScreen = () => {
   const [accounts, setAccounts] = useState<User[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [activeFilter, setActiveFilter] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (accounts) {
-      setFilteredUsers(accounts);
+  const filteredUsers = useMemo(() => {
+    let filtered = accounts;
+    const q = searchQuery.toLowerCase();
+    
+    if (q) {
+      filtered = filtered.filter(
+        (user) =>
+          user.fullName.toLocaleLowerCase().includes(q) ||
+          user.email.toLocaleLowerCase().includes(q) ||
+          user.phoneNumber.toLocaleLowerCase().includes(q) ||
+          user.username.toLocaleLowerCase().includes(q)
+      );
     }
+
+    switch(activeFilter) {
+      case 0 : 
+        filtered = filtered.filter((user) => user.role === 0);
+        break;
+      case 1 : 
+        filtered = filtered.filter((user) => user.role === 1);
+        break;
+      case 2 : 
+        filtered = filtered.filter((user) => user.role === 2);
+        break;
+    }
+
+    return(filtered);
   }, [accounts]);
 
   useFocusEffect(
@@ -76,28 +98,6 @@ const AccountScreen = () => {
     }
   };
 
-  /** Func: Search and filter */
-  const filterAccounts = (query: string, role: number): void => {
-    let filtered = accounts;
-
-    if (query) {
-      filtered = filtered.filter(
-        (user) =>
-          user.fullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.email.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.phoneNumber.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-          user.username.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-      );
-    }
-
-    if (role !== 3) {
-      filtered = filtered.filter((user) => user.role === role);
-    }
-
-    setFilteredUsers(filtered);
-  };
-
-  /** Component: Badge User role */
   const renderBadgeUserRole = ({ role }: { role: number }) => {
     const bgColor = getRoleStyle(role);
     return (
@@ -107,7 +107,6 @@ const AccountScreen = () => {
     );
   };
 
-  /** Component: User Item */
   const renderUserItem = ({ item }: { item: User }) => (
     <Pressable
       onPress={() => handleOption(item)}
@@ -136,17 +135,16 @@ const AccountScreen = () => {
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    filterAccounts(text, 3);
+    setActiveFilter(3);
   };
 
   const handleFilterChange = (role: number): void => {
     setActiveFilter(role);
-    filterAccounts(searchQuery, role);
   };
 
   const handleClearFilters = (): void => {
     setSearchQuery('');
-    filterAccounts('', 3);
+    setActiveFilter(3);
   };
 
   const handleViewDetail = () => {
