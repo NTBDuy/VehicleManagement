@@ -98,7 +98,7 @@ export default function EmployeeNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'Personal History Request',
+          title: 'History Request',
           headerShown: false,
         }}
       />

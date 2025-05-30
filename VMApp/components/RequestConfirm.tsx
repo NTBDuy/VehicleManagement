@@ -29,7 +29,7 @@ const RequestConfirm = ({
 }: ConfirmComponentProps) => {
   const toggleSwitchDriver = () => setIsAssignDriver((previousState) => !previousState);
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View>
         <View className="bg-white rounded-2xl">
           <View className="px-4 pb-3 bg-gray-50">

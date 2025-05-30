@@ -14,8 +14,8 @@ export class VehicleService extends BaseApiClient {
   }
 
   // Lấy danh sách phương tiện available
-  static async getAvailableVehicles(): Promise<Vehicle[]> {
-    return this.request<Vehicle[]>('/vehicle/available');
+  static async getAvailableVehicles(startTime: string, endTime: string): Promise<Vehicle[]> {
+    return this.request<Vehicle[]>(`/vehicle/available?startTime=${startTime}&endTime=${endTime}`);
   }
 
   // Lấy danh sách lịch trình của phương tiện
@@ -64,10 +64,7 @@ export class VehicleService extends BaseApiClient {
   }
 
   // Cập nhật trạng thái bảo dưỡng
-  static async changeStatusMaintenance(
-    id: number,
-    status: number
-  ): Promise<MaintenanceSchedule> {
+  static async changeStatusMaintenance(id: number, status: number): Promise<MaintenanceSchedule> {
     return this.request<MaintenanceSchedule>(`/vehicle/maintenance/${id}/status?status=${status}`, {
       method: 'PUT',
     });

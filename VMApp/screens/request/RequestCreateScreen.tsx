@@ -1,37 +1,34 @@
+import { useAuth } from '@/contexts/AuthContext';
+import { VehicleService } from '@/services/vehicleService';
+import { showToast } from '@/utils/toast';
 import { faCalendarCheck, faCalendarDays, faCarSide } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useFocusEffect } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from 'contexts/AuthContext';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, SafeAreaView, Text, View } from 'react-native';
-import { RequestService } from 'services/requestService';
-import { VehicleService } from 'services/vehicleService';
-import { showToast } from 'utils/toast';
 
-import Vehicle from 'types/Vehicle';
+import Vehicle from '@/types/Vehicle';
 
-import Header from 'components/HeaderComponent';
-import RequestConfirm from 'components/RequestConfirm';
-import RequestDatePicker from 'components/RequestDatePicker';
-import RequestVehiclePicker from 'components/RequestVehiclePicker';
+import Header from '@/components/HeaderComponent';
+import RequestConfirm from '@/components/RequestConfirm';
+import RequestDatePicker from '@/components/RequestDatePicker';
+import RequestVehiclePicker from '@/components/RequestVehiclePicker';
+import { RequestService } from '@/services/requestService';
 
-const RequestCreateScreen = () => {
+const RequestCreateScreenV2 = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
+  const [isMultiDayTrip, setIsMultiDayTrip] = useState(false);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
-  const [isMultiDayTrip, setIsMultiDayTrip] = useState(false);
   const [availableVehicle, setAvailableVehicle] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>();
   const [purpose, setPurpose] = useState('');
   const [isAssignDriver, setIsAssignDriver] = useState(false);
+  const [isDisabled, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    clearContent();
-     getAvailableVehicle();
-  }, []);
 
   const tabs = [
     { id: 0, title: 'Choose Date', icon: faCalendarDays },
@@ -39,10 +36,11 @@ const RequestCreateScreen = () => {
     { id: 2, title: 'Purpose & Confirm', icon: faCalendarCheck },
   ];
 
-  const  getAvailableVehicle = async () => {
-    const data = await VehicleService.getAvailableVehicles();
-    return setAvailableVehicle(data);
-  };
+  useFocusEffect(
+    useCallback(() => {
+      clearContent();
+    }, [])
+  );
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -65,6 +63,7 @@ const RequestCreateScreen = () => {
       endDate={endDate}
       setStartDate={setStartDate}
       setEndDate={setEndDate}
+      setIsDisable={setIsDisable}
     />
   );
 
@@ -88,6 +87,19 @@ const RequestCreateScreen = () => {
     />
   );
 
+  const getAvailableVehicle = async () => {
+    try {
+      setIsLoading(true);
+      const data = await VehicleService.getAvailableVehicles(startDate, isMultiDayTrip ? endDate : startDate);
+      setAvailableVehicle(data);
+      setActiveTab(activeTab + 1);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const validateData = (): boolean => {
     if (!selectedVehicle?.vehicleId) {
       showToast.error('Action Required', 'Please select a vehicle to continue.');
@@ -109,7 +121,7 @@ const RequestCreateScreen = () => {
         userId: user?.userId,
         vehicleId: selectedVehicle?.vehicleId,
         startTime: startDate,
-        endTime: endDate,
+        endTime: isMultiDayTrip ? endDate : startDate,
         purpose: purpose,
         isDriverRequired: isAssignDriver,
       };
@@ -136,11 +148,13 @@ const RequestCreateScreen = () => {
     setStartDate(new Date().toISOString().split('T')[0]);
     setEndDate(new Date().toISOString().split('T')[0]);
     setIsMultiDayTrip(false);
+    setIsDisable(true);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="New Request" />
+      <Header title="New Request V2" />
+
       <View className="flex-1 px-6 mt-4">
         <View className="mb-4 overflow-hidden rounded-2xl">
           <View className="flex-row">
@@ -148,6 +162,7 @@ const RequestCreateScreen = () => {
               <Pressable
                 key={tab.id}
                 className={`flex-1 items-center py-4`}
+                disabled={isDisabled}
                 onPress={() => setActiveTab(tab.id)}>
                 <View className="flex-row items-center">
                   <View
@@ -180,9 +195,12 @@ const RequestCreateScreen = () => {
       <View className="absolute bottom-0 left-0 right-0 px-6 pb-12 bg-gray-50">
         {activeTab === 0 && (
           <Pressable
-            className="w-full py-4 mt-4 bg-blue-400 rounded-2xl active:bg-blue-500"
-            onPress={() => setActiveTab(activeTab + 1)}>
-            <Text className="text-lg font-bold text-center text-white">Next</Text>
+            className={`mt-4 w-full py-4 ${isDisabled && !isLoading ? 'bg-gray-400' : 'bg-blue-400 '} rounded-2xl active:bg-blue-500`}
+            disabled={isDisabled && !isLoading}
+            onPress={getAvailableVehicle}>
+            <Text className="text-lg font-bold text-center text-white">
+              {isLoading ? 'Loading vehicle available...' : 'Next'}
+            </Text>
           </Pressable>
         )}
         {activeTab === 1 && (
@@ -223,4 +241,4 @@ const RequestCreateScreen = () => {
   );
 };
 
-export default RequestCreateScreen;
+export default RequestCreateScreenV2;

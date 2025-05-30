@@ -45,7 +45,7 @@ namespace VMServer.Controllers
 
         // GET: api/vehicle/available
         // Lấy phương tiện đang khả dụng trong khoảng thời gian
-        // [Authorize]
+        [Authorize]
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableVehicles([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
         {

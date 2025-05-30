@@ -12,6 +12,7 @@ interface DatePickerComponentProps {
   endDate: string;
   setStartDate: React.Dispatch<React.SetStateAction<string>>;
   setEndDate: React.Dispatch<React.SetStateAction<string>>;
+  setIsDisable: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const RequestDatePicker = ({
@@ -21,11 +22,12 @@ const RequestDatePicker = ({
   endDate,
   setStartDate,
   setEndDate,
+  setIsDisable,
 }: DatePickerComponentProps) => {
   const toggleSwitch = () => setIsMultiDayTrip((previousState) => !previousState);
-  
+
   const [today] = useState(new Date().toISOString().split('T')[0]);
-  
+
   const getMarkedDates = () => {
     let marked: { [date: string]: any } = {};
     if (startDate) {
@@ -57,7 +59,6 @@ const RequestDatePicker = ({
 
   const onDayPress = (day: any) => {
     const date = day.dateString;
-
     if (!startDate || (startDate && endDate)) {
       setStartDate(date);
       setEndDate('');
@@ -111,6 +112,7 @@ const RequestDatePicker = ({
                 }
           }
           onDayPress={(day) => {
+            setIsDisable(false);
             isMultiDayTrip ? onDayPress(day) : setStartDate(day.dateString);
           }}
           theme={{

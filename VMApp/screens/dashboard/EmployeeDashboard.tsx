@@ -88,7 +88,7 @@ const EmployeeDashboard = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {user && <WelcomeSection user={user} />}
 
-        <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+        <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
           <View className="px-4 py-3 bg-gray-50">
             <Text className="text-lg font-semibold text-gray-800">Quick Actions</Text>
           </View>
@@ -120,7 +120,7 @@ const EmployeeDashboard = () => {
         ) : (
           <View>
             {stat.pending.length > 0 && (
-              <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+              <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
                 <View className="px-4 py-3 bg-gray-50">
                   <Text className="text-lg font-semibold text-gray-800">Pending</Text>
                 </View>
