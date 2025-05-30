@@ -45,13 +45,13 @@ namespace VMServer.Controllers
 
         // GET: api/vehicle/available
         // Lấy phương tiện đang khả dụng trong khoảng thời gian
-        [Authorize]
+        // [Authorize]
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableVehicles([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
         {
             var conflictingVehicleIds = await _dbContext.Requests
                 .Where(r => (r.Status == RequestStatus.Pending || r.Status == RequestStatus.Approved)
-                            && r.StartTime < endTime && r.EndTime > startTime)
+                            && r.StartTime <= endTime && r.EndTime >= startTime)
                 .Select(r => r.VehicleId)
                 .Distinct()
                 .ToListAsync();

@@ -19,7 +19,7 @@ import EditProfileScreen from 'screens/profile/EditProfileScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
 import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
-import HistoryNewRequestScreen from 'screens/request/RequestHistoryScreen';
+import HistoryRequestScreen from 'screens/request/RequestHistoryScreen';
 import RequestScreen from 'screens/request/RequestScreen';
 import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
 import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
@@ -79,7 +79,7 @@ function NewRequestStackScreen() {
 function HistoryStackScreen() {
   return (
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
-      <HistoryStack.Screen name="HistoryScreen" component={HistoryNewRequestScreen} />
+      <HistoryStack.Screen name="HistoryScreen" component={HistoryRequestScreen} />
       <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
     </HistoryStack.Navigator>
   );
