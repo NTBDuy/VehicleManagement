@@ -100,7 +100,7 @@ const EmployeeDashboard = () => {
               }}
               className="w-[48%] flex-row justify-center rounded-2xl bg-green-500 p-4 active:bg-green-600">
               <FontAwesomeIcon icon={faCalendarPlus} color="#fff" />
-              <Text className="ml-2 font-bold text-white">Booking Now</Text>
+              <Text className="ml-2 font-bold text-white">New Request</Text>
             </Pressable>
             <Pressable
               onPress={() => {

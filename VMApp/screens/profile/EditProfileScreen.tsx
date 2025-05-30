@@ -165,7 +165,7 @@ const EditProfileScreen = () => {
               onPress={() => handleUpdateProfile(userData)}
               disabled={isLoading || !hasChanges}>
               <Text className="font-semibold text-white">
-                {isLoading ? 'Updating...' : 'Update Account'}
+                {isLoading ? 'Updating...' : 'Update User'}
               </Text>
             </Pressable>
           </View>

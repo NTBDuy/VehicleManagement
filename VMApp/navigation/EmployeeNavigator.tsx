@@ -14,7 +14,7 @@ import EditProfileScreen from 'screens/profile/EditProfileScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
 import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
-import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
+import HistoryNewRequestScreen from 'screens/request/RequestHistoryScreen';
 
 import SidebarComponent from 'components/SidebarComponent';
 
@@ -31,7 +31,7 @@ function DashboardStackScreen() {
       <DashboardStack.Screen name="Notification" component={NotificationScreen} />
       <DashboardStack.Screen name="RequestDetail" component={RequestDetailScreen} />
       <DashboardStack.Screen name="NewRequestStack" component={NewRequest} />
-      <DashboardStack.Screen name="HistoryStack" component={HistoryBookingScreen} />
+      <DashboardStack.Screen name="HistoryStack" component={HistoryNewRequestScreen} />
     </DashboardStack.Navigator>
   );
 }
@@ -47,7 +47,7 @@ function NewRequestStackScreen() {
 function HistoryStackScreen() {
   return (
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
-      <HistoryStack.Screen name="HistoryScreen" component={HistoryBookingScreen} />
+      <HistoryStack.Screen name="HistoryScreen" component={HistoryNewRequestScreen} />
       <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
     </HistoryStack.Navigator>
   );
@@ -98,7 +98,7 @@ export default function EmployeeNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'History Request',
+          title: 'Personal History Request',
           headerShown: false,
         }}
       />

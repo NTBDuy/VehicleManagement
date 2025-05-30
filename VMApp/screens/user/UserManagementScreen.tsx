@@ -21,7 +21,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { AccountService } from 'services/accountService';
+import { UserService } from 'services/userService';
 import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
 import { showToast } from 'utils/toast';
 import { getUserInitials } from 'utils/userUtils';
@@ -39,9 +39,9 @@ const filterOptions = [
   { id: 1, name: 'Employee' },
 ];
 
-const AccountScreen = () => {
+const UserManagementScreen = () => {
   const navigation = useNavigation<any>();
-  const [accounts, setAccounts] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
   const [activeFilter, setActiveFilter] = useState(3);
@@ -50,9 +50,9 @@ const AccountScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const filteredUsers = useMemo(() => {
-    let filtered = accounts;
+    let filtered = [...users];
     const q = searchQuery.toLowerCase();
-    
+
     if (q) {
       filtered = filtered.filter(
         (user) =>
@@ -63,35 +63,35 @@ const AccountScreen = () => {
       );
     }
 
-    switch(activeFilter) {
-      case 0 : 
+    switch (activeFilter) {
+      case 0:
         filtered = filtered.filter((user) => user.role === 0);
         break;
-      case 1 : 
+      case 1:
         filtered = filtered.filter((user) => user.role === 1);
         break;
-      case 2 : 
+      case 2:
         filtered = filtered.filter((user) => user.role === 2);
         break;
     }
 
-    return(filtered);
-  }, [accounts]);
+    return filtered;
+  }, [users, searchQuery, activeFilter]);
 
   useFocusEffect(
     useCallback(() => {
-      getAccountsData();
+      getUsersData();
     }, [])
   );
 
-  const getAccountsData = async () => {
+  const getUsersData = async () => {
     try {
       setIsLoading(true);
-      const data = await AccountService.getAllAccounts();
-      return setAccounts(data);
+      const data = await UserService.getAllUsers();
+      return setUsers(data);
     } catch (error) {
       console.error(error);
-      return setAccounts([]);
+      return setUsers([]);
     } finally {
       setRefreshing(false);
       setIsLoading(false);
@@ -135,7 +135,6 @@ const AccountScreen = () => {
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    setActiveFilter(3);
   };
 
   const handleFilterChange = (role: number): void => {
@@ -148,15 +147,15 @@ const AccountScreen = () => {
   };
 
   const handleViewDetail = () => {
-    navigation.navigate('AccountDetail', { userData: selected });
+    navigation.navigate('UserDetail', { userData: selected });
   };
 
   const handleAddUser = () => {
-    navigation.navigate('AccountAdd');
+    navigation.navigate('UserAdd');
   };
 
   const handleEditUser = () => {
-    navigation.navigate('AccountEdit', { userData: selected });
+    navigation.navigate('UserEdit', { userData: selected });
   };
 
   const handleCloseModal = () => {
@@ -165,7 +164,7 @@ const AccountScreen = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getAccountsData();
+    getUsersData();
   };
 
   const onToggleStatus = () => {
@@ -174,7 +173,7 @@ const AccountScreen = () => {
       const actionText = selected.status ? 'Deactivate' : 'Activate';
 
       Alert.alert(
-        `${actionText} Account`,
+        `${actionText} User`,
         `Are you sure you want to ${action} ${selected.fullName || selected.username}?`,
         [
           { text: 'Cancel', style: 'cancel' },
@@ -184,9 +183,9 @@ const AccountScreen = () => {
             onPress: async () => {
               setIsLoading(true);
               try {
-                await AccountService.toggleStatus(selected?.userId);
-                showToast.success('Success', 'Account status changed successfully!');
-                getAccountsData();
+                await UserService.toggleStatus(selected?.userId);
+                showToast.success('Success', 'User status changed successfully!');
+                getUsersData();
                 handleCloseModal();
               } catch (error) {
                 console.log(error);
@@ -203,7 +202,7 @@ const AccountScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
-        title="Account Management"
+        title="User Management"
         rightElement={
           <Pressable className="p-2 bg-white rounded-full" onPress={handleAddUser}>
             <FontAwesomeIcon icon={faUserPlus} size={18} />
@@ -244,14 +243,14 @@ const AccountScreen = () => {
             keyExtractor={(item) => item.userId.toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <EmptyList title="No accounts found!" icon={faPersonCircleQuestion} />
+              <EmptyList title="No users found!" icon={faPersonCircleQuestion} />
             }
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
         )}
       </View>
 
-      {accounts.length > 0 && (
+      {users.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
           <Text className="text-sm font-medium text-center text-gray-500">
             Total Users:{' '}
@@ -264,68 +263,70 @@ const AccountScreen = () => {
         visible={isModalVisible}
         animationType="slide"
         onRequestClose={() => setIsModalVisible(false)}>
-        <View className="justify-end flex-1 bg-black/30">
-          <View className="p-6 pb-12 bg-white rounded-t-2xl">
-            <Text className="mb-6 text-lg font-bold text-center">
-              Options for #{selected?.username}
-            </Text>
-
-            <Pressable
-              className="flex-row items-center gap-3 mb-6"
-              onPress={() => {
-                handleViewDetail();
-                handleCloseModal();
-              }}>
-              <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-              <Text className="text-lg font-semibold text-blue-600">Account details</Text>
-            </Pressable>
-
-            <Pressable
-              className="flex-row items-center gap-3 mb-6"
-              onPress={() => {
-                handleEditUser();
-                handleCloseModal();
-              }}>
-              <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />
-              <Text className="text-lg font-semibold text-blue-600">Edit profile</Text>
-            </Pressable>
-
-            <Pressable
-              className="flex-row items-center gap-3 mb-6"
-              onPress={() => {
-                // onResetPassword();
-                handleCloseModal();
-              }}>
-              <FontAwesomeIcon icon={faKey} size={20} color="#2563eb" />
-              <Text className="text-lg font-semibold text-blue-600">Reset password</Text>
-            </Pressable>
-
-            <Pressable
-              className="flex-row items-center gap-3 mb-6"
-              onPress={() => {
-                onToggleStatus();
-              }}>
-              <FontAwesomeIcon
-                icon={selected?.status ? faBan : faCircleCheck}
-                size={20}
-                color={selected?.status ? '#dc2626' : '#16a34a'}
-              />
-              <Text
-                className={`text-lg font-semibold ${selected?.status ? 'text-red-600' : 'text-green-600'}`}>
-                {selected?.status ? 'Deactivate user' : 'Activate user'}
+        <Pressable onPress={handleCloseModal} className="justify-end flex-1 bg-black/30">
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <View className="p-6 pb-12 bg-white rounded-t-2xl">
+              <Text className="mb-6 text-lg font-bold text-center">
+                Options for #{selected?.username}
               </Text>
-            </Pressable>
 
-            <Pressable
-              className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg"
-              onPress={handleCloseModal}>
-              <Text className="text-lg font-semibold text-white">Close</Text>
-            </Pressable>
-          </View>
-        </View>
+              <Pressable
+                className="flex-row items-center gap-3 mb-6"
+                onPress={() => {
+                  handleViewDetail();
+                  handleCloseModal();
+                }}>
+                <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
+                <Text className="text-lg font-semibold text-blue-600">User details</Text>
+              </Pressable>
+
+              <Pressable
+                className="flex-row items-center gap-3 mb-6"
+                onPress={() => {
+                  handleEditUser();
+                  handleCloseModal();
+                }}>
+                <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />
+                <Text className="text-lg font-semibold text-blue-600">Edit profile</Text>
+              </Pressable>
+
+              <Pressable
+                className="flex-row items-center gap-3 mb-6"
+                onPress={() => {
+                  // onResetPassword();
+                  handleCloseModal();
+                }}>
+                <FontAwesomeIcon icon={faKey} size={20} color="#2563eb" />
+                <Text className="text-lg font-semibold text-blue-600">Reset password</Text>
+              </Pressable>
+
+              <Pressable
+                className="flex-row items-center gap-3 mb-6"
+                onPress={() => {
+                  onToggleStatus();
+                }}>
+                <FontAwesomeIcon
+                  icon={selected?.status ? faBan : faCircleCheck}
+                  size={20}
+                  color={selected?.status ? '#dc2626' : '#16a34a'}
+                />
+                <Text
+                  className={`text-lg font-semibold ${selected?.status ? 'text-red-600' : 'text-green-600'}`}>
+                  {selected?.status ? 'Deactivate user' : 'Activate user'}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg"
+                onPress={handleCloseModal}>
+                <Text className="text-lg font-semibold text-white">Close</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     </SafeAreaView>
   );
 };
 
-export default AccountScreen;
+export default UserManagementScreen;

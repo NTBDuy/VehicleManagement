@@ -227,9 +227,9 @@ interface StyleConfig {
     });
   }
 
-  static showBookingSuccess(vehicleType: string = 'vehicle'): void {
+  static showNewRequestSuccess(vehicleType: string = 'vehicle'): void {
     this.showSuccess({
-      title: 'Booking Confirmed!',
+      title: 'NewRequest Confirmed!',
       message: `Your ${vehicleType} reservation \n has been successfully submitted.`,
       duration: 4500
     });
@@ -310,61 +310,3 @@ interface StyleConfig {
 export default CustomToast;
 
 export type { CustomStyle, QuickToastConfig, ToastConfig, ToastType };
-
-// Usage Examples:
-
-/*
-// Basic usage
-import CustomToast from 'components/CustomToast';
-
-// Simple success
-CustomToast.showSuccess({
-  title: 'Great!',
-  message: 'Your action was completed successfully.'
-});
-
-// Error with custom duration
-CustomToast.showError({
-  title: 'Oops!',
-  message: 'Something went wrong.',
-  duration: 5000
-});
-
-// Custom toast with full control
-CustomToast.show({
-  type: CustomToast.TYPES.INFO,
-  title: 'Custom Toast',
-  message: 'This is a custom message',
-  position: CustomToast.POSITIONS.BOTTOM,
-  emoji: '🚀',
-  duration: 3000
-});
-
-// Predefined use cases
-CustomToast.showBookingSuccess('car');
-CustomToast.showValidationError('vehicle selection');
-CustomToast.showPurposeRequired();
-CustomToast.showNetworkError();
-CustomToast.showLoginSuccess('John Doe');
-
-// With custom styling
-CustomToast.show({
-  type: CustomToast.TYPES.SUCCESS,
-  title: 'Custom Styled Toast',
-  message: 'This toast has custom styling',
-  customStyle: {
-    titleStyle: {
-      fontSize: 18,
-      color: '#000'
-    },
-    messageStyle: {
-      fontSize: 16,
-      fontStyle: 'italic'
-    },
-    containerStyle: {
-      backgroundColor: '#f0f0f0',
-      borderRadius: 8
-    }
-  }
-});
-*/

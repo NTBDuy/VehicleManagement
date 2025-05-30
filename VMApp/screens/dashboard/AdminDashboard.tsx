@@ -13,7 +13,6 @@ import {
   View,
 } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
-import { AccountService } from 'services/accountService';
 import { UserService } from 'services/userService';
 import { VehicleService } from 'services/vehicleService';
 
@@ -29,7 +28,7 @@ const AdminDashboard = () => {
   const { user } = useAuth();
   const navigation = useNavigation<any>();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [accounts, setAccounts] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState<number>(0);
@@ -42,13 +41,13 @@ const AdminDashboard = () => {
     return { total, available, inUse, underMaintenance };
   }, [vehicles]);
 
-  const accountStat = useMemo(() => {
-    const total = accounts.length;
-    const admin = accounts.filter((account) => account.role === 0).length;
-    const employee = accounts.filter((account) => account.role === 1).length;
-    const manager = accounts.filter((account) => account.role === 2).length;
+  const userStat = useMemo(() => {
+    const total = users.length;
+    const admin = users.filter((user) => user.role === 0).length;
+    const employee = users.filter((user) => user.role === 1).length;
+    const manager = users.filter((user) => user.role === 2).length;
     return { total, employee, manager, admin };
-  }, [accounts]);
+  }, [users]);
 
   const screenWidth = Dimensions.get('window').width;
 
@@ -73,13 +72,13 @@ const AdminDashboard = () => {
     try {
       setIsLoading(true);
       const vehiclesData = await VehicleService.getAllVehicles();
-      const accountsData = await AccountService.getAllAccounts();
+      const usersData = await UserService.getAllUsers();
       setVehicles(vehiclesData);
-      setAccounts(accountsData);
+      setUsers(usersData);
     } catch (error) {
       console.error(error);
       setVehicles([]);
-      setAccounts([]);
+      setUsers([]);
     } finally {
       setRefreshing(false);
       setIsLoading(false);
@@ -162,14 +161,14 @@ const AdminDashboard = () => {
           <View>
             <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
               <View className="px-4 py-3 bg-gray-50">
-                <Text className="text-lg font-semibold text-gray-800">Account Statistics</Text>
+                <Text className="text-lg font-semibold text-gray-800">User Statistics</Text>
               </View>
 
               <View className="p-4">
-                <StatItem label="Total Accounts" value={accountStat.total} />
-                <StatItem label="Admin" value={accountStat.admin} status="admin" />
-                <StatItem label="Manager" value={accountStat.manager} status="manager" />
-                <StatItem label="Employee" value={accountStat.employee} status="employee" />
+                <StatItem label="Total Users" value={userStat.total} />
+                <StatItem label="Admin" value={userStat.admin} status="admin" />
+                <StatItem label="Manager" value={userStat.manager} status="manager" />
+                <StatItem label="Employee" value={userStat.employee} status="employee" />
               </View>
             </View>
 

@@ -21,7 +21,7 @@ import EmptyList from 'components/EmptyListComponent';
 import Header from 'components/HeaderComponent';
 import LoadingData from 'components/LoadingData';
 
-const VehicleScreen = () => {
+const VehicleManagementScreen = () => {
   const navigation = useNavigation<any>();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -142,7 +142,6 @@ const VehicleScreen = () => {
     </Pressable>
   );
 
-  /** Component: Vehicle Item */
   const renderVehicleItem = ({ item }: { item: Vehicle }) => (
     <Pressable
       onPress={() => handleVehicleSelection(item)}
@@ -171,7 +170,6 @@ const VehicleScreen = () => {
 
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
-    setCurrentStatusFilter('');
   };
 
   const handleClearFilters = (): void => {
@@ -294,7 +292,8 @@ const VehicleScreen = () => {
         visible={isModalVisible}
         animationType="slide"
         onRequestClose={() => setIsModalVisible(false)}>
-        <View className="justify-end flex-1 bg-black/30">
+        <Pressable onPress={handleCloseModal} className="justify-end flex-1 bg-black/30">
+        <Pressable onPress={(e) => e.stopPropagation()}>
           <View className="p-6 pb-12 bg-white rounded-t-2xl">
             <Text className="mb-6 text-lg font-bold text-center">
               Options for plate number #{selected?.licensePlate}
@@ -347,10 +346,11 @@ const VehicleScreen = () => {
               <Text className="text-lg font-semibold text-white">Close</Text>
             </Pressable>
           </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     </SafeAreaView>
   );
 };
 
-export default VehicleScreen;
+export default VehicleManagementScreen;

@@ -12,7 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { AccountService } from 'services/accountService';
+import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 
 import User from 'types/User';
@@ -20,7 +20,7 @@ import User from 'types/User';
 import Header from 'components/HeaderComponent';
 import InputField from 'components/InputFieldComponent';
 
-const AccountEditScreen = () => {
+const UserEditScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
   const { userData: initialUserData } = route.params as { userData: User };
@@ -72,17 +72,17 @@ const AccountEditScreen = () => {
       return;
     }
 
-    Alert.alert('Update Account', 'Are you sure you want to update this account?', [
+    Alert.alert('Update User', 'Are you sure you want to update this user?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Update',
         onPress: async () => {
           setIsLoading(true);
           try {
-            const data = await AccountService.updateAccount(userData.userId, userData);
+            const data = await UserService.updateUser(userData.userId, userData);
             setUserData(data);
             setHasChanges(false);
-            showToast.success('Success', 'Account updated successfully!');
+            showToast.success('Success', 'User updated successfully!');
           } catch (error) {
             console.log(error);
           } finally {
@@ -130,7 +130,7 @@ const AccountEditScreen = () => {
         backBtn
         customTitle={
           <View>
-            <Text className="text-xl font-bold text-gray-800">Edit Account #{userData.userId}</Text>
+            <Text className="text-xl font-bold text-gray-800">Edit User #{userData.userId}</Text>
             {hasChanges && <Text className="text-xs text-orange-600">Unsaved changes</Text>}
           </View>
         }
@@ -181,10 +181,10 @@ const AccountEditScreen = () => {
           </View>
         </View>
 
-        {/* Account Details Section */}
+        {/* User Details Section */}
         <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
           <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Account Details</Text>
+            <Text className="text-lg font-semibold text-gray-800">User Details</Text>
           </View>
           <View className="p-4">
             <View className="p-4 mb-6 border border-blue-200 rounded-2xl bg-blue-50">
@@ -223,7 +223,7 @@ const AccountEditScreen = () => {
             </View>
 
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm text-gray-600">Account Status</Text>
+              <Text className="text-sm text-gray-600">User Status</Text>
               <View className="flex-row items-center">
                 <Text
                   className={`mr-2 text-sm ${userData.status ? 'text-green-600' : 'text-gray-500'}`}>
@@ -272,7 +272,7 @@ const AccountEditScreen = () => {
             onPress={handleUpdate}
             disabled={isLoading || !hasChanges}>
             <Text className="font-semibold text-white">
-              {isLoading ? 'Updating...' : 'Update Account'}
+              {isLoading ? 'Updating...' : 'Update User'}
             </Text>
           </Pressable>
         </View>
@@ -281,4 +281,4 @@ const AccountEditScreen = () => {
   );
 };
 
-export default AccountEditScreen;
+export default UserEditScreen;

@@ -20,7 +20,9 @@ namespace VMServer.Models.Entities
         public string LicenseNumber { get; set; } = null!;
 
         public DateTime LicenseIssuedDate { get; set; }
+
         public int YearsOfExperience { get; set; }
+        
         public bool IsActive { get; set; } = true;
     }
 }

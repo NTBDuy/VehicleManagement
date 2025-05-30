@@ -2,7 +2,7 @@ using VMServer.Models.Entities;
 
 namespace VMServer.Models.DTOs
 {
-    public class AccountDTO
+    public class UserDTO
     {
         public required string FullName { get; set; }
 

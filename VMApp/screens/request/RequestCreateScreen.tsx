@@ -140,7 +140,7 @@ const RequestCreateScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="Booking" />
+      <Header title="New Request" />
       <View className="flex-1 px-6 mt-4">
         <View className="mb-4 overflow-hidden rounded-2xl">
           <View className="flex-row">

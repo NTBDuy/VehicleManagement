@@ -11,28 +11,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import AccountAddScreen from 'screens/account/AccountAddScreen';
-import AccountDetailScreen from 'screens/account/AccountDetailScreen';
-import AccountEditScreen from 'screens/account/AccountEditScreen';
-import AccountScreen from 'screens/account/AccountScreen';
+import UserAddScreen from '@/screens/user/UserAddScreen';
+import UserDetailScreen from '@/screens/user/UserDetailsScreen';
+import UserEditScreen from '@/screens/user/UserEditScreen';
+import UserManagementScreen from '@/screens/user/UserManagementScreen';
+import MaintenanceDetailScreen from '@/screens/vehicle/MaintenanceDetailScreen';
+import VehicleManagementScreen from '@/screens/vehicle/VehicleManagementScreen';
 import HomeScreen from 'screens/dashboard/AdminDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
 import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
-import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
+import HistoryNewRequestScreen from 'screens/request/RequestHistoryScreen';
 import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
-import VehicleScreen from 'screens/vehicle/VehicleScreen';
 
 import SidebarComponent from 'components/SidebarComponent';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();
-const AccountStack = createNativeStackNavigator();
+const UserStack = createNativeStackNavigator();
 const VehicleStack = createNativeStackNavigator();
 const SettingStack = createNativeStackNavigator();
 const NewRequestStack = createNativeStackNavigator();
@@ -48,21 +49,21 @@ function DashboardStackScreen() {
   );
 }
 
-function AccountStackScreen() {
+function UserStackScreen() {
   return (
-    <AccountStack.Navigator screenOptions={{ headerShown: false }}>
-      <AccountStack.Screen name="AccountManagement" component={AccountScreen} />
-      <AccountStack.Screen name="AccountDetail" component={AccountDetailScreen} />
-      <AccountStack.Screen name="AccountEdit" component={AccountEditScreen} />
-      <AccountStack.Screen name="AccountAdd" component={AccountAddScreen} />
-    </AccountStack.Navigator>
+    <UserStack.Navigator screenOptions={{ headerShown: false }}>
+      <UserStack.Screen name="UserManagement" component={UserManagementScreen} />
+      <UserStack.Screen name="UserDetail" component={UserDetailScreen} />
+      <UserStack.Screen name="UserEdit" component={UserEditScreen} />
+      <UserStack.Screen name="UserAdd" component={UserAddScreen} />
+    </UserStack.Navigator>
   );
 }
 
 function VehicleStackScreen() {
   return (
     <VehicleStack.Navigator screenOptions={{ headerShown: false }}>
-      <VehicleStack.Screen name="VehicleManagement" component={VehicleScreen} />
+      <VehicleStack.Screen name="VehicleManagement" component={VehicleManagementScreen} />
       <VehicleStack.Screen name="VehicleDetail" component={VehicleDetailScreen} />
       <VehicleStack.Screen name="VehicleEdit" component={VehicleEditScreen} />
       <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
@@ -90,7 +91,7 @@ function NewRequestStackScreen() {
 function HistoryStackScreen() {
   return (
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
-      <HistoryStack.Screen name="HistoryScreen" component={HistoryBookingScreen} />
+      <HistoryStack.Screen name="HistoryScreen" component={HistoryNewRequestScreen} />
       <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
     </HistoryStack.Navigator>
   );
@@ -100,6 +101,7 @@ function MaintenanceStackScreen() {
   return (
     <MaintenanceStack.Navigator screenOptions={{ headerShown: false }}>
       <MaintenanceStack.Screen name='Maintenance' component={MaintenanceManagement}/>
+      <MaintenanceStack.Screen name='MaintenanceDetails' component={MaintenanceDetailScreen}/>
     </MaintenanceStack.Navigator>
   )
 }
@@ -141,18 +143,18 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'History Request',
+          title: 'Personal History Request',
         }}
       />
 
       <Drawer.Screen
-        name="AccountStack"
-        component={AccountStackScreen}
+        name="UserStack"
+        component={UserStackScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faUsers} color={color} size={size} />
           ),
-          title: 'Account Management',
+          title: 'User Management',
         }}
       />
 
@@ -175,6 +177,7 @@ export default function AdminNavigator() {
             <FontAwesomeIcon icon={faTools} color={color} size={size} />
           ),
           title: 'Maintenance Management',
+          headerShown: false,
         }}
       />
 

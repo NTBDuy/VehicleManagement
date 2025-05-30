@@ -9,7 +9,7 @@ module.exports = {
   plugins: [],
   safelist: [
     {
-      pattern: /border-(orange|green|red|gray)-(400|600)/,
+      pattern: /border-(orange|green|red|gray|blue|yellow)-(400|600)/,
     },
   ],
 };

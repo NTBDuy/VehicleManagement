@@ -1,33 +1,19 @@
-using System.ComponentModel.DataAnnotations;
+using VMServer.Models.Entities;
 
-namespace VMServer.Models.Entities
+namespace VMServer.Models.DTOs
 {
-    public enum UserRole { Administrator, Employee, Manager }
-
-    public class User
+    public class UserDetailsDTO
     {
-        [Key]
         public int UserId { get; set; }
 
-        [Required]
         public required string Username { get; set; }
 
-        [Required]
-        public required string PasswordHash { get; set; }
-
-        [Required]
-        [MaxLength(255)]
         public required string FullName { get; set; }
 
-        [Required]
-        [EmailAddress]
         public required string Email { get; set; }
 
-        [Required]
         public required string PhoneNumber { get; set; }
 
-        [Required]
-        [EnumDataType(typeof(UserRole))]
         public UserRole Role { get; set; }
 
         public bool Status { get; set; } = true;

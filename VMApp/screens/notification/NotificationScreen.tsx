@@ -70,7 +70,7 @@ const NotificationScreen = () => {
           return { bgColor: 'bg-orange-500', icon: faCarSide };
         case 'MaintenanceScheduled':
           return { bgColor: 'bg-blue-500', icon: faTools };
-        case 'AccountDeactivated':
+        case 'UserDeactivated':
           return { bgColor: 'bg-red-500', icon: faWarning };
         case 'System':
           return { bgColor: 'bg-gray-500', icon: faBell };
@@ -104,7 +104,7 @@ const NotificationScreen = () => {
         return 'border-l-orange-500';
       case 'MaintenanceScheduled':
         return 'border-l-blue-500';
-      case 'AccountDeactivated':
+      case 'UserDeactivated':
         return 'border-l-red-500';
       case 'System':
         return 'border-l-gray-500';

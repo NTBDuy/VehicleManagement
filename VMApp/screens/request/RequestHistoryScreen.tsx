@@ -108,7 +108,7 @@ const RequestHistoryScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
-        title="History Booking"
+        title="History NewRequest"
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}

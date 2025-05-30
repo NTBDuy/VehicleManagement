@@ -293,57 +293,59 @@ const RequestScreen = () => {
         visible={isModalVisible}
         animationType="slide"
         onRequestClose={handleCloseModal}>
-        <View className="justify-end flex-1 bg-black/30">
-          <View className="p-6 pb-12 bg-white rounded-t-2xl">
-            <Text className="mb-6 text-lg font-bold text-center">
-              Options for request ID #{selected?.requestId}
-            </Text>
+        <Pressable onPress={handleCloseModal} className="justify-end flex-1 bg-black/30">
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <View className="p-6 pb-12 bg-white rounded-t-2xl">
+              <Text className="mb-6 text-lg font-bold text-center">
+                Options for request ID #{selected?.requestId}
+              </Text>
 
-            <Pressable
-              className="flex-row items-center gap-3 mb-6 active:opacity-70"
-              onPress={handleViewDetail}>
-              <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-              <Text className="text-lg font-semibold text-blue-600">Request details</Text>
-            </Pressable>
-
-            {selected?.status === 0 && (
-              <>
-                <Pressable
-                  className="flex-row items-center gap-3 mb-6 active:opacity-70"
-                  onPress={handleApprove}>
-                  <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
-                  <Text className="text-lg font-semibold text-green-600">
-                    {selected.isDriverRequired
-                      ? 'Approve and assign a driver'
-                      : 'Approve the request'}
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  className="flex-row items-center gap-3 mb-6 active:opacity-70"
-                  onPress={handleReject}>
-                  <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
-                  <Text className="text-lg font-semibold text-red-600">Reject the request</Text>
-                </Pressable>
-              </>
-            )}
-
-            {selected?.status === 1 && (
               <Pressable
                 className="flex-row items-center gap-3 mb-6 active:opacity-70"
-                onPress={handleCancel}>
-                <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
-                <Text className="text-lg font-semibold text-gray-600">Cancel the request</Text>
+                onPress={handleViewDetail}>
+                <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
+                <Text className="text-lg font-semibold text-blue-600">Request details</Text>
               </Pressable>
-            )}
 
-            <Pressable
-              className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg active:bg-gray-700"
-              onPress={handleCloseModal}>
-              <Text className="text-lg font-semibold text-white">Close</Text>
-            </Pressable>
-          </View>
-        </View>
+              {selected?.status === 0 && (
+                <>
+                  <Pressable
+                    className="flex-row items-center gap-3 mb-6 active:opacity-70"
+                    onPress={handleApprove}>
+                    <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
+                    <Text className="text-lg font-semibold text-green-600">
+                      {selected.isDriverRequired
+                        ? 'Approve and assign a driver'
+                        : 'Approve the request'}
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    className="flex-row items-center gap-3 mb-6 active:opacity-70"
+                    onPress={handleReject}>
+                    <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
+                    <Text className="text-lg font-semibold text-red-600">Reject the request</Text>
+                  </Pressable>
+                </>
+              )}
+
+              {selected?.status === 1 && (
+                <Pressable
+                  className="flex-row items-center gap-3 mb-6 active:opacity-70"
+                  onPress={handleCancel}>
+                  <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
+                  <Text className="text-lg font-semibold text-gray-600">Cancel the request</Text>
+                </Pressable>
+              )}
+
+              <Pressable
+                className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg active:bg-gray-700"
+                onPress={handleCloseModal}>
+                <Text className="text-lg font-semibold text-white">Close</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
       </Modal>
 
       {selected && (

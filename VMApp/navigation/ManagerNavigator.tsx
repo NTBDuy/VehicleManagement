@@ -1,5 +1,3 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   faCalendarCheck,
   faCalendarPlus,
@@ -10,21 +8,24 @@ import {
   faTools,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import MaintenanceDetailScreen from '@/screens/vehicle/MaintenanceDetailScreen';
+import VehicleManagementScreen from '@/screens/vehicle/VehicleManagementScreen';
 import HomeScreen from 'screens/dashboard/ManagerDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
 import SettingScreen from 'screens/profile/SettingScreen';
 import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
-import HistoryBookingScreen from 'screens/request/RequestHistoryScreen';
+import HistoryNewRequestScreen from 'screens/request/RequestHistoryScreen';
 import RequestScreen from 'screens/request/RequestScreen';
 import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
 import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
-import VehicleScreen from 'screens/vehicle/VehicleScreen';
 
 import SidebarComponent from 'components/SidebarComponent';
 
@@ -49,7 +50,7 @@ function DashboardStackScreen() {
 function VehicleStackScreen() {
   return (
     <VehicleStack.Navigator screenOptions={{ headerShown: false }}>
-      <VehicleStack.Screen name="VehicleManagement" component={VehicleScreen} />
+      <VehicleStack.Screen name="VehicleManagement" component={VehicleManagementScreen} />
       <VehicleStack.Screen name="VehicleDetail" component={VehicleDetailScreen} />
       <VehicleStack.Screen name="VehicleEdit" component={VehicleEditScreen} />
       <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
@@ -78,7 +79,7 @@ function NewRequestStackScreen() {
 function HistoryStackScreen() {
   return (
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
-      <HistoryStack.Screen name="HistoryScreen" component={HistoryBookingScreen} />
+      <HistoryStack.Screen name="HistoryScreen" component={HistoryNewRequestScreen} />
       <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
     </HistoryStack.Navigator>
   );
@@ -95,8 +96,9 @@ function SettingStackScreen() {
 
 function MaintenanceStackScreen() {
   return (
-    <MaintenanceStack.Navigator>
+    <MaintenanceStack.Navigator screenOptions={{ headerShown: false }}>
       <MaintenanceStack.Screen name="Maintenance" component={MaintenanceManagement} />
+      <MaintenanceStack.Screen name='MaintenanceDetails' component={MaintenanceDetailScreen}/>
     </MaintenanceStack.Navigator>
   );
 }
@@ -137,7 +139,7 @@ export default function ManagerNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'History Request',
+          title: 'Personal History Request',
           headerShown: false,
         }}
       />
@@ -174,6 +176,7 @@ export default function ManagerNavigator() {
             <FontAwesomeIcon icon={faTools} color={color} size={size} />
           ),
           title: 'Maintenance Management',
+          headerShown: false,
         }}
       />
 

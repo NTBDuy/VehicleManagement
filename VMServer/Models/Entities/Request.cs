@@ -30,7 +30,7 @@ namespace VMServer.Models.Entities
         public string Purpose { get; set; } = null!;
 
         [Required]
-        public RequestStatus Status { get; set; }
+        public RequestStatus Status { get; set; } = RequestStatus.Pending;
 
         public bool IsDriverRequired { get; set; }
 

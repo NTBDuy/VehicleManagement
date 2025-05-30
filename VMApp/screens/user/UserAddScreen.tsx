@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { Image, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from 'react-native';
-import { AccountService } from 'services/accountService';
+import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 
 import User from 'types/User';
@@ -11,7 +11,7 @@ import User from 'types/User';
 import Header from 'components/HeaderComponent';
 import InputField from 'components/InputFieldComponent';
 
-const AccountCreateScreen = () => {
+const UserAddScreen = () => {
   const initialUserData = {
     userId: 0,
     fullName: '',
@@ -63,16 +63,16 @@ const AccountCreateScreen = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleCreateAccount = async () => {
+  const handleCreateUser = async () => {
     if (!validateForm()) {
       showToast.error('Validation Error', 'Please fix the errors above');
       return;
     }
     try {
       setIsLoading(true);
-      const data = await AccountService.createAccount(userData);
-      showToast.success('Success', 'Account created successfully!');
-      navigation.navigate('AccountDetail', { userData: data });
+      const data = await UserService.createUser(userData);
+      showToast.success('Success', 'User created successfully!');
+      navigation.navigate('UserDetail', { userData: data });
     } catch (error) {
       console.log(error);
     } finally {
@@ -83,7 +83,7 @@ const AccountCreateScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* HEADER */}
-      <Header backBtn title="Create New Account" />
+      <Header backBtn title="Create New User" />
       {/* BODY */}
       <ScrollView className="flex-1 px-6">
         {/* Profile Picture Section */}
@@ -129,10 +129,10 @@ const AccountCreateScreen = () => {
           </View>
         </View>
 
-        {/* Account Details Section */}
+        {/* User Details Section */}
         <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
           <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Account Details</Text>
+            <Text className="text-lg font-semibold text-gray-800">User Details</Text>
           </View>
           <View className="p-4">
             <View className="p-4 mb-6 border border-blue-200 rounded-2xl bg-blue-50">
@@ -174,7 +174,7 @@ const AccountCreateScreen = () => {
               </View>
             </View>
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm text-gray-600">Account status</Text>
+              <Text className="text-sm text-gray-600">User status</Text>
               <View className="flex-row items-center">
                 <Text
                   className={`mr-2 text-sm ${userData.status ? 'text-green-600' : 'text-gray-500'}`}>
@@ -196,9 +196,9 @@ const AccountCreateScreen = () => {
           <Pressable
             className={`items-center rounded-xl py-4 shadow-sm ${isLoading ? 'bg-gray-500' : 'bg-blue-600 active:bg-blue-700'}`}
             disabled={isLoading}
-            onPress={handleCreateAccount}>
+            onPress={handleCreateUser}>
             <Text className="text-lg font-semibold text-white">
-              {isLoading ? 'Creating...' : 'Create Account'}
+              {isLoading ? 'Creating...' : 'Create User'}
             </Text>
           </Pressable>
         </View>
@@ -207,4 +207,4 @@ const AccountCreateScreen = () => {
   );
 };
 
-export default AccountCreateScreen;
+export default UserAddScreen;

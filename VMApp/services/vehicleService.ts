@@ -52,6 +52,27 @@ export class VehicleService extends BaseApiClient {
     });
   }
 
+  // Thay đổi lịch bảo dưỡng xe
+  static async rescheduleMaintenance(
+    id: number,
+    maintenanceData: any
+  ): Promise<MaintenanceSchedule> {
+    return this.request<MaintenanceSchedule>(`/vehicle/maintenance/${id}/reschedule`, {
+      method: 'PUT',
+      body: JSON.stringify(maintenanceData),
+    });
+  }
+
+  // Cập nhật trạng thái bảo dưỡng
+  static async changeStatusMaintenance(
+    id: number,
+    status: number
+  ): Promise<MaintenanceSchedule> {
+    return this.request<MaintenanceSchedule>(`/vehicle/maintenance/${id}/status?status=${status}`, {
+      method: 'PUT',
+    });
+  }
+
   // Xóa phương tiện
   static async deleteVehicle(id: number): Promise<void> {
     return this.request<void>(`/vehicle/${id}`, {

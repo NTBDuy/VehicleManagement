@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Authorization;
 
 namespace VMServer.Controllers
 {
@@ -48,7 +47,7 @@ namespace VMServer.Controllers
 
             return Ok(new
             {
-                token = token,
+                token,
                 user = new
                 {
                     userId = user.UserId,
@@ -82,7 +81,7 @@ namespace VMServer.Controllers
             new Claim(ClaimTypes.Role, user.Role.ToString())
 
         }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddHours(12),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

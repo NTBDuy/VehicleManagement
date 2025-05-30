@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { Alert, Image, Pressable, SafeAreaView, Text, View } from 'react-native';
-import { AccountService } from 'services/accountService';
+import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
@@ -20,7 +20,7 @@ type RoleInfo = {
   color: string;
 };
 
-const AccountDetailScreen = () => {
+const UserDetailsScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,8 +39,8 @@ const AccountDetailScreen = () => {
   const fetchUserData = async (userId: number) => {
     try {
       setIsLoading(true);
-      const updatedData = await AccountService.getAccountById(userId);
-      setUserData(updatedData);
+      const data = await UserService.getUserById(userId);
+      setUserData(data);
     } catch (error) {
       console.log('Error fetching user data:', error);
     } finally {
@@ -90,7 +90,7 @@ const AccountDetailScreen = () => {
   };
 
   const handleEdit = () => {
-    navigation.navigate('AccountEdit', { userData });
+    navigation.navigate('UserEdit', { userData });
   };
 
   // Update later - Coming Soon!
@@ -124,7 +124,7 @@ const AccountDetailScreen = () => {
     const actionText = userData.status ? 'Deactivate' : 'Activate';
 
     Alert.alert(
-      `${actionText} Account`,
+      `${actionText} User`,
       `Are you sure you want to ${action} ${userData.fullName || userData.username}?`,
       [
         { text: 'Cancel', style: 'cancel' },
@@ -134,12 +134,12 @@ const AccountDetailScreen = () => {
           onPress: async () => {
             setIsButtonActionLoading(true);
             try {
-              await AccountService.toggleStatus(userData?.userId);
-              showToast.success('Success', `Account has been ${action}d successfully`);
+              await UserService.toggleStatus(userData?.userId);
+              showToast.success('Success', `User has been ${action}d successfully`);
               await fetchUserData(userData.userId);
             } catch (error) {
               console.log('Error toggling status:', error);
-              Alert.alert('Error', `Failed to ${action} account`);
+              Alert.alert('Error', `Failed to ${action} user`);
             } finally {
               setIsButtonActionLoading(false);
             }
@@ -157,7 +157,7 @@ const AccountDetailScreen = () => {
       <Header
         backBtn
         customTitle={
-          <Text className="text-xl font-bold text-gray-800">Account #{userData.userId}</Text>
+          <Text className="text-xl font-bold text-gray-800">User #{userData.userId}</Text>
         }
         rightElement={
           <Pressable onPress={handleEdit} className="p-2 bg-white rounded-full shadow-sm">
@@ -214,10 +214,10 @@ const AccountDetailScreen = () => {
             </View>
           </View>
 
-          {/** Account Details Section */}
+          {/** User Details Section */}
           <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
             <View className="px-4 py-3 bg-gray-50">
-              <Text className="text-lg font-semibold text-gray-800">Account Details</Text>
+              <Text className="text-lg font-semibold text-gray-800">User Details</Text>
             </View>
             <View className="p-4">
               <InfoRow label="Username" value={userData.username || 'Not set'} />
@@ -278,4 +278,4 @@ const AccountDetailScreen = () => {
   );
 };
 
-export default AccountDetailScreen;
+export default UserDetailsScreen;

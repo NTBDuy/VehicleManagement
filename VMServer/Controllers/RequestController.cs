@@ -65,6 +65,9 @@ namespace VMServer.Controllers
             if (vehicle == null)
                 return NotFound(new { message = "Vehicle not found with id ", dto.VehicleId });
 
+            if (dto.EndTime < dto.StartTime)
+                return BadRequest(new { message = "End time must be after start time" });
+
             var newRequest = new Request
             {
                 UserId = dto.UserId,
@@ -77,6 +80,15 @@ namespace VMServer.Controllers
             };
 
             await SendNotificationToRole(UserRole.Manager, "A new vehicle request has been submitted and needs approval.", "NewRequestSubmitted");
+
+            var newNotifications = new Notification
+            {
+                UserId = dto.UserId,
+                Message = "A new vehicle request has been successfully created and is pending your approval.",
+                Type = "SendRequestSuccess",
+            };
+            _dbContext.Notifications.Add(newNotifications);
+
 
             _dbContext.Requests.Add(newRequest);
             await _dbContext.SaveChangesAsync();

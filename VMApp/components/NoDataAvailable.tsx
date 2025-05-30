@@ -11,7 +11,7 @@ type NoDataAvailableProp = {
 const NoDataAvailable = ({ onRetry }: NoDataAvailableProp) => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header backBtn title="Account Detail" />
+      <Header backBtn title="User Detail" />
 
       <View className="items-center justify-center flex-1 px-8">
         <View className="items-center justify-center w-24 h-24 mb-6 bg-white rounded-full shadow-sm">

@@ -7,7 +7,7 @@ import {
   Pressable,
   Text,
   TouchableWithoutFeedback,
-  View
+  View,
 } from 'react-native';
 import { showToast } from 'utils/toast';
 
@@ -61,36 +61,38 @@ const RejectModal: React.FC<RejectModalProps> = ({ visible, onClose, onReject })
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="justify-end flex-1 bg-black/30">
-            <View className="p-6 pb-12 rounded-t-2xl bg-gray-50">
-              <Text className="mb-6 text-lg font-bold text-center">Reject Request</Text>
+          <Pressable onPress={onClose} className="justify-end flex-1 bg-black/30">
+            <Pressable onPress={(e) => e.stopPropagation()}>
+              <View className="p-6 pb-12 rounded-t-2xl bg-gray-50">
+                <Text className="mb-6 text-lg font-bold text-center">Reject Request</Text>
 
-              <View className="mb-4">
-                <Text className="text-lg font-semibold text-gray-800">
-                  Are you sure want to reject this request?
-                </Text>
-              </View>
-
-              <View className="mb-6">
-                <InputField label="Reason" value={reason} onChangeText={setReason} />
-              </View>
-
-              <View className="flex-row justify-between">
-                <Pressable
-                  className="w-[48%] items-center justify-center rounded-lg bg-gray-600 py-3 active:bg-gray-700"
-                  onPress={handleClose}>
-                  <Text className="text-lg font-semibold text-white">Close</Text>
-                </Pressable>
-                <Pressable
-                  className="w-[48%] items-center justify-center rounded-lg bg-red-600 py-3 active:bg-red-700"
-                  onPress={handleReject}>
-                  <Text className="text-lg font-semibold text-white">
-                    {isReject ? 'Rejecting....' : 'Reject'}
+                <View className="mb-4">
+                  <Text className="text-lg font-semibold text-gray-800">
+                    Are you sure want to reject this request?
                   </Text>
-                </Pressable>
+                </View>
+
+                <View className="mb-6">
+                  <InputField label="Reason" value={reason} onChangeText={setReason} />
+                </View>
+
+                <View className="flex-row justify-between">
+                  <Pressable
+                    className="w-[48%] items-center justify-center rounded-lg bg-gray-600 py-3 active:bg-gray-700"
+                    onPress={handleClose}>
+                    <Text className="text-lg font-semibold text-white">Close</Text>
+                  </Pressable>
+                  <Pressable
+                    className="w-[48%] items-center justify-center rounded-lg bg-red-600 py-3 active:bg-red-700"
+                    onPress={handleReject}>
+                    <Text className="text-lg font-semibold text-white">
+                      {isReject ? 'Rejecting....' : 'Reject'}
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          </View>
+            </Pressable>
+          </Pressable>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </Modal>

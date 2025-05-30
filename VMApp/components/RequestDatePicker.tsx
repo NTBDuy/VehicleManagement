@@ -25,6 +25,7 @@ const RequestDatePicker = ({
   const toggleSwitch = () => setIsMultiDayTrip((previousState) => !previousState);
   
   const [today] = useState(new Date().toISOString().split('T')[0]);
+  
   const getMarkedDates = () => {
     let marked: { [date: string]: any } = {};
     if (startDate) {

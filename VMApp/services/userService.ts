@@ -4,6 +4,16 @@ import Request from 'types/Request';
 import Notification from 'types/Notification';
 
 export class UserService extends BaseApiClient {
+  // Lấy danh sách người dùng
+  static async getAllUsers(): Promise<User[]> {
+    return this.request<User[]>('/user');
+  }
+
+  // Lấy thông tin chi tiết người dùng
+  static async getUserById(id: number): Promise<User> {
+    return this.request<User>(`/user/${id}`);
+  }
+
   // Cập nhật thông tin người dùng
   static async updateProfile(userData: Partial<User>): Promise<User> {
     return this.request<User>(`/user/information`, {
@@ -25,5 +35,28 @@ export class UserService extends BaseApiClient {
   // Lấy số lượng thông báo chưa đọc
   static async getUserUnreadNotifications(): Promise<number> {
     return this.request<number>(`/user/notifications/count-unread`);
+  }
+
+  // Tạo mới người dùng
+  static async createUser(userData: Partial<User>): Promise<User> {
+    return this.request<User>('/user', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  // Cập nhật thông tin người dùng
+  static async updateUser(id: number, userData: Partial<User>): Promise<User> {
+    return this.request<User>(`/user/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  // Thay đổi trạng thái người dùng
+  static async toggleStatus(id: number): Promise<void> {
+    return this.request<void>(`/user/${id}/toggle-status`, {
+      method: 'PUT',
+    });
   }
 }
