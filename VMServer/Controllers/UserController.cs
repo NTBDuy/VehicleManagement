@@ -42,18 +42,19 @@ namespace VMServer.Controllers
             if (user == null)
                 return NotFound(new { message = $"User not found with ID #{userId}" });
 
-            return Ok(new
+            return Ok(new UserDetailsDTO
             {
-                user = new
-                {
-                    userId = user.UserId,
-                    username = user.Username,
-                    fullName = user.FullName,
-                    email = user.Email,
-                    phoneNumber = user.PhoneNumber,
-                    role = user.Role
-                }
-            });
+                UserId = user.UserId,
+                Username = user.Username,
+                FullName = user.FullName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Role = user.Role,
+                Status = user.Status,
+                CreatedAt = user.CreatedAt,
+                LastUpdateAt = user.LastUpdateAt
+            }
+            );
         }
 
         // GET: api/user/notification

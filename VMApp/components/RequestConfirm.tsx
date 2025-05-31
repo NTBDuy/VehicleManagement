@@ -16,6 +16,8 @@ interface ConfirmComponentProps {
   setPurpose: React.Dispatch<React.SetStateAction<string>>;
   isAssignDriver: boolean;
   setIsAssignDriver: React.Dispatch<React.SetStateAction<boolean>>;
+  errors: string;
+  setErrors:React.Dispatch<React.SetStateAction<string>>
 }
 
 const RequestConfirm = ({
@@ -26,6 +28,8 @@ const RequestConfirm = ({
   setPurpose,
   isAssignDriver,
   setIsAssignDriver,
+  errors,
+  setErrors
 }: ConfirmComponentProps) => {
   const toggleSwitchDriver = () => setIsAssignDriver((previousState) => !previousState);
   return (
@@ -71,6 +75,7 @@ const RequestConfirm = ({
               require={false}
               multiline={true}
               numberOfLines={4}
+              error={errors}
             />
           </View>
         </View>

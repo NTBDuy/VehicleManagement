@@ -13,6 +13,7 @@ import Header from 'components/HeaderComponent';
 import InfoRow from 'components/InfoRowComponent';
 import InputField from 'components/InputFieldComponent';
 import LoadingData from 'components/LoadingData';
+import MaintenanceSchedule from '@/types/MaintenanceSchedule';
 
 const ScheduleMaintenance = () => {
   const route = useRoute();
@@ -22,8 +23,9 @@ const ScheduleMaintenance = () => {
   const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [isLoading, setIsLoading] = useState(false);
+  const [estimatedTime, setEstimatedTime] = useState('');
   const [description, setDescription] = useState('');
-  const [errors, setErrors] = useState<Partial<Assignment>>({});
+  const [errors, setErrors] = useState<Partial<MaintenanceSchedule>>({});
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -40,10 +42,14 @@ const ScheduleMaintenance = () => {
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Assignment> = {};
+    const newErrors: Partial<MaintenanceSchedule> = {};
+
+    if (!estimatedTime.trim()) {
+      newErrors.estimatedEndDate = 'Estimated time is required';
+    }
 
     if (!description.trim()) {
-      newErrors.note = 'Description is required';
+      newErrors.description = 'Description is required';
     }
 
     setErrors(newErrors);
@@ -65,6 +71,7 @@ const ScheduleMaintenance = () => {
           try {
             await VehicleService.scheduleMaintenance(vehicleData.vehicleId, {
               scheduledDate: selectedDate,
+              estimatedDurationInDays: estimatedTime,
               description: description.trim(),
             });
 
@@ -159,12 +166,20 @@ const ScheduleMaintenance = () => {
             <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
               <View className="px-4 py-3 bg-gray-50">
                 <InputField
+                  label="Estimated Time (days)"
+                  value={estimatedTime}
+                  onChangeText={setEstimatedTime}
+                  keyboardType="numeric"
+                  error={errors.estimatedEndDate}
+                />
+
+                <InputField
                   label="Description"
                   value={description}
                   onChangeText={setDescription}
                   multiline
                   numberOfLines={3}
-                  error={errors.note}
+                  error={errors.description}
                 />
               </View>
             </View>

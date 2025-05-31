@@ -6,11 +6,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VMServer.Migrations
 {
     /// <inheritdoc />
-    public partial class initDatabase : Migration
+    public partial class initForVMServerV2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Drivers",
+                columns: table => new
+                {
+                    DriverId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FullName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LicenseNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LicenseIssuedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    YearsOfExperience = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Drivers", x => x.DriverId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -44,33 +62,14 @@ namespace VMServer.Migrations
                     Model = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     LastMaintenance = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    NextMaintenance = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    NextMaintenanceId = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastUpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vehicles", x => x.VehicleId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Drivers",
-                columns: table => new
-                {
-                    DriverId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    LicenseNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LicenseIssuedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    YearsOfExperience = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Drivers", x => x.DriverId);
-                    table.ForeignKey(
-                        name: "FK_Drivers_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -104,6 +103,10 @@ namespace VMServer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VehicleId = table.Column<int>(type: "int", nullable: false),
                     ScheduledDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EstimatedEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastUpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
@@ -131,11 +134,18 @@ namespace VMServer.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     IsDriverRequired = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastUpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    LastUpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ActionBy = table.Column<int>(type: "int", nullable: true),
+                    CancelOrRejectReason = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Requests", x => x.RequestId);
+                    table.ForeignKey(
+                        name: "FK_Requests_Users_ActionBy",
+                        column: x => x.ActionBy,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
                     table.ForeignKey(
                         name: "FK_Requests_Users_UserId",
                         column: x => x.UserId,
@@ -158,7 +168,7 @@ namespace VMServer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RequestId = table.Column<int>(type: "int", nullable: false),
                     DriverId = table.Column<int>(type: "int", nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
+                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -194,11 +204,6 @@ namespace VMServer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Drivers_UserId",
-                table: "Drivers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_MaintenanceSchedules_VehicleId",
                 table: "MaintenanceSchedules",
                 column: "VehicleId");
@@ -207,6 +212,11 @@ namespace VMServer.Migrations
                 name: "IX_Notifications_UserId",
                 table: "Notifications",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requests_ActionBy",
+                table: "Requests",
+                column: "ActionBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Requests_UserId",

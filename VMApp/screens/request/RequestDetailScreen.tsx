@@ -20,6 +20,7 @@ const RequestDetailScreen = () => {
   const { user } = useAuth();
   const { requestData: initialRequestData } = route.params as { requestData: Request };
   const [requestData, setRequestData] = useState<Request>(initialRequestData);
+  const [isASameDate] = useState(initialRequestData.startTime == initialRequestData.endTime);
   const [assignmentData, setAssignmentData] = useState<Assignment | null>(null);
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
@@ -128,47 +129,76 @@ const RequestDetailScreen = () => {
       <Header title="Request detail" backBtn />
 
       <ScrollView className="flex-1 mb-8">
-        <View className="px-6">
-          <View className="mt-4 mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
-            <View className="p-4 bg-blue-50">
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center">
-                  <View className="items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-full">
-                    <Text className="text-lg font-bold text-blue-600">
+        <View className="px-4">
+          <View className="mt-6 mb-4 overflow-hidden bg-white border border-gray-100 shadow-lg rounded-3xl">
+            <View className="p-6 bg-blue-50">
+              <View className="flex-row items-start justify-between">
+                <View className="flex-row items-center flex-1">
+                  <View className="items-center justify-center w-12 h-12 mr-4 bg-blue-600 shadow-md rounded-2xl">
+                    <Text className="text-lg font-bold text-white">
                       {getUserInitials(requestData.user?.fullName)}
                     </Text>
                   </View>
-                  <View>
-                    <Text className="text-sm text-gray-500">
+                  <View className="flex-1">
+                    <Text className="mb-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
                       Request ID #{requestData.requestId}
                     </Text>
-                    <Text className="text-lg font-bold text-gray-800">
-                      <Text className="text-base font-semibold text-gray-600">From: </Text>
+                    <Text className="mb-1 text-xl font-bold text-gray-900">
                       {requestData.user?.fullName}
                     </Text>
+                    <Text className="text-sm text-gray-600">Submitted request</Text>
                   </View>
                 </View>
-                {renderBadgeRequestStatus({ status: requestData.status })}
+                <View className="ml-4">
+                  {renderBadgeRequestStatus({ status: requestData.status })}
+                </View>
               </View>
+              {requestData.status !== 0 && (
+                <View className="p-4 mt-4 border border-blue-200 shadow-sm rounded-2xl bg-white/90">
+                  <Text className="text-base leading-relaxed text-gray-700">
+                    <Text className="font-semibold">Status: </Text>
+                    This request was{' '}
+                    <Text
+                      className={`font-bold ${
+                        requestData.status === 1
+                          ? 'text-green-600'
+                          : requestData.status === 2
+                            ? 'text-red-600'
+                            : 'text-orange-600'
+                      }`}>
+                      {requestData.status === 1 && 'approved'}
+                      {requestData.status === 2 && 'rejected'}
+                      {requestData.status === 3 && 'cancelled'}
+                    </Text>{' '}
+                    by{' '}
+                    <Text className="font-semibold text-gray-800">
+                      {requestData.actionByUser.fullName}
+                    </Text>
+                  </Text>
+                </View>
+              )}
+            </View>
 
-              {(requestData.status === 3 || requestData.status === 2) && (
-                <View className="p-3 mt-4 border border-red-100 rounded-xl bg-red-50">
-                  <View className="flex-row items-start">
-                    <View className="items-center justify-center w-6 h-6 mr-3 bg-red-100 rounded-full">
-                      <Text className="text-xs font-bold text-red-600">!</Text>
-                    </View>
-                    <View className="flex-1">
-                      <Text className="mb-1 text-sm font-semibold text-red-700">
-                        {requestData.status === 3 ? 'Cancellation' : 'Rejection'} Reason
-                      </Text>
-                      <Text className="text-sm leading-5 text-red-600">
+            {/* Rejection/Cancellation Reason */}
+            {(requestData.status === 3 || requestData.status === 2) && (
+              <View className="p-6 border-t border-red-100 bg-red-50">
+                <View className="flex-row items-start">
+                  <View className="items-center justify-center w-8 h-8 mr-4 bg-red-500 rounded-full shadow-sm">
+                    <Text className="text-sm font-bold text-white">!</Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className="mb-3 text-lg font-bold text-red-800">
+                      {requestData.status === 3 ? 'Cancellation' : 'Rejection'} Details
+                    </Text>
+                    <View className="p-4 bg-white border border-red-200 shadow-sm rounded-xl">
+                      <Text className="text-base font-medium leading-6 text-red-700">
                         {requestData.cancelOrRejectReason}
                       </Text>
                     </View>
                   </View>
                 </View>
-              )}
-            </View>
+              </View>
+            )}
           </View>
         </View>
 
@@ -181,11 +211,13 @@ const RequestDetailScreen = () => {
             <View className="p-4">
               <InfoRow label="Request by" value={requestData.user?.fullName || 'No information'} />
               <InfoRow
-                label="Time"
+                label={!isASameDate ? 'Date range' : 'Date'}
                 value=""
                 valueComponent={
                   <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                    {formatDate(requestData.startTime)} - {formatDate(requestData.endTime)}
+                    {!isASameDate
+                      ? `${formatDate(requestData.startTime)} - ${formatDate(requestData.endTime)}`
+                      : `${formatDate(requestData.startTime)}`}
                   </Text>
                 }
               />

@@ -16,7 +16,7 @@ import RequestDatePicker from '@/components/RequestDatePicker';
 import RequestVehiclePicker from '@/components/RequestVehiclePicker';
 import { RequestService } from '@/services/requestService';
 
-const RequestCreateScreenV2 = () => {
+const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
@@ -29,6 +29,7 @@ const RequestCreateScreenV2 = () => {
   const [isAssignDriver, setIsAssignDriver] = useState(false);
   const [isDisabled, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState("");
 
   const tabs = [
     { id: 0, title: 'Choose Date', icon: faCalendarDays },
@@ -84,13 +85,18 @@ const RequestCreateScreenV2 = () => {
       setPurpose={setPurpose}
       isAssignDriver={isAssignDriver}
       setIsAssignDriver={setIsAssignDriver}
+      errors={errors}
+      setErrors={setErrors}
     />
   );
 
   const getAvailableVehicle = async () => {
     try {
       setIsLoading(true);
-      const data = await VehicleService.getAvailableVehicles(startDate, isMultiDayTrip ? endDate : startDate);
+      const data = await VehicleService.getAvailableVehicles(
+        startDate,
+        isMultiDayTrip ? endDate : startDate
+      );
       setAvailableVehicle(data);
       setActiveTab(activeTab + 1);
     } catch (error) {
@@ -107,6 +113,7 @@ const RequestCreateScreenV2 = () => {
       return false;
     }
     if (purpose.trim() === '') {
+      setErrors("Please specify the purpose of your trip to continue.")
       showToast.error('Purpose Required', 'Please specify the purpose of your trip to continue.');
       return false;
     }
@@ -153,7 +160,7 @@ const RequestCreateScreenV2 = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="New Request V2" />
+      <Header title="New Request " />
 
       <View className="flex-1 px-6 mt-4">
         <View className="mb-4 overflow-hidden rounded-2xl">
@@ -241,4 +248,4 @@ const RequestCreateScreenV2 = () => {
   );
 };
 
-export default RequestCreateScreenV2;
+export default RequestCreateScreen;

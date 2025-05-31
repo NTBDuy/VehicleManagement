@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250525045527_initDatabase")]
-    partial class initDatabase
+    [Migration("20250530162830_initForVMServerV2")]
+    partial class initForVMServerV2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,7 +36,6 @@ namespace VMServer.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -60,6 +59,14 @@ namespace VMServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DriverId"));
 
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("LicenseIssuedDate")
                         .HasColumnType("datetime2");
 
@@ -68,8 +75,9 @@ namespace VMServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("YearsOfExperience")
                         .HasColumnType("int");
@@ -78,8 +86,6 @@ namespace VMServer.Migrations
 
                     b.HasIndex("LicenseNumber")
                         .IsUnique();
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Drivers");
                 });
@@ -92,13 +98,25 @@ namespace VMServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaintenanceId"));
 
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<DateTime>("EstimatedEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdateAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("ScheduledDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
@@ -152,6 +170,12 @@ namespace VMServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
 
+                    b.Property<int?>("ActionBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CancelOrRejectReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -182,6 +206,8 @@ namespace VMServer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("RequestId");
+
+                    b.HasIndex("ActionBy");
 
                     b.HasIndex("UserId");
 
@@ -274,6 +300,12 @@ namespace VMServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime?>("NextMaintenance")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("NextMaintenanceId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -309,15 +341,6 @@ namespace VMServer.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("VMServer.Models.Entities.Driver", b =>
-                {
-                    b.HasOne("VMServer.Models.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("VMServer.Models.Entities.MaintenanceSchedule", b =>
                 {
                     b.HasOne("VMServer.Models.Entities.Vehicle", "Vehicle")
@@ -342,6 +365,10 @@ namespace VMServer.Migrations
 
             modelBuilder.Entity("VMServer.Models.Entities.Request", b =>
                 {
+                    b.HasOne("VMServer.Models.Entities.User", "ActionByUser")
+                        .WithMany()
+                        .HasForeignKey("ActionBy");
+
                     b.HasOne("VMServer.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -353,6 +380,8 @@ namespace VMServer.Migrations
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ActionByUser");
 
                     b.Navigation("User");
 

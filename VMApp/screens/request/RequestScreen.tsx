@@ -135,8 +135,16 @@ const RequestScreen = () => {
         </View>
 
         <View className="mr-4">
-          <Text className="text-xs text-gray-500">Start: {formatDate(item.startTime)}</Text>
-          <Text className="text-xs text-gray-500">End: {formatDate(item.endTime)}</Text>
+          {item.startTime !== item.endTime ? (
+            <View>
+              <Text className="text-xs text-gray-500">Start: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">End: {formatDate(item.endTime)}</Text>
+            </View>
+          ) : (
+            <View>
+              <Text className="text-xs text-gray-500">Date: {formatDate(item.startTime)}</Text>
+            </View>
+          )}
         </View>
 
         <View className="items-end">
@@ -252,7 +260,7 @@ const RequestScreen = () => {
 
           {isExpanded && (
             <View className="flex-row flex-wrap justify-between mt-4 gap-y-4">
-              <StatusCard label="Pending" count={requestStat.pending} bgColor="bg-orange-400" />
+              <StatusCard label="Pending" count={requestStat.pending} bgColor="bg-yellow-500" />
               <StatusCard label="Approved" count={requestStat.approved} bgColor="bg-green-400" />
               <StatusCard label="Rejected" count={requestStat.rejected} bgColor="bg-red-400" />
               <StatusCard label="Cancelled" count={requestStat.cancelled} bgColor="bg-gray-400" />

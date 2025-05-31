@@ -59,7 +59,7 @@ const RequestVehiclePicker = ({
   );
 
   return (
-    <View className="px-2">
+    <View className="flex-1 px-2">
       <View className="mb-2">
         <View className="px-4 bg-gray-50 ">
           <Text className="text-lg font-semibold text-gray-800">Available Vehicle</Text>

@@ -167,6 +167,9 @@ namespace VMServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
 
+                    b.Property<int?>("ActionBy")
+                        .HasColumnType("int");
+
                     b.Property<string>("CancelOrRejectReason")
                         .HasColumnType("nvarchar(max)");
 
@@ -200,6 +203,8 @@ namespace VMServer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("RequestId");
+
+                    b.HasIndex("ActionBy");
 
                     b.HasIndex("UserId");
 
@@ -357,6 +362,10 @@ namespace VMServer.Migrations
 
             modelBuilder.Entity("VMServer.Models.Entities.Request", b =>
                 {
+                    b.HasOne("VMServer.Models.Entities.User", "ActionByUser")
+                        .WithMany()
+                        .HasForeignKey("ActionBy");
+
                     b.HasOne("VMServer.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -368,6 +377,8 @@ namespace VMServer.Migrations
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ActionByUser");
 
                     b.Navigation("User");
 

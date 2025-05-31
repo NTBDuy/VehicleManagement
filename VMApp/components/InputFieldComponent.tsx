@@ -19,7 +19,7 @@ const InputField = ({
   onChangeText: (text: string) => void;
   placeholder?: string;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'phone-pad';
+  keyboardType?: 'default' | 'email-address' | 'phone-pad' | 'numeric';
   editable?: boolean;
   error?: string;
   multiline?: boolean;

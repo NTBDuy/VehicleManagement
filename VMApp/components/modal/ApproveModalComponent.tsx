@@ -130,11 +130,11 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <Pressable onPress={onClose} className="justify-end flex-1 bg-black/30">
-            <Pressable onPress={(e) => e.stopPropagation()}>
-              <View className="max-h-[90%] rounded-t-2xl bg-gray-50 p-6 pb-12">
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -24 : 0}>
+        <Pressable onPress={onClose} className="justify-end flex-1 bg-black/30">
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View className="p-6 pb-12 rounded-t-2xl bg-gray-50">
                 {/* Header */}
                 <Text className="mb-4 text-lg font-bold text-center text-gray-800">{title}</Text>
 
@@ -238,9 +238,9 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
                   </Pressable>
                 </View>
               </View>
-            </Pressable>
+            </TouchableWithoutFeedback>
           </Pressable>
-        </TouchableWithoutFeedback>
+        </Pressable>
       </KeyboardAvoidingView>
     </Modal>
   );

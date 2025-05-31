@@ -25,6 +25,7 @@ namespace VMServer.Controllers
             var requests = await _dbContext.Requests
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
+                .Include(r => r.ActionByUser)
                 .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
             return Ok(requests);
@@ -104,6 +105,7 @@ namespace VMServer.Controllers
         {
             var request = await _dbContext.Requests
                 .Include(r => r.User)
+                .Include(r => r.ActionByUser)
                 .Include(r => r.Vehicle)
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
@@ -126,6 +128,11 @@ namespace VMServer.Controllers
                 _dbContext.Assignments.Add(newAssign);
             }
 
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
+
+            request.ActionBy = userId;
             request.Status = RequestStatus.Approved;
             request.LastUpdateAt = DateTime.Now;
 
@@ -152,11 +159,18 @@ namespace VMServer.Controllers
             var request = await _dbContext.Requests
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
+                .Include(r => r.ActionByUser)
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)
                 return NotFound(new { message = $"Request not found with ID #{requestId}" });
 
+
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
+
+            request.ActionBy = userId;
             request.CancelOrRejectReason = dto.Reason;
             request.Status = RequestStatus.Cancelled;
             request.LastUpdateAt = DateTime.Now;
@@ -184,11 +198,17 @@ namespace VMServer.Controllers
             var request = await _dbContext.Requests
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
+                .Include(r => r.ActionByUser)
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)
                 return NotFound(new { message = $"Request not found with ID #{requestId}" });
 
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
+
+            request.ActionBy = userId;
             request.CancelOrRejectReason = dto.Reason;
             request.Status = RequestStatus.Rejected;
             request.LastUpdateAt = DateTime.Now;

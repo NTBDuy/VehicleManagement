@@ -101,18 +101,39 @@ const MaintenanceDetailScreen = () => {
     }
   };
 
-  const handleConfirmReschedule = async () => {
+  const handleConfirmReschedule = () => {
     try {
-      const response = await VehicleService.rescheduleMaintenance(maintenance.maintenanceId, {
-        startDate: selectedStartDate,
-        endDate: selectedEndDate,
-      });
-      setMaintenance(response);
-      showToast.success(
-        'Reschedule successfully',
-        'Your maintenance schedule was reschedule successfully!'
+      Alert.alert(
+        'Reschedule Maintenance',
+        `Are you sure you want to reschedule maintenance ID#${maintenance.maintenanceId} - ${maintenance.vehicle.licensePlate}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Yes, I am sure',
+            style: 'default',
+            onPress: async () => {
+              try {
+                const response = await VehicleService.rescheduleMaintenance(
+                  maintenance.maintenanceId,
+                  { 
+                    startDate: selectedStartDate,
+                    endDate: selectedEndDate,
+                  }
+                );
+                setMaintenance(response);
+                showToast.success(
+                  'Reschedule successfully',
+                  'Your maintenance schedule was rescheduled successfully!'
+                );
+                setIsModalVisible(false);
+              } catch (error) {
+                console.log('Error rescheduling maintenance:', error);
+                Alert.alert('Error', 'Failed to reschedule maintenance');
+              }
+            },
+          },
+        ]
       );
-      setIsModalVisible(false);
     } catch (error) {
       console.log(error);
     }

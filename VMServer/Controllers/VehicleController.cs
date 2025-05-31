@@ -145,10 +145,21 @@ namespace VMServer.Controllers
             if (vehicle == null)
                 return NotFound(new { message = "Vehicle not found!" });
 
+            var EstimatedEndDate = dto.ScheduledDate.AddDays(dto.EstimatedDurationInDays);
+
+            var hasConflict = await _dbContext.Requests
+                    .AnyAsync(r => r.VehicleId == vehicleId &&
+                                    r.StartTime <= EstimatedEndDate &&
+                                    r.EndTime >= dto.ScheduledDate);
+
+            if (hasConflict)
+                return BadRequest(new { message = "This vehicle has schedule at that day" });
+
             var newSchedule = new MaintenanceSchedule
             {
                 VehicleId = vehicleId,
                 ScheduledDate = dto.ScheduledDate,
+                EstimatedEndDate = EstimatedEndDate,
                 Description = dto.Description
             };
 
@@ -193,6 +204,14 @@ namespace VMServer.Controllers
 
             if (maintenance == null)
                 return NotFound(new { message = $"Maintenance not found ID #{maintenanceId}" });
+
+            var hasConflict = await _dbContext.Requests
+                    .AnyAsync(r => r.VehicleId == maintenance.VehicleId &&
+                                    r.StartTime <= dto.EndDate &&
+                                    r.EndTime >= dto.StartDate);
+
+            if (hasConflict)
+                return BadRequest(new { message = "This vehicle has schedule at that day" });
 
             maintenance.ScheduledDate = dto.StartDate;
             maintenance.EstimatedEndDate = dto.EndDate;

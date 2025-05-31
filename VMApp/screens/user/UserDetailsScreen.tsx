@@ -30,6 +30,7 @@ const UserDetailsScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      console.log("TEST NHA")
       if (initialUserData?.userId) {
         fetchUserData(initialUserData.userId);
       }

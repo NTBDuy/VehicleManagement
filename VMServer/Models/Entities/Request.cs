@@ -35,12 +35,18 @@ namespace VMServer.Models.Entities
         public bool IsDriverRequired { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        
+
         public DateTime LastUpdateAt { get; set; } = DateTime.Now;
+
+        [ForeignKey("ActionByUser")]
+        public int? ActionBy { get; set; }
 
         public string? CancelOrRejectReason { get; set; }
 
         public User? User { get; set; }
+
+        public User? ActionByUser { get; set; }
+
         public Vehicle? Vehicle { get; set; }
     }
 }
