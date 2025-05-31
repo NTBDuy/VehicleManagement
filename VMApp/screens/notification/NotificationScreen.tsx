@@ -62,6 +62,8 @@ const NotificationScreen = () => {
           return { bgColor: 'bg-purple-500', icon: faCarSide };
         case 'RequestApproved':
           return { bgColor: 'bg-green-500', icon: faCheck };
+        case 'VehicleReturned':
+          return { bgColor: 'bg-green-500', icon: faCarSide };
         case 'RequestRejected':
           return { bgColor: 'bg-red-500', icon: faXmark };
         case 'RequestCancelled':
@@ -74,6 +76,8 @@ const NotificationScreen = () => {
           return { bgColor: 'bg-blue-500', icon: faTools };
         case 'UserDeactivated':
           return { bgColor: 'bg-red-500', icon: faWarning };
+        case 'RemindReturn':
+          return { bgColor: 'bg-orange-500', icon: faWarning };
         case 'System':
           return { bgColor: 'bg-gray-500', icon: faBell };
         default:
@@ -98,6 +102,8 @@ const NotificationScreen = () => {
         return 'border-l-purple-500';
       case 'RequestApproved':
         return 'border-l-green-500';
+      case 'VehicleReturned':
+        return 'border-l-green-500';
       case 'RequestRejected':
         return 'border-l-red-500';
       case 'RequestCancelled':
@@ -110,6 +116,8 @@ const NotificationScreen = () => {
         return 'border-l-blue-500';
       case 'UserDeactivated':
         return 'border-l-red-500';
+      case 'RemindReturn':
+        return 'border-l-orange-500';
       case 'System':
         return 'border-l-gray-500';
       default:

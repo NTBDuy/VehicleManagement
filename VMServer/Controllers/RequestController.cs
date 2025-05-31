@@ -265,7 +265,7 @@ namespace VMServer.Controllers
                 return Forbid("Invalid user identity.");
 
             if (userId != request.UserId)
-                return Forbid("You are not authorized to start this request.");
+                return Unauthorized(new { message = "You are not authorized to start this request." });
 
             if (request.Vehicle == null)
                 return BadRequest(new { message = "Vehicle not found" });
@@ -279,13 +279,188 @@ namespace VMServer.Controllers
                 UserId = request.ActionBy ?? 0,
                 Message = $"Vehicle {request.Vehicle.LicensePlate} has started being used for request #{requestId}",
                 Type = "VehicleInUse",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
 
             _dbContext.Notifications.Add(notification);
 
             await _dbContext.SaveChangesAsync();
             return Ok(request);
+        }
+
+        // PUT: api/request/{requestId}/end-usage
+        // kết thúc sử dụng phương tiện
+        [Authorize]
+        [HttpPut("{requestId}/end-usage")]
+        public async Task<IActionResult> EndUsageVehicle(int requestId)
+        {
+            var request = await _dbContext.Requests
+               .Include(r => r.User)
+               .Include(r => r.Vehicle)
+               .Include(r => r.ActionByUser)
+               .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            if (request.Status != RequestStatus.InProgress)
+                return BadRequest(new { message = "Request must be in progress before usage can be ended." });
+
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
+
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return Unauthorized(new { message = "Invalid user identity." });
+
+            if (userId != request.UserId && user.Role != UserRole.Manager)
+                return Unauthorized(new { message = "You are not authorized to end this request." });
+
+            if (request.Vehicle == null)
+                return BadRequest(new { message = "Vehicle not found" });
+
+            if (DateTime.Now > request.EndTime)
+            {
+                var overdueNotification = new Notification
+                {
+                    UserId = request.UserId,
+                    Message = $"Vehicle {request.Vehicle.LicensePlate} was returned late for request #{requestId}",
+                    Type = "OverdueReturn",
+                    CreatedAt = DateTime.Now
+                };
+                _dbContext.Notifications.Add(overdueNotification);
+            }
+
+            request.Vehicle.Status = Status.Available;
+            request.Status = RequestStatus.Done;
+            request.LastUpdateAt = DateTime.Now;
+
+            if (request.ActionBy.HasValue)
+            {
+                var notification = new Notification
+                {
+                    UserId = request.ActionBy.Value,
+                    Message = $"Vehicle {request.Vehicle.LicensePlate} has done for request #{requestId}",
+                    Type = "VehicleReturned",
+                    CreatedAt = DateTime.Now
+                };
+                _dbContext.Notifications.Add(notification);
+            }
+
+
+            if (user.Role == UserRole.Manager && userId != request.UserId)
+            {
+                var userNotification = new Notification
+                {
+                    UserId = request.UserId,
+                    Message = $"Your vehicle request #{requestId} has been completed by manager",
+                    Type = "RequestCompleted",
+                    CreatedAt = DateTime.Now
+                };
+                _dbContext.Notifications.Add(userNotification);
+            }
+
+            await _dbContext.SaveChangesAsync();
+            return Ok(request);
+        }
+
+        // PUT: api/request/{requestId}/remind-return
+        // Nhắc nhở kết thúc sử dụng phương tiện
+        [Authorize(Roles = "Manager")]
+        [HttpPut("{requestId}/remind-return")]
+        public async Task<IActionResult> RemindReturnVehicle(int requestId)
+        {
+            var request = await _dbContext.Requests
+               .Include(r => r.User)
+               .Include(r => r.Vehicle)
+               .Include(r => r.ActionByUser)
+               .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            if (request.Status != RequestStatus.InProgress)
+                return BadRequest(new { message = "Request must be in progress to send reminder." });
+
+            var today = DateTime.Now.Date;
+            var dueDate = request.EndTime.Date;
+            var isOverdue = today > dueDate;
+            var isDueToday = today == dueDate;
+            var isDueTomorrow = today.AddDays(1) == dueDate;
+
+            Notification notification;
+
+            if (isOverdue)
+            {
+                notification = new Notification
+                {
+                    UserId = request.UserId,
+                    Message = $"URGENT: Vehicle {request.Vehicle?.LicensePlate} return is overdue for request #{requestId}. Please return immediately.",
+                    Type = "RemindReturn",
+                    CreatedAt = DateTime.Now
+                };
+            }
+            else if (isDueToday)
+            {
+                notification = new Notification
+                {
+                    UserId = request.UserId,
+                    Message = $"REMINDER: Vehicle {request.Vehicle?.LicensePlate} must be returned today for request #{requestId}.",
+                    Type = "RemindReturn",
+                    CreatedAt = DateTime.Now
+                };
+            }
+            else if (isDueTomorrow)
+            {
+                notification = new Notification
+                {
+                    UserId = request.UserId,
+                    Message = $"REMINDER: Vehicle {request.Vehicle?.LicensePlate} must be returned tomorrow for request #{requestId}.",
+                    Type = "RemindReturn",
+                    CreatedAt = DateTime.Now
+                };
+            }
+            else
+            {
+                notification = new Notification
+                {
+                    UserId = request.UserId,
+                    Message = $"REMINDER: Please prepare to return vehicle {request.Vehicle?.LicensePlate} by {request.EndTime:dd/MM/yyyy} for request #{requestId}.",
+                    Type = "RemindReturn",
+                    CreatedAt = DateTime.Now
+                };
+            }
+
+            var existingReminder = await _dbContext.Notifications
+                .Where(n => n.UserId == request.UserId &&
+                           n.Type.Contains("Return") &&
+                           n.Message.Contains($"#{requestId}") &&
+                           n.CreatedAt.Date == DateTime.Now.Date)
+                .FirstOrDefaultAsync();
+
+            if (existingReminder != null)
+                return BadRequest(new { message = "Reminder has already been sent today for this request." });
+
+            _dbContext.Notifications.Add(notification);
+
+            var managerNotification = new Notification
+            {
+                UserId = request.ActionBy ?? 0,
+                Message = $"Reminder sent to {request.User?.FullName} for vehicle return (Request #{requestId})",
+                Type = "ReminderSent",
+                CreatedAt = DateTime.Now
+            };
+            _dbContext.Notifications.Add(managerNotification);
+
+            request.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Reminder sent successfully",
+            });
         }
 
         // Gửi thông báo tới Role

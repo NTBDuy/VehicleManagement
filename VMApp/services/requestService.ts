@@ -44,6 +44,19 @@ export class RequestService extends BaseApiClient {
     });
   }
 
+  // End usage vehicle
+  static async endUsageVehicle(id: number): Promise<Request> {
+    return this.request<Request>(`/request/${id}/end-usage`, {
+      method: 'PUT',
+    });
+  }
+
+  static async remindVehicle(id: number): Promise<void> {
+    return this.request<void>(`/request/${id}/remind-return`, {
+      method: 'PUT',
+    })
+  }
+
   // Từ chối yêu cầu
   static async rejectRequest(id: number, reason: any): Promise<Request> {
     return this.request<Request>(`/request/${id}/reject`, {

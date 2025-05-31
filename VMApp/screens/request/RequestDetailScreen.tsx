@@ -1,7 +1,7 @@
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { useEffect, useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
@@ -27,12 +27,17 @@ const RequestDetailScreen = () => {
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
   const [isUsingLoading, setIsUsingLoading] = useState(false);
+  const [isEndUsageLoading, setIsEndUsageLoading] = useState(false);
+  const [isReminderSent, setIsReminderSent] = useState(false);
 
-  useEffect(() => {
-    if (requestData.isDriverRequired && requestData.status !== 2 && requestData.status !== 0) {
-      getAssignmentData(requestData.requestId);
-    }
-  }, [requestData]);
+  useFocusEffect(
+    useCallback(() => {
+      setAssignmentData(null);
+      if (requestData.isDriverRequired && requestData.status !== 2 && requestData.status !== 0) {
+        getAssignmentData(requestData.requestId);
+      }
+    }, [requestData])
+  );
 
   const getAssignmentData = async (requestId: number) => {
     try {
@@ -144,24 +149,94 @@ const RequestDetailScreen = () => {
     return today >= startDate && today <= endDate;
   };
 
-  const handleUsingVehicle = async () => {
-    if (!canUseVehicle()) {
-      showToast.error('Cannot use vehicle', 'Vehicle can only be used on the scheduled date');
-      return;
-    }
-    try {
-      setIsUsingLoading(true);
-      const response = await RequestService.usingVehicle(requestData.requestId);
-      setRequestData(response);
-      showToast.success(
-        'Vehicle usage started successfully',
-        'You can now use the vehicle. Please remember to end usage when finished.'
-      );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsUsingLoading(false);
-    }
+  const handleUsingVehicle = () => {
+    Alert.alert('Start Vehicle Usage', 'Are you sure you want to start using the vehicle?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Confirm',
+        onPress: async () => {
+          if (!canUseVehicle()) {
+            showToast.error('Cannot use vehicle', 'Vehicle can only be used on the scheduled date');
+            return;
+          }
+          try {
+            setIsUsingLoading(true);
+            const response = await RequestService.usingVehicle(requestData.requestId);
+            setRequestData(response);
+            showToast.success(
+              'Vehicle usage started successfully',
+              'You can now use the vehicle. Please remember to end usage when finished.'
+            );
+          } catch (error) {
+            console.log(error);
+          } finally {
+            setIsUsingLoading(false);
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleEndUsage = () => {
+    Alert.alert('End Vehicle Usage', 'Are you sure you want to end the vehicle usage?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Confirm',
+        onPress: async () => {
+          try {
+            setIsEndUsageLoading(true);
+            const response = await RequestService.endUsageVehicle(requestData.requestId);
+            setRequestData(response);
+            showToast.success(
+              'Vehicle usage ended successfully',
+              'The vehicle has been returned and the request is now marked as complete.'
+            );
+          } catch (error) {
+            console.log(error);
+          } finally {
+            setIsEndUsageLoading(false);
+          }
+        },
+      },
+    ]);
+  };
+
+  const isOverdue = (endDate: string) => {
+    const today = new Date().toDateString();
+    const dueDate = new Date(endDate).toDateString();
+
+    return new Date(today) > new Date(dueDate);
+  };
+
+  const isNearDueDate = (endDate: string) => {
+    const now = new Date();
+    const dueDate = new Date(endDate);
+    const timeDiff = dueDate.getTime() - now.getTime();
+    const daysDiff = timeDiff / (1000 * 3600 * 24);
+    return daysDiff <= 1 && daysDiff > 0;
+  };
+
+  const handleRemind = () => {
+    Alert.alert('Send Reminder', 'Are you sure you want to send a reminder to use the vehicle?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Confirm',
+        onPress: async () => {
+          try {
+            setIsUsingLoading(true);
+            await RequestService.remindVehicle(requestData.requestId);
+            showToast.success(
+              'Reminder sent',
+              'The user has been reminded to start vehicle usage.'
+            );
+          } catch (error) {
+            console.log(error);
+          } finally {
+            setIsUsingLoading(false);
+          }
+        },
+      },
+    ]);
   };
 
   return (
@@ -308,7 +383,7 @@ const RequestDetailScreen = () => {
             </View>
           )}
 
-          {(user?.role === 2) && (
+          {user?.role === 2 && (
             <>
               {requestData.status === 0 && (
                 <View className="flex-row justify-between mt-4">
@@ -326,12 +401,37 @@ const RequestDetailScreen = () => {
                 </View>
               )}
 
-              {(requestData.status === 1 && user?.userId != requestData.userId) && (
+              {requestData.status === 1 && user?.userId != requestData.userId && (
                 <View className="mt-4">
                   <Pressable
                     className="items-center py-4 bg-gray-500 shadow-sm rounded-xl active:bg-gray-700"
                     onPress={handleCancel}>
                     <Text className="font-semibold text-white">Cancel</Text>
+                  </Pressable>
+                </View>
+              )}
+
+              {requestData.status == 4 && (
+                <View className="mt-4">
+                  <Pressable
+                    className={`items-center rounded-xl py-4 shadow-sm ${
+                      isOverdue(requestData.endTime)
+                        ? 'bg-red-500 active:bg-red-700'
+                        : isNearDueDate(requestData.endTime)
+                          ? 'bg-orange-500 active:bg-orange-700'
+                          : 'bg-amber-500 active:bg-amber-700'
+                    }`}
+                    onPress={handleRemind}
+                    disabled={isReminderSent}>
+                    <Text className="font-semibold text-white">
+                      {isReminderSent
+                        ? '✓ Reminder sent'
+                        : isOverdue(requestData.endTime)
+                          ? 'Urgent: Return overdue vehicle'
+                          : isNearDueDate(requestData.endTime)
+                            ? 'Due soon: Remind return'
+                            : 'Remind for return vehicle'}
+                    </Text>
                   </Pressable>
                 </View>
               )}
@@ -363,6 +463,18 @@ const RequestDetailScreen = () => {
                     onPress={handleUsingVehicle}>
                     <Text className="font-semibold text-white">
                       {isUsingLoading ? 'Loading...' : 'Using Vehicle'}
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+              {requestData.status === 4 && (
+                <View className="mt-4">
+                  <Pressable
+                    className={`items-center rounded-xl ${isEndUsageLoading ? 'bg-gray-600' : 'bg-green-600'} py-4 shadow-sm active:bg-green-700 `}
+                    disabled={isEndUsageLoading}
+                    onPress={handleEndUsage}>
+                    <Text className="font-semibold text-white">
+                      {isEndUsageLoading ? 'Ending...' : 'End Usage'}
                     </Text>
                   </Pressable>
                 </View>
