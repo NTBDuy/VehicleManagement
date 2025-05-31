@@ -377,6 +377,8 @@ const RequestScreen = () => {
             onClose={handleCloseModal}
             onApprove={handleApproveConfirm}
             isDriverRequired={selected.isDriverRequired}
+            startTime={selected.startTime}
+            endTime={selected.endTime}
           />
 
           <RejectModal

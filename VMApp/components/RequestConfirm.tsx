@@ -17,7 +17,6 @@ interface ConfirmComponentProps {
   isAssignDriver: boolean;
   setIsAssignDriver: React.Dispatch<React.SetStateAction<boolean>>;
   errors: string;
-  setErrors:React.Dispatch<React.SetStateAction<string>>
 }
 
 const RequestConfirm = ({
@@ -29,9 +28,9 @@ const RequestConfirm = ({
   isAssignDriver,
   setIsAssignDriver,
   errors,
-  setErrors
 }: ConfirmComponentProps) => {
   const toggleSwitchDriver = () => setIsAssignDriver((previousState) => !previousState);
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View>

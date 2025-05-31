@@ -19,6 +19,7 @@ import { showToast } from 'utils/toast';
 import Driver from 'types/Driver';
 
 import InputField from 'components/InputFieldComponent';
+import { formatDate } from '@/utils/datetimeUtils';
 interface ApproveModalProps {
   visible: boolean;
   onClose: () => void;
@@ -26,6 +27,8 @@ interface ApproveModalProps {
   onApprove: (driverId: string | null, note: string) => void;
   title?: string;
   approveButtonText?: string;
+  startTime: string;
+  endTime: string;
 }
 
 type ItemDropDownPicker = {
@@ -40,6 +43,8 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   isDriverRequired,
   title = 'Approve Request',
   approveButtonText = 'Approve',
+  startTime,
+  endTime,
 }) => {
   const [open, setOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
@@ -57,7 +62,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   useEffect(() => {
     if (visible) {
-      getAllDrivers();
+      getAvailableDrivers();
     }
   }, [visible]);
 
@@ -71,10 +76,10 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
     }
   }, [drivers]);
 
-  const getAllDrivers = async () => {
+  const getAvailableDrivers = async () => {
     setLoading(true);
     try {
-      const dataDrivers = await DriverService.getAllDrivers();
+      const dataDrivers = await DriverService.getAvailableDrivers(startTime, endTime);
       setDrivers(dataDrivers);
     } catch (error) {
       Alert.alert('Error', 'Failed to load drivers. Please try again.');
@@ -160,44 +165,53 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
                       </Text>
                     </View>
 
-                    <View className="p-4">
-                      <View style={{ zIndex: open ? 1000 : 0 }}>
-                        <Text className="mb-2 text-sm font-medium text-gray-700">
-                          Select Driver *
-                        </Text>
-                        <DropDownPicker
-                          open={open}
-                          value={selectedDriver}
-                          items={items}
-                          setOpen={setOpen}
-                          setValue={setSelectedDriver}
-                          setItems={setItems}
-                          placeholder="Choose a driver..."
-                          style={{
-                            borderColor: selectedDriver ? '#10B981' : '#D1D5DB',
-                            borderRadius: 8,
-                            minHeight: 50,
-                          }}
-                          dropDownContainerStyle={{
-                            borderColor: '#D1D5DB',
-                            maxHeight: 200,
-                            zIndex: 1000,
-                          }}
-                          textStyle={{ fontSize: 16 }}
-                          zIndex={1000}
-                          zIndexInverse={3000}
-                          searchable={drivers.length > 5}
-                        />
-                      </View>
-
-                      {selectedDriver && (
-                        <View className="p-3 mt-3 border border-green-200 rounded-lg bg-green-50">
-                          <Text className="text-sm text-green-800">
-                            ✓ Driver selected successfully
+                    {drivers.length > 0 ? (
+                      <View className="p-4">
+                        <View style={{ zIndex: open ? 1000 : 0 }}>
+                          <Text className="mb-2 text-sm font-medium text-gray-700">
+                            Select Driver *
                           </Text>
+                          <DropDownPicker
+                            open={open}
+                            value={selectedDriver}
+                            items={items}
+                            setOpen={setOpen}
+                            setValue={setSelectedDriver}
+                            setItems={setItems}
+                            placeholder="Choose a driver..."
+                            style={{
+                              borderColor: selectedDriver ? '#10B981' : '#D1D5DB',
+                              borderRadius: 8,
+                              minHeight: 50,
+                            }}
+                            dropDownContainerStyle={{
+                              borderColor: '#D1D5DB',
+                              maxHeight: 200,
+                              zIndex: 1000,
+                            }}
+                            textStyle={{ fontSize: 16 }}
+                            zIndex={1000}
+                            zIndexInverse={3000}
+                            searchable={drivers.length > 5}
+                          />
                         </View>
-                      )}
-                    </View>
+
+                        {selectedDriver && (
+                          <View className="p-3 mt-3 border border-green-200 rounded-lg bg-green-50">
+                            <Text className="text-sm text-green-800">
+                              ✓ Driver selected successfully
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    ) : (
+                      <View className="p-3 border border-red-200 rounded-lg bg-red-50">
+                        <Text className="text-sm text-red-800">
+                          There are no drivers available for this request from
+                          {formatDate(startTime)} to {formatDate(endTime)}.
+                        </Text>
+                      </View>
+                    )}
                   </View>
                 )}
 

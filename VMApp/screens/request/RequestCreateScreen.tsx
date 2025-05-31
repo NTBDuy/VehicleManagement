@@ -86,7 +86,6 @@ const RequestCreateScreen = () => {
       isAssignDriver={isAssignDriver}
       setIsAssignDriver={setIsAssignDriver}
       errors={errors}
-      setErrors={setErrors}
     />
   );
 
