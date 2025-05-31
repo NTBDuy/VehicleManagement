@@ -10,7 +10,7 @@ export class RequestService extends BaseApiClient {
 
   // Lấy thông tin gán định tài xế
   static async getAssignmentDetails(id: number): Promise<Assignment> {
-    return this.request<Assignment>(`/request/${id}/assignment`)
+    return this.request<Assignment>(`/request/${id}/assignment`);
   }
 
   // Tạo yêu cầu mới
@@ -21,7 +21,7 @@ export class RequestService extends BaseApiClient {
     });
   }
 
-  // Chấp thuận yêu cầu 
+  // Chấp thuận yêu cầu
   static async approveRequest(id: number, approvalData?: any): Promise<Request> {
     return this.request<Request>(`/request/${id}/approve`, {
       method: 'PUT',
@@ -34,6 +34,13 @@ export class RequestService extends BaseApiClient {
     return this.request<Request>(`/request/${id}/cancel`, {
       method: 'PUT',
       body: JSON.stringify(reason),
+    });
+  }
+
+  // Start using vehicle
+  static async usingVehicle(id: number): Promise<Request> {
+    return this.request<Request>(`/request/${id}/start-using`, {
+      method: 'PUT',
     });
   }
 

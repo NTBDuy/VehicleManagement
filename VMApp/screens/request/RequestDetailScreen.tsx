@@ -14,6 +14,7 @@ import InfoRow from 'components/InfoRowComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
+import { showToast } from '@/utils/toast';
 
 const RequestDetailScreen = () => {
   const route = useRoute();
@@ -25,6 +26,7 @@ const RequestDetailScreen = () => {
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [isUsingLoading, setIsUsingLoading] = useState(false);
 
   useEffect(() => {
     if (requestData.isDriverRequired && requestData.status !== 2 && requestData.status !== 0) {
@@ -124,6 +126,36 @@ const RequestDetailScreen = () => {
     handleCloseModal();
   };
 
+  const canUseVehicle = () => {
+    const today = new Date();
+    const startDate = new Date(requestData.startTime);
+    const endDate = new Date(requestData.endTime);
+    today.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    return today >= startDate && today <= endDate;
+  };
+
+  const handleUsingVehicle = async () => {
+    if (!canUseVehicle()) {
+      showToast.error('Cannot use vehicle', 'Vehicle can only be used on the scheduled date');
+      return;
+    }
+    try {
+      setIsUsingLoading(true);
+      const response = await RequestService.usingVehicle(requestData.requestId);
+      setRequestData(response);
+      showToast.success(
+        'Vehicle usage started successfully',
+        'You can now use the vehicle. Please remember to end usage when finished.'
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsUsingLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header title="Request detail" backBtn />
@@ -172,7 +204,7 @@ const RequestDetailScreen = () => {
                     </Text>{' '}
                     by{' '}
                     <Text className="font-semibold text-gray-800">
-                      {requestData.actionByUser.fullName}
+                      {requestData.actionByUser.fullName || 'No Information'}
                     </Text>
                   </Text>
                 </View>
@@ -294,12 +326,30 @@ const RequestDetailScreen = () => {
 
           {user?.role === 1 && (
             <>
-              {(requestData.status === 0 || requestData.status === 1) && (
+              {requestData.status === 0 && (
                 <View className="mt-4">
                   <Pressable
                     className={`items-center rounded-xl bg-gray-600 py-4 shadow-sm active:bg-gray-700 `}
                     onPress={handleCancel}>
                     <Text className="font-semibold text-white">Cancel</Text>
+                  </Pressable>
+                </View>
+              )}
+              {requestData.status === 1 && (
+                <View className="flex-row justify-between mt-4">
+                  <Pressable
+                    className="w-[48%] items-center rounded-xl bg-gray-600 py-4 shadow-sm active:bg-gray-700"
+                    onPress={handleCancel}>
+                    <Text className="font-semibold text-white">Cancel</Text>
+                  </Pressable>
+
+                  <Pressable
+                    className={`w-[48%] items-center rounded-xl ${isUsingLoading ? 'bg-gray-600' : 'bg-blue-600'} py-4 shadow-sm active:bg-blue-700`}
+                    disabled={isUsingLoading}
+                    onPress={handleUsingVehicle}>
+                    <Text className="font-semibold text-white">
+                      {isUsingLoading ? 'Loading...' : 'Using Vehicle'}
+                    </Text>
                   </Pressable>
                 </View>
               )}

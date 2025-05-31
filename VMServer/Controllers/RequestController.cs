@@ -132,6 +132,11 @@ namespace VMServer.Controllers
             if (!int.TryParse(claimUserId, out var userId))
                 return Forbid("Invalid user identity.");
 
+            var approveByUser = await _dbContext.Users.FindAsync(userId);
+            if (approveByUser == null)
+                return Forbid("Approving user not found.");
+
+            request.ActionByUser = approveByUser;
             request.ActionBy = userId;
             request.Status = RequestStatus.Approved;
             request.LastUpdateAt = DateTime.Now;
@@ -170,6 +175,11 @@ namespace VMServer.Controllers
             if (!int.TryParse(claimUserId, out var userId))
                 return Forbid("Invalid user identity.");
 
+            var approveByUser = await _dbContext.Users.FindAsync(userId);
+            if (approveByUser == null)
+                return Forbid("Approving user not found.");
+
+            request.ActionByUser = approveByUser;
             request.ActionBy = userId;
             request.CancelOrRejectReason = dto.Reason;
             request.Status = RequestStatus.Cancelled;
@@ -208,6 +218,11 @@ namespace VMServer.Controllers
             if (!int.TryParse(claimUserId, out var userId))
                 return Forbid("Invalid user identity.");
 
+            var approveByUser = await _dbContext.Users.FindAsync(userId);
+            if (approveByUser == null)
+                return Forbid("Approving user not found.");
+
+            request.ActionByUser = approveByUser;
             request.ActionBy = userId;
             request.CancelOrRejectReason = dto.Reason;
             request.Status = RequestStatus.Rejected;
@@ -224,6 +239,51 @@ namespace VMServer.Controllers
 
             await _dbContext.SaveChangesAsync();
 
+            return Ok(request);
+        }
+
+        // PUT: api/request/{requestId}/start-using
+        // Bắt đầu sử dụng phương tiện
+        [Authorize]
+        [HttpPut("{requestId}/start-using")]
+        public async Task<IActionResult> UsingVehicle(int requestId)
+        {
+            var request = await _dbContext.Requests
+               .Include(r => r.User)
+               .Include(r => r.Vehicle)
+               .Include(r => r.ActionByUser)
+               .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            if (request.Status != RequestStatus.Approved)
+                return BadRequest(new { message = "Request must be approved before starting usage" });
+
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
+
+            if (userId != request.UserId)
+                return Forbid("You are not authorized to start this request.");
+
+            if (request.Vehicle == null)
+                return BadRequest(new { message = "Vehicle not found" });
+
+            request.Vehicle.Status = Status.InUse;
+            request.LastUpdateAt = DateTime.Now;
+
+            var notification = new Notification
+            {
+                UserId = request.ActionBy ?? 0,
+                Message = $"Vehicle {request.Vehicle.LicensePlate} has started being used for request #{requestId}",
+                Type = "VehicleInUse",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _dbContext.Notifications.Add(notification);
+
+            await _dbContext.SaveChangesAsync();
             return Ok(request);
         }
 

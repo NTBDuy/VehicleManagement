@@ -43,9 +43,17 @@ const RequestItem = ({ item }: RequestItemProps) => {
           </Text>
         </View>
 
-        <View className="mr-4">
-          <Text className="text-xs text-gray-500">Start: {formatDate(item.startTime)}</Text>
-          <Text className="text-xs text-gray-500">End: {formatDate(item.endTime)}</Text>
+       <View className="mr-4">
+          {item.startTime !== item.endTime ? (
+            <View>
+              <Text className="text-xs text-gray-500">Start: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">End: {formatDate(item.endTime)}</Text>
+            </View>
+          ) : (
+            <View>
+              <Text className="text-xs text-gray-500">Date: {formatDate(item.startTime)}</Text>
+            </View>
+          )}
         </View>
 
         <View className="items-end">

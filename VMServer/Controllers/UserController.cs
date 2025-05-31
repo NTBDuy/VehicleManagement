@@ -117,6 +117,7 @@ namespace VMServer.Controllers
             var requests = await _dbContext.Requests
                 .Where(r => r.UserId == userId)
                 .Include(r => r.Vehicle)
+                .Include(r => r.ActionByUser)
                 .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
 
