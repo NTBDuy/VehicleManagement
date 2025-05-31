@@ -271,6 +271,7 @@ namespace VMServer.Controllers
                 return BadRequest(new { message = "Vehicle not found" });
 
             request.Vehicle.Status = Status.InUse;
+            request.Status = RequestStatus.InProgress;
             request.LastUpdateAt = DateTime.Now;
 
             var notification = new Notification

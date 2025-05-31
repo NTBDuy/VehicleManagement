@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VMServer.Models.Entities
 {
-    public enum RequestStatus { Pending, Approved, Rejected, Cancelled }
+    public enum RequestStatus { Pending, Approved, Rejected, Cancelled, InProgress, Done }
 
     public class Request
     {

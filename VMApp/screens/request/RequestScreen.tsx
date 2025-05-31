@@ -43,7 +43,9 @@ const RequestScreen = () => {
     const approved = requests.filter((r) => r.status === 1).length;
     const rejected = requests.filter((r) => r.status === 2).length;
     const cancelled = requests.filter((r) => r.status === 3).length;
-    return { total, pending, approved, rejected, cancelled };
+    const inProgress = requests.filter((r) => r.status === 4).length;
+    const done = requests.filter((r) => r.status === 5).length;
+    return { total, pending, approved, rejected, cancelled, inProgress, done };
   }, [requests]);
 
   const filteredRequests = useMemo(() => {
@@ -76,6 +78,12 @@ const RequestScreen = () => {
         break;
       case 'Cancelled':
         filtered = filtered.filter((item) => item.status === 3);
+        break;
+      case 'In Progress':
+        filtered = filtered.filter((item) => item.status === 4);
+        break;
+      case 'Done':
+        filtered = filtered.filter((item) => item.status === 5);
         break;
     }
 
@@ -260,10 +268,16 @@ const RequestScreen = () => {
 
           {isExpanded && (
             <View className="flex-row flex-wrap justify-between mt-4 gap-y-4">
-              <StatusCard label="Pending" count={requestStat.pending} bgColor="bg-yellow-500" />
-              <StatusCard label="Approved" count={requestStat.approved} bgColor="bg-green-400" />
-              <StatusCard label="Rejected" count={requestStat.rejected} bgColor="bg-red-400" />
-              <StatusCard label="Cancelled" count={requestStat.cancelled} bgColor="bg-gray-400" />
+              <StatusCard label="Pending" count={requestStat.pending} bgColor="bg-amber-500" />
+              <StatusCard label="Approved" count={requestStat.approved} bgColor="bg-emerald-500" />
+              <StatusCard label="Rejected" count={requestStat.rejected} bgColor="bg-red-500" />
+              <StatusCard label="Cancelled" count={requestStat.cancelled} bgColor="bg-slate-500" />
+              <StatusCard
+                label="In Progress"
+                count={requestStat.inProgress}
+                bgColor="bg-blue-500"
+              />
+              <StatusCard label="Done" count={requestStat.done} bgColor="bg-green-600" />
             </View>
           )}
         </View>

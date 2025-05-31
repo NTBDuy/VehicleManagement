@@ -46,17 +46,25 @@ const RequestHistoryScreen = () => {
       case 3:
         filtered = filtered.filter((request) => request.status === 3);
         break;
+      case 4:
+        filtered = filtered.filter((request) => request.status === 4);
+        break;
+      case 5:
+        filtered = filtered.filter((request) => request.status === 5);
+        break;
     }
 
     return filtered;
   }, [userRequest, searchQuery, currentStatusFilter]);
 
   const filterOptions = [
-    { id: 4, name: 'All' },
+    { id: 6, name: 'All' },
     { id: 0, name: 'Pending' },
     { id: 1, name: 'Approved' },
     { id: 2, name: 'Rejected' },
     { id: 3, name: 'Cancelled' },
+    { id: 4, name: 'In Progress' },
+    { id: 5, name: 'Done' },
   ];
 
   useEffect(() => {
@@ -67,14 +75,14 @@ const RequestHistoryScreen = () => {
     useCallback(() => {
       if (user) {
         getRequestByUserID();
-        setActiveFilter(4);
+        setActiveFilter(6);
       }
     }, [user])
   );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setActiveFilter(4);
+    setActiveFilter(6);
     getRequestByUserID();
   }, []);
 

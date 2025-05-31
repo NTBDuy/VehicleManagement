@@ -24,7 +24,8 @@ const EmployeeDashboard = () => {
   const stat = useMemo(() => {
     const pending = userRequest.filter((request) => request.status === 0);
     const incoming = userRequest.filter((request) => request.status === 1);
-    return {pending, incoming};
+    const inProgress = userRequest.filter((request) => request.status === 4);
+    return { pending, incoming, inProgress };
   }, [userRequest]);
 
   useFocusEffect(
@@ -60,7 +61,7 @@ const EmployeeDashboard = () => {
   const onRefresh = () => {
     setRefreshing(true);
     getRequestByUserID();
-  }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -119,6 +120,22 @@ const EmployeeDashboard = () => {
           </View>
         ) : (
           <View>
+            {stat.inProgress.length > 0 && (
+              <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
+                <View className="px-4 py-3 bg-gray-50">
+                  <Text className="text-lg font-semibold text-gray-800">In Progress</Text>
+                </View>
+                
+                <View className="p-4 -mb-4">
+                  <View>
+                    {stat.inProgress.slice(0, 1).map((item) => (
+                      <RequestItem item={item} key={item.requestId} />
+                    ))}
+                  </View>
+                </View>
+              </View>
+            )}
+            
             {stat.pending.length > 0 && (
               <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
                 <View className="px-4 py-3 bg-gray-50">

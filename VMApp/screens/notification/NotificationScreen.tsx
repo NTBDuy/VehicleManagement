@@ -68,6 +68,8 @@ const NotificationScreen = () => {
           return { bgColor: 'bg-orange-500', icon: faXmark };
         case 'NewRequestSubmitted':
           return { bgColor: 'bg-orange-500', icon: faCarSide };
+        case 'VehicleInUse':
+          return { bgColor: 'bg-orange-500', icon: faCarSide };
         case 'MaintenanceScheduled':
           return { bgColor: 'bg-blue-500', icon: faTools };
         case 'UserDeactivated':
@@ -101,6 +103,8 @@ const NotificationScreen = () => {
       case 'RequestCancelled':
         return 'border-l-orange-500';
       case 'NewRequestSubmitted':
+        return 'border-l-orange-500';
+      case 'VehicleInUse':
         return 'border-l-orange-500';
       case 'MaintenanceScheduled':
         return 'border-l-blue-500';

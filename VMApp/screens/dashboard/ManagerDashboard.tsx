@@ -41,7 +41,9 @@ const ManagerDashboard = () => {
     const approved = requests.filter((request) => request.status === 1).length;
     const rejected = requests.filter((request) => request.status === 2).length;
     const cancelled = requests.filter((request) => request.status === 3).length;
-    return { total, pending, approved, rejected, cancelled };
+    const inProgress = requests.filter((request) => request.status === 4).length;
+    const done = requests.filter((request) => request.status === 5).length;
+    return { total, pending, approved, rejected, cancelled, inProgress, done };
   }, [requests]);
 
   const vehicleStat = useMemo(() => {
@@ -95,28 +97,42 @@ const ManagerDashboard = () => {
     {
       name: 'Pending',
       count: requestStat.pending,
-      color: '#f97316',
+      color: '#e17100',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
       name: 'Approved',
       count: requestStat.approved,
-      color: '#22c55e',
+      color: '#009966',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
       name: 'Rejected',
       count: requestStat.rejected,
-      color: '#ef4444',
+      color: '#e7000b',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
       name: 'Cancelled',
       count: requestStat.cancelled,
-      color: '#6b7280',
+      color: '#45556c',
+      legendFontColor: '#374151',
+      legendFontSize: 14,
+    },
+    {
+      name: 'In Progress',
+      count: requestStat.inProgress,
+      color: '#155dfc',
+      legendFontColor: '#374151',
+      legendFontSize: 14,
+    },
+    {
+      name: 'Done',
+      count: requestStat.done,
+      color: '#00a63e',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
@@ -200,6 +216,8 @@ const ManagerDashboard = () => {
                 <StatItem label="Approved" value={requestStat.approved} status="approved" />
                 <StatItem label="Rejected" value={requestStat.rejected} status="rejected" />
                 <StatItem label="Cancelled" value={requestStat.cancelled} status="cancelled" />
+                <StatItem label="In Progress" value={requestStat.inProgress} status="inProgress" />
+                <StatItem label="Done" value={requestStat.done} status="done" />
                 <View className="my-4 border-t border-gray-200"></View>
 
                 {requestStat.total > 0 && requestChartData.length > 0 ? (

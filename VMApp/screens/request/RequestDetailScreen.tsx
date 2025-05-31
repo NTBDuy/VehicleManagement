@@ -47,13 +47,17 @@ const RequestDetailScreen = () => {
     const getStatusStyle = (status: number) => {
       switch (status) {
         case 0:
-          return 'bg-orange-600';
+          return 'bg-amber-600';
         case 1:
-          return 'bg-green-600';
+          return 'bg-emerald-600';
         case 2:
           return 'bg-red-600';
         case 3:
-          return 'bg-gray-600';
+          return 'bg-slate-600';
+        case 4:
+          return 'bg-blue-600';
+        case 5:
+          return 'bg-green-600';
         default:
           return 'bg-gray-600';
       }
@@ -69,6 +73,10 @@ const RequestDetailScreen = () => {
           return 'Rejected';
         case 3:
           return 'Cancelled';
+        case 4:
+          return 'In Progress';
+        case 5:
+          return 'Done';
         default:
           return 'Unknown';
       }
@@ -194,11 +202,17 @@ const RequestDetailScreen = () => {
                       className={`font-bold ${
                         requestData.status === 1
                           ? 'text-green-600'
-                          : requestData.status === 2
-                            ? 'text-red-600'
-                            : 'text-orange-600'
+                          : requestData.status === 4
+                            ? 'text-green-600'
+                            : requestData.status === 5
+                              ? 'text-green-600'
+                              : requestData.status === 2
+                                ? 'text-red-600'
+                                : 'text-orange-600'
                       }`}>
                       {requestData.status === 1 && 'approved'}
+                      {requestData.status === 4 && 'approved'}
+                      {requestData.status === 5 && 'approved'}
                       {requestData.status === 2 && 'rejected'}
                       {requestData.status === 3 && 'cancelled'}
                     </Text>{' '}
@@ -294,7 +308,7 @@ const RequestDetailScreen = () => {
             </View>
           )}
 
-          {(user?.role === 0 || user?.role === 2) && (
+          {(user?.role === 2) && (
             <>
               {requestData.status === 0 && (
                 <View className="flex-row justify-between mt-4">
@@ -312,7 +326,7 @@ const RequestDetailScreen = () => {
                 </View>
               )}
 
-              {requestData.status === 1 && (
+              {(requestData.status === 1 && user?.userId != requestData.userId) && (
                 <View className="mt-4">
                   <Pressable
                     className="items-center py-4 bg-gray-500 shadow-sm rounded-xl active:bg-gray-700"
@@ -324,7 +338,7 @@ const RequestDetailScreen = () => {
             </>
           )}
 
-          {user?.role === 1 && (
+          {user?.userId == requestData.userId && (
             <>
               {requestData.status === 0 && (
                 <View className="mt-4">
