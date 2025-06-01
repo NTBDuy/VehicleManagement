@@ -2,7 +2,7 @@ import { faArrowLeft, faBars, faMagnifyingGlass, faXmark } from '@fortawesome/fr
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { TouchableOpacity, Text, TextInput, View } from 'react-native';
 
 interface HeaderProps {
   backBtn?: boolean;
@@ -33,15 +33,15 @@ const Header = ({
     <View className="-mt-20 overflow-hidden rounded-b-[40px] bg-blue-300 shadow-md">
       <View className="flex-row items-start justify-between px-6 pt-20 mt-10 mb-6">
         {backBtn ? (
-          <Pressable onPress={() => navigation.goBack()} className="p-2 bg-white rounded-full">
+          <TouchableOpacity onPress={() => navigation.goBack()} className="p-2 bg-white rounded-full">
             <FontAwesomeIcon icon={faArrowLeft} size={18} />
-          </Pressable>
+          </TouchableOpacity>
         ) : (
-          <Pressable
+          <TouchableOpacity
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
             className="p-2 bg-white rounded-full">
             <FontAwesomeIcon icon={faBars} size={18} />
-          </Pressable>
+          </TouchableOpacity>
         )}
 
         {customTitle ? customTitle : <Text className="text-2xl font-bold">{title}</Text>}
@@ -60,9 +60,9 @@ const Header = ({
             onChangeText={handleSearch}
           />
           {searchQuery !== '' && (
-            <Pressable onPress={handleClearFilters}>
+            <TouchableOpacity onPress={handleClearFilters}>
               <FontAwesomeIcon icon={faXmark} size={16} color="#000" />
-            </Pressable>
+            </TouchableOpacity>
           )}
         </View>
       )}

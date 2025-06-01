@@ -5,7 +5,7 @@ import { useState } from 'react';
 import {
   Alert,
   Image,
-  Pressable,
+  TouchableOpacity,
   SafeAreaView,
   ScrollView,
   Switch,
@@ -145,9 +145,9 @@ const UserEditScreen = () => {
               className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
               source={require('../../assets/images/user-default.jpg')}
             />
-            <Pressable className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
+            <TouchableOpacity className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -204,7 +204,7 @@ const UserEditScreen = () => {
                 {roles.map((role) => {
                   const isSelected = userData.role === role.value;
                   return (
-                    <Pressable
+                    <TouchableOpacity
                       key={role.value}
                       onPress={() => updateUserData('role', role.value)}
                       className={`min-w-[30%] flex-1 items-center rounded-xl border-2 px-4 py-3 ${
@@ -216,7 +216,7 @@ const UserEditScreen = () => {
                         }`}>
                         {role.label}
                       </Text>
-                    </Pressable>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -246,35 +246,35 @@ const UserEditScreen = () => {
             <Text className="text-lg font-semibold text-gray-800">Security</Text>
           </View>
           <View className="p-4">
-            <Pressable
+            <TouchableOpacity
               className="flex-row items-center px-4 py-3 border border-gray-300 rounded-xl bg-gray-50"
               onPress={handleResetPassword}>
               <FontAwesomeIcon icon={faLock} size={16} color="#6b7280" />
               <Text className="ml-3 text-gray-700">Reset Password</Text>
               <Text className="ml-auto text-sm text-blue-600">Send Reset Link</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
 
         
         <View className="flex-row justify-between mt-4 mb-8">
-          <Pressable
+          <TouchableOpacity
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
             disabled={isLoading}>
             <Text className="font-semibold text-gray-700">Cancel</Text>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable
+          <TouchableOpacity
             className={`w-[48%] items-center rounded-xl py-4 shadow-sm ${
-              isLoading ? 'bg-gray-400' : 'bg-blue-600 active:bg-blue-700'
+              isLoading ? 'bg-gray-400' : 'bg-blue-600 '
             }`}
             onPress={handleUpdate}
             disabled={isLoading || !hasChanges}>
             <Text className="font-semibold text-white">
               {isLoading ? 'Updating...' : 'Update User'}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

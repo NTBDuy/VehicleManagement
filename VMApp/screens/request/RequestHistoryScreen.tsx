@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, SafeAreaView, Text, View } from 'react-native';
+import { FlatList, TouchableOpacity, RefreshControl, SafeAreaView, Text, View } from 'react-native';
 import { UserService } from 'services/userService';
 
 import Request from 'types/Request';
@@ -131,14 +131,14 @@ const RequestHistoryScreen = () => {
             data={filterOptions}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <Pressable
+              <TouchableOpacity
                 onPress={() => handleFilterChange(item.id)}
                 className={`mr-2 items-center rounded-full px-4 py-2 ${activeFilter === item.id ? 'bg-blue-500' : 'bg-gray-100'}`}>
                 <Text
                   className={`text-sm font-medium ${activeFilter === item.id ? 'text-white' : 'text-gray-600'}`}>
                   {item.name}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             )}
           />
         </View>

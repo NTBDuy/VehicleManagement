@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { Pressable, SafeAreaView, Text, View } from 'react-native';
+import { TouchableOpacity, SafeAreaView, Text, View } from 'react-native';
 
 import Vehicle from '@/types/Vehicle';
 
@@ -165,7 +165,7 @@ const RequestCreateScreen = () => {
         <View className="mb-4 overflow-hidden rounded-2xl">
           <View className="flex-row">
             {tabs.map((tab) => (
-              <Pressable
+              <TouchableOpacity
                 key={tab.id}
                 className={`flex-1 items-center py-4`}
                 disabled={isDisabled}
@@ -191,7 +191,7 @@ const RequestCreateScreen = () => {
                   }`}>
                   {tab.title}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             ))}
           </View>
         </View>
@@ -200,46 +200,46 @@ const RequestCreateScreen = () => {
 
       <View className="absolute bottom-0 left-0 right-0 px-6 pb-12 bg-gray-50">
         {activeTab === 0 && (
-          <Pressable
-            className={`mt-4 w-full py-4 ${isDisabled && !isLoading ? 'bg-gray-400' : 'bg-blue-400 '} rounded-2xl active:bg-blue-500`}
+          <TouchableOpacity
+            className={`mt-4 w-full py-4 ${isDisabled && !isLoading ? 'bg-gray-400' : 'bg-blue-400 '} rounded-2xl `}
             disabled={isDisabled && !isLoading}
             onPress={getAvailableVehicle}>
             <Text className="text-lg font-bold text-center text-white">
               {isLoading ? 'Loading vehicle available...' : 'Next'}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         )}
         {activeTab === 1 && (
           <View className="flex-row items-center justify-between">
-            <Pressable
-              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 active:bg-gray-500"
+            <TouchableOpacity
+              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
               <Text className="text-lg font-bold text-center text-white">Back</Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
-              className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 active:bg-blue-500"
+            <TouchableOpacity
+              className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
               onPress={() => setActiveTab(activeTab + 1)}>
               <Text className="text-lg font-bold text-center text-white">Next</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         )}
         {activeTab === 2 && (
           <View className="flex-row items-center justify-between">
-            <Pressable
-              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 active:bg-gray-500"
+            <TouchableOpacity
+              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
               <Text className="text-lg font-bold text-center text-white">Back</Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
-              className={`mt-4 w-[48%] rounded-2xl py-4 ${isLoading ? 'bg-gray-400' : 'bg-blue-400 active:bg-blue-500'}`}
+            <TouchableOpacity
+              className={`mt-4 w-[48%] rounded-2xl py-4 ${isLoading ? 'bg-gray-400' : 'bg-blue-400 '}`}
               onPress={handleConfirm}
               disabled={isLoading}>
               <Text className="text-lg font-bold text-center text-white">
                 {isLoading ? 'Confirming ...' : 'Confirm'}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         )}
       </View>

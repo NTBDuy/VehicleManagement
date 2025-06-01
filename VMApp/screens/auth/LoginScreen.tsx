@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useAuth } from 'contexts/AuthContext';
 import { useState } from 'react';
 import {
-  Pressable,
   SafeAreaView,
   ScrollView,
   Text,
@@ -96,7 +95,7 @@ const LoginScreen = () => {
             <Text className="mb-4">Developer Tool - Quick Login</Text>
             <View className="flex-row justify-between mb-2">
               {quickLoginRoles.map((role, index) => (
-                <Pressable
+                <TouchableOpacity
                   key={index}
                   disabled={isLoading}
                   className={`mx-1 flex-1 rounded-lg px-4 py-3 ${
@@ -104,7 +103,7 @@ const LoginScreen = () => {
                   }`}
                   onPress={() => handleQuickLogin(role)}>
                   <Text className="font-medium text-center text-blue-800">{role.title}</Text>
-                </Pressable>
+                </TouchableOpacity>
               ))}
             </View>
           </View>

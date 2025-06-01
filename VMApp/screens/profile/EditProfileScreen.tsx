@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import { Alert, Image, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 
@@ -114,9 +114,9 @@ const EditProfileScreen = () => {
                 className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
                 source={require('../../assets/images/user-default.jpg')}
               />
-              <Pressable className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
+              <TouchableOpacity className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
                 <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -151,23 +151,23 @@ const EditProfileScreen = () => {
           </View>
           
           <View className="flex-row items-center justify-between mt-4 mb-8">
-            <Pressable
+            <TouchableOpacity
               className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
               onPress={handleCancel}
               disabled={isLoading}>
               <Text className="font-semibold text-gray-700">Cancel</Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
               className={`w-[48%] items-center rounded-xl border-2 border-blue-300 py-4 ${
-                isLoading ? 'bg-gray-400' : 'bg-blue-600 active:bg-blue-700'
+                isLoading ? 'bg-gray-400' : 'bg-blue-600 '
               }`}
               onPress={() => handleUpdateProfile(userData)}
               disabled={isLoading || !hasChanges}>
               <Text className="font-semibold text-white">
                 {isLoading ? 'Updating...' : 'Update User'}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       ) : (

@@ -2,7 +2,7 @@ import { faFileContract, faPen, faShieldHalved } from '@fortawesome/free-solid-s
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { Alert, Image, Pressable, SafeAreaView, Text, View } from 'react-native';
+import { Alert, Image, TouchableOpacity, SafeAreaView, Text, View } from 'react-native';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 import Header from '@/components/layout/HeaderComponent';
@@ -36,25 +36,25 @@ const SettingScreen = () => {
           </View>
         }
         rightElement={
-          <Pressable className="p-2 bg-white rounded-full" onPress={handleEditProfile}>
+          <TouchableOpacity className="p-2 bg-white rounded-full" onPress={handleEditProfile}>
             <FontAwesomeIcon icon={faPen} color="#000" size={18} />
-          </Pressable>
+          </TouchableOpacity>
         }
       />
 
       {/** BODY */}
       <View className="px-6">
-        <Pressable
+        <TouchableOpacity
           className="flex-row items-center px-2 py-4 border-b border-gray-200"
           onPress={handlePress}>
           <FontAwesomeIcon icon={faFileContract} size={24} color="#4b5563" />
           <Text className="ml-2 text-gray-600">Terms and Conditions</Text>
-        </Pressable>
+        </TouchableOpacity>
 
-        <Pressable className="flex-row items-center px-2 py-4" onPress={handlePress}>
+        <TouchableOpacity className="flex-row items-center px-2 py-4" onPress={handlePress}>
           <FontAwesomeIcon icon={faShieldHalved} size={24} color="#4b5563" />
           <Text className="ml-2 text-gray-600">Privacy Policy</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

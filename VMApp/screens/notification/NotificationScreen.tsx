@@ -12,7 +12,6 @@ import { useAuth } from 'contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import {
   FlatList,
-  Pressable,
   RefreshControl,
   SafeAreaView,
   Text,
@@ -195,9 +194,9 @@ const NotificationScreen = () => {
         title="Notifications"
         backBtn
         rightElement={
-          <Pressable onPress={handleMakeAllRead} className="p-2 bg-white rounded-full shadow-sm">
+          <TouchableOpacity onPress={handleMakeAllRead} className="p-2 bg-white rounded-full shadow-sm">
             <FontAwesomeIcon icon={faListCheck} size={18} color="#374151" />
-          </Pressable>
+          </TouchableOpacity>
         }
       />
 

@@ -1,17 +1,55 @@
-import { View, Text, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import { DriverService } from '@/services/driverService';
+import { getStatusLabel, getStatusStyle, getUserInitials } from '@/utils/userUtils';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useFocusEffect } from '@react-navigation/core';
+import { useCallback, useMemo, useState } from 'react';
+import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
 import Driver from '@/types/Driver';
 
 import Header from '@/components/layout/HeaderComponent';
-import { useFocusEffect } from '@react-navigation/core';
-import { DriverService } from '@/services/driverService';
+import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import { formatDate } from '@/utils/datetimeUtils';
+
+const filterOptions = [
+  { id: 2, name: 'All' },
+  { id: 0, name: 'Active' },
+  { id: 1, name: 'Deactivate' },
+];
 
 const DriverManagement = () => {
-  const [drivers, setDrivers] = useState<Driver[]>();
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState(2);
+
+  const filteredDrivers = useMemo(() => {
+    let filtered = [...drivers];
+    const q = searchQuery.toLowerCase();
+
+    if (q) {
+      filtered = filtered.filter(
+        (driver) =>
+          (driver.fullName?.toLowerCase().includes(q) ?? false) ||
+          (driver.licenseIssuedDate?.toLowerCase().includes(q) ?? false) ||
+          (driver.licenseNumber?.toLowerCase().includes(q) ?? false) ||
+          (driver.phoneNumber?.toLowerCase().includes(q) ?? false)
+      );
+    }
+
+    switch (activeFilter) {
+      case 0:
+        filtered = filtered.filter((driver) => driver.isActive);
+        break;
+      case 1:
+        filtered = filtered.filter((driver) => !driver.isActive);
+        break;
+    }
+
+    return filtered;
+  }, [drivers, searchQuery, activeFilter]);
 
   useFocusEffect(
     useCallback(() => {
@@ -28,52 +66,95 @@ const DriverManagement = () => {
       console.log(error);
     } finally {
       setIsLoading(false);
+      setRefreshing(false);
     }
   };
 
-  const renderDriverItem = ({ item }: { item: Driver }) => {
+  const renderBadgeStatus = (status: boolean) => {
+    const bgColor = getStatusStyle(status);
     return (
-      <TouchableOpacity className="p-4 mx-4 mb-3 bg-white border border-gray-100 rounded-lg shadow-sm">
-        <View className="flex-row items-center justify-between mb-2">
-          <Text className="flex-1 text-lg font-semibold text-gray-900">{item.fullName}</Text>
-
-          <View
-            className={`rounded-full px-2 py-1 ${item.isActive ? 'bg-green-100' : 'bg-gray-100'}`}>
-            <Text
-              className={`text-xs font-medium ${
-                item.isActive ? 'text-green-700' : 'text-gray-600'
-              }`}>
-              {item.isActive ? 'Active' : 'Deactivate'}
-            </Text>
-          </View>
-        </View>
-
-        <View className="flex-row items-center justify-between">
-          <View>
-            <Text className="text-sm text-gray-500">Experience: {item.yearsOfExperience} năm</Text>
-            <Text className="text-sm text-gray-500">Phone: {item.phoneNumber}</Text>
-          </View>
-
-          <View className="items-center justify-center w-6 h-6">
-            <Text className="text-lg text-gray-400">›</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
+      <View className={`rounded-full px-3 py-1 ${bgColor}`}>
+        <Text className="text-xs font-medium text-white">{getStatusLabel(status)}</Text>
+      </View>
     );
+  };
+
+  const renderDriverItem = ({ item }: { item: Driver }) => (
+    <TouchableOpacity
+      onPress={() => {}}
+      className="mb-4 mt-1 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
+      <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
+        <Text className="text-xl font-semibold text-white">{getUserInitials(item.fullName)}</Text>
+      </View>
+      <View className="flex-1">
+        <Text className="font-bold">{item.fullName}</Text>
+        <Text className="text-sm">{item.phoneNumber}</Text>
+      </View>
+      <View className="flex-row items-center">
+        <View className="mr-2">{renderBadgeStatus(item.isActive)}</View>
+        <FontAwesomeIcon icon={faChevronRight} color="#9ca3af" />
+      </View>
+    </TouchableOpacity>
+  );
+
+  const handleSearch = (text: string): void => {
+    setSearchQuery(text);
+  };
+
+  const handleClearFilters = (): void => {
+    setSearchQuery('');
+    setActiveFilter(2);
+  };
+
+  const handleFilterChange = (status: number): void => {
+    setActiveFilter(status);
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchDriverData();
   };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="Driver Management" />
+      <Header
+        title="Driver Management"
+        searchSection
+        searchQuery={searchQuery}
+        handleSearch={handleSearch}
+        placeholder="Search name or phone ..."
+        handleClearFilters={handleClearFilters}
+      />
 
       {isLoading ? (
         <LoadingData />
       ) : (
-        <View className="flex-1 pt-4 mx-4">
+        <View className="mx-6 flex-1">
+          <View className="my-4">
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={filterOptions}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => handleFilterChange(item.id)}
+                  className={`mr-2 items-center rounded-full px-4 py-2 ${activeFilter === item.id ? 'bg-blue-500' : 'bg-gray-100'}`}>
+                  <Text
+                    className={`text-sm font-medium ${activeFilter === item.id ? 'text-white' : 'text-gray-600'}`}>
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+
           <FlatList
-            data={drivers}
+            data={filteredDrivers}
             keyExtractor={(item) => item.driverId.toString()}
             renderItem={renderDriverItem}
+            ListEmptyComponent={<EmptyList />}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
         </View>
       )}

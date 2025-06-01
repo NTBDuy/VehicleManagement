@@ -1,7 +1,7 @@
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Alert, TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
@@ -387,39 +387,39 @@ const RequestDetailScreen = () => {
             <>
               {requestData.status === 0 && (
                 <View className="flex-row justify-between mt-4">
-                  <Pressable
-                    className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm active:bg-green-700"
+                  <TouchableOpacity
+                    className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm "
                     onPress={handleApprove}>
                     <Text className="font-semibold text-white">Approve</Text>
-                  </Pressable>
+                  </TouchableOpacity>
 
-                  <Pressable
-                    className="w-[48%] items-center rounded-xl bg-red-600 py-4 shadow-sm active:bg-red-700"
+                  <TouchableOpacity
+                    className="w-[48%] items-center rounded-xl bg-red-600 py-4 shadow-sm "
                     onPress={handleReject}>
                     <Text className="font-semibold text-white">Reject</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               )}
 
               {requestData.status === 1 && user?.userId != requestData.userId && (
                 <View className="mt-4">
-                  <Pressable
-                    className="items-center py-4 bg-gray-500 shadow-sm rounded-xl active:bg-gray-700"
+                  <TouchableOpacity
+                    className="items-center py-4 bg-gray-500 shadow-sm rounded-xl "
                     onPress={handleCancel}>
                     <Text className="font-semibold text-white">Cancel</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               )}
 
               {requestData.status == 4 && (
                 <View className="mt-4">
-                  <Pressable
+                  <TouchableOpacity
                     className={`items-center rounded-xl py-4 shadow-sm ${
                       isOverdue(requestData.endTime)
-                        ? 'bg-red-500 active:bg-red-700'
+                        ? 'bg-red-500 '
                         : isNearDueDate(requestData.endTime)
-                          ? 'bg-orange-500 active:bg-orange-700'
-                          : 'bg-amber-500 active:bg-amber-700'
+                          ? 'bg-orange-500 '
+                          : 'bg-amber-500 '
                     }`}
                     onPress={handleRemind}
                     disabled={isReminderSent}>
@@ -432,7 +432,7 @@ const RequestDetailScreen = () => {
                             ? 'Due soon: Remind return'
                             : 'Remind for return vehicle'}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               )}
             </>
@@ -442,41 +442,41 @@ const RequestDetailScreen = () => {
             <>
               {requestData.status === 0 && (
                 <View className="mt-4">
-                  <Pressable
-                    className={`items-center rounded-xl bg-gray-600 py-4 shadow-sm active:bg-gray-700 `}
+                  <TouchableOpacity
+                    className={`items-center rounded-xl bg-gray-600 py-4 shadow-sm  `}
                     onPress={handleCancel}>
                     <Text className="font-semibold text-white">Cancel</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               )}
               {requestData.status === 1 && (
                 <View className="flex-row justify-between mt-4">
-                  <Pressable
-                    className="w-[48%] items-center rounded-xl bg-gray-600 py-4 shadow-sm active:bg-gray-700"
+                  <TouchableOpacity
+                    className="w-[48%] items-center rounded-xl bg-gray-600 py-4 shadow-sm "
                     onPress={handleCancel}>
                     <Text className="font-semibold text-white">Cancel</Text>
-                  </Pressable>
+                  </TouchableOpacity>
 
-                  <Pressable
-                    className={`w-[48%] items-center rounded-xl ${isUsingLoading ? 'bg-gray-600' : 'bg-blue-600'} py-4 shadow-sm active:bg-blue-700`}
+                  <TouchableOpacity
+                    className={`w-[48%] items-center rounded-xl ${isUsingLoading ? 'bg-gray-600' : 'bg-blue-600'} py-4 shadow-sm `}
                     disabled={isUsingLoading}
                     onPress={handleUsingVehicle}>
                     <Text className="font-semibold text-white">
                       {isUsingLoading ? 'Loading...' : 'Using Vehicle'}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               )}
               {requestData.status === 4 && (
                 <View className="mt-4">
-                  <Pressable
-                    className={`items-center rounded-xl ${isEndUsageLoading ? 'bg-gray-600' : 'bg-green-600'} py-4 shadow-sm active:bg-green-700 `}
+                  <TouchableOpacity
+                    className={`items-center rounded-xl ${isEndUsageLoading ? 'bg-gray-600' : 'bg-green-600'} py-4 shadow-sm  `}
                     disabled={isEndUsageLoading}
                     onPress={handleEndUsage}>
                     <Text className="font-semibold text-white">
                       {isEndUsageLoading ? 'Ending...' : 'End Usage'}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               )}
             </>

@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
+  TouchableOpacity,
   Text,
   TouchableWithoutFeedback,
   View,
@@ -119,13 +119,13 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   if (loading) {
     return (
       <Modal transparent visible={visible} animationType="slide">
-        <Pressable onPress={onClose} className="items-center justify-center flex-1 bg-black/30">
-          <Pressable onPress={(e) => e.stopPropagation()}>
+        <TouchableOpacity onPress={onClose} className="items-center justify-center flex-1 bg-black/30">
+          <TouchableOpacity onPress={(e) => e.stopPropagation()}>
             <View className="p-6 bg-white rounded-lg">
               <Text className="text-center">Loading drivers...</Text>
             </View>
-          </Pressable>
-        </Pressable>
+          </TouchableOpacity>
+        </TouchableOpacity>
       </Modal>
     );
   }
@@ -136,8 +136,8 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? -24 : 0}>
-        <Pressable onPress={onClose} className="justify-end flex-1 bg-black/30">
-          <Pressable onPress={(e) => e.stopPropagation()}>
+        <TouchableOpacity onPress={onClose} className="justify-end flex-1 bg-black/30">
+          <TouchableOpacity onPress={(e) => e.stopPropagation()}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View className="p-6 pb-12 rounded-t-2xl bg-gray-50">
                 {/* Header */}
@@ -232,16 +232,16 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
                 {/* Action Buttons */}
                 <View className="flex-row justify-between space-x-3">
-                  <Pressable
-                    className="w-[48%] items-center justify-center rounded-lg bg-gray-600 py-4 active:bg-gray-700"
+                  <TouchableOpacity
+                    className="w-[48%] items-center justify-center rounded-lg bg-gray-600 py-4 "
                     onPress={handleClose}
                     disabled={isApproving}>
                     <Text className="text-lg font-semibold text-white">Cancel</Text>
-                  </Pressable>
-                  <Pressable
+                  </TouchableOpacity>
+                  <TouchableOpacity
                     className={`w-[48%] items-center justify-center rounded-lg py-4 ${
                       (!isDriverRequired || selectedDriver !== null) && !isApproving
-                        ? 'bg-green-600 active:bg-green-700'
+                        ? 'bg-green-600 '
                         : 'bg-gray-400'
                     }`}
                     onPress={handleApprove}
@@ -249,12 +249,12 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
                     <Text className="text-lg font-semibold text-white">
                       {isApproving ? 'Processing...' : approveButtonText}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               </View>
             </TouchableWithoutFeedback>
-          </Pressable>
-        </Pressable>
+          </TouchableOpacity>
+        </TouchableOpacity>
       </KeyboardAvoidingView>
     </Modal>
   );

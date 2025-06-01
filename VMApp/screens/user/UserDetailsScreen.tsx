@@ -2,7 +2,7 @@ import { faCrown, faEdit, faShieldAlt, faUser } from '@fortawesome/free-solid-sv
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { Alert, Image, Pressable, SafeAreaView, Text, View } from 'react-native';
+import { Alert, Image, TouchableOpacity, SafeAreaView, Text, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
@@ -161,9 +161,9 @@ const UserDetailsScreen = () => {
           <Text className="text-xl font-bold text-gray-800">User #{userData.userId}</Text>
         }
         rightElement={
-          <Pressable onPress={handleEdit} className="p-2 bg-white rounded-full shadow-sm">
+          <TouchableOpacity onPress={handleEdit} className="p-2 bg-white rounded-full shadow-sm">
             <FontAwesomeIcon icon={faEdit} size={18} color="#374151" />
-          </Pressable>
+          </TouchableOpacity>
         }
       />
 
@@ -253,25 +253,25 @@ const UserDetailsScreen = () => {
 
           
           <View className="flex-row justify-between mt-4">
-            <Pressable
-              className="w-[48%] items-center rounded-xl bg-blue-600 py-4 shadow-sm active:bg-blue-700"
+            <TouchableOpacity
+              className="w-[48%] items-center rounded-xl bg-blue-600 py-4 shadow-sm "
               onPress={handleResetPassword}
               disabled={isLoading}>
               <Text className="font-semibold text-white">Reset Password</Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
               className={`w-[48%] items-center rounded-xl py-4 shadow-sm ${
                 userData.status
-                  ? 'bg-red-600 active:bg-red-700'
-                  : 'bg-green-600 active:bg-green-700'
+                  ? 'bg-red-600 '
+                  : 'bg-green-600 '
               }`}
               onPress={handleToggleStatus}
               disabled={isButtonActionLoading}>
               <Text className="font-semibold text-white">
                 {isButtonActionLoading ? 'Loading...' : userData.status ? 'Deactivate' : 'Activate'}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       )}

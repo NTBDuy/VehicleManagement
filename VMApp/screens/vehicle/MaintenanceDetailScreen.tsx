@@ -1,4 +1,4 @@
-import { SafeAreaView, View, Text, Pressable, Modal, Alert } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useRoute } from '@react-navigation/core';
 import { useEffect, useState } from 'react';
@@ -251,34 +251,34 @@ const MaintenanceDetailScreen = () => {
         {maintenance.status === 0 && (
           <View className="mt-2">
             <View className="flex-row justify-between mt-4">
-              <Pressable
-                className="w-[48%] items-center rounded-xl bg-orange-500 py-4 shadow-sm active:bg-orange-600"
+              <TouchableOpacity
+                className="w-[48%] items-center rounded-xl bg-orange-500 py-4 shadow-sm "
                 onPress={handleReschedule}>
                 <Text className="font-semibold text-white">Reschedule</Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable
-                className={`w-[48%] items-center rounded-xl ${isLoading ? 'bg-gray-600' : 'bg-green-600'} py-4 shadow-sm active:bg-green-700`}
+              <TouchableOpacity
+                className={`w-[48%] items-center rounded-xl ${isLoading ? 'bg-gray-600' : 'bg-green-600'} py-4 shadow-sm `}
                 disabled={isLoading}
                 onPress={() => handleChangeStatus(1)}>
                 <Text className="font-semibold text-white">
                   {isLoading ? 'Beginning....' : 'Begin'}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         )}
 
         {maintenance.status === 1 && (
           <View className="mt-2">
-            <Pressable
-              className={`items-center py-4 ${isLoading ? 'bg-gray-600' : 'bg-blue-600'} rounded-xl shadow-sm active:bg-blue-700`}
+            <TouchableOpacity
+              className={`items-center py-4 ${isLoading ? 'bg-gray-600' : 'bg-blue-600'} rounded-xl shadow-sm `}
               disabled={isLoading}
               onPress={() => handleChangeStatus(2)}>
               <Text className="font-semibold text-white">
                 {isLoading ? 'Getting done...' : 'Done'}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -293,16 +293,16 @@ const MaintenanceDetailScreen = () => {
           visible={isModalVisible}
           animationType="fade"
           onRequestClose={handleCloseModal}>
-          <Pressable onPress={handleCloseModal} className="justify-center flex-1 bg-black/30">
-            <Pressable onPress={(e) => e.stopPropagation()}>
+          <TouchableOpacity onPress={handleCloseModal} className="justify-center flex-1 bg-black/30">
+            <TouchableOpacity onPress={(e) => e.stopPropagation()}>
               <View className="mx-6 bg-white rounded-2xl">
                 <View className="flex-row items-center justify-between p-4 border-b border-gray-100">
                   <Text className="text-lg font-bold text-gray-800">Reschedule Maintenance</Text>
-                  <Pressable
+                  <TouchableOpacity
                     onPress={handleCloseModal}
-                    className="items-center justify-center w-8 h-8 bg-gray-100 rounded-full active:bg-gray-200">
+                    className="items-center justify-center w-8 h-8 bg-gray-100 rounded-full ">
                     <FontAwesomeIcon icon={faTimes} size={16} color="#6b7280" />
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <View className="p-4">
                   <Calendar
@@ -325,20 +325,20 @@ const MaintenanceDetailScreen = () => {
                   />
 
                   <View className="mt-4">
-                    <Pressable
-                      className={`${hasChanges ? 'items-center rounded-xl bg-blue-500 py-4 shadow-sm active:bg-blue-700' : 'items-center rounded-xl bg-gray-300 py-4 shadow-sm'}`}
+                    <TouchableOpacity
+                      className={`${hasChanges ? 'items-center rounded-xl bg-blue-500 py-4 shadow-sm ' : 'items-center rounded-xl bg-gray-300 py-4 shadow-sm'}`}
                       disabled={!hasChanges}
                       onPress={handleConfirmReschedule}>
                       <Text
                         className={`${hasChanges ? 'font-semibold text-white' : 'font-semibold text-gray-500'}`}>
                         Confirm
                       </Text>
-                    </Pressable>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
-            </Pressable>
-          </Pressable>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </Modal>
       </View>
     </SafeAreaView>

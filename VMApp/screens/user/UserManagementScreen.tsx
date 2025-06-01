@@ -15,7 +15,7 @@ import {
   Alert,
   FlatList,
   Modal,
-  Pressable,
+  TouchableOpacity,
   RefreshControl,
   SafeAreaView,
   Text,
@@ -108,7 +108,7 @@ const UserManagementScreen = () => {
   };
 
   const renderUserItem = ({ item }: { item: User }) => (
-    <Pressable
+    <TouchableOpacity
       onPress={() => handleOption(item)}
       className="flex-row items-center px-2 py-4 mt-1 mb-4 bg-gray-100 rounded-2xl">
       <View className="items-center justify-center w-12 h-12 ml-2 mr-4 bg-blue-300 rounded-full">
@@ -125,7 +125,7 @@ const UserManagementScreen = () => {
       <View className="absolute -right-0 -top-1">
         <View className={`h-4 w-4 rounded-full ${item.status ? 'bg-green-500' : 'bg-gray-400'}`} />
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   const handleOption = (user: User) => {
@@ -204,9 +204,9 @@ const UserManagementScreen = () => {
       <Header
         title="User Management"
         rightElement={
-          <Pressable className="p-2 bg-white rounded-full" onPress={handleAddUser}>
+          <TouchableOpacity className="p-2 bg-white rounded-full" onPress={handleAddUser}>
             <FontAwesomeIcon icon={faUserPlus} size={18} />
-          </Pressable>
+          </TouchableOpacity>
         }
         searchSection
         searchQuery={searchQuery}
@@ -223,14 +223,14 @@ const UserManagementScreen = () => {
             data={filterOptions}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <Pressable
+              <TouchableOpacity
                 onPress={() => handleFilterChange(item.id)}
                 className={`mr-2 items-center rounded-full px-4 py-2 ${activeFilter === item.id ? 'bg-blue-500' : 'bg-gray-100'}`}>
                 <Text
                   className={`text-sm font-medium ${activeFilter === item.id ? 'text-white' : 'text-gray-600'}`}>
                   {item.name}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             )}
           />
         </View>
@@ -263,14 +263,14 @@ const UserManagementScreen = () => {
         visible={isModalVisible}
         animationType="slide"
         onRequestClose={() => setIsModalVisible(false)}>
-        <Pressable onPress={handleCloseModal} className="justify-end flex-1 bg-black/30">
-          <Pressable onPress={(e) => e.stopPropagation()}>
+        <TouchableOpacity onPress={handleCloseModal} className="justify-end flex-1 bg-black/30">
+          <TouchableOpacity onPress={(e) => e.stopPropagation()}>
             <View className="p-6 pb-12 bg-white rounded-t-2xl">
               <Text className="mb-6 text-lg font-bold text-center">
                 Options for #{selected?.username}
               </Text>
 
-              <Pressable
+              <TouchableOpacity
                 className="flex-row items-center gap-3 mb-6"
                 onPress={() => {
                   handleViewDetail();
@@ -278,9 +278,9 @@ const UserManagementScreen = () => {
                 }}>
                 <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
                 <Text className="text-lg font-semibold text-blue-600">User details</Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable
+              <TouchableOpacity
                 className="flex-row items-center gap-3 mb-6"
                 onPress={() => {
                   handleEditUser();
@@ -288,9 +288,9 @@ const UserManagementScreen = () => {
                 }}>
                 <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />
                 <Text className="text-lg font-semibold text-blue-600">Edit profile</Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable
+              <TouchableOpacity
                 className="flex-row items-center gap-3 mb-6"
                 onPress={() => {
                   // onResetPassword();
@@ -298,9 +298,9 @@ const UserManagementScreen = () => {
                 }}>
                 <FontAwesomeIcon icon={faKey} size={20} color="#2563eb" />
                 <Text className="text-lg font-semibold text-blue-600">Reset password</Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable
+              <TouchableOpacity
                 className="flex-row items-center gap-3 mb-6"
                 onPress={() => {
                   onToggleStatus();
@@ -314,16 +314,16 @@ const UserManagementScreen = () => {
                   className={`text-lg font-semibold ${selected?.status ? 'text-red-600' : 'text-green-600'}`}>
                   {selected?.status ? 'Deactivate user' : 'Activate user'}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable
+              <TouchableOpacity
                 className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg"
                 onPress={handleCloseModal}>
                 <Text className="text-lg font-semibold text-white">Close</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
-          </Pressable>
-        </Pressable>
+          </TouchableOpacity>
+        </TouchableOpacity>
       </Modal>
     </SafeAreaView>
   );

@@ -7,7 +7,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, Modal, Pressable, RefreshControl, SafeAreaView, Text, View } from 'react-native';
+import { FlatList, Modal, TouchableOpacity, RefreshControl, SafeAreaView, Text, View } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate } from 'utils/datetimeUtils';
 import { getColorByStatus } from 'utils/requestUtils';
@@ -118,16 +118,16 @@ const RequestScreen = () => {
     count: number;
     bgColor: string;
   }) => (
-    <Pressable
+    <TouchableOpacity
       onPress={() => handleStatusFilter(label)}
       className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
       <Text className="text-base font-medium text-white">{label}</Text>
       <Text className="text-lg font-bold text-white">{count}</Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   const renderRequestItem = ({ item }: { item: Request }) => (
-    <Pressable
+    <TouchableOpacity
       onPress={() => handleRequestOption(item)}
       className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.status)}`}>
       <View className="flex-row items-center">
@@ -161,7 +161,7 @@ const RequestScreen = () => {
           </View>
         </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   const handleStatusFilter = (status: string) => {
@@ -254,7 +254,7 @@ const RequestScreen = () => {
 
       <View className="flex-1 mx-6 mb-10">
         <View className="p-4 mt-4 mb-4 bg-gray-100 shadow-sm rounded-2xl">
-          <Pressable
+          <TouchableOpacity
             className="flex-row justify-between"
             onPress={() => setIsExpanded(!isExpanded)}>
             <Text className="text-base font-medium text-gray-600">
@@ -264,7 +264,7 @@ const RequestScreen = () => {
             <Text className="mt-1 text-sm text-blue-500">
               {isExpanded ? 'Hide details ▲' : 'Show details ▼'}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
 
           {isExpanded && (
             <View className="flex-row flex-wrap justify-between mt-4 gap-y-4">
@@ -283,9 +283,9 @@ const RequestScreen = () => {
         </View>
 
         {isFiltered && (
-          <Pressable onPress={handleClearFilters} className="items-end ps-4">
+          <TouchableOpacity onPress={handleClearFilters} className="items-end ps-4">
             <Text className="mb-4 text-sm">Clear filter</Text>
-          </Pressable>
+          </TouchableOpacity>
         )}
 
         {isLoading ? (
@@ -315,24 +315,24 @@ const RequestScreen = () => {
         visible={isModalVisible}
         animationType="slide"
         onRequestClose={handleCloseModal}>
-        <Pressable onPress={handleCloseModal} className="justify-end flex-1 bg-black/30">
-          <Pressable onPress={(e) => e.stopPropagation()}>
+        <TouchableOpacity onPress={handleCloseModal} className="justify-end flex-1 bg-black/30">
+          <TouchableOpacity onPress={(e) => e.stopPropagation()}>
             <View className="p-6 pb-12 bg-white rounded-t-2xl">
               <Text className="mb-6 text-lg font-bold text-center">
                 Options for request ID #{selected?.requestId}
               </Text>
 
-              <Pressable
-                className="flex-row items-center gap-3 mb-6 active:opacity-70"
+              <TouchableOpacity
+                className="flex-row items-center gap-3 mb-6 "
                 onPress={handleViewDetail}>
                 <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
                 <Text className="text-lg font-semibold text-blue-600">Request details</Text>
-              </Pressable>
+              </TouchableOpacity>
 
               {selected?.status === 0 && (
                 <>
-                  <Pressable
-                    className="flex-row items-center gap-3 mb-6 active:opacity-70"
+                  <TouchableOpacity
+                    className="flex-row items-center gap-3 mb-6 "
                     onPress={handleApprove}>
                     <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
                     <Text className="text-lg font-semibold text-green-600">
@@ -340,34 +340,34 @@ const RequestScreen = () => {
                         ? 'Approve and assign a driver'
                         : 'Approve the request'}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
 
-                  <Pressable
-                    className="flex-row items-center gap-3 mb-6 active:opacity-70"
+                  <TouchableOpacity
+                    className="flex-row items-center gap-3 mb-6 "
                     onPress={handleReject}>
                     <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
                     <Text className="text-lg font-semibold text-red-600">Reject the request</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </>
               )}
 
               {selected?.status === 1 && (
-                <Pressable
-                  className="flex-row items-center gap-3 mb-6 active:opacity-70"
+                <TouchableOpacity
+                  className="flex-row items-center gap-3 mb-6 "
                   onPress={handleCancel}>
                   <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
                   <Text className="text-lg font-semibold text-gray-600">Cancel the request</Text>
-                </Pressable>
+                </TouchableOpacity>
               )}
 
-              <Pressable
-                className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg active:bg-gray-700"
+              <TouchableOpacity
+                className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg "
                 onPress={handleCloseModal}>
                 <Text className="text-lg font-semibold text-white">Close</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
-          </Pressable>
-        </Pressable>
+          </TouchableOpacity>
+        </TouchableOpacity>
       </Modal>
 
       {selected && (

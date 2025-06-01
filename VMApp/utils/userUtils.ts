@@ -22,3 +22,11 @@ export const formatVietnamPhoneNumber = (phoneNumber: string): string => {
 
   return phoneNumber;
 };
+
+export const getStatusLabel = (status: boolean): string => {
+  return status ? 'Active' : 'Deactivate';
+};
+
+export const getStatusStyle = (status: boolean): string => {
+  return status ? 'bg-green-500' : 'bg-red-500';
+};

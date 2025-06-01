@@ -1,7 +1,7 @@
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
-import { Pressable, Text, View } from 'react-native';
+import { TouchableOpacity, Text, View } from 'react-native';
 import { formatDate } from 'utils/datetimeUtils';
 import { getColorByStatus } from 'utils/requestUtils';
 import { getVehicleTypeIcon } from 'utils/vehicleUtils';
@@ -20,7 +20,7 @@ const RequestItem = ({ item }: RequestItemProps) => {
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={() => handleViewDetail(item)}
       className={`mb-4 mt-1 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.status)}`}>
       <View className="flex-row items-center">
@@ -57,12 +57,10 @@ const RequestItem = ({ item }: RequestItemProps) => {
         </View>
 
         <View className="items-end">
-          <View className="mt-1">
-            <FontAwesomeIcon icon={faEllipsisV} size={16} color="#6B7280" />
-          </View>
+            <FontAwesomeIcon icon={faChevronRight} color="#9ca3af" />
         </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

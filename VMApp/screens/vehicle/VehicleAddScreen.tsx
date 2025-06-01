@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
 
@@ -106,7 +106,7 @@ const VehicleAddScreen = () => {
                     ? vehicleData.type === type.value
                     : type.value === 'Sedan';
                   return (
-                    <Pressable
+                    <TouchableOpacity
                       key={type.value}
                       onPress={() => setVehicleData({ ...vehicleData, type: type.value })}
                       className={`w-[24%] items-center rounded-xl border px-4 py-2 ${
@@ -116,7 +116,7 @@ const VehicleAddScreen = () => {
                         className={`text-sm ${isFilterApplied ? 'text-white' : 'text-gray-700'}`}>
                         {type.label}
                       </Text>
-                    </Pressable>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -138,12 +138,12 @@ const VehicleAddScreen = () => {
         </View>
 
         <View className="mt-2 mb-40">
-          <Pressable
+          <TouchableOpacity
             onPress={handleAddVehicle}
             disabled={isLoading}
-            className={`items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 active:bg-blue-700'}`}>
+            className={`items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 '}`}>
             <Text className="font-bold text-white">{isLoading ? 'Adding... ' : 'Add Vehicle'}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

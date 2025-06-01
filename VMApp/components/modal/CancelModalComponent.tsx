@@ -4,7 +4,7 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
+  TouchableOpacity,
   Text,
   TouchableWithoutFeedback,
   View,
@@ -60,8 +60,8 @@ const CancelModal: React.FC<CancelModalProps> = ({ visible, onClose, onCancel })
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <Pressable onPress={onClose} className="justify-end flex-1 bg-black/30">
-            <Pressable onPress={(e) => e.stopPropagation()}>
+          <TouchableOpacity onPress={onClose} className="justify-end flex-1 bg-black/30">
+            <TouchableOpacity onPress={(e) => e.stopPropagation()}>
               <View className="p-6 pb-12 rounded-t-2xl bg-gray-50">
                 <Text className="mb-6 text-lg font-bold text-center">Cancel Request</Text>
 
@@ -75,22 +75,22 @@ const CancelModal: React.FC<CancelModalProps> = ({ visible, onClose, onCancel })
                   <InputField label="Reason" value={reason} onChangeText={setReason} />
                 </View>
                 <View className="flex-row justify-between">
-                  <Pressable
-                    className="w-[48%] items-center justify-center rounded-lg bg-gray-600 py-3 active:bg-gray-700"
+                  <TouchableOpacity
+                    className="w-[48%] items-center justify-center rounded-lg bg-gray-600 py-3 "
                     onPress={handleClose}>
                     <Text className="text-lg font-semibold text-white">Close</Text>
-                  </Pressable>
-                  <Pressable
-                    className="w-[48%] items-center justify-center rounded-lg bg-red-600 py-3 active:bg-red-700"
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    className="w-[48%] items-center justify-center rounded-lg bg-red-600 py-3 "
                     onPress={handleCancel}>
                     <Text className="text-lg font-semibold text-white">
                       {isCancel ? 'Canceling....' : 'Cancel'}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               </View>
-            </Pressable>
-          </Pressable>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </Modal>

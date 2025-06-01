@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
-import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Alert, TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
 
@@ -128,7 +128,7 @@ const VehicleEditScreen = () => {
                 {types.map((type) => {
                   const isFilterApplied = vehicleData.type === type.value;
                   return (
-                    <Pressable
+                    <TouchableOpacity
                       key={type.value}
                       onPress={() => updateVehicleData('type', type.value)}
                       className={`w-[24%] items-center rounded-xl border px-4 py-2 ${
@@ -138,7 +138,7 @@ const VehicleEditScreen = () => {
                         className={`text-sm ${isFilterApplied ? 'text-white' : 'text-gray-700'}`}>
                         {type.label}
                       </Text>
-                    </Pressable>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -160,20 +160,20 @@ const VehicleEditScreen = () => {
         </View>
 
         <View className="flex-row justify-between mt-2 mb-40">
-          <Pressable
+          <TouchableOpacity
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
             disabled={isLoading}>
             <Text className="font-semibold text-gray-700">Cancel</Text>
-          </Pressable>
-          <Pressable
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={handleUpdateVehicle}
             disabled={isLoading}
-            className={`w-[48%] items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 active:bg-blue-700'}`}>
+            className={`w-[48%] items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 '}`}>
             <Text className="font-bold text-white">
               {isLoading ? 'Updating ...' : 'Update Vehicle'}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

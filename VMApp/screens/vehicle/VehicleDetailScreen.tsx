@@ -2,7 +2,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { Pressable, SafeAreaView, Text, View } from 'react-native';
+import { TouchableOpacity, SafeAreaView, Text, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { formatDate } from 'utils/datetimeUtils';
 import { getVehicleTypeIcon } from 'utils/vehicleUtils';
@@ -85,9 +85,9 @@ const VehicleDetailScreen = () => {
         backBtn
         title="Vehicle Detail"
         rightElement={
-          <Pressable onPress={handleEditVehicle} className="p-2 bg-white rounded-full">
+          <TouchableOpacity onPress={handleEditVehicle} className="p-2 bg-white rounded-full">
             <FontAwesomeIcon icon={faEdit} size={18} />
-          </Pressable>
+          </TouchableOpacity>
         }
       />
 
@@ -163,13 +163,13 @@ const VehicleDetailScreen = () => {
 
               {(!vehicleData.nextMaintenanceId && vehicleData.status !== 2) && (
                 <View className="justify-end mt-4">
-                  <Pressable
-                    className="py-3 bg-blue-500 shadow-sm w-px-4 rounded-xl active:bg-blue-600"
+                  <TouchableOpacity
+                    className="py-3 bg-blue-500 shadow-sm w-px-4 rounded-xl "
                     onPress={() => {
                       navigation.navigate('ScheduleMaintenance', { vehicleData });
                     }}>
                     <Text className="font-semibold text-center text-white">Schedule Now</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>

@@ -5,7 +5,7 @@ import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useMemo, useState } from 'react';
 import {
   Dimensions,
-  Pressable,
+  TouchableOpacity,
   RefreshControl,
   SafeAreaView,
   ScrollView,
@@ -132,7 +132,7 @@ const AdminDashboard = () => {
       <Header
         title="Admin Dashboard"
         rightElement={
-          <Pressable
+          <TouchableOpacity
             className="relative p-2 bg-white rounded-full"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
@@ -143,7 +143,7 @@ const AdminDashboard = () => {
                 </Text>
               </View>
             )}
-          </Pressable>
+          </TouchableOpacity>
         }
       />
 

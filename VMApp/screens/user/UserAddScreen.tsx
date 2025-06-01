@@ -2,7 +2,7 @@ import { faCircleInfo, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { Image, Pressable, SafeAreaView, ScrollView, Switch, Text, View } from 'react-native';
+import { Image, TouchableOpacity, SafeAreaView, ScrollView, Switch, Text, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 
@@ -93,9 +93,9 @@ const UserAddScreen = () => {
               className="w-24 h-24 mt-4 border-2 border-gray-200 rounded-full"
               source={require('../../assets/images/user-default.jpg')}
             />
-            <Pressable className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
+            <TouchableOpacity className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -156,7 +156,7 @@ const UserAddScreen = () => {
                 {roles.map((role) => {
                   const isSelected = userData.role === role.value;
                   return (
-                    <Pressable
+                    <TouchableOpacity
                       key={role.value}
                       onPress={() => setUserData({ ...userData, role: role.value })}
                       className={`min-w-[30%] flex-1 items-center rounded-xl border-2 px-4 py-3 ${
@@ -168,7 +168,7 @@ const UserAddScreen = () => {
                         }`}>
                         {role.label}
                       </Text>
-                    </Pressable>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -193,14 +193,14 @@ const UserAddScreen = () => {
 
         {/* Action Button */}
         <View className="mt-4 mb-8">
-          <Pressable
-            className={`items-center rounded-xl py-4 shadow-sm ${isLoading ? 'bg-gray-500' : 'bg-blue-600 active:bg-blue-700'}`}
+          <TouchableOpacity
+            className={`items-center rounded-xl py-4 shadow-sm ${isLoading ? 'bg-gray-500' : 'bg-blue-600 '}`}
             disabled={isLoading}
             onPress={handleCreateUser}>
             <Text className="text-lg font-semibold text-white">
               {isLoading ? 'Creating...' : 'Create User'}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

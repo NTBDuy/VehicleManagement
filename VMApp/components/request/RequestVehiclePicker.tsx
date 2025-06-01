@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
+import { FlatList, TouchableOpacity, Text, TextInput, View } from 'react-native';
 import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 import Vehicle from 'types/Vehicle';
@@ -41,7 +41,7 @@ const RequestVehiclePicker = ({
   };
 
   const renderVehicleItem = ({ item }: { item: Vehicle }) => (
-    <Pressable
+    <TouchableOpacity
       onPress={() => setSelectedVehicle(item)}
       className={`mb-4 flex-row items-center rounded-2xl ${selectedVehicle == item ? 'bg-blue-100' : 'bg-gray-100'}  px-2 py-4`}>
       <View className="items-center justify-center w-12 h-12 ml-2 mr-4 bg-blue-300 rounded-full">
@@ -55,7 +55,7 @@ const RequestVehiclePicker = ({
           {item.brand} {item.model}
         </Text>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   return (

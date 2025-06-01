@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useMemo, useState } from 'react';
-import { Pressable, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { TouchableOpacity, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { UserService } from 'services/userService';
 
 import Request from 'types/Request';
@@ -69,7 +69,7 @@ const EmployeeDashboard = () => {
       <Header
         title="Employee Dashboard"
         rightElement={
-          <Pressable
+          <TouchableOpacity
             className="relative p-2 bg-white rounded-full"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
@@ -80,7 +80,7 @@ const EmployeeDashboard = () => {
                 </Text>
               </View>
             )}
-          </Pressable>
+          </TouchableOpacity>
         }
       />
 
@@ -95,22 +95,22 @@ const EmployeeDashboard = () => {
           </View>
 
           <View className="flex-row justify-between p-4">
-            <Pressable
+            <TouchableOpacity
               onPress={() => {
                 navigation.getParent()?.navigate('NewRequestStack');
               }}
-              className="w-[48%] flex-row justify-center rounded-2xl bg-green-500 p-4 active:bg-green-600">
+              className="w-[48%] flex-row justify-center rounded-2xl bg-green-500 p-4">
               <FontAwesomeIcon icon={faCalendarPlus} color="#fff" />
               <Text className="ml-2 font-bold text-white">New Request</Text>
-            </Pressable>
-            <Pressable
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => {
                 navigation.getParent()?.navigate('HistoryStack');
               }}
-              className="w-[48%] flex-row justify-center rounded-2xl bg-gray-500 p-4 active:bg-gray-600">
+              className="w-[48%] flex-row justify-center rounded-2xl bg-gray-500 p-4 ">
               <FontAwesomeIcon icon={faCalendarDays} color="#fff" />
               <Text className="ml-2 font-bold text-white">History Request</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
 

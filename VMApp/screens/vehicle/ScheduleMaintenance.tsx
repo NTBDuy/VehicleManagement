@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
-import { Alert, Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Alert, TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
 import { VehicleService } from 'services/vehicleService';
 import { formatDate } from 'utils/datetimeUtils';
@@ -184,11 +184,11 @@ const ScheduleMaintenance = () => {
               </View>
             </View>
 
-            <Pressable className="p-4 mb-6 bg-blue-600 rounded-xl" onPress={handleSchedule}>
+            <TouchableOpacity className="p-4 mb-6 bg-blue-600 rounded-xl" onPress={handleSchedule}>
               <Text className="text-lg font-semibold text-center text-white">
                 Schedule Maintenance
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       )}

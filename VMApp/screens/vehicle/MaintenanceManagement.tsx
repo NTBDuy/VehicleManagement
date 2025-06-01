@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, SafeAreaView, View, Text, Modal } from 'react-native';
+import { FlatList, TouchableOpacity, RefreshControl, SafeAreaView, View, Text, Modal } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
@@ -100,7 +100,7 @@ const MaintenanceManagement = () => {
   };
 
   const renderMaintenanceItem = ({ item }: { item: MaintenanceSchedule }) => (
-    <Pressable
+    <TouchableOpacity
       onPress={() => {
         handleViewDetail(item);
       }}
@@ -120,7 +120,7 @@ const MaintenanceManagement = () => {
         <Text className="mr-2 text-base text-gray-500">{formatDate(item.scheduledDate)}</Text>
         <FontAwesomeIcon icon={faEllipsisV} />
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   return (
@@ -142,14 +142,14 @@ const MaintenanceManagement = () => {
             data={filterOptions}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <Pressable
+              <TouchableOpacity
                 onPress={() => handleFilterChange(item.id)}
                 className={`mr-2 items-center rounded-full px-4 py-2 ${currentStatusFilter === item.id ? 'bg-blue-500' : 'bg-gray-100'}`}>
                 <Text
                   className={`text-sm font-medium ${currentStatusFilter === item.id ? 'text-white' : 'text-gray-600'}`}>
                   {item.name}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             )}
           />
         </View>
