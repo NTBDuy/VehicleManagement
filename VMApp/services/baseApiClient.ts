@@ -1,8 +1,14 @@
 import { showToast } from 'utils/toast';
 import { API_CONFIG } from 'config/apiConfig';
-import { AuthService } from 'services/authService'
+import { AuthService } from 'services/authService';
 
 export class BaseApiClient {
+  private static onUnauthorized: (() => void) | null = null;
+
+  public static setUnauthorizedHandler(handler: () => void) {
+    this.onUnauthorized = handler;
+  }
+
   protected static readonly BASE_URL = API_CONFIG.BASE_URL;
 
   protected static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -26,22 +32,14 @@ export class BaseApiClient {
     console.log('Response status:', response.status);
 
     if (!response.ok) {
-      if (response.status === 401) {
-        console.warn('Unauthorized. Logging out...');
-        await AuthService.logout();
-        throw new Error('Session expired. Please login again.');
-      }
+      const errorData = await response.json();
+      const errorMessage = errorData.message || `API Error: ${response.status}`;
 
-      let errorMessage = `API Error: ${response.status}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
-        showToast.error('Error', errorMessage);
-      } catch (e) {
-        console.warn('Error parsing JSON:', e);
-        errorMessage = response.statusText || errorMessage;
+      if (response.status === 401 && this.onUnauthorized) {
+        this.onUnauthorized();
       }
-
+      
+      showToast.error(response.status === 401 ? 'Unauthorized' : 'Error', errorMessage);
       throw new Error(errorMessage);
     }
 

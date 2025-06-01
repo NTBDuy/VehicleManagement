@@ -1,3 +1,4 @@
+import { useAuth } from '@/contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_CONFIG } from 'config/apiConfig';
 import { LoginRequest } from 'types/LoginRequest';
@@ -12,6 +13,7 @@ export class AuthService {
   private static readonly USER_KEY = 'user_data';
 
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
+    
     try {
       const response = await fetch(`${this.BASE_URL}/auth/login`, {
         method: 'POST',

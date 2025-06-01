@@ -81,7 +81,7 @@ namespace VMServer.Controllers
             new Claim(ClaimTypes.Role, user.Role.ToString())
 
         }),
-                Expires = DateTime.UtcNow.AddHours(12),
+                Expires = DateTime.UtcNow.AddMinutes(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

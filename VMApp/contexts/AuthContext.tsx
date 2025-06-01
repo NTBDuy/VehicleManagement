@@ -2,6 +2,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import { AuthService } from 'services/authService';
 import { LoginRequest } from 'types/LoginRequest';
 import { showToast } from 'utils/toast';
+import { BaseApiClient } from '@/services/baseApiClient';
 
 import User from 'types/User';
 
@@ -40,6 +41,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    BaseApiClient.setUnauthorizedHandler(() => {
+      handleUnauthorized();
+    });
     checkAuthStatus();
   }, []);
 
@@ -55,6 +59,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Error checking auth status:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleUnauthorized = async () => {
+    try {
+      await AuthService.logout();
+      setUser(null);
+    } catch (error) {
+      console.error('Error during forced logout:', error);
+      setUser(null); 
     }
   };
 

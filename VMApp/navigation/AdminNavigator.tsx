@@ -5,7 +5,8 @@ import {
   faGear,
   faHome,
   faTools,
-  faUsers
+  faUsers,
+  faPeopleGroup
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -28,6 +29,7 @@ import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
+import DriverManagement from '@/screens/driver/DriverManagement';
 
 import SidebarComponent from 'components/SidebarComponent';
 
@@ -39,6 +41,7 @@ const SettingStack = createNativeStackNavigator();
 const NewRequestStack = createNativeStackNavigator();
 const HistoryStack = createNativeStackNavigator();
 const MaintenanceStack = createNativeStackNavigator();
+const DriverStack = createNativeStackNavigator();
 
 function DashboardStackScreen() {
   return (
@@ -105,6 +108,16 @@ function MaintenanceStackScreen() {
     </MaintenanceStack.Navigator>
   )
 }
+
+function DriverStackScreen() {
+  return (
+    <DriverStack.Navigator screenOptions={{ headerShown: false }}>
+      <DriverStack.Screen name='DriverManagement' component={DriverManagement}/>
+      {/* <DriverStack.Screen name='MaintenanceDetails' component={MaintenanceDetailScreen}/> */}
+    </DriverStack.Navigator>
+  )
+}
+
 
 export default function AdminNavigator() {
   return (
@@ -177,6 +190,18 @@ export default function AdminNavigator() {
             <FontAwesomeIcon icon={faTools} color={color} size={size} />
           ),
           title: 'Maintenance Management',
+          headerShown: false,
+        }}
+      />
+
+      <Drawer.Screen
+        name="DriverStack"
+        component={DriverStackScreen}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faPeopleGroup} color={color} size={size} />
+          ),
+          title: 'Driver Management',
           headerShown: false,
         }}
       />
