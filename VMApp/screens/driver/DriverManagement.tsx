@@ -3,10 +3,10 @@ import React, { useCallback, useState } from 'react';
 
 import Driver from '@/types/Driver';
 
-import Header from '@/components/HeaderComponent';
+import Header from '@/components/layout/HeaderComponent';
 import { useFocusEffect } from '@react-navigation/core';
 import { DriverService } from '@/services/driverService';
-import LoadingData from '@/components/LoadingData';
+import LoadingData from '@/components/ui/LoadingData';
 import { formatDate } from '@/utils/datetimeUtils';
 
 const DriverManagement = () => {

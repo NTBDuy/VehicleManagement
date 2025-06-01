@@ -9,8 +9,8 @@ import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
 import Assignment from 'types/Assignment';
 import Request from 'types/Request';
 
-import Header from 'components/HeaderComponent';
-import InfoRow from 'components/InfoRowComponent';
+import Header from '@/components/layout/HeaderComponent';
+import InfoRow from '@/components/ui/InfoRowComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';

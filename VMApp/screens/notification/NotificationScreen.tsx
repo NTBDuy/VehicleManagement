@@ -26,9 +26,9 @@ import { showToast } from 'utils/toast';
 
 import Notification from 'types/Notification';
 
-import EmptyList from 'components/EmptyListComponent';
-import Header from 'components/HeaderComponent';
-import LoadingData from 'components/LoadingData';
+import EmptyList from '@/components/ui/EmptyListComponent';
+import Header from '@/components/layout/HeaderComponent';
+import LoadingData from '@/components/ui/LoadingData';
 
 const NotificationScreen = () => {
   const { user } = useAuth();

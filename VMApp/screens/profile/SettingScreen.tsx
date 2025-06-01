@@ -5,7 +5,7 @@ import { useAuth } from 'contexts/AuthContext';
 import { Alert, Image, Pressable, SafeAreaView, Text, View } from 'react-native';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
-import Header from 'components/HeaderComponent';
+import Header from '@/components/layout/HeaderComponent';
 
 const SettingScreen = () => {
   const navigation = useNavigation<any>();

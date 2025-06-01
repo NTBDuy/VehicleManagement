@@ -5,8 +5,8 @@ import { formatDayMonth } from 'utils/datetimeUtils';
 
 import Vehicle from 'types/Vehicle';
 
-import InfoRow from 'components/InfoRowComponent';
-import InputField from 'components/InputFieldComponent';
+import InfoRow from '@/components/ui/InfoRowComponent';
+import InputField from '@/components/ui/InputFieldComponent';
 
 interface ConfirmComponentProps {
   startDate: string;

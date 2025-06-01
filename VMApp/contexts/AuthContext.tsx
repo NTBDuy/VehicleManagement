@@ -41,10 +41,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    checkAuthStatus();
     BaseApiClient.setUnauthorizedHandler(() => {
       handleUnauthorized();
     });
-    checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {
@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
     } catch (error) {
       console.error('Error during forced logout:', error);
-      setUser(null); 
+      setUser(null);
     }
   };
 

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { showToast } from 'utils/toast';
 
-import InputField from 'components/InputFieldComponent';
+import InputField from '@/components/ui/InputFieldComponent';
 
 interface RejectModalProps {
   visible: boolean;

@@ -6,9 +6,9 @@ import { UserService } from 'services/userService';
 
 import Request from 'types/Request';
 
-import EmptyList from 'components/EmptyListComponent';
-import Header from 'components/HeaderComponent';
-import RequestItem from 'components/HistoryRequestItem';
+import EmptyList from '@/components/ui/EmptyListComponent';
+import Header from '@/components/layout/HeaderComponent';
+import RequestItem from '@/components/request/HistoryRequestItem';
 
 const RequestHistoryScreen = () => {
   const { user } = useAuth();

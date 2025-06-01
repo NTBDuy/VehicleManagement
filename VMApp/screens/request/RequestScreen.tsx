@@ -15,9 +15,9 @@ import { getUserInitials } from 'utils/userUtils';
 
 import Request from 'types/Request';
 
-import EmptyList from 'components/EmptyListComponent';
-import Header from 'components/HeaderComponent';
-import LoadingData from 'components/LoadingData';
+import EmptyList from '@/components/ui/EmptyListComponent';
+import Header from '@/components/layout/HeaderComponent';
+import LoadingData from '@/components/ui/LoadingData';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';

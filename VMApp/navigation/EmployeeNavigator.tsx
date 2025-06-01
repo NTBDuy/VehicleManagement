@@ -16,7 +16,7 @@ import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 import HistoryRequestScreen from 'screens/request/RequestHistoryScreen';
 
-import SidebarComponent from 'components/SidebarComponent';
+import SidebarComponent from '@/components/layout/SidebarComponent';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();

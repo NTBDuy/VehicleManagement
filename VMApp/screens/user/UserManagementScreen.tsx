@@ -28,9 +28,9 @@ import { getUserInitials } from 'utils/userUtils';
 
 import User from 'types/User';
 
-import EmptyList from 'components/EmptyListComponent';
-import Header from 'components/HeaderComponent';
-import LoadingData from 'components/LoadingData';
+import EmptyList from '@/components/ui/EmptyListComponent';
+import Header from '@/components/layout/HeaderComponent';
+import LoadingData from '@/components/ui/LoadingData';
 
 const filterOptions = [
   { id: 3, name: 'All' },

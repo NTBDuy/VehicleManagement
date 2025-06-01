@@ -13,7 +13,6 @@ export class AuthService {
   private static readonly USER_KEY = 'user_data';
 
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
-    
     try {
       const response = await fetch(`${this.BASE_URL}/auth/login`, {
         method: 'POST',
@@ -30,7 +29,7 @@ export class AuthService {
 
       const data: LoginResponse = await response.json();
 
-      showToast.success('Login succesfully', `Welcome ${data.user.fullName}!`);
+      showToast.success('Login successfully', `Welcome ${data.user.fullName}!`);
 
       await AsyncStorage.setItem(this.TOKEN_KEY, data.token);
       await AsyncStorage.setItem(this.USER_KEY, JSON.stringify(data.user));

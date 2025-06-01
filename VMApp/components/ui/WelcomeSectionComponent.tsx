@@ -6,7 +6,7 @@ interface WelcomeSectionProps {
 }
 
 const WelcomeSection = ({ user }: WelcomeSectionProps) => (
-  <View className="mt-4 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+  <View className="mt-4 overflow-hidden bg-white border border-gray-100 shadow-sm rounded-2xl">
     <View className="p-6">
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
@@ -20,7 +20,7 @@ const WelcomeSection = ({ user }: WelcomeSectionProps) => (
             })}
           </Text>
         </View>
-        <View className="h-14 w-14 items-center justify-center rounded-full bg-blue-50">
+        <View className="items-center justify-center rounded-full h-14 w-14 bg-blue-50">
           <Text className="text-2xl">👋</Text>
         </View>
       </View>

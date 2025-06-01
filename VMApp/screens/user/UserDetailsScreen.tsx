@@ -9,10 +9,10 @@ import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 import User from 'types/User';
 
-import Header from 'components/HeaderComponent';
-import InfoRow from 'components/InfoRowComponent';
-import LoadingData from 'components/LoadingData';
-import NoDataAvailable from 'components/NoDataAvailable';
+import Header from '@/components/layout/HeaderComponent';
+import InfoRow from '@/components/ui/InfoRowComponent';
+import LoadingData from '@/components/ui/LoadingData';
+import NoDataAvailable from '@/components/ui/NoDataAvailable';
 
 type RoleInfo = {
   label: string;

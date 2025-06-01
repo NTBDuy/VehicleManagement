@@ -9,9 +9,9 @@ import { showToast } from 'utils/toast';
 
 import User from 'types/User';
 
-import ErrorComponent from 'components/ErrorComponent';
-import Header from 'components/HeaderComponent';
-import InputField from 'components/InputFieldComponent';
+import ErrorComponent from '@/components/ui/ErrorComponent';
+import Header from '@/components/layout/HeaderComponent';
+import InputField from '@/components/ui/InputFieldComponent';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation<any>();

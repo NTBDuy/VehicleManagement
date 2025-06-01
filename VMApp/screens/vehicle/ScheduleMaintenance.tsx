@@ -9,10 +9,10 @@ import { showToast } from 'utils/toast';
 import Assignment from 'types/Assignment';
 import Vehicle from 'types/Vehicle';
 
-import Header from 'components/HeaderComponent';
-import InfoRow from 'components/InfoRowComponent';
-import InputField from 'components/InputFieldComponent';
-import LoadingData from 'components/LoadingData';
+import Header from '@/components/layout/HeaderComponent';
+import InfoRow from '@/components/ui/InfoRowComponent';
+import InputField from '@/components/ui/InputFieldComponent';
+import LoadingData from '@/components/ui/LoadingData';
 import MaintenanceSchedule from '@/types/MaintenanceSchedule';
 
 const ScheduleMaintenance = () => {

@@ -19,10 +19,10 @@ import { VehicleService } from 'services/vehicleService';
 import User from 'types/User';
 import Vehicle from 'types/Vehicle';
 
-import Header from 'components/HeaderComponent';
-import LoadingData from 'components/LoadingData';
-import StatItem from 'components/StatItemComponent';
-import WelcomeSection from 'components/WelcomeSectionComponent';
+import Header from '@/components/layout/HeaderComponent';
+import LoadingData from '@/components/ui/LoadingData';
+import StatItem from '@/components/ui/StatItemComponent';
+import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
 
 const AdminDashboard = () => {
   const { user } = useAuth();

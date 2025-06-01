@@ -27,7 +27,7 @@ import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 
-import SidebarComponent from 'components/SidebarComponent';
+import SidebarComponent from '@/components/layout/SidebarComponent';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();

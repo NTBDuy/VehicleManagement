@@ -10,10 +10,10 @@ import { Pressable, SafeAreaView, Text, View } from 'react-native';
 
 import Vehicle from '@/types/Vehicle';
 
-import Header from '@/components/HeaderComponent';
-import RequestConfirm from '@/components/RequestConfirm';
-import RequestDatePicker from '@/components/RequestDatePicker';
-import RequestVehiclePicker from '@/components/RequestVehiclePicker';
+import Header from '@/components/layout/HeaderComponent';
+import RequestConfirm from '@/components/request/RequestConfirm';
+import RequestDatePicker from '@/components/request/RequestDatePicker';
+import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
 import { RequestService } from '@/services/requestService';
 
 const RequestCreateScreen = () => {

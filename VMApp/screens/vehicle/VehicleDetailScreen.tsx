@@ -9,9 +9,9 @@ import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 import Vehicle from 'types/Vehicle';
 
-import Header from 'components/HeaderComponent';
-import InfoRow from 'components/InfoRowComponent';
-import LoadingData from 'components/LoadingData';
+import Header from '@/components/layout/HeaderComponent';
+import InfoRow from '@/components/ui/InfoRowComponent';
+import LoadingData from '@/components/ui/LoadingData';
 
 const VehicleDetailScreen = () => {
   const route = useRoute();

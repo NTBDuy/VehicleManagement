@@ -18,7 +18,7 @@ import { showToast } from 'utils/toast';
 
 import Driver from 'types/Driver';
 
-import InputField from 'components/InputFieldComponent';
+import InputField from '@/components/ui/InputFieldComponent';
 import { formatDate } from '@/utils/datetimeUtils';
 interface ApproveModalProps {
   visible: boolean;

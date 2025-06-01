@@ -17,8 +17,8 @@ import { showToast } from 'utils/toast';
 
 import User from 'types/User';
 
-import Header from 'components/HeaderComponent';
-import InputField from 'components/InputFieldComponent';
+import Header from '@/components/layout/HeaderComponent';
+import InputField from '@/components/ui/InputFieldComponent';
 
 const UserEditScreen = () => {
   const route = useRoute();

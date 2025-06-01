@@ -2,7 +2,7 @@ import { faInbox, faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
-import Header from 'components/HeaderComponent';
+import Header from '@/components/layout/HeaderComponent';
 
 type NoDataAvailableProp = {
   onRetry: any;

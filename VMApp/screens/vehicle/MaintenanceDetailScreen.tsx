@@ -4,9 +4,9 @@ import { useRoute } from '@react-navigation/core';
 import { useEffect, useState } from 'react';
 import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
 
-import Header from '@/components/HeaderComponent';
+import Header from '@/components/layout/HeaderComponent';
 import MaintenanceSchedule from '@/types/MaintenanceSchedule';
-import InfoRow from '@/components/InfoRowComponent';
+import InfoRow from '@/components/ui/InfoRowComponent';
 import { getBgColorByStatus, getStatusLabel } from '@/utils/maintenanceUtils';
 import { formatDate, formatDatetime } from '@/utils/datetimeUtils';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';

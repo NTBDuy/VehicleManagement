@@ -6,8 +6,8 @@ import { showToast } from 'utils/toast';
 
 import Vehicle from 'types/Vehicle';
 
-import Header from 'components/HeaderComponent';
-import InputField from 'components/InputFieldComponent';
+import Header from '@/components/layout/HeaderComponent';
+import InputField from '@/components/ui/InputFieldComponent';
 
 const VehicleAddScreen = () => {
   const initialVehicleData = {

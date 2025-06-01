@@ -9,9 +9,9 @@ import { getColorByStatus } from '@/utils/maintenanceUtils';
 
 import MaintenanceSchedule from 'types/MaintenanceSchedule';
 
-import Header from 'components/HeaderComponent';
-import LoadingData from 'components/LoadingData';
-import EmptyList from '@/components/EmptyListComponent';
+import Header from '@/components/layout/HeaderComponent';
+import LoadingData from '@/components/ui/LoadingData';
+import EmptyList from '@/components/ui/EmptyListComponent';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 const filterOptions = [

@@ -24,7 +24,7 @@ const SidebarComponent: React.FC<SidebarProps> = (props) => {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       {/* Header */}
-      <View className="mb-4 items-center justify-center border-b border-gray-200 py-6">
+      <View className="items-center justify-center py-6 mb-4 border-b border-gray-200">
         <FontAwesomeIcon icon={faCar} size={30} color="#1f2937" />
         <Text className="mt-2 text-xl font-bold text-gray-800">Vehicle Management</Text>
       </View>
@@ -35,7 +35,7 @@ const SidebarComponent: React.FC<SidebarProps> = (props) => {
       </View>
 
       {/* Footer */}
-      <View className="border-t border-gray-200 px-4 pt-4">
+      <View className="px-4 pt-4 border-t border-gray-200">
         <DrawerItem
           label="Log out"
           labelStyle={{ color: '#ef4444', fontWeight: 'bold' }}

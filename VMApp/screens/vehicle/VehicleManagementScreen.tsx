@@ -17,9 +17,9 @@ import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 import Vehicle from 'types/Vehicle';
 
-import EmptyList from 'components/EmptyListComponent';
-import Header from 'components/HeaderComponent';
-import LoadingData from 'components/LoadingData';
+import EmptyList from '@/components/ui/EmptyListComponent';
+import Header from '@/components/layout/HeaderComponent';
+import LoadingData from '@/components/ui/LoadingData';
 
 const VehicleManagementScreen = () => {
   const navigation = useNavigation<any>();
