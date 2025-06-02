@@ -53,5 +53,79 @@ namespace VMServer.Controllers
 
             return Ok(driversAvailable);
         }
+
+        // GET: api/driver/{driverId}
+        // Lấy tài xế chi tiết 
+        [Authorize(Roles = "Administrator, Manager")]
+        [HttpGet("{driverId}")]
+        public async Task<IActionResult> GetDriverDetails(int driverId)
+        {
+            var driver = await _dbContext.Drivers.FindAsync(driverId);
+            if (driver == null)
+                return NotFound(new { message = $"Driver not found with ID #{driverId}" });
+
+            return Ok(driver);
+        }
+
+        // POST: api/driver
+        // Tạo mới tài xế
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public async Task<IActionResult> CreateNewDriver([FromBody] DriverDTO dto)
+        {
+            var newDriver = new Driver
+            {
+                FullName = dto.FullName,
+                PhoneNumber = dto.PhoneNumber,
+                LicenseNumber = dto.LicenseNumber,
+                LicenseIssuedDate = dto.LicenseIssuedDate,
+                YearsOfExperience = dto.YearsOfExperience,
+                CreatedAt = DateTime.Now,
+                LastUpdateAt = DateTime.Now,
+                IsActive = true
+            };
+
+            _dbContext.Drivers.Add(newDriver);
+            await _dbContext.SaveChangesAsync();
+            return Ok(newDriver);
+        }
+
+        // PUT: api/driver/{driverId}
+        // Cập nhật thông tin tài xế
+        [Authorize(Roles = "Administrator")]
+        [HttpPut("{driverId}")]
+        public async Task<IActionResult> UpdateDriver(int driverId, [FromBody] DriverDTO dto)
+        {
+            var driver = await _dbContext.Drivers.FindAsync(driverId);
+            if (driver == null)
+                return NotFound(new { message = $"Driver not found with ID #{driverId}" });
+
+            driver.FullName = dto.FullName;
+            driver.PhoneNumber = dto.PhoneNumber;
+            driver.LicenseNumber = dto.LicenseNumber;
+            driver.LicenseIssuedDate = dto.LicenseIssuedDate;
+            driver.YearsOfExperience = dto.YearsOfExperience;
+            driver.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+            return Ok(driver);
+        }
+
+        // PUT: api/driver/{driverId}/toggle-status
+        // Thay đổi trạng thái tài xế
+        [Authorize(Roles = "Administrator")]
+        [HttpPut("{driverId}/toggle-status")]
+        public async Task<IActionResult> ToggleDriverStatus(int driverId)
+        {
+            var driver = await _dbContext.Drivers.FindAsync(driverId);
+            if (driver == null)
+                return NotFound(new { message = $"Driver not found with ID #{driverId}" });
+
+            driver.IsActive = !driver.IsActive;
+            driver.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+            return Ok(new { message = $"Driver with ID #{driverId} has been toggled status successfully." });
+        }
     }
 }

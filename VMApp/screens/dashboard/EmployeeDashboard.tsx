@@ -65,7 +65,7 @@ const EmployeeDashboard = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      {/** HEADER */}
+      
       <Header
         title="Employee Dashboard"
         rightElement={

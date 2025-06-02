@@ -154,7 +154,7 @@ const UserDetailsScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      {/** HEADER */}
+      
       <Header
         backBtn
         customTitle={
@@ -167,7 +167,7 @@ const UserDetailsScreen = () => {
         }
       />
 
-      {/** BODY */}
+      
       {isLoading ? (
         <LoadingData />
       ) : (

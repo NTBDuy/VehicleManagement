@@ -6,7 +6,7 @@ namespace VMServer.Models.Entities
     public class Driver
     {
         [Key]
-        public int DriverId { get; set; } 
+        public int DriverId { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -22,7 +22,11 @@ namespace VMServer.Models.Entities
         public DateTime LicenseIssuedDate { get; set; }
 
         public int YearsOfExperience { get; set; }
-        
+
         public bool IsActive { get; set; } = true;
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public DateTime LastUpdateAt { get; set; } = DateTime.Now;
     }
 }

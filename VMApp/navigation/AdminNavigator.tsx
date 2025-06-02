@@ -30,6 +30,9 @@ import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 import DriverManagement from '@/screens/driver/DriverManagement';
+import DriverEditScreen from '@/screens/driver/DriverEditScreen';
+import DriverAddScreen from '@/screens/driver/DriverAddScreen';
+import DriverDetailsScreen from '@/screens/driver/DriverDetailsScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -113,7 +116,9 @@ function DriverStackScreen() {
   return (
     <DriverStack.Navigator screenOptions={{ headerShown: false }}>
       <DriverStack.Screen name='DriverManagement' component={DriverManagement}/>
-      {/* <DriverStack.Screen name='MaintenanceDetails' component={MaintenanceDetailScreen}/> */}
+      <DriverStack.Screen name='DriverDetail' component={DriverDetailsScreen}/>
+      <DriverStack.Screen name='DriverEdit' component={DriverEditScreen}/>
+      <DriverStack.Screen name='DriverAdd' component={DriverAddScreen}/>
     </DriverStack.Navigator>
   )
 }

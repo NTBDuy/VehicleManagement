@@ -125,7 +125,7 @@ const UserEditScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      {/** HEADER */}
+      
       <Header
         backBtn
         customTitle={
@@ -136,7 +136,7 @@ const UserEditScreen = () => {
         }
       />
 
-      {/** BODY */}
+      
       <ScrollView className="flex-1 px-6">
         {/** Profile Picture */}
         <View className="items-center mb-6">

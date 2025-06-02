@@ -21,7 +21,7 @@ const SettingScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/** HEADER */}
+      
       <Header
         customTitle={
           <View className="items-center ">
@@ -42,7 +42,7 @@ const SettingScreen = () => {
         }
       />
 
-      {/** BODY */}
+      
       <View className="px-6">
         <TouchableOpacity
           className="flex-row items-center px-2 py-4 border-b border-gray-200"

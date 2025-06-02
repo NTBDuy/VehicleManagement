@@ -176,7 +176,7 @@ const ManagerDashboard = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      {/** HEADER */}
+      
       <Header
         title="Manager Dashboard"
         rightElement={
@@ -195,7 +195,7 @@ const ManagerDashboard = () => {
         }
       />
 
-      {/** BODY */}
+      
       <ScrollView
         className="px-6"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>

@@ -1,10 +1,10 @@
 import { DriverService } from '@/services/driverService';
 import { getStatusLabel, getStatusStyle, getUserInitials } from '@/utils/userUtils';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect } from '@react-navigation/core';
 import { useCallback, useMemo, useState } from 'react';
 import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 import Driver from '@/types/Driver';
 
@@ -19,6 +19,7 @@ const filterOptions = [
 ];
 
 const DriverManagement = () => {
+  const navigation = useNavigation<any>();
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -79,9 +80,13 @@ const DriverManagement = () => {
     );
   };
 
+  const handleViewDetail = (driverData: Driver) => {
+    navigation.navigate('DriverDetail', { driverData });
+  };
+
   const renderDriverItem = ({ item }: { item: Driver }) => (
     <TouchableOpacity
-      onPress={() => {}}
+      onPress={() => handleViewDetail(item)}
       className="mb-4 mt-1 flex-row items-center rounded-2xl bg-gray-100 px-2 py-4">
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">{getUserInitials(item.fullName)}</Text>
@@ -115,10 +120,19 @@ const DriverManagement = () => {
     fetchDriverData();
   };
 
+  const handleAddDriver = () => {
+    navigation.navigate('DriverAdd');
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
         title="Driver Management"
+        rightElement={
+          <TouchableOpacity className="rounded-full bg-white p-2" onPress={handleAddDriver}>
+            <FontAwesomeIcon icon={faUserPlus} size={18} />
+          </TouchableOpacity>
+        }
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}

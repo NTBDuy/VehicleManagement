@@ -1,4 +1,4 @@
-import { faChevronRight, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity, Text, View } from 'react-native';

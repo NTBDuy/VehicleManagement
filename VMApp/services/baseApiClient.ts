@@ -21,24 +21,37 @@ export class BaseApiClient {
       body: options.body,
     });
 
-    const response = await fetch(`${this.BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        ...headers,
-        ...options.headers,
-      },
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${this.BASE_URL}${endpoint}`, {
+        ...options,
+        headers: {
+          ...options.headers,
+          ...headers,
+        },
+      });
+    } catch (e: any) {
+      showToast.error('Network Error', e.message || 'Connection failed');
+      throw e;
+    }
 
     console.log('Response status:', response.status);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      const errorMessage = errorData.message || `API Error: ${response.status}`;
+    if (response.status === 401 && this.onUnauthorized) {
+      this.onUnauthorized();
+    }
 
-      if (response.status === 401 && this.onUnauthorized) {
-        this.onUnauthorized();
+    if (!response.ok) {
+      let errorMessage = `API Error: ${response.status}`;
+
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+        const text = await response.text();
+        if (text) errorMessage = text;
       }
-      
+
       showToast.error(response.status === 401 ? 'Unauthorized' : 'Error', errorMessage);
       throw new Error(errorMessage);
     }
