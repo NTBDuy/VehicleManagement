@@ -26,6 +26,7 @@ import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
+import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -90,6 +91,7 @@ function SettingStackScreen() {
     <SettingStack.Navigator screenOptions={{ headerShown: false }}>
       <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
       <SettingStack.Screen name="EditProfile" component={EditProfileScreen} />
+      <SettingStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
     </SettingStack.Navigator>
   );
 }

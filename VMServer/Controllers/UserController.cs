@@ -206,5 +206,55 @@ namespace VMServer.Controllers
 
             return Ok(user);
         }
+
+        // PUT: api/user/{userId}/reset-password
+        // Reset mật khẩu cho người dùng
+        [Authorize(Roles = "Administrator")]
+        [HttpPut("{userId}/reset-password")]
+        public async Task<IActionResult> ResetUserPassword(int userId)
+        {
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = $"User not found with ID #{userId}" });
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, "P@ssword123");
+            user.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = $"Password has been reset for user ID #{userId}. New password: P@ssword123" });
+        }
+
+        // PUT: api/user/change-password
+        // Thay đổi mật khẩu
+        [Authorize]
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO dto)
+        {
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
+
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found!" });
+
+            var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.CurrentPassword);
+            if (verificationResult == PasswordVerificationResult.Failed)
+                return BadRequest(new { message = "Current password is incorrect!" });
+
+            if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 6)
+                return BadRequest(new { message = "New password must be at least 6 characters long!" });
+
+            if (dto.NewPassword != dto.ConfirmPassword)
+                return BadRequest(new { message = "New password and confirm password do not match!" });
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
+            user.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Password changed successfully!" });
+        }
     }
 }

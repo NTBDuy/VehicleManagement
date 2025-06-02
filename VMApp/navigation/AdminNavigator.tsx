@@ -33,6 +33,7 @@ import DriverManagement from '@/screens/driver/DriverManagement';
 import DriverEditScreen from '@/screens/driver/DriverEditScreen';
 import DriverAddScreen from '@/screens/driver/DriverAddScreen';
 import DriverDetailsScreen from '@/screens/driver/DriverDetailsScreen';
+import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -82,6 +83,7 @@ function SettingStackScreen() {
     <SettingStack.Navigator screenOptions={{ headerShown: false }}>
       <SettingStack.Screen name="SettingScreen" component={SettingScreen} />
       <SettingStack.Screen name="EditProfile" component={EditProfileScreen} />
+      <SettingStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
     </SettingStack.Navigator>
   );
 }

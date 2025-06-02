@@ -59,4 +59,19 @@ export class UserService extends BaseApiClient {
       method: 'PUT',
     });
   }
+
+  // Reset mật khẩu cho người dùng
+  static async resetPassword(id: number): Promise<void> {
+    return this.request<void>(`/user/${id}/reset-password`, {
+      method: 'PUT',
+    });
+  }
+
+  // Thay đổi mật khẩu
+  static async changePassword(data: any): Promise<void> {
+    return this.request<void>(`/user/change-password`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
 }

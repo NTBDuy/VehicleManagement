@@ -94,7 +94,6 @@ const UserDetailsScreen = () => {
     navigation.navigate('UserEdit', { userData });
   };
 
-  // Update later - Coming Soon!
   const handleResetPassword = async () => {
     Alert.alert(
       'Reset Password',
@@ -107,6 +106,7 @@ const UserDetailsScreen = () => {
           onPress: async () => {
             try {
               setIsLoading(true);
+              await UserService.resetPassword(userData.userId);
               Alert.alert('Success', 'Password reset link has been sent to user email');
             } catch (error) {
               console.log('Error resetting password:', error);

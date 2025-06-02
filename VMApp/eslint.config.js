@@ -28,6 +28,7 @@ module.exports = defineConfig([
             ['@/config', './config'],
             ['@/contexts', './contexts'],
             ['@/utils', './utils'],
+            ['@/assets', './assets'],
           ],
           extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
         },

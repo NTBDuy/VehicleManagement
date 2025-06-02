@@ -11,7 +11,8 @@
       "@/components/*": ["./components/*"],
       "@/config/*": ["./config/*"],
       "@/contexts/*": ["./contexts/*"],
-      "@/utils/*": ["./utils/*"]
+      "@/utils/*": ["./utils/*"],
+      "@/assets/*": ["./assets/*"]
     }
   }
 }
