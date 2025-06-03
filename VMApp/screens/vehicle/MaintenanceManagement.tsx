@@ -3,7 +3,7 @@ import { FlatList, TouchableOpacity, RefreshControl, SafeAreaView, View, Text, M
 import { VehicleService } from 'services/vehicleService';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
-import { faEllipsisV, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faEllipsisV, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { formatDate } from '@/utils/datetimeUtils';
 import { getColorByStatus } from '@/utils/maintenanceUtils';
 
@@ -118,7 +118,7 @@ const MaintenanceManagement = () => {
       </View>
       <View className="flex-row items-center">
         <Text className="mr-2 text-base text-gray-500">{formatDate(item.scheduledDate)}</Text>
-        <FontAwesomeIcon icon={faEllipsisV} />
+        <FontAwesomeIcon icon={faChevronRight} color="#9ca3af" />
       </View>
     </TouchableOpacity>
   );

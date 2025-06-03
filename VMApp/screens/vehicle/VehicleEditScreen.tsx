@@ -7,7 +7,7 @@ import { showToast } from 'utils/toast';
 import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
-import InputField from '@/components/ui/InputFieldComponent';
+import InputField from '@/components/ui/InputFieldComponent';;
 
 const VehicleEditScreen = () => {
   const route = useRoute();

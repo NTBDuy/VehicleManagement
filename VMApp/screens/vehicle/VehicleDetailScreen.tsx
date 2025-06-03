@@ -12,8 +12,10 @@ import Vehicle from 'types/Vehicle';
 import Header from '@/components/layout/HeaderComponent';
 import InfoRow from '@/components/ui/InfoRowComponent';
 import LoadingData from '@/components/ui/LoadingData';
+import { useAuth } from '@/contexts/AuthContext';
 
 const VehicleDetailScreen = () => {
+  const { user } = useAuth();
   const route = useRoute();
   const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
   const navigation = useNavigation<any>();
@@ -85,9 +87,11 @@ const VehicleDetailScreen = () => {
         backBtn
         title="Vehicle Detail"
         rightElement={
-          <TouchableOpacity onPress={handleEditVehicle} className="p-2 bg-white rounded-full">
-            <FontAwesomeIcon icon={faEdit} size={18} />
-          </TouchableOpacity>
+          user?.role == 0 && (
+            <TouchableOpacity onPress={handleEditVehicle} className="rounded-full bg-white p-2">
+              <FontAwesomeIcon icon={faEdit} size={18} />
+            </TouchableOpacity>
+          )
         }
       />
 
@@ -95,11 +99,11 @@ const VehicleDetailScreen = () => {
         <LoadingData />
       ) : (
         <View className="px-6">
-          <View className="mt-4 mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
-            <View className="p-4 bg-blue-50">
+          <View className="mb-6 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+            <View className="bg-blue-50 p-4">
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center">
-                  <View className="items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-full">
+                  <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                     <FontAwesomeIcon
                       icon={getVehicleTypeIcon(vehicleData.type)}
                       size={18}
@@ -120,8 +124,8 @@ const VehicleDetailScreen = () => {
             </View>
           </View>
 
-          <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-            <View className="px-4 py-3 bg-gray-50">
+          <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+            <View className="bg-gray-50 px-4 py-3">
               <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
             </View>
 
@@ -145,8 +149,8 @@ const VehicleDetailScreen = () => {
             </View>
           </View>
 
-          <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-            <View className="px-4 py-3 bg-gray-50">
+          <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+            <View className="bg-gray-50 px-4 py-3">
               <Text className="text-lg font-semibold text-gray-800">Maintenance</Text>
             </View>
 
@@ -161,17 +165,18 @@ const VehicleDetailScreen = () => {
                 isLast
               />
 
-              {(!vehicleData.nextMaintenanceId && vehicleData.status !== 2) && (
-                <View className="justify-end mt-4">
+              {user?.role === 0 && !vehicleData.nextMaintenanceId && vehicleData.status !== 2 && (
+                <View className="mt-4 justify-end">
                   <TouchableOpacity
-                    className="py-3 bg-blue-500 shadow-sm w-px-4 rounded-xl "
+                    className="w-px-4 rounded-xl bg-blue-500 py-3 shadow-sm"
                     onPress={() => {
                       navigation.navigate('ScheduleMaintenance', { vehicleData });
                     }}>
-                    <Text className="font-semibold text-center text-white">Schedule Now</Text>
+                    <Text className="text-center font-semibold text-white">Schedule Now</Text>
                   </TouchableOpacity>
                 </View>
               )}
+              
             </View>
           </View>
         </View>

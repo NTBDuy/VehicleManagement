@@ -4,13 +4,13 @@ import {
   faCarSide,
   faClockRotateLeft,
   faGear,
-  faHome,
-  faTools,
+  faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 import MaintenanceDetailScreen from '@/screens/vehicle/MaintenanceDetailScreen';
 import VehicleManagementScreen from '@/screens/vehicle/VehicleManagementScreen';
 import HomeScreen from 'screens/dashboard/ManagerDashboard';
@@ -26,7 +26,6 @@ import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
-import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -55,7 +54,7 @@ function VehicleStackScreen() {
       <VehicleStack.Screen name="VehicleDetail" component={VehicleDetailScreen} />
       <VehicleStack.Screen name="VehicleEdit" component={VehicleEditScreen} />
       <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
-      <RequestStack.Screen name="ScheduleMaintenance" component={ScheduleMaintenance} />
+      <VehicleStack.Screen name="ScheduleMaintenance" component={ScheduleMaintenance} />
     </VehicleStack.Navigator>
   );
 }
@@ -170,7 +169,7 @@ export default function ManagerNavigator() {
         }}
       />
 
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="MaintenanceStack"
         component={MaintenanceStackScreen}
         options={{
@@ -180,7 +179,7 @@ export default function ManagerNavigator() {
           title: 'Maintenance Management',
           headerShown: false,
         }}
-      />
+      /> */}
 
       <Drawer.Screen
         name="SettingStack"

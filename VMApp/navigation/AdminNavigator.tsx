@@ -4,14 +4,19 @@ import {
   faClockRotateLeft,
   faGear,
   faHome,
+  faPeopleGroup,
   faTools,
-  faUsers,
-  faPeopleGroup
+  faUsers
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import DriverAddScreen from '@/screens/driver/DriverAddScreen';
+import DriverDetailsScreen from '@/screens/driver/DriverDetailsScreen';
+import DriverEditScreen from '@/screens/driver/DriverEditScreen';
+import DriverManagement from '@/screens/driver/DriverManagement';
+import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 import UserAddScreen from '@/screens/user/UserAddScreen';
 import UserDetailScreen from '@/screens/user/UserDetailsScreen';
 import UserEditScreen from '@/screens/user/UserEditScreen';
@@ -26,14 +31,10 @@ import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 import HistoryRequestScreen from 'screens/request/RequestHistoryScreen';
 import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
+import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
-import DriverManagement from '@/screens/driver/DriverManagement';
-import DriverEditScreen from '@/screens/driver/DriverEditScreen';
-import DriverAddScreen from '@/screens/driver/DriverAddScreen';
-import DriverDetailsScreen from '@/screens/driver/DriverDetailsScreen';
-import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -74,6 +75,7 @@ function VehicleStackScreen() {
       <VehicleStack.Screen name="VehicleDetail" component={VehicleDetailScreen} />
       <VehicleStack.Screen name="VehicleEdit" component={VehicleEditScreen} />
       <VehicleStack.Screen name="VehicleAdd" component={VehicleAddScreen} />
+      <VehicleStack.Screen name="ScheduleMaintenance" component={ScheduleMaintenance} />
     </VehicleStack.Navigator>
   );
 }
