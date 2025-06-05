@@ -4,7 +4,7 @@ import {
   faCarSide,
   faClockRotateLeft,
   faGear,
-  faHome
+  faHome,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -28,6 +28,7 @@ import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
+import { useTranslation } from 'react-i18next';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();
@@ -99,12 +100,14 @@ function MaintenanceStackScreen() {
   return (
     <MaintenanceStack.Navigator screenOptions={{ headerShown: false }}>
       <MaintenanceStack.Screen name="Maintenance" component={MaintenanceManagement} />
-      <MaintenanceStack.Screen name='MaintenanceDetails' component={MaintenanceDetailScreen}/>
+      <MaintenanceStack.Screen name="MaintenanceDetails" component={MaintenanceDetailScreen} />
     </MaintenanceStack.Navigator>
   );
 }
 
 export default function ManagerNavigator() {
+  const { t } = useTranslation();
+
   return (
     <Drawer.Navigator
       initialRouteName="DashboardStack"
@@ -116,7 +119,7 @@ export default function ManagerNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faHome} color={color} size={size} />
           ),
-          title: 'Dashboard',
+          title: t('dashboard.title'),
           headerShown: false,
         }}
       />
@@ -128,7 +131,7 @@ export default function ManagerNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCalendarPlus} color={color} size={size} />
           ),
-          title: 'New Request',
+          title: t('sidebar.newRequest'),
           headerShown: false,
         }}
       />
@@ -140,7 +143,7 @@ export default function ManagerNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'Personal History Request',
+          title: t('sidebar.history.personal'),
           headerShown: false,
         }}
       />
@@ -152,7 +155,7 @@ export default function ManagerNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCalendarCheck} color={color} size={size} />
           ),
-          title: 'Request Management',
+          title: t('sidebar.management.request'),
           headerShown: false,
         }}
       />
@@ -164,22 +167,10 @@ export default function ManagerNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCarSide} color={color} size={size} />
           ),
-          title: 'Vehicle Management',
+          title: t('sidebar.management.vehicle'),
           headerShown: false,
         }}
       />
-
-      {/* <Drawer.Screen
-        name="MaintenanceStack"
-        component={MaintenanceStackScreen}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <FontAwesomeIcon icon={faTools} color={color} size={size} />
-          ),
-          title: 'Maintenance Management',
-          headerShown: false,
-        }}
-      /> */}
 
       <Drawer.Screen
         name="SettingStack"
@@ -187,7 +178,7 @@ export default function ManagerNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faGear} color={color} size={size} />
           ),
-          title: 'Setting',
+          title: t('sidebar.setting'),
           headerShown: false,
         }}
         component={SettingStackScreen}></Drawer.Screen>

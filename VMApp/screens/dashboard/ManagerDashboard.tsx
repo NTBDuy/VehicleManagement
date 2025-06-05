@@ -24,10 +24,12 @@ import Header from '@/components/layout/HeaderComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import StatItem from '@/components/ui/StatItemComponent';
 import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
+import { useTranslation } from 'react-i18next';
 
 const ManagerDashboard = () => {
   const navigation = useNavigation<any>();
   const screenWidth = Dimensions.get('window').width;
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [requests, setRequests] = useState<Request[]>([]);
@@ -95,42 +97,42 @@ const ManagerDashboard = () => {
 
   const requestChartData = [
     {
-      name: 'Pending',
+      name: t('common.status.pending'),
       count: requestStat.pending,
       color: '#e17100',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'Approved',
+      name: t('common.status.approved'),
       count: requestStat.approved,
       color: '#009966',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'Rejected',
+      name: t('common.status.rejected'),
       count: requestStat.rejected,
       color: '#e7000b',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'Cancelled',
+      name: t('common.status.cancelled'),
       count: requestStat.cancelled,
       color: '#45556c',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'In Progress',
+      name: t('common.status.inProgress'),
       count: requestStat.inProgress,
       color: '#155dfc',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'Done',
+      name: t('common.status.done'),
       count: requestStat.done,
       color: '#00a63e',
       legendFontColor: '#374151',
@@ -140,21 +142,21 @@ const ManagerDashboard = () => {
 
   const vehicleChartData = [
     {
-      name: 'Available',
+      name: t('common.status.available'),
       count: vehicleStat.available,
       color: '#10b981',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'In Use',
+      name: t('common.status.inUse'),
       count: vehicleStat.inUse,
       color: '#3b82f6',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'Maintenance',
+      name: t('common.status.maintenance'),
       count: vehicleStat.underMaintenance,
       color: '#ff7a04',
       legendFontColor: '#374151',
@@ -176,17 +178,16 @@ const ManagerDashboard = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      
       <Header
-        title="Manager Dashboard"
+        title={t('dashboard.view.manager')}
         rightElement={
           <TouchableOpacity
-            className="relative p-2 bg-white rounded-full"
+            className="relative rounded-full bg-white p-2"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
             {notificationCount > 0 && (
               <View className="absolute -right-2 -top-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500">
-                <Text className="text-xs font-bold text-center text-white">
+                <Text className="text-center text-xs font-bold text-white">
                   {notificationCount > 99 ? '99+' : notificationCount}
                 </Text>
               </View>
@@ -195,7 +196,6 @@ const ManagerDashboard = () => {
         }
       />
 
-      
       <ScrollView
         className="px-6"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
@@ -205,19 +205,41 @@ const ManagerDashboard = () => {
           <LoadingData />
         ) : (
           <View>
-            <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-              <View className="px-4 py-3 bg-gray-50">
-                <Text className="text-lg font-semibold text-gray-800">Request Statistics</Text>
+            <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800">
+                  {t('dashboard.request.stat')}
+                </Text>
               </View>
 
               <View className="p-4">
-                <StatItem label="Total Requests" value={requestStat.total} />
-                <StatItem label="Pending" value={requestStat.pending} status="pending" />
-                <StatItem label="Approved" value={requestStat.approved} status="approved" />
-                <StatItem label="Rejected" value={requestStat.rejected} status="rejected" />
-                <StatItem label="Cancelled" value={requestStat.cancelled} status="cancelled" />
-                <StatItem label="In Progress" value={requestStat.inProgress} status="inProgress" />
-                <StatItem label="Done" value={requestStat.done} status="done" />
+                <StatItem label={t('dashboard.request.total')} value={requestStat.total} />
+                <StatItem
+                  label={t('common.status.pending')}
+                  value={requestStat.pending}
+                  status="pending"
+                />
+                <StatItem
+                  label={t('common.status.approved')}
+                  value={requestStat.approved}
+                  status="approved"
+                />
+                <StatItem
+                  label={t('common.status.rejected')}
+                  value={requestStat.rejected}
+                  status="rejected"
+                />
+                <StatItem
+                  label={t('common.status.cancelled')}
+                  value={requestStat.cancelled}
+                  status="cancelled"
+                />
+                <StatItem
+                  label={t('common.status.inProgress')}
+                  value={requestStat.inProgress}
+                  status="inProgress"
+                />
+                <StatItem label={t('common.status.done')} value={requestStat.done} status="done" />
                 <View className="my-4 border-t border-gray-200"></View>
 
                 {requestStat.total > 0 && requestChartData.length > 0 ? (
@@ -229,8 +251,8 @@ const ManagerDashboard = () => {
                       chartConfig={chartConfig}
                       accessor="count"
                       backgroundColor="transparent"
-                      paddingLeft="12"
-                      center={[24, 0]}
+                      paddingLeft="2"
+                      center={[32, 0]}
                       absolute={false}
                       hasLegend={true}
                       style={{
@@ -248,17 +270,21 @@ const ManagerDashboard = () => {
               </View>
             </View>
 
-            <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-              <View className="px-4 py-3 bg-gray-50">
-                <Text className="text-lg font-semibold text-gray-800">Vehicle Statistics</Text>
+            <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800"> {t('dashboard.vehicle.stat')}</Text>
               </View>
 
               <View className="p-4">
-                <StatItem label="Total Vehicles" value={vehicleStat.total} />
-                <StatItem label="Available" value={vehicleStat.available} status="available" />
-                <StatItem label="In Use" value={vehicleStat.inUse} status="inUse" />
+                <StatItem label={t('dashboard.vehicle.total')} value={vehicleStat.total} />
                 <StatItem
-                  label="Under Maintenance"
+                  label={t('common.status.available')}
+                  value={vehicleStat.available}
+                  status="available"
+                />
+                <StatItem label={t('common.status.inUse')} value={vehicleStat.inUse} status="inUse" />
+                <StatItem
+                  label={t('common.status.maintenance')}
                   value={vehicleStat.underMaintenance}
                   status="underMaintenance"
                 />
@@ -272,8 +298,8 @@ const ManagerDashboard = () => {
                       chartConfig={chartConfig}
                       accessor="count"
                       backgroundColor="transparent"
-                      paddingLeft="12"
-                      center={[18, 0]}
+                      paddingLeft="2"
+                      center={[32, 0]}
                       absolute={false}
                       hasLegend={true}
                       style={{

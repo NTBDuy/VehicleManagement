@@ -23,8 +23,10 @@ import Header from '@/components/layout/HeaderComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import StatItem from '@/components/ui/StatItemComponent';
 import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
+import { useTranslation } from 'react-i18next';
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigation = useNavigation<any>();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -92,21 +94,21 @@ const AdminDashboard = () => {
 
   const vehicleChartData = [
     {
-      name: 'Available',
+      name: t('common.status.available'),
       count: vehicleStat.available,
       color: '#10b981',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'In Use',
+      name: t('common.status.inUse'),
       count: vehicleStat.inUse,
       color: '#3b82f6',
       legendFontColor: '#374151',
       legendFontSize: 14,
     },
     {
-      name: 'Maintenance',
+      name: t('common.status.maintenance'),
       count: vehicleStat.underMaintenance,
       color: '#ff7a04',
       legendFontColor: '#374151',
@@ -128,17 +130,16 @@ const AdminDashboard = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      
       <Header
-        title="Admin Dashboard"
+        title={`${t('dashboard.view.admin')}`}
         rightElement={
           <TouchableOpacity
-            className="relative p-2 bg-white rounded-full"
+            className="relative rounded-full bg-white p-2"
             onPress={() => navigation.navigate('Notification')}>
             <FontAwesomeIcon icon={faBell} size={18} />
             {notificationCount > 0 && (
               <View className="absolute -right-2 -top-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500">
-                <Text className="text-xs font-bold text-center text-white">
+                <Text className="text-center text-xs font-bold text-white">
                   {notificationCount > 99 ? '99+' : notificationCount}
                 </Text>
               </View>
@@ -147,7 +148,6 @@ const AdminDashboard = () => {
         }
       />
 
-      
       <ScrollView
         className="flex-1 px-6"
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
@@ -159,30 +159,30 @@ const AdminDashboard = () => {
           </View>
         ) : (
           <View>
-            <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-              <View className="px-4 py-3 bg-gray-50">
-                <Text className="text-lg font-semibold text-gray-800">User Statistics</Text>
+            <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800">{t('dashboard.user.stat')}</Text>
               </View>
 
               <View className="p-4">
-                <StatItem label="Total Users" value={userStat.total} />
-                <StatItem label="Admin" value={userStat.admin} status="admin" />
-                <StatItem label="Manager" value={userStat.manager} status="manager" />
-                <StatItem label="Employee" value={userStat.employee} status="employee" />
+                <StatItem label={t('dashboard.user.total')} value={userStat.total} />
+                <StatItem label={t('common.role.admin')} value={userStat.admin} status="admin" />
+                <StatItem label={t('common.role.manager')} value={userStat.manager} status="manager" />
+                <StatItem label={t('common.role.employee')} value={userStat.employee} status="employee" />
               </View>
             </View>
 
-            <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-              <View className="px-4 py-3 bg-gray-50">
-                <Text className="text-lg font-semibold text-gray-800">Vehicle Statistics</Text>
+            <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800">{t('dashboard.vehicle.stat')}</Text>
               </View>
 
               <View className="p-4">
-                <StatItem label="Total Vehicles" value={vehicleStat.total} />
-                <StatItem label="Available" value={vehicleStat.available} status="available" />
-                <StatItem label="In Use" value={vehicleStat.inUse} status="inUse" />
+                <StatItem label={t('dashboard.vehicle.total')} value={vehicleStat.total} />
+                <StatItem label={t('common.status.available')} value={vehicleStat.available} status="available" />
+                <StatItem label={t('common.status.inUse')} value={vehicleStat.inUse} status="inUse" />
                 <StatItem
-                  label="Under Maintenance"
+                  label={t('common.status.maintenance')}
                   value={vehicleStat.underMaintenance}
                   status="underMaintenance"
                 />
@@ -196,14 +196,14 @@ const AdminDashboard = () => {
                       chartConfig={chartConfig}
                       accessor="count"
                       backgroundColor="transparent"
-                      paddingLeft="12"
-                      center={[18, 0]}
+                      paddingLeft="2"
+                      center={[36, 0]}
                       absolute={false}
                       hasLegend={true}
                       style={{
                         marginVertical: 8,
                         borderRadius: 16,
-                        paddingRight: 420,
+                        paddingRight: '124%',
                       }}
                     />
                   </View>

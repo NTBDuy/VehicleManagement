@@ -143,7 +143,7 @@ const UserEditScreen = () => {
           <View className="relative">
             <Image
               className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
-              source={require('../../assets/images/user-default.jpg')}
+              source={require('@/assets/images/user-default.jpg')}
             />
             <TouchableOpacity className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />

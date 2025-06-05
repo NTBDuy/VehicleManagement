@@ -91,7 +91,7 @@ const SettingScreen = () => {
           <View className="items-center">
             <Image
               className="h-28 w-28 rounded-full border-2 border-white shadow-lg"
-              source={require('../../assets/images/user-default.jpg')}
+              source={require('@/assets/images/user-default.jpg')}
             />
             <Text className="mt-4 text-lg font-bold text-gray-800">
               {user?.fullName || 'NO INFORMATION'}

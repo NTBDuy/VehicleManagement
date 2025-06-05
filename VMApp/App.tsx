@@ -1,6 +1,7 @@
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import AppContent from 'navigation/AppNavigator';
 import './global.css';
+import '@/i18n';
 import { AuthProvider } from 'contexts/AuthContext';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from 'config/toastConfig';

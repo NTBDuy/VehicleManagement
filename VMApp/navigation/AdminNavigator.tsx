@@ -37,6 +37,7 @@ import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
+import { useTranslation } from 'react-i18next';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();
@@ -129,6 +130,8 @@ function DriverStackScreen() {
 
 
 export default function AdminNavigator() {
+  const { t } = useTranslation();
+
   return (
     <Drawer.Navigator
       initialRouteName="DashboardStack"
@@ -143,7 +146,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faHome} color={color} size={size} />
           ),
-          title: 'Dashboard',
+          title: t('dashboard.title'),
         }}
       />
 
@@ -154,7 +157,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCalendarPlus} color={color} size={size} />
           ),
-          title: 'New Request',
+          title: t('sidebar.newRequest'),
         }}
       />
 
@@ -165,7 +168,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'Personal History Request',
+          title: t('sidebar.history.personal'),
         }}
       />
 
@@ -176,7 +179,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faUsers} color={color} size={size} />
           ),
-          title: 'User Management',
+          title: t('sidebar.management.user'),
         }}
       />
 
@@ -187,7 +190,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCarSide} color={color} size={size} />
           ),
-          title: 'Vehicle Management',
+          title:  t('sidebar.management.vehicle'),
         }}
       />
 
@@ -198,7 +201,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faTools} color={color} size={size} />
           ),
-          title: 'Maintenance Management',
+          title:  t('sidebar.management.maintenance'),
           headerShown: false,
         }}
       />
@@ -210,7 +213,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faPeopleGroup} color={color} size={size} />
           ),
-          title: 'Driver Management',
+          title:  t('sidebar.management.driver'),
           headerShown: false,
         }}
       />
@@ -222,7 +225,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faGear} color={color} size={size} />
           ),
-          title: 'Setting',
+          title:  t('sidebar.setting'),
         }}
       />
     </Drawer.Navigator>

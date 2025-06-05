@@ -1,7 +1,12 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { VehicleService } from '@/services/vehicleService';
 import { showToast } from '@/utils/toast';
-import { faCalendarCheck, faCalendarDays, faCarSide } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendarCheck,
+  faCalendarDays,
+  faCarSide,
+  faLocation,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +20,7 @@ import RequestConfirm from '@/components/request/RequestConfirm';
 import RequestDatePicker from '@/components/request/RequestDatePicker';
 import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
 import { RequestService } from '@/services/requestService';
+import RequestDestination from '@/components/request/RequestDestination';
 
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
@@ -29,12 +35,13 @@ const RequestCreateScreen = () => {
   const [isAssignDriver, setIsAssignDriver] = useState(false);
   const [isDisabled, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState("");
+  const [errors, setErrors] = useState('');
 
   const tabs = [
-    { id: 0, title: 'Choose Date', icon: faCalendarDays },
-    { id: 1, title: 'Choose Vehicle', icon: faCarSide },
-    { id: 2, title: 'Purpose & Confirm', icon: faCalendarCheck },
+    { id: 0, title: 'Date', icon: faCalendarDays },
+    { id: 1, title: 'Vehicle', icon: faCarSide },
+    { id: 2, title: 'Destination', icon: faLocation },
+    { id: 3, title: 'Confirm', icon: faCalendarCheck },
   ];
 
   useFocusEffect(
@@ -50,6 +57,8 @@ const RequestCreateScreen = () => {
       case 1:
         return renderVehicleComponent();
       case 2:
+        return renderDestinationComponent();
+      case 3:
         return renderConfirmComponent();
       default:
         return renderDateComponent();
@@ -73,6 +82,19 @@ const RequestCreateScreen = () => {
       availableVehicle={availableVehicle}
       setSelectedVehicle={setSelectedVehicle}
       selectedVehicle={selectedVehicle}
+    />
+  );
+
+  const renderDestinationComponent = () => (
+    <RequestDestination
+      startDate={startDate}
+      endDate={endDate}
+      selectedVehicle={selectedVehicle}
+      purpose={purpose}
+      setPurpose={setPurpose}
+      isAssignDriver={isAssignDriver}
+      setIsAssignDriver={setIsAssignDriver}
+      errors={errors}
     />
   );
 
@@ -112,7 +134,7 @@ const RequestCreateScreen = () => {
       return false;
     }
     if (purpose.trim() === '') {
-      setErrors("Please specify the purpose of your trip to continue.")
+      setErrors('Please specify the purpose of your trip to continue.');
       showToast.error('Purpose Required', 'Please specify the purpose of your trip to continue.');
       return false;
     }
@@ -161,7 +183,7 @@ const RequestCreateScreen = () => {
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header title="New Request " />
 
-      <View className="flex-1 px-6 mt-4">
+      <View className="mt-4 flex-1 px-6">
         <View className="mb-4 overflow-hidden rounded-2xl">
           <View className="flex-row">
             {tabs.map((tab) => (
@@ -174,7 +196,7 @@ const RequestCreateScreen = () => {
                   <View
                     className={`mt-2 h-[1] ${
                       activeTab === tab.id ? 'bg-blue-500' : 'bg-gray-600'
-                    } mr-1 w-12`}></View>
+                    } mr-1 w-8`}></View>
                   <FontAwesomeIcon
                     icon={tab.icon}
                     color={activeTab === tab.id ? '#3b82f6' : '#6b7280'}
@@ -183,7 +205,7 @@ const RequestCreateScreen = () => {
                   <View
                     className={`mt-2 h-[1] ${
                       activeTab === tab.id ? 'bg-blue-500' : 'bg-gray-600'
-                    } ml-1 w-12`}></View>
+                    } ml-1 w-8`}></View>
                 </View>
                 <Text
                   className={`mt-1 text-xs font-medium ${
@@ -195,16 +217,16 @@ const RequestCreateScreen = () => {
             ))}
           </View>
         </View>
-        <View className="flex-1 mb-24">{renderTabContent()}</View>
+        <View className="mb-24 flex-1">{renderTabContent()}</View>
       </View>
 
-      <View className="absolute bottom-0 left-0 right-0 px-6 pb-12 bg-gray-50">
+      <View className="absolute bottom-0 left-0 right-0 bg-gray-50 px-6 pb-12">
         {activeTab === 0 && (
           <TouchableOpacity
             className={`mt-4 w-full py-4 ${isDisabled && !isLoading ? 'bg-gray-400' : 'bg-blue-400 '} rounded-2xl `}
             disabled={isDisabled && !isLoading}
             onPress={getAvailableVehicle}>
-            <Text className="text-lg font-bold text-center text-white">
+            <Text className="text-center text-lg font-bold text-white">
               {isLoading ? 'Loading vehicle available...' : 'Next'}
             </Text>
           </TouchableOpacity>
@@ -214,29 +236,45 @@ const RequestCreateScreen = () => {
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-lg font-bold text-center text-white">Back</Text>
+              <Text className="text-center text-lg font-bold text-white">Back</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
               onPress={() => setActiveTab(activeTab + 1)}>
-              <Text className="text-lg font-bold text-center text-white">Next</Text>
+              <Text className="text-center text-lg font-bold text-white">Next</Text>
             </TouchableOpacity>
           </View>
         )}
+
         {activeTab === 2 && (
           <View className="flex-row items-center justify-between">
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-lg font-bold text-center text-white">Back</Text>
+              <Text className="text-center text-lg font-bold text-white">Back</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
+              onPress={() => setActiveTab(activeTab + 1)}>
+              <Text className="text-center text-lg font-bold text-white">Next</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {activeTab === 3 && (
+          <View className="flex-row items-center justify-between">
+            <TouchableOpacity
+              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
+              onPress={() => setActiveTab(activeTab - 1)}>
+              <Text className="text-center text-lg font-bold text-white">Back</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className={`mt-4 w-[48%] rounded-2xl py-4 ${isLoading ? 'bg-gray-400' : 'bg-blue-400 '}`}
               onPress={handleConfirm}
               disabled={isLoading}>
-              <Text className="text-lg font-bold text-center text-white">
+              <Text className="text-center text-lg font-bold text-white">
                 {isLoading ? 'Confirming ...' : 'Confirm'}
               </Text>
             </TouchableOpacity>

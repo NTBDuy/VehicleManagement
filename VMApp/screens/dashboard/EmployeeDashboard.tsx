@@ -12,9 +12,11 @@ import LoadingData from '@/components/ui/LoadingData';
 import Header from '@/components/layout/HeaderComponent';
 import RequestItem from '@/components/request/HistoryRequestItem';
 import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
+import { useTranslation } from 'react-i18next';
 
 const EmployeeDashboard = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation(); 
   const { user } = useAuth();
   const [notificationCount, setNotificationCount] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -67,7 +69,7 @@ const EmployeeDashboard = () => {
     <SafeAreaView className="flex-1 bg-gray-50">
       
       <Header
-        title="Employee Dashboard"
+        title={t('dashboard.view.employee')}
         rightElement={
           <TouchableOpacity
             className="relative p-2 bg-white rounded-full"
@@ -91,7 +93,7 @@ const EmployeeDashboard = () => {
 
         <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
           <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Quick Actions</Text>
+            <Text className="text-lg font-semibold text-gray-800">{t('dashboard.quickAction')}</Text>
           </View>
 
           <View className="flex-row justify-between p-4">
@@ -101,7 +103,7 @@ const EmployeeDashboard = () => {
               }}
               className="w-[48%] flex-row justify-center rounded-2xl bg-green-500 p-4">
               <FontAwesomeIcon icon={faCalendarPlus} color="#fff" />
-              <Text className="ml-2 font-bold text-white">New Request</Text>
+              <Text className="ml-2 font-bold text-white">{t('sidebar.newRequest')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -109,7 +111,7 @@ const EmployeeDashboard = () => {
               }}
               className="w-[48%] flex-row justify-center rounded-2xl bg-gray-500 p-4 ">
               <FontAwesomeIcon icon={faCalendarDays} color="#fff" />
-              <Text className="ml-2 font-bold text-white">History Request</Text>
+              <Text className="ml-2 font-bold text-white">{t('sidebar.history.all')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -123,7 +125,7 @@ const EmployeeDashboard = () => {
             {stat.inProgress.length > 0 && (
               <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
                 <View className="px-4 py-3 bg-gray-50">
-                  <Text className="text-lg font-semibold text-gray-800">In Progress</Text>
+                  <Text className="text-lg font-semibold text-gray-800">{t('common.status.inProgress')}</Text>
                 </View>
                 
                 <View className="p-4 -mb-4">
@@ -139,7 +141,7 @@ const EmployeeDashboard = () => {
             {stat.pending.length > 0 && (
               <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
                 <View className="px-4 py-3 bg-gray-50">
-                  <Text className="text-lg font-semibold text-gray-800">Pending</Text>
+                  <Text className="text-lg font-semibold text-gray-800">{t('common.status.pending')} </Text>
                 </View>
 
                 <View className="p-4 -mb-4">
@@ -155,7 +157,7 @@ const EmployeeDashboard = () => {
             {stat.incoming.length > 0 && (
               <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
                 <View className="px-4 py-3 bg-gray-50">
-                  <Text className="text-lg font-semibold text-gray-800">Incoming</Text>
+                  <Text className="text-lg font-semibold text-gray-800">{t('dashboard.incoming')}</Text>
                 </View>
 
                 <View className="p-4 -mb-4">

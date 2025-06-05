@@ -1,0 +1,82 @@
+{
+  "common": {
+    "button": {
+      "search": "Tìm kiếm",
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "save": "Lưu"
+    },
+    "status": {
+      "pending": "Đang chờ",
+      "approved": "Đã phê duyệt",
+      "rejected": "Bị từ chối",
+      "cancelled": "Đã hủy",
+      "inProgress": "Đang thực hiện",
+      "done": "Hoàn tất",
+      "available": "Có sẵn",
+      "inUse": "Đang sử dụng",
+      "maintenance": "Bảo trì"
+    },
+    "role": {
+      "admin": "Quản trị viên",
+      "manager": "Quản lý",
+      "employee": "Nhân viên"
+    },
+    "noData": {
+      "vehicle": "Không có dữ liệu phương tiện"
+    }
+  },
+
+  "auth": {
+    "title": "Đăng nhập",
+    "username": "Tên đăng nhập",
+    "password": "Mật khẩu",
+    "loggingIn": "Đang đăng nhập...",
+    "signOut": {
+      "label": "Đăng xuất",
+      "title": "Đăng xuất",
+      "message": "Bạn có chắc chắn muốn đăng xuất không?"
+    }
+  },
+
+  "sidebar": {
+    "title": "Quản lý phương tiện",
+    "newRequest": "Yêu cầu mới",
+    "history": {
+      "personal": "Lịch sử yêu cầu cá nhân",
+      "all": "Lịch sử yêu cầu"
+    },
+    "setting": "Cài đặt",
+    "management": {
+      "user": "Quản lý người dùng",
+      "vehicle": "Quản lý phương tiện",
+      "maintenance": "Quản lý bảo trì",
+      "driver": "Quản lý tài xế",
+      "request": "Quản lý yêu cầu"
+    }
+  },
+
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "welcome": "Chào mừng trở lại",
+    "view": {
+      "admin": "Quản trị viên",
+      "manager": "Quản lý",
+      "employee": "Nhân viên"
+    },
+    "user": {
+      "stat": "Thống kê người dùng",
+      "total": "Tổng số người dùng"
+    },
+    "vehicle": {
+      "stat": "Thống kê phương tiện",
+      "total": "Tổng số phương tiện"
+    },
+    "request": {
+      "stat": "Thống kê yêu cầu",
+      "total": "Tổng số yêu cầu"
+    },
+    "quickAction": "Hành động nhanh",
+    "incoming": "Sắp tới"
+  }
+}

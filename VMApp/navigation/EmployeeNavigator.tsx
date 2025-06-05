@@ -18,6 +18,7 @@ import HistoryRequestScreen from 'screens/request/RequestHistoryScreen';
 import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
+import { useTranslation } from 'react-i18next';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();
@@ -65,6 +66,8 @@ function SettingStackScreen() {
 }
 
 export default function EmployeeNavigator() {
+  const { t } = useTranslation();
+
   return (
     <Drawer.Navigator
       initialRouteName="DashboardStack"
@@ -76,7 +79,7 @@ export default function EmployeeNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faHome} color={color} size={size} />
           ),
-          title: 'Dashboard',
+          title: t('dashboard.title'),
           headerShown: false,
         }}
       />
@@ -88,7 +91,7 @@ export default function EmployeeNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCalendarPlus} color={color} size={size} />
           ),
-          title: 'New Request',
+          title: t('sidebar.newRequest'),
           headerShown: false,
         }}
       />
@@ -100,7 +103,7 @@ export default function EmployeeNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faClockRotateLeft} color={color} size={size} />
           ),
-          title: 'History Request',
+          title: t('sidebar.history.all'),
           headerShown: false,
         }}
       />
@@ -111,7 +114,7 @@ export default function EmployeeNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faGear} color={color} size={size} />
           ),
-          title: 'Setting',
+          title: t('sidebar.setting'),
           headerShown: false,
         }}
         component={SettingStackScreen}></Drawer.Screen>

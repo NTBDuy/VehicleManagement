@@ -1,16 +1,12 @@
 import { faCar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useAuth } from 'contexts/AuthContext';
-import { useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { useEffect, useState } from 'react';
+import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { showToast } from 'utils/toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CountryFlag from "react-native-country-flag";
 
 type QuickLoginRole = {
   title: string;
@@ -25,12 +21,25 @@ const quickLoginRoles: QuickLoginRole[] = [
 ];
 
 const LoginScreen = () => {
+  const { t, i18n } = useTranslation();
+  const [currentLanguage, setCurrentLanguage] = useState('en-US');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
   const [activeRole, setActiveRole] = useState<string>('');
+
+  useEffect(() => {
+    const loadLanguage = async () => {
+      const savedLanguage = await AsyncStorage.getItem('language');
+      if (savedLanguage) {
+        setCurrentLanguage(savedLanguage);
+        i18n.changeLanguage(savedLanguage);
+      }
+    };
+    loadLanguage();
+  }, [i18n]);
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
@@ -54,28 +63,49 @@ const LoginScreen = () => {
     setActiveRole(role.title);
   };
 
+  const handleLanguageChange = async (lang: string) => {
+    setCurrentLanguage(lang);
+    i18n.changeLanguage(lang);
+    await AsyncStorage.setItem('language', lang);
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
+      <View className="absolute top-24 right-6 z-10 flex-row space-x-2">
+        <TouchableOpacity
+          onPress={() => handleLanguageChange('en-US')}
+          className={`rounded-lg p-2 ${currentLanguage === 'en-US' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-100'}`}
+        >
+          <CountryFlag isoCode="us" size={20} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleLanguageChange('vi-VN')}
+          className={`rounded-lg p-2 ${currentLanguage === 'vi-VN' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-100'}`}
+        >
+          <CountryFlag isoCode="vn" size={20} />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className="justify-center flex-1 px-6 py-8">
-          <View className="items-center mb-4">
+        <View className="flex-1 justify-center px-6 py-8">
+          <View className="mb-4 items-center">
             <FontAwesomeIcon icon={faCar} size={48} />
           </View>
           <View className="mb-8">
-            <Text className="text-3xl font-bold text-center">VMS Login</Text>
+            <Text className="text-center text-3xl font-bold">VMS Login</Text>
           </View>
           <View className="mb-4">
             <TextInput
-              className="px-4 py-2 border border-gray-300 rounded-lg"
-              placeholder="Username"
+              className="rounded-lg border border-gray-300 px-4 py-2"
+              placeholder={t('auth.username')}
               value={username}
               onChangeText={setUsername}
             />
           </View>
           <View className="mb-6">
             <TextInput
-              className="px-4 py-2 border border-gray-300 rounded-lg"
-              placeholder="Password"
+              className="rounded-lg border border-gray-300 px-4 py-2"
+              placeholder={t('auth.password')}
               secureTextEntry
               value={password}
               onChangeText={setPassword}
@@ -85,15 +115,14 @@ const LoginScreen = () => {
             disabled={isLoading}
             className={`rounded-lg py-3 ${isLoading ? 'bg-gray-500' : 'bg-blue-500'}`}
             onPress={handleLogin}>
-            <Text className="font-bold text-center text-white">
-              {' '}
-              {isLoading ? 'Logging in...' : 'Login'}
+            <Text className="text-center font-bold text-white">
+              {isLoading ? `${t('auth.loggingIn')}...` : `${t('auth.title')}`}
             </Text>
           </TouchableOpacity>
 
-          <View className="px-4 py-2 mt-6 border rounded-2xl">
+          <View className="mt-6 rounded-2xl border px-4 py-2">
             <Text className="mb-4">Developer Tool - Quick Login</Text>
-            <View className="flex-row justify-between mb-2">
+            <View className="mb-2 flex-row justify-between">
               {quickLoginRoles.map((role, index) => (
                 <TouchableOpacity
                   key={index}
@@ -102,7 +131,7 @@ const LoginScreen = () => {
                     activeRole === role.title ? 'bg-blue-300' : 'bg-blue-100'
                   }`}
                   onPress={() => handleQuickLogin(role)}>
-                  <Text className="font-medium text-center text-blue-800">{role.title}</Text>
+                  <Text className="text-center font-medium text-blue-800">{role.title}</Text>
                 </TouchableOpacity>
               ))}
             </View>

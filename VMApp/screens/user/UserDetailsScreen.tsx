@@ -177,7 +177,7 @@ const UserDetailsScreen = () => {
             <View className="relative">
               <Image
                 className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
-                source={require('../../assets/images/user-default.jpg')}
+                source={require('@/assets/images/user-default.jpg')}
               />
               <View
                 className={`absolute bottom-2 right-2 rounded-full p-2 ${userData.status ? 'bg-green-500' : 'bg-gray-400'}`}>

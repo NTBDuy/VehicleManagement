@@ -1,0 +1,82 @@
+{
+  "common": {
+    "button": {
+      "search": "Search",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "save": "Save"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "inProgress": "In Progress",
+      "done": "Done",
+      "available": "Available",
+      "inUse": "In Use",
+      "maintenance": "Under Maintenance"
+    },
+    "role": {
+      "admin": "Admin",
+      "manager": "Manager",
+      "employee": "Employee"
+    },
+    "noData": {
+      "vehicle": "No vehicle data available"
+    }
+  },
+
+  "auth": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "loggingIn": "Logging in...",
+    "signOut": {
+      "label": "Log out",
+      "title": "Sign Out",
+      "message": "Are you sure you want to sign out?"
+    }
+  },
+
+  "sidebar": {
+    "title": "Vehicle Management",
+    "newRequest": "New Request",
+    "history": {
+      "personal": "Personal History Request",
+      "all": "History Request"
+    },
+    "setting": "Setting",
+    "management": {
+      "user": "User Management",
+      "vehicle": "Vehicle Management",
+      "maintenance": "Maintenance Management",
+      "driver": "Driver Management",
+      "request": "Request Management"
+    }
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "view": {
+      "admin": "Admin Dashboard",
+      "manager": "Management Dashboard",
+      "employee": "Employee Dashboard"
+    },
+    "user": {
+      "stat": "User Statistics",
+      "total": "Total Users"
+    },
+    "vehicle": {
+      "stat": "Vehicle Statistics",
+      "total": "Total Vehicles"
+    },
+    "request": {
+      "stat": "Request Statistics",
+      "total": "Total Requests"
+    },
+    "quickAction": "Quick Action",
+    "incoming": "Incoming"
+  }
+}
