@@ -5,10 +5,12 @@
       "cancel": "Cancel",
       "confirm": "Confirm",
       "delete": "Delete",
-      "save": "Save"
+      "save": "Save",
+      "keepEdit": "Keep Editing"
     },
     "status": {
       "all": "All",
+      "total": "Total",
       "pending": "Pending",
       "approved": "Approved",
       "rejected": "Rejected",
@@ -27,6 +29,10 @@
     "noData": {
       "vehicle": "No vehicle data available",
       "requestHistory": "User has not requested any vehicles"
+    },
+    "expand": {
+      "hide": "Hide details ▲",
+      "show": "Show details ▼"
     }
   },
 
@@ -172,10 +178,6 @@
     "management": {
       "searchPlaceholder": "Search username, phone or email ...",
       "totalRequest": "Total Request",
-      "expand": {
-        "hide": "Hide details ▲",
-        "show": "Show details ▼"
-      },
       "clearFilter": "Clear filter",
       "modal": {
         "title": "Options for request ID #",
@@ -231,7 +233,7 @@
           "normal": "Remind for return vehicle"
         }
       },
-      "lastUpdated": "Last updated:",
+      "lastUpdated": "Last updated",
       "toast": {
         "startUsing": {
           "title": "Start Vehicle Usage",
@@ -260,6 +262,104 @@
         "remindSuccess": {
           "title": "Reminder sent",
           "message": "The user has been reminded to start vehicle usage."
+        }
+      }
+    }
+  },
+
+  "vehicle": {
+    "management": {
+      "title": "Vehicle Management",
+      "searchPlaceholder": "Search plate, type or brand ...",
+      "summary": "Summary",
+      "totalVehicle": "Total Vehicle"
+    },
+    "modal": {
+      "title": "Options for plate number #",
+      "actions": {
+        "detail": "Vehicle details",
+        "edit": "Edit vehicle",
+        "maintenance": "Schedule maintenance",
+        "remove": "Remove vehicle",
+        "close": "Close"
+      }
+    },
+    "detail": {
+      "title": "Vehicle Detail",
+      "vehicleId": "Vehicle ID #",
+      "sectionInfo": {
+        "title": "Vehicle Information",
+        "label": {
+          "plate": "Plate number",
+          "type": "Type",
+          "brand": "Brand",
+          "model": "Model",
+          "brandAndModel": "Brand & Model",
+          "createAt": "Create At"
+        }
+      },
+      "sectionMaintenance": {
+        "title": "Maintenance",
+        "label": {
+          "last": "Last time",
+          "next": "Next time",
+          "notSchedule": "Not scheduled"
+        },
+        "actions": {
+          "schedule": "Schedule Now"
+        }
+      },
+      "lastUpdated": "Last updated"
+    },
+    "add": {
+      "title": "Add New Vehicle",
+      "actions": {
+        "add": "Add Vehicle",
+        "adding": "Adding..."
+      }
+    },
+    "edit": {
+      "title": "Update Vehicle",
+      "actions": {
+        "update": "Update Vehicle",
+        "updating": "Updating..."
+      }
+    },
+    "validate": {
+      "error": {
+        "title": "Validation Error",
+        "message": "Please fix the errors above"
+      },
+      "plate": "License plate is required",
+      "brand": "Brand plate is required",
+      "model": "Model plate is required",
+      "type": "Type plate is required"
+    },
+    "toast": {
+      "update": {
+        "confirm": {
+          "title": "Update Vehicle",
+          "message": "Are you sure you want to update this vehicle?"
+        },
+        "success": {
+          "title": "Success",
+          "message": "Vehicle updated successfully"
+        }
+      },
+      "cancel": {
+        "title": "Discard Changes",
+        "message": "You have unsaved changes. Are you sure you want to discard them?"
+      },
+      "add": {
+        "success": {
+          "title": "Success",
+          "message": "Vehicle created successfully"
+        }
+      },
+      "remove": {
+        "success": {
+          "title": "Vehicle Removed",
+          "message": "Vehicle was removed successfully."
         }
       }
     }

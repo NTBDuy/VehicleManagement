@@ -7,10 +7,11 @@ import { showToast } from 'utils/toast';
 import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
-import InputField from '@/components/ui/InputFieldComponent';;
-
+import InputField from '@/components/ui/InputFieldComponent';
+import { useTranslation } from 'react-i18next';
 const VehicleEditScreen = () => {
   const route = useRoute();
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
   const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
@@ -37,19 +38,19 @@ const VehicleEditScreen = () => {
     const newErrors: Partial<Vehicle> = {};
 
     if (!vehicleData.licensePlate.trim()) {
-      newErrors.licensePlate = 'License plate is required';
+      newErrors.licensePlate = t('vehicle.validate.plate');
     }
 
     if (!vehicleData.brand.trim()) {
-      newErrors.brand = 'Brand is required';
+      newErrors.brand =  t('vehicle.validate.brand');
     }
 
     if (!vehicleData.model.trim()) {
-      newErrors.model = 'Model is required';
+      newErrors.model =  t('vehicle.validate.modal');
     }
 
     if (!vehicleData.type) {
-      newErrors.type = 'Type is required';
+      newErrors.type =  t('vehicle.validate.type');
     }
 
     setErrors(newErrors);
@@ -58,7 +59,7 @@ const VehicleEditScreen = () => {
 
   const handleUpdateVehicle = () => {
     if (!validateForm()) {
-      showToast.error('Validation Error', 'Please fix the errors above');
+      showToast.error( `${t('vehicle.validate.error.title')}`, `${t('vehicle.validate.error.message')}`);
       return;
     }
     Alert.alert('Update Vehicle', 'Are you sure you want to update this vehicle?', [
@@ -85,8 +86,8 @@ const VehicleEditScreen = () => {
   const handleCancel = () => {
     if (hasChanges) {
       Alert.alert(
-        'Discard Changes',
-        'You have unsaved changes. Are you sure you want to discard them?',
+        `${t('vehicle.toast.remove.cancel.title')}`,
+        `${t('vehicle.toast.remove.cancel.message')}`,
         [
           { text: 'Keep Editing', style: 'cancel' },
           { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
@@ -102,19 +103,23 @@ const VehicleEditScreen = () => {
       <Header
         backBtn
         customTitle={
-          <Text className="text-xl font-bold">Update Vehicle #{vehicleData.vehicleId}</Text>
+          <Text className="text-xl font-bold">
+            {t('vehicle.edit.title')} #{vehicleData.vehicleId}
+          </Text>
         }
       />
 
       <ScrollView className="px-6">
-        <View className="mt-4 mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
+        <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('vehicle.detail.sectionInfo.title')}
+            </Text>
           </View>
 
           <View className="p-4">
             <InputField
-              label="Plate number"
+              label={t('vehicle.detail.sectionInfo.label.plate')}
               value={vehicleData.licensePlate}
               onChangeText={(text) => updateVehicleData('licensePlate', text)}
               error={errors.licensePlate}
@@ -122,7 +127,7 @@ const VehicleEditScreen = () => {
 
             <View className="mb-4">
               <Text className="mb-1 text-sm text-gray-600">
-                Type <Text className="text-red-500">*</Text>
+                {t('vehicle.detail.sectionInfo.label.type')} <Text className="text-red-500">*</Text>
               </Text>
               <View className="flex-row flex-wrap justify-between">
                 {types.map((type) => {
@@ -145,13 +150,13 @@ const VehicleEditScreen = () => {
             </View>
 
             <InputField
-              label="Brand"
+              label={t('vehicle.detail.sectionInfo.label.brand')}
               value={vehicleData.brand}
               onChangeText={(text) => updateVehicleData('brand', text)}
               error={errors.brand}
             />
             <InputField
-              label="Model"
+              label={t('vehicle.detail.sectionInfo.label.model')}
               value={vehicleData.model}
               onChangeText={(text) => updateVehicleData('model', text)}
               error={errors.model}
@@ -159,7 +164,7 @@ const VehicleEditScreen = () => {
           </View>
         </View>
 
-        <View className="flex-row justify-between mt-2 mb-40">
+        <View className="mb-40 mt-2 flex-row justify-between">
           <TouchableOpacity
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
@@ -171,7 +176,9 @@ const VehicleEditScreen = () => {
             disabled={isLoading}
             className={`w-[48%] items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 '}`}>
             <Text className="font-bold text-white">
-              {isLoading ? 'Updating ...' : 'Update Vehicle'}
+              {isLoading
+                ? `${t('vehicle.edit.actions.updating')}`
+                : `${t('vehicle.edit.actions.update')}`}
             </Text>
           </TouchableOpacity>
         </View>

@@ -30,10 +30,12 @@ import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const VehicleManagementScreen = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<Vehicle>();
@@ -140,13 +142,15 @@ const VehicleManagementScreen = () => {
     label,
     count,
     bgColor,
+    keyword,
   }: {
     label: string;
     count: number;
     bgColor: string;
+    keyword: string;
   }) => (
     <TouchableOpacity
-      onPress={() => handleStatusFilter(label)}
+      onPress={() => handleStatusFilter(keyword)}
       className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
       <Text className="text-base font-medium text-white">{label}</Text>
       <Text className="text-lg font-bold text-white">{count}</Text>
@@ -231,8 +235,8 @@ const VehicleManagementScreen = () => {
       if (selected) {
         await VehicleService.deleteVehicle(selected?.vehicleId);
         showToast.success(
-          'Vehicle Removed',
-          `Vehicle ID #${selected.vehicleId} was removed successfully.`
+          `${t('vehicle.toast.remove.success.title')}`,
+          `${t('vehicle.toast.remove.success.message')}`
         );
         getVehiclesData();
         handleCloseModal();
@@ -245,7 +249,7 @@ const VehicleManagementScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
-        title="Vehicle Management"
+        title={t('vehicle.management.title')}
         rightElement={
           user?.role == 0 && (
             <TouchableOpacity className="rounded-full bg-white p-2" onPress={handleAddVehicle}>
@@ -256,7 +260,7 @@ const VehicleManagementScreen = () => {
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder="Search plate, type or brand ..."
+        placeholder={t('vehicle.management.searchPlaceholder')}
         handleClearFilters={handleClearFilters}
       />
 
@@ -265,19 +269,37 @@ const VehicleManagementScreen = () => {
           <TouchableOpacity
             className="flex-row justify-between"
             onPress={() => setIsExpanded(!isExpanded)}>
-            <Text className="text-base font-medium text-gray-600">Summary</Text>
+            <Text className="text-base font-medium text-gray-600">
+              {t('vehicle.management.summary')}
+            </Text>
             <Text className="mt-1 text-sm text-blue-500">
-              {isExpanded ? 'Hide details ▲' : 'Show details ▼'}
+              {isExpanded ? `${t('common.expand.hide')}` : `${t('common.expand.show')}`}
             </Text>
           </TouchableOpacity>
 
           {isExpanded && (
             <View className="mt-4 flex-row flex-wrap justify-between gap-y-4">
-              <StatusCard label="Total" count={vehicleStat.total} bgColor="bg-gray-400" />
-              <StatusCard label="Available" count={vehicleStat.available} bgColor="bg-green-500" />
-              <StatusCard label="InUse" count={vehicleStat.inUse} bgColor="bg-blue-500" />
               <StatusCard
-                label="Maintenance"
+                label={t('common.status.total')}
+                keyword="Total"
+                count={vehicleStat.total}
+                bgColor="bg-gray-400"
+              />
+              <StatusCard
+                label={t('common.status.available')}
+                keyword="Available"
+                count={vehicleStat.available}
+                bgColor="bg-green-500"
+              />
+              <StatusCard
+                label={t('common.status.inUse')}
+                keyword="InUse"
+                count={vehicleStat.inUse}
+                bgColor="bg-blue-500"
+              />
+              <StatusCard
+                label={t('common.status.maintenance')}
+                keyword="Maintenance"
                 count={vehicleStat.underMaintenance}
                 bgColor="bg-orange-500"
               />
@@ -302,7 +324,7 @@ const VehicleManagementScreen = () => {
       {vehicles.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
           <Text className="text-center text-sm font-medium text-gray-500">
-            Total Vehicle:{' '}
+            {t('vehicle.management.totalVehicle')}:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredVehicles.length}</Text>
           </Text>
         </View>
@@ -317,7 +339,7 @@ const VehicleManagementScreen = () => {
           <TouchableOpacity onPress={(e) => e.stopPropagation()}>
             <View className="rounded-t-2xl bg-white p-6 pb-12">
               <Text className="mb-6 text-center text-lg font-bold">
-                Options for plate number #{selected?.licensePlate}
+                {t('vehicle.modal.title')}{selected?.licensePlate}
               </Text>
 
               <TouchableOpacity
@@ -327,7 +349,7 @@ const VehicleManagementScreen = () => {
                   handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">Vehicle details</Text>
+                <Text className="text-lg font-semibold text-blue-600">{t('vehicle.modal.actions.detail')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -337,7 +359,7 @@ const VehicleManagementScreen = () => {
                   handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faEdit} size={20} color="#ca8a04" />
-                <Text className="text-lg font-semibold text-yellow-600">Edit vehicle</Text>
+                <Text className="text-lg font-semibold text-yellow-600">{t('vehicle.modal.actions.edit')}</Text>
               </TouchableOpacity>
 
               {selected?.status !== 2 && selected?.nextMaintenanceId == null && (
@@ -349,7 +371,7 @@ const VehicleManagementScreen = () => {
                   }}>
                   <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#059669" />
                   <Text className="text-lg font-semibold text-emerald-600">
-                    Schedule maintenance
+                    {t('vehicle.modal.actions.maintenance')}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -360,13 +382,13 @@ const VehicleManagementScreen = () => {
                   onRemoveVehicle();
                 }}>
                 <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
-                <Text className="text-lg font-semibold text-red-600">Remove vehicle</Text>
+                <Text className="text-lg font-semibold text-red-600">{t('vehicle.modal.actions.remove')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
                 onPress={handleCloseModal}>
-                <Text className="text-lg font-semibold text-white">Close</Text>
+                <Text className="text-lg font-semibold text-white">{t('vehicle.modal.actions.close')}</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

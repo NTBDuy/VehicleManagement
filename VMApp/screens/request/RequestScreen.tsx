@@ -157,12 +157,18 @@ const RequestScreen = () => {
         <View className="mr-4">
           {item.startTime !== item.endTime ? (
             <View>
-              <Text className="text-xs text-gray-500">{t('request.list.label.start')}: {formatDate(item.startTime)}</Text>
-              <Text className="text-xs text-gray-500">{t('request.list.label.end')}: {formatDate(item.endTime)}</Text>
+              <Text className="text-xs text-gray-500">
+                {t('request.list.label.start')}: {formatDate(item.startTime)}
+              </Text>
+              <Text className="text-xs text-gray-500">
+                {t('request.list.label.end')}: {formatDate(item.endTime)}
+              </Text>
             </View>
           ) : (
             <View>
-              <Text className="text-xs text-gray-500">{t('request.list.label.date')}: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">
+                {t('request.list.label.date')}: {formatDate(item.startTime)}
+              </Text>
             </View>
           )}
         </View>
@@ -274,9 +280,7 @@ const RequestScreen = () => {
               <Text className="text-xl font-bold text-gray-900">{requestStat.total}</Text>
             </Text>
             <Text className="mt-1 text-sm text-blue-500">
-              {isExpanded
-                ? `${t('request.management.expand.hide')}`
-                : `${t('request.management.expand.show')}`}
+              {isExpanded ? `${t('common.expand.hide')}` : `${t('common.expand.show')}`}
             </Text>
           </TouchableOpacity>
 
@@ -366,7 +370,9 @@ const RequestScreen = () => {
                 className="mb-6 flex-row items-center gap-3 "
                 onPress={handleViewDetail}>
                 <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">{t('request.management.modal.actions.detail')}</Text>
+                <Text className="text-lg font-semibold text-blue-600">
+                  {t('request.management.modal.actions.detail')}
+                </Text>
               </TouchableOpacity>
 
               {selected?.status === 0 && (
@@ -386,7 +392,9 @@ const RequestScreen = () => {
                     className="mb-6 flex-row items-center gap-3 "
                     onPress={handleReject}>
                     <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
-                    <Text className="text-lg font-semibold text-red-600">{t('request.management.modal.actions.reject')}</Text>
+                    <Text className="text-lg font-semibold text-red-600">
+                      {t('request.management.modal.actions.reject')}
+                    </Text>
                   </TouchableOpacity>
                 </>
               )}
@@ -396,14 +404,18 @@ const RequestScreen = () => {
                   className="mb-6 flex-row items-center gap-3 "
                   onPress={handleCancel}>
                   <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
-                  <Text className="text-lg font-semibold text-gray-600">{t('request.management.modal.actions.cancel')}</Text>
+                  <Text className="text-lg font-semibold text-gray-600">
+                    {t('request.management.modal.actions.cancel')}
+                  </Text>
                 </TouchableOpacity>
               )}
 
               <TouchableOpacity
                 className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3 "
                 onPress={handleCloseModal}>
-                <Text className="text-lg font-semibold text-white">{t('request.management.modal.actions.close')}</Text>
+                <Text className="text-lg font-semibold text-white">
+                  {t('request.management.modal.actions.close')}
+                </Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

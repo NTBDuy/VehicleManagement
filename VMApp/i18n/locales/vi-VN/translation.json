@@ -5,10 +5,12 @@
       "cancel": "Hủy",
       "confirm": "Xác nhận",
       "delete": "Xóa",
-      "save": "Lưu"
+      "save": "Lưu",
+      "keepEdit": "Tiếp tục chỉnh sữa"
     },
     "status": {
       "all": "Tất cả",
+      "total": "Tổng cộng",
       "pending": "Đang chờ",
       "approved": "Đã phê duyệt",
       "rejected": "Bị từ chối",
@@ -27,6 +29,10 @@
     "noData": {
       "vehicle": "Không có dữ liệu phương tiện",
       "requestHistory": "Người dùng chưa có yêu cầu nào ở trạng thái này!"
+    },
+    "expand": {
+      "hide": "Ẩn chi tiết ▲",
+      "show": "Hiện chi tiết ▼"
     }
   },
 
@@ -172,10 +178,6 @@
     "management": {
       "searchPlaceholder": "Tìm theo tên người dùng, số điện thoại hoặc email...",
       "totalRequest": "Tổng Số Yêu Cầu",
-      "expand": {
-        "hide": "Ẩn chi tiết ▲",
-        "show": "Hiện chi tiết ▼"
-      },
       "clearFilter": "Xóa bộ lọc",
       "modal": {
         "title": "Tùy chọn cho yêu cầu mã #",
@@ -231,7 +233,7 @@
           "normal": "Nhắc nhở trả xe"
         }
       },
-      "lastUpdated": "Cập nhật lần cuối:",
+      "lastUpdated": "Cập nhật lần cuối",
       "toast": {
         "startUsing": {
           "title": "Bắt Đầu Sử Dụng Xe",
@@ -260,6 +262,104 @@
         "remindSuccess": {
           "title": "Đã gửi nhắc nhở",
           "message": "Người dùng đã được nhắc nhở bắt đầu sử dụng xe."
+        }
+      }
+    }
+  },
+
+  "vehicle": {
+    "management": {
+      "title": "Quản Lý Phương Tiện",
+      "searchPlaceholder": "Tìm theo biển số, loại hoặc hãng xe...",
+      "summary": "Tổng Quan",
+      "totalVehicle": "Tổng Số Phương Tiện"
+    },
+    "modal": {
+      "title": "Tùy chọn cho biển số #",
+      "actions": {
+        "detail": "Chi tiết phương tiện",
+        "edit": "Chỉnh sửa phương tiện",
+        "maintenance": "Lên lịch bảo dưỡng",
+        "remove": "Xóa phương tiện",
+        "close": "Đóng"
+      }
+    },
+    "detail": {
+      "title": "Chi Tiết Phương Tiện",
+      "vehicleId": "Mã Phương Tiện #",
+      "sectionInfo": {
+        "title": "Thông Tin Phương Tiện",
+        "label": {
+          "plate": "Biển số",
+          "type": "Loại",
+          "brand": "Hãng",
+          "model": "Mẫu",
+          "brandAndModel": "Hãng & Mẫu",
+          "createAt": "Ngày tạo"
+        }
+      },
+      "sectionMaintenance": {
+        "title": "Bảo Dưỡng",
+        "label": {
+          "last": "Lần gần nhất",
+          "next": "Lần tiếp theo",
+          "notSchedule": "Chưa được lên lịch"
+        },
+        "actions": {
+          "schedule": "Lên lịch ngay"
+        }
+      },
+      "lastUpdated": "Cập nhật lần cuối"
+    },
+    "add": {
+      "title": "Thêm Phương Tiện Mới",
+      "actions": {
+        "add": "Thêm Phương Tiện",
+        "adding": "Đang thêm..."
+      }
+    },
+    "edit": {
+      "title": "Cập Nhật Phương Tiện",
+      "actions": {
+        "update": "Cập Nhật Phương Tiện",
+        "updating": "Đang cập nhật..."
+      }
+    },
+    "validate": {
+      "error": {
+        "title": "Lỗi Xác Minh",
+        "message": "Vui lòng sửa các lỗi bên trên"
+      },
+      "plate": "Biển số là bắt buộc",
+      "brand": "Hãng xe là bắt buộc",
+      "model": "Mẫu xe là bắt buộc",
+      "type": "Loại xe là bắt buộc"
+    },
+    "toast": {
+      "update": {
+        "confirm": {
+          "title": "Cập Nhật Phương Tiện",
+          "message": "Bạn có chắc muốn cập nhật phương tiện này không?"
+        },
+        "success": {
+          "title": "Thành Công",
+          "message": "Phương tiện đã được cập nhật thành công"
+        }
+      },
+      "cancel": {
+        "title": "Hủy Thay Đổi",
+        "message": "Bạn có thay đổi chưa lưu. Bạn có chắc muốn hủy bỏ chúng không?"
+      },
+      "add": {
+        "success": {
+          "title": "Thành Công",
+          "message": "Phương tiện đã được tạo thành công"
+        }
+      },
+      "remove": {
+        "success": {
+          "title": "Đã Xóa Phương Tiện",
+          "message": "Phương tiện đã được xóa thành công."
         }
       }
     }

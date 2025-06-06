@@ -8,6 +8,7 @@ import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
+import { useTranslation } from 'react-i18next';
 
 const VehicleAddScreen = () => {
   const initialVehicleData = {
@@ -20,6 +21,7 @@ const VehicleAddScreen = () => {
     lastMaintenance: '',
   };
 
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,19 +44,19 @@ const VehicleAddScreen = () => {
     const newErrors: Partial<Vehicle> = {};
 
     if (!vehicleData.licensePlate.trim()) {
-      newErrors.licensePlate = 'License plate is required';
+      newErrors.licensePlate = t('vehicle.validate.plate');
     }
 
     if (!vehicleData.brand.trim()) {
-      newErrors.brand = 'Brand is required';
+      newErrors.brand = t('vehicle.validate.brand');
     }
 
     if (!vehicleData.model.trim()) {
-      newErrors.model = 'Model is required';
+      newErrors.model = t('vehicle.validate.model');
     }
 
     if (!vehicleData.type) {
-      newErrors.type = 'Type is required';
+      newErrors.type = t('vehicle.validate.type');
     }
 
     setErrors(newErrors);
@@ -63,13 +65,19 @@ const VehicleAddScreen = () => {
 
   const handleAddVehicle = async () => {
     if (!validateForm()) {
-      showToast.error('Validation Error', 'Please fix the errors above');
+      showToast.error(
+        `${t('vehicle.validate.error.title')}`,
+        `${t('vehicle.validate.error.message')}`
+      );
       return;
     }
     try {
       setIsLoading(true);
       const data = await VehicleService.createVehicle(vehicleData);
-      showToast.success('Success', 'Vehicle created successfully!');
+      showToast.success(
+        `${t('vehicle.toast.add.success.title')}`,
+        `${t('vehicle.toast.add.success.message')}`
+      );
       navigation.navigate('VehicleDetail', { vehicleData: data });
     } catch (error) {
       console.log(error);
@@ -83,14 +91,14 @@ const VehicleAddScreen = () => {
       <Header backBtn title="Add New Vehicle" />
 
       <ScrollView className="px-6">
-        <View className="mt-4 mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
+        <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
             <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
           </View>
 
           <View className="p-4">
             <InputField
-              label="Plate number"
+              label={t('vehicle.detail.sectionInfo.label.plate')}
               value={vehicleData.licensePlate}
               onChangeText={(text) => setVehicleData({ ...vehicleData, licensePlate: text })}
               error={errors.licensePlate}
@@ -98,7 +106,7 @@ const VehicleAddScreen = () => {
 
             <View className="mb-4">
               <Text className="mb-1 text-sm text-gray-600">
-                Type <Text className="text-red-500">*</Text>
+                {t('vehicle.detail.sectionInfo.label.type')} <Text className="text-red-500">*</Text>
               </Text>
               <View className="flex-row flex-wrap justify-between">
                 {types.map((type) => {
@@ -123,13 +131,13 @@ const VehicleAddScreen = () => {
             </View>
 
             <InputField
-              label="Brand"
+              label={t('vehicle.detail.sectionInfo.label.brand')}
               value={vehicleData.brand}
               onChangeText={(text) => setVehicleData({ ...vehicleData, brand: text })}
               error={errors.brand}
             />
             <InputField
-              label="Model"
+              label={t('vehicle.detail.sectionInfo.label.model')}
               value={vehicleData.model}
               onChangeText={(text) => setVehicleData({ ...vehicleData, model: text })}
               error={errors.model}
@@ -137,12 +145,14 @@ const VehicleAddScreen = () => {
           </View>
         </View>
 
-        <View className="mt-2 mb-40">
+        <View className="mb-40 mt-2">
           <TouchableOpacity
             onPress={handleAddVehicle}
             disabled={isLoading}
             className={`items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 '}`}>
-            <Text className="font-bold text-white">{isLoading ? 'Adding... ' : 'Add Vehicle'}</Text>
+            <Text className="font-bold text-white">
+              {isLoading ? `${t('vehicle.add.actions.adding')}` : `${t('vehicle.add.actions.add')}`}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
