@@ -14,9 +14,11 @@ import InfoRow from '@/components/ui/InfoRowComponent';
 import InputField from '@/components/ui/InputFieldComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import MaintenanceSchedule from '@/types/MaintenanceSchedule';
+import { useTranslation } from 'react-i18next';
 
 const ScheduleMaintenance = () => {
   const route = useRoute();
+  const { t } = useTranslation();
   const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
   const navigation = useNavigation<any>();
 
@@ -45,11 +47,11 @@ const ScheduleMaintenance = () => {
     const newErrors: Partial<MaintenanceSchedule> = {};
 
     if (!estimatedTime.trim()) {
-      newErrors.estimatedEndDate = 'Estimated time is required';
+      newErrors.estimatedEndDate = t('maintenance.validate.estimate');
     }
 
     if (!description.trim()) {
-      newErrors.description = 'Description is required';
+      newErrors.description = t('maintenance.validate.description');
     }
 
     setErrors(newErrors);
@@ -58,14 +60,14 @@ const ScheduleMaintenance = () => {
 
   const handleSchedule = async () => {
     if (!validateForm()) {
-      showToast.error('Validation Error', 'Please fix the errors above');
+      showToast.error(`${t('maintenance.validate.error.title')}`, `${t('maintenance.validate.error.message')}`);
       return;
     }
 
-    Alert.alert('Confirm Schedule', 'Are you sure you want to schedule this maintenance?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(`${t('maintenance.toast.schedule.confirm.title')}`, `${t('maintenance.toast.schedule.confirm.message')}`, [
+      { text: `${t('common.button.cancel')}`, style: 'cancel' },
       {
-        text: 'Confirm',
+        text: `${t('common.button.confirm')}`,
         onPress: async () => {
           setIsLoading(true);
           try {
@@ -75,7 +77,7 @@ const ScheduleMaintenance = () => {
               description: description.trim(),
             });
 
-            showToast.success('Scheduled', 'Maintenance scheduled successfully!');
+            showToast.success(`${t('maintenance.toast.schedule.success.title')}`, `${t('maintenance.toast.schedule.success.title')}`);
             navigation.goBack();
           } catch (error) {
             console.error(error);
@@ -89,26 +91,31 @@ const ScheduleMaintenance = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="Schedule Maintenance" backBtn />
+      <Header title={t('maintenance.schedule.title')} backBtn />
 
       {isLoading ? (
         <LoadingData />
       ) : (
         <ScrollView>
           <View className="px-6">
-            <View className="mt-4 mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-              <View className="px-4 py-3 bg-gray-50">
-                <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
+            <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800">
+                  {t('vehicle.detail.sectionInfo.title')}
+                </Text>
               </View>
 
               <View className="p-4">
                 <InfoRow
-                  label="Plate number"
+                  label={t('vehicle.detail.sectionInfo.label.plate')}
                   value={vehicleData.licensePlate || 'No information'}
                 />
-                <InfoRow label="Type" value={vehicleData.type || 'No information'} />
                 <InfoRow
-                  label="Brand & Model"
+                  label={t('vehicle.detail.sectionInfo.label.type')}
+                  value={vehicleData.type || 'No information'}
+                />
+                <InfoRow
+                  label={t('vehicle.detail.sectionInfo.label.brandAndModel')}
                   value=""
                   valueComponent={
                     vehicleData.brand || vehicleData.model ? (
@@ -121,17 +128,17 @@ const ScheduleMaintenance = () => {
                   }
                 />
                 <InfoRow
-                  label="Last maintenance"
+                  label={t('vehicle.detail.sectionInfo.label.lastMaintenance')}
                   value={formatDate(vehicleData.lastMaintenance) || 'No information'}
                   isLast
                 />
               </View>
             </View>
 
-            <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
-              <View className="px-4 py-3 bg-gray-50">
+            <View className="overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
                 <Text className="text-lg font-semibold text-gray-800">
-                  Schedule next maintenance
+                  {t('maintenance.schedule.section.title')}
                 </Text>
               </View>
               <View className="p-4">
@@ -154,8 +161,10 @@ const ScheduleMaintenance = () => {
                   }}
                 />
 
-                <View className="p-3 mt-4 rounded-lg bg-blue-50">
-                  <Text className="text-sm text-gray-600">Selected maintenance date:</Text>
+                <View className="mt-4 rounded-lg bg-blue-50 p-3">
+                  <Text className="text-sm text-gray-600">
+                    {t('maintenance.schedule.section.selectedDate')}:
+                  </Text>
                   <Text className="text-lg font-semibold text-blue-600">
                     {formatDate(selectedDate) || selectedDate}
                   </Text>
@@ -163,10 +172,10 @@ const ScheduleMaintenance = () => {
               </View>
             </View>
 
-            <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-              <View className="px-4 py-3 bg-gray-50">
+            <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
                 <InputField
-                  label="Estimated Time (days)"
+                  label={t('maintenance.schedule.estimate')}
                   value={estimatedTime}
                   onChangeText={setEstimatedTime}
                   keyboardType="numeric"
@@ -174,7 +183,7 @@ const ScheduleMaintenance = () => {
                 />
 
                 <InputField
-                  label="Description"
+                  label={t('maintenance.schedule.description')}
                   value={description}
                   onChangeText={setDescription}
                   multiline
@@ -184,9 +193,9 @@ const ScheduleMaintenance = () => {
               </View>
             </View>
 
-            <TouchableOpacity className="p-4 mb-6 bg-blue-600 rounded-xl" onPress={handleSchedule}>
-              <Text className="text-lg font-semibold text-center text-white">
-                Schedule Maintenance
+            <TouchableOpacity className="mb-6 rounded-xl bg-blue-600 p-4" onPress={handleSchedule}>
+              <Text className="text-center text-lg font-semibold text-white">
+                {t('maintenance.schedule.actions.schedule')}
               </Text>
             </TouchableOpacity>
           </View>

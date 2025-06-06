@@ -13,9 +13,11 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Calendar, DateData } from 'react-native-calendars';
 import { VehicleService } from '@/services/vehicleService';
 import { showToast } from '@/utils/toast';
+import { useTranslation } from 'react-i18next';
 
 const MaintenanceDetailScreen = () => {
   const route = useRoute();
+  const { t } = useTranslation();
   const { maintenanceData: initialMaintenanceData } = route.params as {
     maintenanceData: MaintenanceSchedule;
   };
@@ -104,8 +106,8 @@ const MaintenanceDetailScreen = () => {
   const handleConfirmReschedule = () => {
     try {
       Alert.alert(
-        'Reschedule Maintenance',
-        `Are you sure you want to reschedule maintenance ID#${maintenance.maintenanceId} - ${maintenance.vehicle.licensePlate}?`,
+        `${t('maintenance.toast.reschedule.confirm.title')}`,
+        `${t('maintenance.toast.reschedule.confirm.message')}`,
         [
           { text: 'Cancel', style: 'cancel' },
           {
@@ -115,20 +117,23 @@ const MaintenanceDetailScreen = () => {
               try {
                 const response = await VehicleService.rescheduleMaintenance(
                   maintenance.maintenanceId,
-                  { 
+                  {
                     startDate: selectedStartDate,
                     endDate: selectedEndDate,
                   }
                 );
                 setMaintenance(response);
                 showToast.success(
-                  'Reschedule successfully',
-                  'Your maintenance schedule was rescheduled successfully!'
+                  `${t('maintenance.toast.reschedule.success.title')}`,
+                  `${t('maintenance.toast.reschedule.success.message')}`
                 );
                 setIsModalVisible(false);
               } catch (error) {
                 console.log('Error rescheduling maintenance:', error);
-                Alert.alert('Error', 'Failed to reschedule maintenance');
+                Alert.alert(
+                  `${t('maintenance.toast.reschedule.error.title')}`,
+                  `${t('maintenance.toast.reschedule.error.message')}`
+                );
               }
             },
           },
@@ -140,13 +145,16 @@ const MaintenanceDetailScreen = () => {
   };
 
   const handleChangeStatus = (status: number) => {
-    const action = maintenance.status === 0 ? 'begin' : 'complete';
-    const actionText = maintenance.status === 0 ? 'Begin' : 'Complete';
+    const isBegin = maintenance.status === 0;
 
     try {
       Alert.alert(
-        `${actionText} Maintenance`,
-        `Are you sure you want to ${action} maintenance ID#${maintenance.maintenanceId} - ${maintenance.vehicle.licensePlate}?`,
+        isBegin
+          ? `${t('maintenance.toast.changeStatus.begin.confirm.title')}`
+          : `${t('maintenance.toast.changeStatus.complete.confirm.title')}`,
+        isBegin
+          ? `${t('maintenance.toast.changeStatus.begin.confirm.message')}`
+          : `${t('maintenance.toast.changeStatus.complete.confirm.message')}`,
         [
           { text: 'Cancel', style: 'cancel' },
           {
@@ -159,11 +167,25 @@ const MaintenanceDetailScreen = () => {
                   maintenance?.maintenanceId,
                   status
                 );
-                showToast.success('Success', `Maintenance has been ${action}d`);
+                showToast.success(
+                  isBegin
+                    ? `${t('maintenance.toast.changeStatus.begin.success.title')}`
+                    : `${t('maintenance.toast.changeStatus.complete.success.title')}`,
+                  isBegin
+                    ? `${t('maintenance.toast.changeStatus.begin.success.message')}`
+                    : `${t('maintenance.toast.changeStatus.complete.success.message')}`
+                );
                 setMaintenance(res);
               } catch (error) {
                 console.log('Error toggling status:', error);
-                Alert.alert('Error', `Failed to ${action} user`);
+                Alert.alert(
+                  isBegin
+                    ? `${t('maintenance.toast.changeStatus.begin.error.title')}`
+                    : `${t('maintenance.toast.changeStatus.complete.error.title')}`,
+                  isBegin
+                    ? `${t('maintenance.toast.changeStatus.begin.error.message')}`
+                    : `${t('maintenance.toast.changeStatus.complete.error.message')}`
+                );
               } finally {
                 setIsLoading(false);
               }
@@ -178,14 +200,14 @@ const MaintenanceDetailScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header backBtn title="Maintenance Details" />
+      <Header backBtn title={t('maintenance.detail.title')} />
 
       <View className="px-6">
-        <View className="mt-4 mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="p-4 bg-blue-50">
+        <View className="mb-2 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-blue-50 p-4">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
-                <View className="items-center justify-center w-10 h-10 mr-3 bg-blue-100 rounded-full">
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                   <FontAwesomeIcon
                     icon={getVehicleTypeIcon(maintenance.vehicle.type)}
                     size={18}
@@ -194,7 +216,7 @@ const MaintenanceDetailScreen = () => {
                 </View>
                 <View>
                   <Text className="text-sm text-gray-500">
-                    Maintenance ID #{maintenance.maintenanceId}
+                    {t('maintenance.detail.maintenanceId')} #{maintenance.maintenanceId}
                   </Text>
                   <Text className="text-base font-bold text-gray-800">
                     {formatDate(maintenance.scheduledDate)} -{' '}
@@ -204,13 +226,15 @@ const MaintenanceDetailScreen = () => {
               </View>
               {renderBadgeMaintenanceStatus(maintenance.status)}
             </View>
-            <View className="p-3 mt-4 border border-orange-200 rounded-xl bg-orange-50">
+            <View className="mt-4 rounded-xl border border-orange-200 bg-orange-50 p-3">
               <View className="flex-row items-start">
-                <View className="items-center justify-center w-6 h-6 mr-3 bg-orange-100 rounded-full">
+                <View className="mr-3 h-6 w-6 items-center justify-center rounded-full bg-orange-100">
                   <Text className="text-xs font-bold text-orange-600">!</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="mb-1 text-sm font-semibold text-orange-700">Description</Text>
+                  <Text className="mb-1 text-sm font-semibold text-orange-700">
+                    {t('maintenance.detail.description')}
+                  </Text>
                   <Text className="text-sm leading-5 text-orange-600">
                     {maintenance.description}
                   </Text>
@@ -220,19 +244,24 @@ const MaintenanceDetailScreen = () => {
           </View>
         </View>
 
-        <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
+        <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('vehicle.detail.sectionInfo.title')}
+            </Text>
           </View>
 
           <View className="p-4">
             <InfoRow
-              label="Plate number"
+              label={t('vehicle.detail.sectionInfo.label.plate')}
               value={maintenance.vehicle.licensePlate || 'No information'}
             />
-            <InfoRow label="Type" value={maintenance.vehicle.type || 'No information'} />
             <InfoRow
-              label="Brand & Model"
+              label={t('vehicle.detail.sectionInfo.label.type')}
+              value={maintenance.vehicle.type || 'No information'}
+            />
+            <InfoRow
+              label={t('vehicle.detail.sectionInfo.label.brandAndModel')}
               value=""
               valueComponent={
                 maintenance.vehicle.brand || maintenance.vehicle.model ? (
@@ -250,11 +279,13 @@ const MaintenanceDetailScreen = () => {
 
         {maintenance.status === 0 && (
           <View className="mt-2">
-            <View className="flex-row justify-between mt-4">
+            <View className="mt-4 flex-row justify-between">
               <TouchableOpacity
                 className="w-[48%] items-center rounded-xl bg-orange-500 py-4 shadow-sm "
                 onPress={handleReschedule}>
-                <Text className="font-semibold text-white">Reschedule</Text>
+                <Text className="font-semibold text-white">
+                  {t('maintenance.detail.actions.reschedule')}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -262,7 +293,9 @@ const MaintenanceDetailScreen = () => {
                 disabled={isLoading}
                 onPress={() => handleChangeStatus(1)}>
                 <Text className="font-semibold text-white">
-                  {isLoading ? 'Beginning....' : 'Begin'}
+                  {isLoading
+                    ? `${t('maintenance.detail.actions.beginning')}`
+                    : `${t('maintenance.detail.actions.begin')}`}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -276,15 +309,17 @@ const MaintenanceDetailScreen = () => {
               disabled={isLoading}
               onPress={() => handleChangeStatus(2)}>
               <Text className="font-semibold text-white">
-                {isLoading ? 'Getting done...' : 'Done'}
+                {isLoading
+                  ? `${t('maintenance.detail.actions.gettingDone')}`
+                  : `${t('maintenance.detail.actions.done')}`}
               </Text>
             </TouchableOpacity>
           </View>
         )}
 
         <View className="mt-4">
-          <Text className="text-sm font-medium text-right text-gray-500">
-            Last updated: {formatDatetime(maintenance.lastUpdateAt)}
+          <Text className="text-right text-sm font-medium text-gray-500">
+            {t('maintenance.detail.lastUpdated')}: {formatDatetime(maintenance.lastUpdateAt)}
           </Text>
         </View>
 
@@ -293,14 +328,18 @@ const MaintenanceDetailScreen = () => {
           visible={isModalVisible}
           animationType="fade"
           onRequestClose={handleCloseModal}>
-          <TouchableOpacity onPress={handleCloseModal} className="justify-center flex-1 bg-black/30">
+          <TouchableOpacity
+            onPress={handleCloseModal}
+            className="flex-1 justify-center bg-black/30">
             <TouchableOpacity onPress={(e) => e.stopPropagation()}>
-              <View className="mx-6 bg-white rounded-2xl">
-                <View className="flex-row items-center justify-between p-4 border-b border-gray-100">
-                  <Text className="text-lg font-bold text-gray-800">Reschedule Maintenance</Text>
+              <View className="mx-6 rounded-2xl bg-white">
+                <View className="flex-row items-center justify-between border-b border-gray-100 p-4">
+                  <Text className="text-lg font-bold text-gray-800">
+                    {t('maintenance.detail.modal.title')}
+                  </Text>
                   <TouchableOpacity
                     onPress={handleCloseModal}
-                    className="items-center justify-center w-8 h-8 bg-gray-100 rounded-full ">
+                    className="h-8 w-8 items-center justify-center rounded-full bg-gray-100 ">
                     <FontAwesomeIcon icon={faTimes} size={16} color="#6b7280" />
                   </TouchableOpacity>
                 </View>
@@ -331,7 +370,7 @@ const MaintenanceDetailScreen = () => {
                       onPress={handleConfirmReschedule}>
                       <Text
                         className={`${hasChanges ? 'font-semibold text-white' : 'font-semibold text-gray-500'}`}>
-                        Confirm
+                        {t('common.button.confirm')}
                       </Text>
                     </TouchableOpacity>
                   </View>

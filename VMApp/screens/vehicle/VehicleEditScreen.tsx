@@ -42,15 +42,15 @@ const VehicleEditScreen = () => {
     }
 
     if (!vehicleData.brand.trim()) {
-      newErrors.brand =  t('vehicle.validate.brand');
+      newErrors.brand = t('vehicle.validate.brand');
     }
 
     if (!vehicleData.model.trim()) {
-      newErrors.model =  t('vehicle.validate.modal');
+      newErrors.model = t('vehicle.validate.modal');
     }
 
     if (!vehicleData.type) {
-      newErrors.type =  t('vehicle.validate.type');
+      newErrors.type = t('vehicle.validate.type');
     }
 
     setErrors(newErrors);
@@ -59,28 +59,38 @@ const VehicleEditScreen = () => {
 
   const handleUpdateVehicle = () => {
     if (!validateForm()) {
-      showToast.error( `${t('vehicle.validate.error.title')}`, `${t('vehicle.validate.error.message')}`);
+      showToast.error(
+        `${t('vehicle.validate.error.title')}`,
+        `${t('vehicle.validate.error.message')}`
+      );
       return;
     }
-    Alert.alert('Update Vehicle', 'Are you sure you want to update this vehicle?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Update',
-        onPress: async () => {
-          setIsLoading(true);
-          try {
+    Alert.alert(
+      `${t('vehicle.validate.toast.update.confirm.title')}`,
+      `${t('vehicle.validate.toast.update.confirm.message')}`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Update',
+          onPress: async () => {
             setIsLoading(true);
-            const data = await VehicleService.updateVehicle(vehicleData.vehicleId, vehicleData);
-            setVehicleData(data);
-            showToast.success('Success', 'Vehicle updated successfully!');
-          } catch (error) {
-            console.log(error);
-          } finally {
-            setIsLoading(false);
-          }
+            try {
+              setIsLoading(true);
+              const data = await VehicleService.updateVehicle(vehicleData.vehicleId, vehicleData);
+              setVehicleData(data);
+              showToast.success(
+                `${t('vehicle.validate.toast.update.success.title')}`,
+                `${t('vehicle.validate.toast.update.success.message')}`
+              );
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setIsLoading(false);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleCancel = () => {

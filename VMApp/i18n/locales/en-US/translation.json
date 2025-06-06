@@ -6,7 +6,8 @@
       "confirm": "Confirm",
       "delete": "Delete",
       "save": "Save",
-      "keepEdit": "Keep Editing"
+      "keepEdit": "Keep Editing",
+      "yesIAmSure": "Yes, I am sure"
     },
     "status": {
       "all": "All",
@@ -295,7 +296,8 @@
           "brand": "Brand",
           "model": "Model",
           "brandAndModel": "Brand & Model",
-          "createAt": "Create At"
+          "createAt": "Create At",
+          "lastMaintenance": "Last maintenance"
         }
       },
       "sectionMaintenance": {
@@ -362,6 +364,106 @@
           "message": "Vehicle was removed successfully."
         }
       }
+    }
+  },
+
+  "maintenance": {
+    "management": {
+      "title": "Maintenance Management",
+      "searchPlaceholder": "Search plate, type or brand ...",
+      "totalSchedule": "Total Schedule"
+    },
+    "detail": {
+      "title": "Maintenance Details",
+      "maintenanceId": "Maintenance ID",
+      "description": "Description",
+      "actions": {
+        "reschedule": "Reschedule",
+        "begin": "Begin",
+        "beginning": "Beginning...",
+        "done": "Done",
+        "gettingDone": "Getting done..."
+      },
+      "lastUpdated": "Last updated",
+      "modal": {
+        "title": "Reschedule Maintenance"
+      }
+    },
+    "schedule": {
+      "title": "Schedule Maintenance",
+      "section": {
+        "title": "Schedule next maintenance",
+        "selectedDate": "Selected maintenance date"
+      },
+      "estimate": "Estimated Time (days)",
+      "description": "Description",
+      "actions": {
+        "schedule": "Schedule Maintenance"
+      }
+    },
+    "toast": {
+      "schedule": {
+        "confirm": {
+          "title": "Confirm Schedule",
+          "message": "Are you sure you want to schedule this maintenance?"
+        },
+        "success": {
+          "title": "Scheduled",
+          "message": "Maintenance scheduled successfully"
+        }
+      },
+      "reschedule": {
+        "confirm": {
+          "title": "Reschedule Maintenance",
+          "message": "Are you sure you want to reschedule this maintenance?"
+        },
+        "success": {
+          "title": "Reschedule successfully",
+          "message": "Your maintenance schedule was rescheduled successfully!"
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to reschedule maintenance!"
+        }
+      },
+      "changeStatus": {
+        "begin": {
+          "confirm": {
+            "title": "Begin Maintenance",
+            "message": "Are you sure you want to start the maintenance now?"
+          },
+          "success": {
+            "title": "Success",
+            "message": "Maintenance has begun"
+          },
+          "error": {
+            "title": "Error",
+            "message": "Failed to start the maintenance!"
+          }
+        },
+        "complete": {
+          "confirm": {
+            "title": "Complete Maintenance",
+            "message": "Are you sure you want to finish this maintenance?"
+          },
+          "success": {
+            "title": "Success",
+            "message": "Maintenance is complete!"
+          },
+          "error": {
+            "title": "Error",
+            "message": "Failed to start the maintenance!"
+          }
+        }
+      }
+    },
+    "validate": {
+      "error": {
+        "title": "Validation Error",
+        "message": "Please fix the errors above"
+      },
+      "estimate": "Estimated time is required",
+      "description": "Description is required"
     }
   }
 }

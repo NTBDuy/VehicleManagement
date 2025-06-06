@@ -93,7 +93,7 @@ const VehicleAddScreen = () => {
       <ScrollView className="px-6">
         <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
-            <Text className="text-lg font-semibold text-gray-800">Vehicle Information</Text>
+            <Text className="text-lg font-semibold text-gray-800">{t('vehicle.detail.sectionInfo.title')}</Text>
           </View>
 
           <View className="p-4">

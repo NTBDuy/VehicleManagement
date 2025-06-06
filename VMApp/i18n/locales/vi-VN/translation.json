@@ -6,7 +6,8 @@
       "confirm": "Xác nhận",
       "delete": "Xóa",
       "save": "Lưu",
-      "keepEdit": "Tiếp tục chỉnh sữa"
+      "keepEdit": "Tiếp tục chỉnh sữa",
+      "yesIAmSure": "Có, tôi chắc chắn"
     },
     "status": {
       "all": "Tất cả",
@@ -295,7 +296,8 @@
           "brand": "Hãng",
           "model": "Mẫu",
           "brandAndModel": "Hãng & Mẫu",
-          "createAt": "Ngày tạo"
+          "createAt": "Ngày tạo",
+          "lastMaintenance": "Bảo dưỡng lần cuối"
         }
       },
       "sectionMaintenance": {
@@ -362,6 +364,106 @@
           "message": "Phương tiện đã được xóa thành công."
         }
       }
+    }
+  },
+
+  "maintenance": {
+    "management": {
+      "title": "Quản Lý Bảo Dưỡng",
+      "searchPlaceholder": "Tìm theo biển số, loại hoặc hãng xe...",
+      "totalSchedule": "Tổng Số Lịch Bảo Dưỡng"
+    },
+    "detail": {
+      "title": "Chi Tiết Bảo Dưỡng",
+      "maintenanceId": "Mã Bảo Dưỡng",
+      "description": "Mô tả",
+      "actions": {
+        "reschedule": "Đặt lại lịch",
+        "begin": "Bắt đầu",
+        "beginning": "Đang bắt đầu...",
+        "done": "Hoàn thành",
+        "gettingDone": "Đang hoàn tất..."
+      },
+      "lastUpdated": "Cập nhật lần cuối",
+      "modal": {
+        "title": "Đặt Lại Lịch Bảo Dưỡng"
+      }
+    },
+    "schedule": {
+      "title": "Lên Lịch Bảo Dưỡng",
+      "section": {
+        "title": "Lên lịch bảo dưỡng tiếp theo",
+        "selectedDate": "Ngày bảo dưỡng đã chọn"
+      },
+      "estimate": "Thời Gian Dự Kiến (ngày)",
+      "description": "Mô tả",
+      "actions": {
+        "schedule": "Lên Lịch Bảo Dưỡng"
+      }
+    },
+    "toast": {
+      "schedule": {
+        "confirm": {
+          "title": "Xác Nhận Lịch",
+          "message": "Bạn có chắc muốn lên lịch bảo dưỡng này không?"
+        },
+        "success": {
+          "title": "Đã Lên Lịch",
+          "message": "Lịch bảo dưỡng đã được lên thành công"
+        }
+      },
+      "reschedule": {
+        "confirm": {
+          "title": "Đặt Lại Lịch Bảo Dưỡng",
+          "message": "Bạn có chắc muốn đặt lại lịch bảo dưỡng này không?"
+        },
+        "success": {
+          "title": "Đặt Lại Thành Công",
+          "message": "Lịch bảo dưỡng đã được đặt lại thành công!"
+        },
+        "error": {
+          "title": "Lỗi",
+          "message": "Không thể đặt lại lịch bảo dưỡng!"
+        }
+      },
+      "changeStatus": {
+        "begin": {
+          "confirm": {
+            "title": "Bắt Đầu Bảo Dưỡng",
+            "message": "Bạn có chắc muốn bắt đầu bảo dưỡng ngay bây giờ không?"
+          },
+          "success": {
+            "title": "Thành Công",
+            "message": "Bảo dưỡng đã bắt đầu"
+          },
+          "error": {
+            "title": "Lỗi",
+            "message": "Không thể bắt đầu bảo dưỡng!"
+          }
+        },
+        "complete": {
+          "confirm": {
+            "title": "Hoàn Thành Bảo Dưỡng",
+            "message": "Bạn có chắc muốn hoàn thành bảo dưỡng này không?"
+          },
+          "success": {
+            "title": "Thành Công",
+            "message": "Bảo dưỡng đã hoàn tất!"
+          },
+          "error": {
+            "title": "Lỗi",
+            "message": "Không thể hoàn tất bảo dưỡng!"
+          }
+        }
+      }
+    },
+    "validate": {
+      "error": {
+        "title": "Lỗi Xác Minh",
+        "message": "Vui lòng sửa các lỗi bên trên"
+      },
+      "estimate": "Thời gian dự kiến là bắt buộc",
+      "description": "Mô tả là bắt buộc"
     }
   }
 }

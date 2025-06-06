@@ -1,33 +1,42 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, TouchableOpacity, RefreshControl, SafeAreaView, View, Text, Modal } from 'react-native';
-import { VehicleService } from 'services/vehicleService';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
-import { faChevronRight, faEllipsisV, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { formatDate } from '@/utils/datetimeUtils';
 import { getColorByStatus } from '@/utils/maintenanceUtils';
+import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  FlatList,
+  RefreshControl,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { VehicleService } from 'services/vehicleService';
 
 import MaintenanceSchedule from 'types/MaintenanceSchedule';
 
 import Header from '@/components/layout/HeaderComponent';
-import LoadingData from '@/components/ui/LoadingData';
 import EmptyList from '@/components/ui/EmptyListComponent';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-
-const filterOptions = [
-  { id: 3, name: 'All' },
-  { id: 0, name: 'Pending' },
-  { id: 1, name: 'In Progress' },
-  { id: 2, name: 'Done' },
-];
+import LoadingData from '@/components/ui/LoadingData';
 
 const MaintenanceManagement = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [maintenance, setMaintenance] = useState<MaintenanceSchedule[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentStatusFilter, setCurrentStatusFilter] = useState(3);
+
+  const filterOptions = [
+    { id: 3, name: t('common.status.all') },
+    { id: 0, name: t('common.status.pending') },
+    { id: 1, name: t('common.status.inProgress') },
+    { id: 2, name: t('common.status.done') },
+  ];
 
   const filteredMaintenance = useMemo(() => {
     let filtered = [...maintenance];
@@ -105,7 +114,7 @@ const MaintenanceManagement = () => {
         handleViewDetail(item);
       }}
       className={`mb-4 flex-row items-center rounded-2xl border-r-2 border-t-2 bg-gray-100 px-2 py-4 ${getColorByStatus(item.status)}`}>
-      <View className="items-center justify-center w-12 h-12 ml-2 mr-4 bg-blue-300 rounded-full">
+      <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">
           <FontAwesomeIcon icon={getVehicleTypeIcon(item.vehicle.type)} size={24} color="#0d4d87" />
         </Text>
@@ -126,15 +135,15 @@ const MaintenanceManagement = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
-        title="Maintenance Management"
+        title={t('maintenance.management.title')}
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder="Search plate, type or brand ..."
+        placeholder={t('maintenance.management.searchPlaceholder')}
         handleClearFilters={handleClearFilters}
       />
 
-      <View className="flex-1 mx-6 mb-10">
+      <View className="mx-6 mb-10 flex-1">
         <View className="my-4">
           <FlatList
             horizontal
@@ -169,9 +178,9 @@ const MaintenanceManagement = () => {
       </View>
 
       {maintenance.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
-          <Text className="text-sm font-medium text-center text-gray-500">
-            Total Schedule:{' '}
+        <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
+          <Text className="text-center text-sm font-medium text-gray-500">
+            {t('maintenance.management.totalSchedule')}:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredMaintenance.length}</Text>
           </Text>
         </View>
