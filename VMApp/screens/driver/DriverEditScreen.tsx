@@ -1,25 +1,18 @@
+import { showToast } from '@/utils/toast';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
-import {
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import Driver from '@/types/Driver';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
-import { formatDate } from '@/utils/datetimeUtils';
 import { DriverService } from '@/services/driverService';
-import { showToast } from '@/utils/toast';
 
 const DriverEditScreen = () => {
   const route = useRoute();
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { driverData: initialDriverData } = route.params as { driverData: Driver };
   const [driverData, setDriverData] = useState<Driver>(initialDriverData);
@@ -39,29 +32,29 @@ const DriverEditScreen = () => {
     const newErrors: Partial<Driver> = {};
 
     if (!driverData.fullName?.trim()) {
-      newErrors.fullName = 'Full name is required' as any;
+      newErrors.fullName = t('validate.required.fullname') as any;
     }
 
     if (!driverData.licenseNumber?.trim()) {
-      newErrors.licenseNumber = 'License number is required' as any;
+      newErrors.licenseNumber = t('validate.required.license') as any;
     }
 
     if (!driverData.phoneNumber?.trim()) {
-      newErrors.phoneNumber = 'Phone number is required' as any;
+      newErrors.phoneNumber = t('validate.required.phone') as any;
     } else if (!/^\d{9,10}$/.test(driverData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = 'Please enter a valid phone number (9-10 digits)' as any;
+      newErrors.phoneNumber = t('validate.regex.phone') as any;
     }
 
     if (!driverData.licenseIssuedDate?.trim()) {
-      newErrors.licenseIssuedDate = 'License issued date is required' as any;
+      newErrors.licenseIssuedDate = t('validate.required.licenseIssueDate') as any;
     } else if (isNaN(Date.parse(driverData.licenseIssuedDate))) {
       newErrors.licenseIssuedDate = 'Please enter a valid date (e.g. YYYY-MM-DD)' as any;
     }
 
     if (driverData.yearsOfExperience == null || isNaN(driverData.yearsOfExperience)) {
-      newErrors.yearsOfExperience = 'Years of experience is required' as any;
+      newErrors.yearsOfExperience = t('validate.required.yearOfExperience') as any;
     } else if (driverData.yearsOfExperience < 0) {
-      newErrors.yearsOfExperience = 'Years of experience must be a non-negative number' as any;
+      newErrors.yearsOfExperience = t('validate.regex.yearOfExperience') as any;
     }
 
     setErrors(newErrors);
@@ -70,29 +63,36 @@ const DriverEditScreen = () => {
 
   const handleUpdate = () => {
     if (!validateForm()) {
-      Alert.alert('Validation Error', 'Please fix the errors above');
+      Alert.alert(`${t('validate.error.title')}`, `${t('validate.error.title')}`);
       return;
     }
 
-    Alert.alert('Update Driver', 'Are you sure you want to update this driver?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Update',
-        onPress: async () => {
-          setIsLoading(true);
-          try {
-            const data = await DriverService.updateDriver(driverData.driverId, driverData);
-            setDriverData(data);
-            setHasChanges(false);
-            showToast.success('Success', 'Driver updated successfully!');
-          } catch (error) {
-            console.log(error);
-          } finally {
-            setIsLoading(false);
-          }
+    Alert.alert(
+      `${t('driver.toast.update.confirm.title')}`,
+      `${t('driver.toast.update.confirm.message')}`,
+      [
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
+        {
+          text: `${t('common.button.update')}`,
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              const data = await DriverService.updateDriver(driverData.driverId, driverData);
+              setDriverData(data);
+              setHasChanges(false);
+              showToast.success(
+                `${t('driver.toast.update.success.title')}`,
+                `${t('driver.toast.update.success.message')}`
+              );
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setIsLoading(false);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleCancel = () => {
@@ -101,7 +101,7 @@ const DriverEditScreen = () => {
         'Discard Changes',
         'You have unsaved changes. Are you sure you want to discard them?',
         [
-          { text: 'Keep Editing', style: 'cancel' },
+          { text: `${t('common.button.keepEdit')}`, style: 'cancel' },
           { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
         ]
       );
@@ -127,17 +127,19 @@ const DriverEditScreen = () => {
       <ScrollView className="flex-1 px-6">
         <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
-            <Text className="text-lg font-semibold text-gray-800">Driver Information</Text>
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('driver.detail.section.title')}
+            </Text>
           </View>
           <View className="p-4">
             <InputField
-              label="Full Name"
+              label={t('driver.detail.section.fullname')}
               value={driverData.fullName || ''}
               onChangeText={(text) => updateDriverData('fullName', text)}
               error={errors.fullName as string}
             />
             <InputField
-              label="Phone Number"
+              label={t('driver.detail.section.phone')}
               value={driverData.phoneNumber || ''}
               onChangeText={(text) => updateDriverData('phoneNumber', text)}
               placeholder="e.g. 0912345678"
@@ -145,13 +147,13 @@ const DriverEditScreen = () => {
               error={errors.phoneNumber as string}
             />
             <InputField
-              label="License Number"
+              label={t('driver.detail.section.license')}
               value={driverData.licenseNumber || ''}
               onChangeText={(text) => updateDriverData('licenseNumber', text)}
               error={errors.licenseNumber as string}
             />
             <InputField
-              label="License Issued Date"
+              label={t('driver.detail.section.licenseDate')}
               value={driverData.licenseIssuedDate?.split('T')[0] || ''}
               onChangeText={(text) => updateDriverData('licenseIssuedDate', text)}
               placeholder="YYYY-MM-DD"
@@ -159,7 +161,7 @@ const DriverEditScreen = () => {
             />
 
             <InputField
-              label="Year of Experience"
+              label={t('driver.detail.section.experience')}
               value={driverData.yearsOfExperience.toString()}
               onChangeText={(text) => updateDriverData('yearsOfExperience', text)}
               keyboardType="numeric"
@@ -173,7 +175,7 @@ const DriverEditScreen = () => {
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
             disabled={isLoading}>
-            <Text className="font-semibold text-gray-700">Cancel</Text>
+            <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -183,7 +185,7 @@ const DriverEditScreen = () => {
             onPress={handleUpdate}
             disabled={isLoading || !hasChanges}>
             <Text className="font-semibold text-white">
-              {isLoading ? 'Updating...' : 'Update Driver'}
+              {isLoading ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
             </Text>
           </TouchableOpacity>
         </View>

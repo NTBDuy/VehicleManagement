@@ -7,7 +7,12 @@
       "delete": "Xóa",
       "save": "Lưu",
       "keepEdit": "Tiếp tục chỉnh sữa",
-      "yesIAmSure": "Có, tôi chắc chắn"
+      "yesIAmSure": "Có, tôi chắc chắn",
+      "create": "Tạo",
+      "creating": "Đang tạo...",
+      "update": "Cập nhật",
+      "updating": "Đang cập nhật...",
+      "loading": "Đang xử lý..."
     },
     "status": {
       "all": "Tất cả",
@@ -20,7 +25,10 @@
       "done": "Hoàn tất",
       "available": "Có sẵn",
       "inUse": "Đang sử dụng",
-      "maintenance": "Bảo trì"
+      "maintenance": "Bảo trì",
+      "active": "Kích hoạt",
+      "inactive": "Không kích hoạt",
+      "deactivate": "Huỷ kích hoạt"
     },
     "role": {
       "admin": "Quản trị viên",
@@ -34,6 +42,26 @@
     "expand": {
       "hide": "Ẩn chi tiết ▲",
       "show": "Hiện chi tiết ▼"
+    },
+    "unsaved": "Chưa lưu thay đổi"
+  },
+
+  "validate": {
+    "error": {
+      "title": "Lỗi Xác Thực",
+      "message": "Vui lòng sửa các lỗi bên trên"
+    },
+    "regex": {
+      "phone": "Vui lòng nhập số điện thoại hợp lệ (9–10 chữ số)",
+      "licenseIssueDate": "Vui lòng nhập ngày hợp lệ (YYYY-MM-DD)",
+      "yearOfExperience": "Số năm kinh nghiệm phải là một số không âm"
+    },
+    "required": {
+      "fullname": "Họ và tên là bắt buộc",
+      "phone": "Số điện thoại là bắt buộc",
+      "license": "Số giấy phép lái xe là bắt buộc",
+      "licenseIssueDate": "Ngày cấp giấy phép là bắt buộc",
+      "yearOfExperience": "Số năm kinh nghiệm là bắt buộc"
     }
   },
 
@@ -464,6 +492,91 @@
       },
       "estimate": "Thời gian dự kiến là bắt buộc",
       "description": "Mô tả là bắt buộc"
+    }
+  },
+
+  "driver": {
+    "management": {
+      "title": "Quản Lý Tài Xế",
+      "searchPlaceholder": "Tìm theo tên hoặc số điện thoại..."
+    },
+    "detail": {
+      "title": "Mã Tài xế",
+      "section": {
+        "title": "Thông Tin Tài Xế",
+        "fullname": "Họ và Tên",
+        "phone": "Số Điện Thoại",
+        "license": "Số Giấy Phép Lái Xe",
+        "licenseDate": "Ngày Cấp Giấy Phép",
+        "experience": "Số Năm Kinh Nghiệm",
+        "status": "Trạng thái"
+      }
+    },
+    "add": {
+      "title": "Thêm Tài Xế Mới",
+      "actions": {
+        "add": "Thêm Tài Xế",
+        "adding": "Đang thêm..."
+      }
+    },
+    "edit": {
+      "title": "Chỉnh Sửa Tài Xế",
+      "actions": {
+        "update": "Cập Nhật Tài Xế",
+        "updating": "Đang cập nhật..."
+      }
+    },
+    "toast": {
+      "toggleStatus": {
+        "activate": {
+          "confirm": {
+            "title": "Kích Hoạt Tài Xế",
+            "message": "Bạn có chắc muốn kích hoạt tài xế này không?"
+          },
+          "success": {
+            "title": "Thành Công",
+            "message": "Tài xế đã được kích hoạt thành công"
+          },
+          "error": {
+            "title": "Lỗi",
+            "message": "Kích hoạt tài xế thất bại"
+          }
+        },
+        "deactivate": {
+          "confirm": {
+            "title": "Vô Hiệu Hóa Tài Xế",
+            "message": "Bạn có chắc muốn vô hiệu hóa tài xế này không?"
+          },
+          "success": {
+            "title": "Thành Công",
+            "message": "Tài xế đã được vô hiệu hóa thành công"
+          },
+          "error": {
+            "title": "Lỗi",
+            "message": "Vô hiệu hóa tài xế thất bại"
+          }
+        }
+      },
+      "add": {
+        "confirm": {
+          "title": "Tạo Mới Tài Xế",
+          "message": "Bạn có chắc muốn tạo tài xế này không?"
+        },
+        "success": {
+          "title": "Thành Công",
+          "message": "Tạo tài xế thành công!"
+        }
+      },
+      "update": {
+        "confirm": {
+          "title": "Cập Nhật Tài Xế",
+          "message": "Bạn có chắc muốn cập nhật thông tin tài xế này không?"
+        },
+        "success": {
+          "title": "Thành Công",
+          "message": "Cập nhật tài xế thành công!"
+        }
+      }
     }
   }
 }

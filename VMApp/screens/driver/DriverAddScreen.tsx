@@ -1,25 +1,15 @@
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
-import {
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { DriverService } from '@/services/driverService';
+import { showToast } from '@/utils/toast';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { isValid, parseISO } from 'date-fns';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import Driver from '@/types/Driver';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
-import { formatDate } from '@/utils/datetimeUtils';
-import { DriverService } from '@/services/driverService';
-import { showToast } from '@/utils/toast';
 
 const DriverAddScreen = () => {
   const initialDriverData = {
@@ -33,6 +23,7 @@ const DriverAddScreen = () => {
   };
 
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [driverData, setDriverData] = useState<Driver>(initialDriverData);
   const [errors, setErrors] = useState<Partial<Driver>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -47,29 +38,29 @@ const DriverAddScreen = () => {
     const newErrors: Partial<Driver> = {};
 
     if (!driverData.fullName?.trim()) {
-      newErrors.fullName = 'Full name is required' as any;
+      newErrors.fullName = t('validate.required.fullname') as any;
     }
 
     if (!driverData.licenseNumber?.trim()) {
-      newErrors.licenseNumber = 'License number is required' as any;
+      newErrors.licenseNumber = t('validate.required.license') as any;
     }
 
     if (!driverData.phoneNumber?.trim()) {
-      newErrors.phoneNumber = 'Phone number is required' as any;
+      newErrors.phoneNumber = t('validate.required.phone') as any;
     } else if (!/^\d{9,10}$/.test(driverData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = 'Please enter a valid phone number (9-10 digits)' as any;
+      newErrors.phoneNumber = t('validate.regex.phone') as any;
     }
 
     if (!driverData.licenseIssuedDate?.trim()) {
-      newErrors.licenseIssuedDate = 'License issued date is required' as any;
+      newErrors.licenseIssuedDate = t('validate.required.licenseIssueDate') as any;
     } else if (!isValid(parseISO(driverData.licenseIssuedDate))) {
-      newErrors.licenseIssuedDate = 'Please enter a valid date (YYYY-MM-DD)';
+      newErrors.licenseIssuedDate = t('validate.regex.licenseIssueDate');
     }
 
     if (driverData.yearsOfExperience == null || isNaN(driverData.yearsOfExperience)) {
-      newErrors.yearsOfExperience = 'Years of experience is required' as any;
+      newErrors.yearsOfExperience = t('validate.required.yearOfExperience') as any;
     } else if (driverData.yearsOfExperience < 0) {
-      newErrors.yearsOfExperience = 'Years of experience must be a non-negative number' as any;
+      newErrors.yearsOfExperience = t('validate.regex.yearOfExperience') as any;
     }
 
     setErrors(newErrors);
@@ -78,29 +69,36 @@ const DriverAddScreen = () => {
 
   const handleCreate = () => {
     if (!validateForm()) {
-      Alert.alert('Validation Error', 'Please fix the errors above');
+      Alert.alert(`${t('validate.error.title')}`, `${t('validate.error.title')}`);
       return;
     }
 
-    Alert.alert('Create New Driver', 'Are you sure you want to create this driver?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Create',
-        onPress: async () => {
-          setIsLoading(true);
-          try {
-            const data = await DriverService.createDriver(driverData);
-            setDriverData(data);
-            showToast.success('Success', 'Driver created successfully!');
-            navigation.navigate('DriverDetail', { driverData: data });
-          } catch (error) {
-            console.log(error);
-          } finally {
-            setIsLoading(false);
-          }
+    Alert.alert(
+      `${t('driver.toast.add.confirm.title')}`,
+      `${t('driver.toast.add.confirm.message')}`,
+      [
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
+        {
+          text: `${t('common.button.create')}`,
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              const data = await DriverService.createDriver(driverData);
+              setDriverData(data);
+              showToast.success(
+                `${t('driver.toast.add.success.title')}`,
+                `${t('driver.toast.add.success.message')}`
+              );
+              navigation.navigate('DriverDetail', { driverData: data });
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setIsLoading(false);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleCancel = () => {
@@ -109,22 +107,24 @@ const DriverAddScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header backBtn title="Create New Driver" />
+      <Header backBtn title={t('driver.add.title')} />
 
       <ScrollView className="flex-1 px-6">
         <View className="overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
-            <Text className="text-lg font-semibold text-gray-800">Driver Information</Text>
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('driver.detail.section.title')}
+            </Text>
           </View>
           <View className="p-4">
             <InputField
-              label="Full Name"
+              label={t('driver.detail.section.fullname')}
               value={driverData.fullName || ''}
               onChangeText={(text) => setDriverData({ ...driverData, fullName: text })}
               error={errors.fullName as string}
             />
             <InputField
-              label="Phone Number"
+              label={t('driver.detail.section.phone')}
               value={driverData.phoneNumber || ''}
               onChangeText={(text) => setDriverData({ ...driverData, phoneNumber: text })}
               placeholder="e.g. 0912345678"
@@ -132,20 +132,20 @@ const DriverAddScreen = () => {
               error={errors.phoneNumber as string}
             />
             <InputField
-              label="License Number"
+              label={t('driver.detail.section.license')}
               value={driverData.licenseNumber || ''}
               onChangeText={(text) => setDriverData({ ...driverData, licenseNumber: text })}
               error={errors.licenseNumber as string}
             />
             <InputField
-              label="license Issued Date"
+              label={t('driver.detail.section.licenseDate')}
               value={driverData.licenseIssuedDate}
               onChangeText={(text) => setDriverData({ ...driverData, licenseIssuedDate: text })}
               placeholder="YYYY-MM-DD"
               error={errors.licenseIssuedDate as string}
             />
             <InputField
-              label="Year of Experience"
+              label={t('driver.detail.section.experience')}
               value={driverData.yearsOfExperience.toString()}
               onChangeText={(text) =>
                 setDriverData({ ...driverData, yearsOfExperience: Number(text) })
@@ -171,7 +171,7 @@ const DriverAddScreen = () => {
             onPress={handleCreate}
             disabled={isLoading}>
             <Text className="font-semibold text-white">
-              {isLoading ? 'Updating...' : 'Update Driver'}
+              {isLoading ? 'Adding...' : 'Add Driver'}
             </Text>
           </TouchableOpacity>
         </View>

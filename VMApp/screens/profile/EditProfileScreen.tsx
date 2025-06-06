@@ -165,7 +165,7 @@ const EditProfileScreen = () => {
               onPress={() => handleUpdateProfile(userData)}
               disabled={isLoading || !hasChanges}>
               <Text className="font-semibold text-white">
-                {isLoading ? 'Updating...' : 'Update User'}
+                {isLoading ? `${t('common.button.updating')}` : 'Update User'}
               </Text>
             </TouchableOpacity>
           </View>

@@ -247,7 +247,7 @@ const ChangePasswordScreen = () => {
             onPress={handleChangePassword}
             disabled={isLoading || !hasChanges}>
             <Text className="font-semibold text-white">
-              {isLoading ? 'Updating...' : 'Change Password'}
+              {isLoading ? `${t('common.button.updating')}` : 'Change Password'}
             </Text>
           </TouchableOpacity>
         </View>

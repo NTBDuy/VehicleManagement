@@ -57,7 +57,7 @@ const UserEditScreen = () => {
     }
 
     if (!userData.phoneNumber?.trim()) {
-      newErrors.phoneNumber = 'Phone number is required' as any;
+      newErrors.phoneNumber = t('validate.required.phone') as any;
     } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
       newErrors.phoneNumber = 'Please enter a valid phone number' as any;
     }
@@ -68,7 +68,7 @@ const UserEditScreen = () => {
 
   const handleUpdate = () => {
     if (!validateForm()) {
-      Alert.alert('Validation Error', 'Please fix the errors above');
+      Alert.alert(`${t('validate.error.title')}`, `${t('validate.error.title')}`);
       return;
     }
 
@@ -272,7 +272,7 @@ const UserEditScreen = () => {
             onPress={handleUpdate}
             disabled={isLoading || !hasChanges}>
             <Text className="font-semibold text-white">
-              {isLoading ? 'Updating...' : 'Update User'}
+              {isLoading ? `${t('common.button.updating')}` : 'Update User'}
             </Text>
           </TouchableOpacity>
         </View>

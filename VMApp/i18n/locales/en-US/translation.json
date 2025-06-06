@@ -7,7 +7,12 @@
       "delete": "Delete",
       "save": "Save",
       "keepEdit": "Keep Editing",
-      "yesIAmSure": "Yes, I am sure"
+      "yesIAmSure": "Yes, I am sure",
+      "create": "Create",
+      "creating": "Creating...",
+      "update": "Update",
+      "updating": "Updating...",
+      "loading": "Loading..."
     },
     "status": {
       "all": "All",
@@ -20,7 +25,10 @@
       "done": "Done",
       "available": "Available",
       "inUse": "In Use",
-      "maintenance": "Under Maintenance"
+      "maintenance": "Under Maintenance",
+      "active": "Active",
+      "inactive": "Inactive",
+      "deactivate": "Deactivate"
     },
     "role": {
       "admin": "Admin",
@@ -34,6 +42,26 @@
     "expand": {
       "hide": "Hide details ▲",
       "show": "Show details ▼"
+    },
+    "unsaved": "Unsaved changes"
+  },
+
+  "validate": {
+    "error": {
+      "title": "Validation Error",
+      "message": "Please fix the errors above"
+    },
+    "regex": {
+      "phone": "Please enter a valid phone number (9-10 digits)",
+      "licenseIssueDate": "Please enter a valid date (YYYY-MM-DD)",
+      "yearOfExperience": "Years of experience must be a non-negative number"
+    },
+    "required": {
+      "fullname": "Full name is required",
+      "phone": "Phone number is required",
+      "license": "License number is required",
+      "licenseIssueDate": "License issue date is required",
+      "yearOfExperience": "Years of experience are required"
     }
   },
 
@@ -464,6 +492,91 @@
       },
       "estimate": "Estimated time is required",
       "description": "Description is required"
+    }
+  },
+
+  "driver": {
+    "management": {
+      "title": "Driver Management",
+      "searchPlaceholder": "Search name or phone ..."
+    },
+    "detail": {
+      "title": "Driver ID",
+      "section": {
+        "title": "Driver Information",
+        "fullname": "Full Name",
+        "phone": "Phone Number",
+        "license": "License Number",
+        "licenseDate": "License Issued Date",
+        "experience": "Year of Experience",
+        "status": "Status"
+      }
+    },
+    "add": {
+      "title": "Create New Driver",
+      "actions": {
+        "add": "Add Driver",
+        "adding": "Adding..."
+      }
+    },
+    "edit": {
+      "title": "Edit Driver",
+      "actions": {
+        "update": "Update Driver",
+        "updating": "Updating..."
+      }
+    },
+    "toast": {
+      "toggleStatus": {
+        "activate": {
+          "confirm": {
+            "title": "Activate Driver",
+            "message": "Are you sure you want to activate"
+          },
+          "success": {
+            "title": "Success",
+            "message": "Driver has been activated successfully"
+          },
+          "error": {
+            "title": "Error",
+            "message": "Failed to activate driver"
+          }
+        },
+        "deactivate": {
+          "confirm": {
+            "title": "Deactivate Driver",
+            "message": "Are you sure you want to deactivate"
+          },
+          "success": {
+            "title": "Success",
+            "message": "Driver has been deactivated successfully"
+          },
+          "error": {
+            "title": "Error",
+            "message": "Failed to deactivate driver"
+          }
+        }
+      },
+      "add": {
+        "confirm": {
+          "title": "Create New Driver",
+          "message": "Are you sure you want to create this driver?"
+        },
+        "success": {
+          "title": "Success",
+          "message": "Driver created successfully!"
+        }
+      },
+      "update": {
+        "confirm": {
+          "title": "Update Driver",
+          "message": "Are you sure you want to update this driver?"
+        },
+        "success": {
+          "title": "Success",
+          "message": "Driver updated successfully!"
+        }
+      }
     }
   }
 }

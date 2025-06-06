@@ -1,5 +1,7 @@
+import { formatDate } from '@/utils/datetimeUtils';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { DriverService } from 'services/driverService';
 import { showToast } from 'utils/toast';
@@ -11,10 +13,10 @@ import Header from '@/components/layout/HeaderComponent';
 import InfoRow from '@/components/ui/InfoRowComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import NoDataAvailable from '@/components/ui/NoDataAvailable';
-import { formatDate } from '@/utils/datetimeUtils';
 
 const DriverDetailsScreen = () => {
   const route = useRoute();
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(false);
   const [isButtonActionLoading, setIsButtonActionLoading] = useState(false);
@@ -23,7 +25,6 @@ const DriverDetailsScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('TEST NHA');
       if (initialDriverData?.driverId) {
         fetchDriverData(initialDriverData.driverId);
       }
@@ -59,26 +60,43 @@ const DriverDetailsScreen = () => {
   };
 
   const handleToggleStatus = async () => {
-    const action = driverData.isActive ? 'deactivate' : 'activate';
-    const actionText = driverData.isActive ? 'Deactivate' : 'Activate';
+    const isActivate = driverData.isActive;
 
     Alert.alert(
-      `${actionText} Driver`,
-      `Are you sure you want to ${action} ${driverData.fullName}?`,
+      isActivate
+        ? `${t('driver.toast.toggleStatus.activate.confirm.title')}`
+        : `${t('driver.toast.toggleStatus.deactivate.confirm.title')}`,
+      isActivate
+        ? `${t('driver.toast.toggleStatus.activate.confirm.message')}?`
+        : `${t('driver.toast.toggleStatus.deactivate.confirm.message')}?`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
         {
-          text: actionText,
+          text: t('common.button.yesIAmSure'),
           style: driverData.isActive ? 'destructive' : 'default',
           onPress: async () => {
             setIsButtonActionLoading(true);
             try {
               await DriverService.toggleStatus(driverData?.driverId);
-              showToast.success('Success', `Driver has been ${action}d successfully`);
+              showToast.success(
+                isActivate
+                  ? `${t('driver.toast.toggleStatus.activate.success.title')}`
+                  : `${t('driver.toast.toggleStatus.deactivate.success.title')}`,
+                isActivate
+                  ? `${t('driver.toast.toggleStatus.activate.success.message')}?`
+                  : `${t('driver.toast.toggleStatus.deactivate.success.message')}?`
+              );
               await fetchDriverData(driverData.driverId);
             } catch (error) {
               console.log('Error toggling isActive:', error);
-              Alert.alert('Error', `Failed to ${action} driver`);
+              Alert.alert(
+                isActivate
+                  ? `${t('driver.toast.toggleStatus.activate.error.title')}`
+                  : `${t('driver.toast.toggleStatus.deactivate.error.title')}`,
+                isActivate
+                  ? `${t('driver.toast.toggleStatus.activate.error.message')}?`
+                  : `${t('driver.toast.toggleStatus.deactivate.error.message')}?`
+              );
             } finally {
               setIsButtonActionLoading(false);
             }
@@ -93,7 +111,9 @@ const DriverDetailsScreen = () => {
       <Header
         backBtn
         customTitle={
-          <Text className="text-xl font-bold text-gray-800">Driver #{driverData.driverId}</Text>
+          <Text className="text-xl font-bold text-gray-800">
+            {t('driver.detail.title')} #{driverData.driverId}
+          </Text>
         }
       />
 
@@ -119,36 +139,46 @@ const DriverDetailsScreen = () => {
 
           <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
             <View className="bg-gray-50 px-4 py-3">
-              <Text className="text-lg font-semibold text-gray-800">Personal Information</Text>
+              <Text className="text-lg font-semibold text-gray-800">
+                {t('driver.detail.section.title')}
+              </Text>
             </View>
             <View className="p-4">
-              <InfoRow label="Full Name" value={driverData.fullName || 'Not provided'} />
               <InfoRow
-                label="Phone Number"
+                label={t('driver.detail.section.fullname')}
+                value={driverData.fullName || 'Not provided'}
+              />
+              <InfoRow
+                label={t('driver.detail.section.phone')}
                 value={
                   driverData.phoneNumber
                     ? formatVietnamPhoneNumber(driverData.phoneNumber)
                     : 'Not provided'
                 }
               />
-              <InfoRow label="License Number" value={driverData.licenseNumber || 'Not provided'} />
               <InfoRow
-                label="License Issued Date"
+                label={t('driver.detail.section.license')}
+                value={driverData.licenseNumber || 'Not provided'}
+              />
+              <InfoRow
+                label={t('driver.detail.section.licenseDate')}
                 value={formatDate(driverData.licenseIssuedDate) || 'Not provided'}
               />
               <InfoRow
-                label="Year of Experience"
+                label={t('driver.detail.section.experience')}
                 value={driverData.yearsOfExperience.toString() || 'Not provided'}
               />
               <InfoRow
-                label="Status"
+                label={t('driver.detail.section.status')}
                 value=""
                 valueComponent={
                   <View
                     className={`rounded-full px-3 py-1 ${driverData.isActive ? 'bg-green-100' : 'bg-gray-100'}`}>
                     <Text
                       className={`text-sm font-medium ${driverData.isActive ? 'text-green-800' : 'text-gray-600'}`}>
-                      {driverData.isActive ? 'Active' : 'Inactive'}
+                      {driverData.isActive
+                        ? `${t('common.status.active')}`
+                        : `${t('common.status.inactive')}`}
                     </Text>
                   </View>
                 }
@@ -166,10 +196,10 @@ const DriverDetailsScreen = () => {
               disabled={isButtonActionLoading}>
               <Text className="font-semibold text-white">
                 {isButtonActionLoading
-                  ? 'Loading...'
+                  ? `${t('common.button.loading')}`
                   : driverData.isActive
-                    ? 'Deactivate'
-                    : 'Activate'}
+                    ? `${t('common.status.deactivate')}`
+                    : `${t('common.status.active')}`}
               </Text>
             </TouchableOpacity>
 
@@ -177,7 +207,7 @@ const DriverDetailsScreen = () => {
               className="w-[48%] items-center rounded-xl bg-blue-600 py-4 shadow-sm "
               onPress={handleEdit}
               disabled={isLoading}>
-              <Text className="font-semibold text-white">Edit Driver</Text>
+              <Text className="font-semibold text-white">{t('driver.edit.actions.update')}</Text>
             </TouchableOpacity>
           </View>
         </View>
