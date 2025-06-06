@@ -1,7 +1,9 @@
+import { showToast } from '@/utils/toast';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useEffect, useState } from 'react';
-import { Alert, TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
@@ -14,11 +16,11 @@ import InfoRow from '@/components/ui/InfoRowComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
-import { showToast } from '@/utils/toast';
 
 const RequestDetailScreen = () => {
   const route = useRoute();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { requestData: initialRequestData } = route.params as { requestData: Request };
   const [requestData, setRequestData] = useState<Request>(initialRequestData);
   const [isASameDate] = useState(initialRequestData.startTime == initialRequestData.endTime);
@@ -150,55 +152,66 @@ const RequestDetailScreen = () => {
   };
 
   const handleUsingVehicle = () => {
-    Alert.alert('Start Vehicle Usage', 'Are you sure you want to start using the vehicle?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Confirm',
-        onPress: async () => {
-          if (!canUseVehicle()) {
-            showToast.error('Cannot use vehicle', 'Vehicle can only be used on the scheduled date');
-            return;
-          }
-          try {
-            setIsUsingLoading(true);
-            const response = await RequestService.usingVehicle(requestData.requestId);
-            setRequestData(response);
-            showToast.success(
-              'Vehicle usage started successfully',
-              'You can now use the vehicle. Please remember to end usage when finished.'
-            );
-          } catch (error) {
-            console.log(error);
-          } finally {
-            setIsUsingLoading(false);
-          }
+    Alert.alert(
+      `${t('request.detail.toast.startUsing.title')}`,
+      `${t('request.detail.toast.startUsing.message')}`,
+      [
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
+        {
+          text: `${t('common.button.confirm')}`,
+          onPress: async () => {
+            if (!canUseVehicle()) {
+              showToast.error(
+                `${t('request.detail.toast.startUsingError.title')}`,
+                `${t('request.detail.toast.startUsingError.message')}`
+              );
+              return;
+            }
+            try {
+              setIsUsingLoading(true);
+              const response = await RequestService.usingVehicle(requestData.requestId);
+              setRequestData(response);
+              showToast.success(
+                `${t('request.detail.toast.startUsingSuccess.title')}`,
+                `${t('request.detail.toast.startUsingSuccess.message')}`
+              );
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setIsUsingLoading(false);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleEndUsage = () => {
-    Alert.alert('End Vehicle Usage', 'Are you sure you want to end the vehicle usage?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Confirm',
-        onPress: async () => {
-          try {
-            setIsEndUsageLoading(true);
-            const response = await RequestService.endUsageVehicle(requestData.requestId);
-            setRequestData(response);
-            showToast.success(
-              'Vehicle usage ended successfully',
-              'The vehicle has been returned and the request is now marked as complete.'
-            );
-          } catch (error) {
-            console.log(error);
-          } finally {
-            setIsEndUsageLoading(false);
-          }
+    Alert.alert(
+      `${t('request.detail.toast.endUsage.title')}`,
+      `${t('request.detail.toast.endUsage.message')}`,
+      [
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
+        {
+          text: `${t('common.button.confirm')}`,
+          onPress: async () => {
+            try {
+              setIsEndUsageLoading(true);
+              const response = await RequestService.endUsageVehicle(requestData.requestId);
+              setRequestData(response);
+              showToast.success(
+                `${t('request.detail.toast.endUsageSuccess.title')}`,
+                `${t('request.detail.toast.endUsageSuccess.message')}`
+              );
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setIsEndUsageLoading(false);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const isOverdue = (endDate: string) => {
@@ -217,51 +230,55 @@ const RequestDetailScreen = () => {
   };
 
   const handleRemind = () => {
-    Alert.alert('Send Reminder', 'Are you sure you want to send a reminder to use the vehicle?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Confirm',
-        onPress: async () => {
-          try {
-            setIsUsingLoading(true);
-            await RequestService.remindVehicle(requestData.requestId);
-            showToast.success(
-              'Reminder sent',
-              'The user has been reminded to start vehicle usage.'
-            );
-          } catch (error) {
-            console.log(error);
-          } finally {
-            setIsUsingLoading(false);
-          }
+    Alert.alert(
+      `${t('request.detail.toast.remind.title')}`,
+      `${t('request.detail.toast.remind.message')}`,
+      [
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
+        {
+          text: `${t('common.button.confirm')}`,
+          onPress: async () => {
+            try {
+              setIsUsingLoading(true);
+              await RequestService.remindVehicle(requestData.requestId);
+              showToast.success(
+                `${t('request.detail.toast.remindSuccess.title')}`,
+                `${t('request.detail.toast.remindSuccess.message')}`
+              );
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setIsUsingLoading(false);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="Request detail" backBtn />
+      <Header title={t('request.detail.title')} backBtn />
 
-      <ScrollView className="flex-1 mb-8">
+      <ScrollView className="mb-8 flex-1">
         <View className="px-4">
-          <View className="mt-6 mb-4 overflow-hidden bg-white border border-gray-100 shadow-lg rounded-3xl">
-            <View className="p-6 bg-blue-50">
+          <View className="mb-4 mt-6 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-lg">
+            <View className="bg-blue-50 p-6">
               <View className="flex-row items-start justify-between">
-                <View className="flex-row items-center flex-1">
-                  <View className="items-center justify-center w-12 h-12 mr-4 bg-blue-600 shadow-md rounded-2xl">
+                <View className="flex-1 flex-row items-center">
+                  <View className="mr-4 h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 shadow-md">
                     <Text className="text-lg font-bold text-white">
                       {getUserInitials(requestData.user?.fullName)}
                     </Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="mb-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                      Request ID #{requestData.requestId}
+                    <Text className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">
+                      {t('request.detail.requestId')} #{requestData.requestId}
                     </Text>
                     <Text className="mb-1 text-xl font-bold text-gray-900">
                       {requestData.user?.fullName}
                     </Text>
-                    <Text className="text-sm text-gray-600">Submitted request</Text>
+                    <Text className="text-sm text-gray-600">{t('request.detail.submitted')}</Text>
                   </View>
                 </View>
                 <View className="ml-4">
@@ -269,10 +286,10 @@ const RequestDetailScreen = () => {
                 </View>
               </View>
               {requestData.status !== 0 && (
-                <View className="p-4 mt-4 border border-blue-200 shadow-sm rounded-2xl bg-white/90">
+                <View className="mt-4 rounded-2xl border border-blue-200 bg-white/90 p-4 shadow-sm">
                   <Text className="text-base leading-relaxed text-gray-700">
-                    <Text className="font-semibold">Status: </Text>
-                    This request was{' '}
+                    <Text className="font-semibold"> {t('request.detail.status')}: </Text>
+                    {t('request.detail.thisRequestWas')}{' '}
                     <Text
                       className={`font-bold ${
                         requestData.status === 1
@@ -285,13 +302,13 @@ const RequestDetailScreen = () => {
                                 ? 'text-red-600'
                                 : 'text-orange-600'
                       }`}>
-                      {requestData.status === 1 && 'approved'}
-                      {requestData.status === 4 && 'approved'}
-                      {requestData.status === 5 && 'approved'}
-                      {requestData.status === 2 && 'rejected'}
-                      {requestData.status === 3 && 'cancelled'}
+                      {requestData.status === 1 && t('common.status.approved')}
+                      {requestData.status === 4 && t('common.status.approved')}
+                      {requestData.status === 5 && t('common.status.approved')}
+                      {requestData.status === 2 && t('common.status.rejected')}
+                      {requestData.status === 3 && t('common.status.cancelled')}
                     </Text>{' '}
-                    by{' '}
+                    {t('request.detail.by')}{' '}
                     <Text className="font-semibold text-gray-800">
                       {requestData.actionByUser.fullName || 'No Information'}
                     </Text>
@@ -300,18 +317,19 @@ const RequestDetailScreen = () => {
               )}
             </View>
 
-            {/* Rejection/Cancellation Reason */}
             {(requestData.status === 3 || requestData.status === 2) && (
-              <View className="p-6 border-t border-red-100 bg-red-50">
+              <View className="border-t border-red-100 bg-red-50 p-6">
                 <View className="flex-row items-start">
-                  <View className="items-center justify-center w-8 h-8 mr-4 bg-red-500 rounded-full shadow-sm">
+                  <View className="mr-4 h-8 w-8 items-center justify-center rounded-full bg-red-500 shadow-sm">
                     <Text className="text-sm font-bold text-white">!</Text>
                   </View>
                   <View className="flex-1">
                     <Text className="mb-3 text-lg font-bold text-red-800">
-                      {requestData.status === 3 ? 'Cancellation' : 'Rejection'} Details
+                      {requestData.status === 3
+                        ? `${t('request.detail.cancellationTitle')}`
+                        : `${t('request.detail.rejectionTitle')}`}
                     </Text>
-                    <View className="p-4 bg-white border border-red-200 shadow-sm rounded-xl">
+                    <View className="rounded-xl border border-red-200 bg-white p-4 shadow-sm">
                       <Text className="text-base font-medium leading-6 text-red-700">
                         {requestData.cancelOrRejectReason}
                       </Text>
@@ -324,15 +342,24 @@ const RequestDetailScreen = () => {
         </View>
 
         <View className="px-6">
-          <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-            <View className="px-4 py-3 bg-gray-50">
-              <Text className="text-lg font-semibold text-gray-800">Request Information</Text>
+          <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+            <View className="bg-gray-50 px-4 py-3">
+              <Text className="text-lg font-semibold text-gray-800">
+                {t('request.detail.info.section')}
+              </Text>
             </View>
 
             <View className="p-4">
-              <InfoRow label="Request by" value={requestData.user?.fullName || 'No information'} />
               <InfoRow
-                label={!isASameDate ? 'Date range' : 'Date'}
+                label={t('request.detail.info.requestBy')}
+                value={requestData.user?.fullName || 'No information'}
+              />
+              <InfoRow
+                label={
+                  !isASameDate
+                    ? `${t('request.detail.info.dateRange')}`
+                    : `${t('request.detail.info.date')}`
+                }
                 value=""
                 valueComponent={
                   <Text className="max-w-[60%] text-right font-semibold text-gray-800">
@@ -343,7 +370,7 @@ const RequestDetailScreen = () => {
                 }
               />
               <InfoRow
-                label="vehicle"
+                label={t('request.detail.info.vehicle')}
                 value=""
                 valueComponent={
                   <Text className="max-w-[60%] text-right font-semibold text-gray-800">
@@ -352,28 +379,37 @@ const RequestDetailScreen = () => {
                   </Text>
                 }
               />
-              <InfoRow label="Purpose" value={requestData.purpose || 'No information'} />
               <InfoRow
-                label="Driver required"
+                label={t('request.detail.info.purpose')}
+                value={requestData.purpose || 'No information'}
+              />
+              <InfoRow
+                label={t('request.detail.info.driverRequired')}
                 value={requestData.isDriverRequired ? 'Assign a driver' : 'Drive by self'}
               />
-              <InfoRow label="Request date" value={formatDate(requestData.createdAt)} isLast />
+              <InfoRow
+                label={t('request.detail.info.requestDate')}
+                value={formatDate(requestData.createdAt)}
+                isLast
+              />
             </View>
           </View>
 
           {requestData.isDriverRequired && assignmentData && (
-            <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-              <View className="px-4 py-3 bg-gray-50">
-                <Text className="text-lg font-semibold text-gray-800">Driver Information</Text>
+            <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800">
+                  {t('request.detail.driver.section')}
+                </Text>
               </View>
 
               <View className="p-4">
                 <InfoRow
-                  label="Driver"
+                  label={t('request.detail.driver.name')}
                   value={assignmentData?.driver.fullName || 'No information'}
                 />
                 <InfoRow
-                  label="Phone"
+                  label={t('request.detail.driver.phone')}
                   value={
                     formatVietnamPhoneNumber(assignmentData?.driver.phoneNumber) || 'No information'
                   }
@@ -386,17 +422,21 @@ const RequestDetailScreen = () => {
           {user?.role === 2 && (
             <>
               {requestData.status === 0 && (
-                <View className="flex-row justify-between mt-4">
+                <View className="mt-4 flex-row justify-between">
                   <TouchableOpacity
                     className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm "
                     onPress={handleApprove}>
-                    <Text className="font-semibold text-white">Approve</Text>
+                    <Text className="font-semibold text-white">
+                      {t('request.detail.actions.approve')}
+                    </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     className="w-[48%] items-center rounded-xl bg-red-600 py-4 shadow-sm "
                     onPress={handleReject}>
-                    <Text className="font-semibold text-white">Reject</Text>
+                    <Text className="font-semibold text-white">
+                      {t('request.detail.actions.reject')}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -404,9 +444,11 @@ const RequestDetailScreen = () => {
               {requestData.status === 1 && user?.userId != requestData.userId && (
                 <View className="mt-4">
                   <TouchableOpacity
-                    className="items-center py-4 bg-gray-500 shadow-sm rounded-xl "
+                    className="items-center rounded-xl bg-gray-500 py-4 shadow-sm "
                     onPress={handleCancel}>
-                    <Text className="font-semibold text-white">Cancel</Text>
+                    <Text className="font-semibold text-white">
+                      {t('request.detail.actions.cancel')}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -425,12 +467,12 @@ const RequestDetailScreen = () => {
                     disabled={isReminderSent}>
                     <Text className="font-semibold text-white">
                       {isReminderSent
-                        ? '✓ Reminder sent'
+                        ? `${t('request.detail.actions.remind.sent')}`
                         : isOverdue(requestData.endTime)
-                          ? 'Urgent: Return overdue vehicle'
+                          ? `${t('request.detail.actions.remind.urgent')}`
                           : isNearDueDate(requestData.endTime)
-                            ? 'Due soon: Remind return'
-                            : 'Remind for return vehicle'}
+                            ? `${t('request.detail.actions.remind.soon')}`
+                            : `${t('request.detail.actions.remind.normal')}`}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -445,16 +487,20 @@ const RequestDetailScreen = () => {
                   <TouchableOpacity
                     className={`items-center rounded-xl bg-gray-600 py-4 shadow-sm  `}
                     onPress={handleCancel}>
-                    <Text className="font-semibold text-white">Cancel</Text>
+                    <Text className="font-semibold text-white">
+                      {t('request.detail.actions.cancel')}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
               {requestData.status === 1 && (
-                <View className="flex-row justify-between mt-4">
+                <View className="mt-4 flex-row justify-between">
                   <TouchableOpacity
                     className="w-[48%] items-center rounded-xl bg-gray-600 py-4 shadow-sm "
                     onPress={handleCancel}>
-                    <Text className="font-semibold text-white">Cancel</Text>
+                    <Text className="font-semibold text-white">
+                      {t('request.detail.actions.cancel')}
+                    </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -462,7 +508,9 @@ const RequestDetailScreen = () => {
                     disabled={isUsingLoading}
                     onPress={handleUsingVehicle}>
                     <Text className="font-semibold text-white">
-                      {isUsingLoading ? 'Loading...' : 'Using Vehicle'}
+                      {isUsingLoading
+                        ? `${t('request.detail.actions.loading')}`
+                        : `${t('request.detail.actions.usingVehicle')}`}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -474,7 +522,9 @@ const RequestDetailScreen = () => {
                     disabled={isEndUsageLoading}
                     onPress={handleEndUsage}>
                     <Text className="font-semibold text-white">
-                      {isEndUsageLoading ? 'Ending...' : 'End Usage'}
+                      {isEndUsageLoading
+                        ? `${t('request.detail.actions.ending')}`
+                        : `${t('request.detail.actions.endUsage')}`}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -483,8 +533,8 @@ const RequestDetailScreen = () => {
           )}
 
           <View className="mt-4">
-            <Text className="text-sm font-medium text-right text-gray-500">
-              Last updated: {formatDatetime(requestData.lastUpdateAt)}
+            <Text className="text-right text-sm font-medium text-gray-500">
+              {t('request.detail.lastUpdated')}: {formatDatetime(requestData.lastUpdateAt)}
             </Text>
           </View>
         </View>

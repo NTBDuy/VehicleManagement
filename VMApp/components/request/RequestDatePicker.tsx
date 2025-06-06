@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Switch, Text, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { formatDayMonth } from 'utils/datetimeUtils';
@@ -24,9 +25,10 @@ const RequestDatePicker = ({
   setEndDate,
   setIsDisable,
 }: DatePickerComponentProps) => {
-  const toggleSwitch = () => setIsMultiDayTrip((previousState) => !previousState);
-
+  const { t } = useTranslation();
   const [today] = useState(new Date().toISOString().split('T')[0]);
+
+  const toggleSwitch = () => setIsMultiDayTrip((previousState) => !previousState);
 
   const getMarkedDates = () => {
     let marked: { [date: string]: any } = {};
@@ -73,7 +75,7 @@ const RequestDatePicker = ({
   return (
     <View className="px-2">
       <View className="mb-4">
-        <View className="flex-row items-center mb-1">
+        <View className="mb-1 flex-row items-center">
           <Switch
             trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
             thumbColor={isMultiDayTrip ? '#fff' : '#f3f4f6'}
@@ -83,13 +85,13 @@ const RequestDatePicker = ({
             className="-m-2 scale-75"
           />
           <Text className="ml-2 text-sm text-gray-600">
-            {isMultiDayTrip ? 'Multi-day trip' : 'Day trip'}
+            {isMultiDayTrip ? `${t('request.create.tripType.multi')}` : `${t('request.create.tripType.day')}`}
           </Text>
         </View>
       </View>
       {isMultiDayTrip ? (
         <InfoRow
-          label="Date"
+          label={t('request.create.dateLabel')}
           value=""
           valueComponent={
             <View className="flex-row">
@@ -99,7 +101,7 @@ const RequestDatePicker = ({
           }
         />
       ) : (
-        <InfoRow label="Date" value={formatDayMonth(startDate)} />
+        <InfoRow label={t('request.create.dateLabel')} value={formatDayMonth(startDate)} />
       )}
       <View className="mt-4">
         <Calendar

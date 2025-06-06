@@ -18,7 +18,6 @@ interface ConfirmComponentProps {
   setPurpose: React.Dispatch<React.SetStateAction<string>>;
   isAssignDriver: boolean;
   setIsAssignDriver: React.Dispatch<React.SetStateAction<boolean>>;
-  errors: string;
 }
 
 const RequestDestination = ({
@@ -29,7 +28,6 @@ const RequestDestination = ({
   setPurpose,
   isAssignDriver,
   setIsAssignDriver,
-  errors,
 }: ConfirmComponentProps) => {
   const [isMultipleDestination, setIsMultipleDestination] = useState(false);
   const toggleSwitch = () => setIsMultipleDestination((previousState) => !previousState);
@@ -52,13 +50,13 @@ const RequestDestination = ({
             </Text>
           </View>
         </View>
-        <View className="rounded-2xl bg-white px-6 py-4 mt-4">
-          <View className='flex-row'>
-            <FontAwesomeIcon icon={faLocationDot} color="#2986cc" size={24}/>
+        <View className="mt-4 rounded-2xl bg-white px-6 py-4">
+          <View className="flex-row">
+            <FontAwesomeIcon icon={faLocationDot} color="#2986cc" size={24} />
             <Text>Điểm đi</Text>
           </View>
-          <View className='flex-row mt-4'>
-            <FontAwesomeIcon icon={faLocationDot} color="#cc0000" size={24}/>
+          <View className="mt-4 flex-row">
+            <FontAwesomeIcon icon={faLocationDot} color="#cc0000" size={24} />
             <Text>Điểm đến</Text>
           </View>
         </View>

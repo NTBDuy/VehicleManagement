@@ -21,9 +21,11 @@ import RequestDatePicker from '@/components/request/RequestDatePicker';
 import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
 import { RequestService } from '@/services/requestService';
 import RequestDestination from '@/components/request/RequestDestination';
+import { useTranslation } from 'react-i18next';
 
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
   const [isMultiDayTrip, setIsMultiDayTrip] = useState(false);
@@ -35,13 +37,12 @@ const RequestCreateScreen = () => {
   const [isAssignDriver, setIsAssignDriver] = useState(false);
   const [isDisabled, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState('');
 
   const tabs = [
-    { id: 0, title: 'Date', icon: faCalendarDays },
-    { id: 1, title: 'Vehicle', icon: faCarSide },
-    { id: 2, title: 'Destination', icon: faLocation },
-    { id: 3, title: 'Confirm', icon: faCalendarCheck },
+    { id: 0, title: t('request.create.tabs.date'), icon: faCalendarDays },
+    { id: 1, title: t('request.create.tabs.vehicle'), icon: faCarSide },
+    { id: 2, title: t('request.create.tabs.destination'), icon: faLocation },
+    { id: 3, title: t('request.create.tabs.confirm'), icon: faCalendarCheck },
   ];
 
   useFocusEffect(
@@ -94,7 +95,6 @@ const RequestCreateScreen = () => {
       setPurpose={setPurpose}
       isAssignDriver={isAssignDriver}
       setIsAssignDriver={setIsAssignDriver}
-      errors={errors}
     />
   );
 
@@ -107,7 +107,6 @@ const RequestCreateScreen = () => {
       setPurpose={setPurpose}
       isAssignDriver={isAssignDriver}
       setIsAssignDriver={setIsAssignDriver}
-      errors={errors}
     />
   );
 
@@ -129,13 +128,12 @@ const RequestCreateScreen = () => {
 
   const validateData = (): boolean => {
     if (!selectedVehicle?.vehicleId) {
-      showToast.error('Action Required', 'Please select a vehicle to continue.');
+      showToast.error(`${t('request.create.toast.vehicleRequired.title')}`,`${t('request.create.toast.vehicleRequired.message')}`);
       setActiveTab(1);
       return false;
     }
     if (purpose.trim() === '') {
-      setErrors('Please specify the purpose of your trip to continue.');
-      showToast.error('Purpose Required', 'Please specify the purpose of your trip to continue.');
+      showToast.error(`${t('request.create.toast.purposeRequired.title')}`,`${t('request.create.toast.purposeRequired.message')}`);
       return false;
     }
     return true;
@@ -155,15 +153,15 @@ const RequestCreateScreen = () => {
       };
       const response = await RequestService.createRequest(requestData);
       if (response) {
-        showToast.success('All Set!', 'We’ve received your reservation.');
+        showToast.success(`${t('request.create.toast.success.title')}`,`${t('request.create.toast.success.message')}`);
         clearContent();
         navigation.getParent()?.navigate('HistoryStack');
       } else {
-        showToast.error('Failed', 'Reservation could not be submitted.');
+        showToast.error(`${t('request.create.toast.fail.title')}`,`${t('request.create.toast.fail.message')}`);
       }
     } catch (error) {
       console.error('Reservation error:', error);
-      showToast.error('Request Failed', 'We couldn’t complete your reservation. Please try again.');
+      showToast.error(`${t('request.create.toast.requestError.title')}`,`${t('request.create.toast.requestError.message')}`);
     } finally {
       setIsLoading(false);
     }
@@ -181,7 +179,7 @@ const RequestCreateScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Header title="New Request " />
+      <Header title={t('request.create.title')} />
 
       <View className="mt-4 flex-1 px-6">
         <View className="mb-4 overflow-hidden rounded-2xl">
@@ -227,7 +225,7 @@ const RequestCreateScreen = () => {
             disabled={isDisabled && !isLoading}
             onPress={getAvailableVehicle}>
             <Text className="text-center text-lg font-bold text-white">
-              {isLoading ? 'Loading vehicle available...' : 'Next'}
+              {isLoading ? `${t('request.create.button.loading')}` : `${t('request.create.button.next')}`}
             </Text>
           </TouchableOpacity>
         )}
@@ -236,13 +234,13 @@ const RequestCreateScreen = () => {
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">Back</Text>
+              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.back')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
               onPress={() => setActiveTab(activeTab + 1)}>
-              <Text className="text-center text-lg font-bold text-white">Next</Text>
+              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.next')}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -252,13 +250,13 @@ const RequestCreateScreen = () => {
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">Back</Text>
+              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.back')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
               onPress={() => setActiveTab(activeTab + 1)}>
-              <Text className="text-center text-lg font-bold text-white">Next</Text>
+              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.next')}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -267,7 +265,7 @@ const RequestCreateScreen = () => {
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">Back</Text>
+              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.back')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -275,7 +273,7 @@ const RequestCreateScreen = () => {
               onPress={handleConfirm}
               disabled={isLoading}>
               <Text className="text-center text-lg font-bold text-white">
-                {isLoading ? 'Confirming ...' : 'Confirm'}
+                {isLoading ? `${t('request.create.button.confirming')}` : `${t('request.create.button.confirm')}`}
               </Text>
             </TouchableOpacity>
           </View>

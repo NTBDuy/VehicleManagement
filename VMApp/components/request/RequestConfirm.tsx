@@ -7,6 +7,7 @@ import Vehicle from 'types/Vehicle';
 
 import InfoRow from '@/components/ui/InfoRowComponent';
 import InputField from '@/components/ui/InputFieldComponent';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmComponentProps {
   startDate: string;
@@ -16,7 +17,6 @@ interface ConfirmComponentProps {
   setPurpose: React.Dispatch<React.SetStateAction<string>>;
   isAssignDriver: boolean;
   setIsAssignDriver: React.Dispatch<React.SetStateAction<boolean>>;
-  errors: string;
 }
 
 const RequestConfirm = ({
@@ -27,21 +27,22 @@ const RequestConfirm = ({
   setPurpose,
   isAssignDriver,
   setIsAssignDriver,
-  errors,
 }: ConfirmComponentProps) => {
+  const { t } = useTranslation();
+
   const toggleSwitchDriver = () => setIsAssignDriver((previousState) => !previousState);
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View>
-        <View className="bg-white rounded-2xl">
-          <View className="px-4 pb-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Request Information</Text>
+        <View className="rounded-2xl bg-white">
+          <View className="bg-gray-50 px-4 pb-3">
+            <Text className="text-lg font-semibold text-gray-800">{t('request.create.confirm.sectionTitle.info')}</Text>
           </View>
 
           <View className="p-4">
             <InfoRow
-              label="Time"
+              label={t('request.create.confirm.label.time')}
               value=""
               valueComponent={
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
@@ -50,7 +51,7 @@ const RequestConfirm = ({
               }
             />
             <InfoRow
-              label="Vehicle"
+              label={t('request.create.confirm.label.vehicle')}
               value=""
               valueComponent={
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
@@ -61,26 +62,25 @@ const RequestConfirm = ({
             />
           </View>
         </View>
-        <View className="mt-4 bg-white rounded-2xl">
-          <View className="px-4 pb-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Purpose</Text>
+        <View className="mt-4 rounded-2xl bg-white">
+          <View className="bg-gray-50 px-4 pb-3">
+            <Text className="text-lg font-semibold text-gray-800">{t('request.create.confirm.sectionTitle.purpose')}</Text>
           </View>
           <View className="p-4">
             <InputField
-              label="Detailed Purpose"
+              label={t('request.create.confirm.label.detailedPurpose')}
               value={purpose}
               onChangeText={setPurpose}
-              placeholder="e.g., Business trip, external meeting, guest pickup/drop-off"
+              placeholder={t('request.create.confirm.placeholder.purpose')}
               require={false}
               multiline={true}
               numberOfLines={4}
-              error={errors}
             />
           </View>
         </View>
-        <View className="mt-4 bg-white rounded-2xl">
-          <View className="px-4 pb-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Driver Required?</Text>
+        <View className="mt-4 rounded-2xl bg-white">
+          <View className="bg-gray-50 px-4 pb-3">
+            <Text className="text-lg font-semibold text-gray-800">{t('request.create.confirm.sectionTitle.driver')}</Text>
           </View>
           <View className="p-4">
             <View className="mb-2">
@@ -94,7 +94,7 @@ const RequestConfirm = ({
                   className="-m-2 scale-75"
                 />
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                  {isAssignDriver ? 'Assign a driver' : 'Drive by self'}
+                  {isAssignDriver ? `${t('request.create.confirm.switchText.assign')}` : `${t('request.create.confirm.switchText.self')}`}
                 </Text>
               </View>
             </View>

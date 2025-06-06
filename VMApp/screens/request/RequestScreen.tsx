@@ -7,7 +7,15 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, Modal, TouchableOpacity, RefreshControl, SafeAreaView, Text, View } from 'react-native';
+import {
+  FlatList,
+  Modal,
+  TouchableOpacity,
+  RefreshControl,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate } from 'utils/datetimeUtils';
 import { getColorByStatus } from 'utils/requestUtils';
@@ -21,9 +29,11 @@ import LoadingData from '@/components/ui/LoadingData';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
+import { useTranslation } from 'react-i18next';
 
 const RequestScreen = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [requests, setRequests] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
@@ -111,15 +121,17 @@ const RequestScreen = () => {
 
   const StatusCard = ({
     label,
+    keyword,
     count,
     bgColor,
   }: {
     label: string;
+    keyword: string;
     count: number;
     bgColor: string;
   }) => (
     <TouchableOpacity
-      onPress={() => handleStatusFilter(label)}
+      onPress={() => handleStatusFilter(keyword)}
       className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
       <Text className="text-base font-medium text-white">{label}</Text>
       <Text className="text-lg font-bold text-white">{count}</Text>
@@ -131,13 +143,13 @@ const RequestScreen = () => {
       onPress={() => handleRequestOption(item)}
       className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.status)}`}>
       <View className="flex-row items-center">
-        <View className="items-center justify-center w-12 h-12 bg-blue-500 rounded-full">
+        <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
           <Text className="text-lg font-bold text-white">
             {getUserInitials(item.user?.fullName)}
           </Text>
         </View>
 
-        <View className="flex-1 ml-4">
+        <View className="ml-4 flex-1">
           <Text className="text-base font-semibold text-gray-800">{item.user?.fullName}</Text>
           <Text className="text-sm text-gray-500">{item.vehicle?.licensePlate}</Text>
         </View>
@@ -145,12 +157,12 @@ const RequestScreen = () => {
         <View className="mr-4">
           {item.startTime !== item.endTime ? (
             <View>
-              <Text className="text-xs text-gray-500">Start: {formatDate(item.startTime)}</Text>
-              <Text className="text-xs text-gray-500">End: {formatDate(item.endTime)}</Text>
+              <Text className="text-xs text-gray-500">{t('request.list.label.start')}: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">{t('request.list.label.end')}: {formatDate(item.endTime)}</Text>
             </View>
           ) : (
             <View>
-              <Text className="text-xs text-gray-500">Date: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">{t('request.list.label.date')}: {formatDate(item.startTime)}</Text>
             </View>
           )}
         </View>
@@ -244,40 +256,68 @@ const RequestScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
-        title="Request Management"
+        title={t('sidebar.management.request')}
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder="Search username, phone or email ..."
+        placeholder={t('request.management.searchPlaceholder')}
         handleClearFilters={handleClearFilters}
       />
 
-      <View className="flex-1 mx-6 mb-10">
-        <View className="p-4 mt-4 mb-4 bg-gray-100 shadow-sm rounded-2xl">
+      <View className="mx-6 mb-10 flex-1">
+        <View className="mb-4 mt-4 rounded-2xl bg-gray-100 p-4 shadow-sm">
           <TouchableOpacity
             className="flex-row justify-between"
             onPress={() => setIsExpanded(!isExpanded)}>
             <Text className="text-base font-medium text-gray-600">
-              Total Request:{' '}
+              {t('request.management.totalRequest')}:{' '}
               <Text className="text-xl font-bold text-gray-900">{requestStat.total}</Text>
             </Text>
             <Text className="mt-1 text-sm text-blue-500">
-              {isExpanded ? 'Hide details ▲' : 'Show details ▼'}
+              {isExpanded
+                ? `${t('request.management.expand.hide')}`
+                : `${t('request.management.expand.show')}`}
             </Text>
           </TouchableOpacity>
 
           {isExpanded && (
-            <View className="flex-row flex-wrap justify-between mt-4 gap-y-4">
-              <StatusCard label="Pending" count={requestStat.pending} bgColor="bg-amber-500" />
-              <StatusCard label="Approved" count={requestStat.approved} bgColor="bg-emerald-500" />
-              <StatusCard label="Rejected" count={requestStat.rejected} bgColor="bg-red-500" />
-              <StatusCard label="Cancelled" count={requestStat.cancelled} bgColor="bg-slate-500" />
+            <View className="mt-4 flex-row flex-wrap justify-between gap-y-4">
               <StatusCard
-                label="In Progress"
+                label={t('common.status.pending')}
+                keyword="Pending"
+                count={requestStat.pending}
+                bgColor="bg-amber-500"
+              />
+              <StatusCard
+                label={t('common.status.approved')}
+                keyword="Approved"
+                count={requestStat.approved}
+                bgColor="bg-emerald-500"
+              />
+              <StatusCard
+                label={t('common.status.rejected')}
+                keyword="Rejected"
+                count={requestStat.rejected}
+                bgColor="bg-red-500"
+              />
+              <StatusCard
+                label={t('common.status.cancelled')}
+                keyword="Cancelled"
+                count={requestStat.cancelled}
+                bgColor="bg-slate-500"
+              />
+              <StatusCard
+                label={t('common.status.inProgress')}
+                keyword="In Progress"
                 count={requestStat.inProgress}
                 bgColor="bg-blue-500"
               />
-              <StatusCard label="Done" count={requestStat.done} bgColor="bg-green-600" />
+              <StatusCard
+                label={t('common.status.done')}
+                keyword="Done"
+                count={requestStat.done}
+                bgColor="bg-green-600"
+              />
             </View>
           )}
         </View>
@@ -302,9 +342,9 @@ const RequestScreen = () => {
         )}
       </View>
       {requests.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 p-4 pb-10 bg-white">
-          <Text className="text-sm font-medium text-center text-gray-500">
-            Total Request:{' '}
+        <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
+          <Text className="text-center text-sm font-medium text-gray-500">
+            {t('request.management.totalRequest')}:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredRequests.length}</Text>
           </Text>
         </View>
@@ -315,55 +355,55 @@ const RequestScreen = () => {
         visible={isModalVisible}
         animationType="slide"
         onRequestClose={handleCloseModal}>
-        <TouchableOpacity onPress={handleCloseModal} className="justify-end flex-1 bg-black/30">
+        <TouchableOpacity onPress={handleCloseModal} className="flex-1 justify-end bg-black/30">
           <TouchableOpacity onPress={(e) => e.stopPropagation()}>
-            <View className="p-6 pb-12 bg-white rounded-t-2xl">
-              <Text className="mb-6 text-lg font-bold text-center">
-                Options for request ID #{selected?.requestId}
+            <View className="rounded-t-2xl bg-white p-6 pb-12">
+              <Text className="mb-6 text-center text-lg font-bold">
+                {t('request.management.modal.title')} {selected?.requestId}
               </Text>
 
               <TouchableOpacity
-                className="flex-row items-center gap-3 mb-6 "
+                className="mb-6 flex-row items-center gap-3 "
                 onPress={handleViewDetail}>
                 <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">Request details</Text>
+                <Text className="text-lg font-semibold text-blue-600">{t('request.management.modal.actions.detail')}</Text>
               </TouchableOpacity>
 
               {selected?.status === 0 && (
                 <>
                   <TouchableOpacity
-                    className="flex-row items-center gap-3 mb-6 "
+                    className="mb-6 flex-row items-center gap-3 "
                     onPress={handleApprove}>
                     <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
                     <Text className="text-lg font-semibold text-green-600">
                       {selected.isDriverRequired
-                        ? 'Approve and assign a driver'
-                        : 'Approve the request'}
+                        ? `${t('request.management.modal.actions.approveWithAssign')}`
+                        : `${t('request.management.modal.actions.approve')}`}
                     </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    className="flex-row items-center gap-3 mb-6 "
+                    className="mb-6 flex-row items-center gap-3 "
                     onPress={handleReject}>
                     <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
-                    <Text className="text-lg font-semibold text-red-600">Reject the request</Text>
+                    <Text className="text-lg font-semibold text-red-600">{t('request.management.modal.actions.reject')}</Text>
                   </TouchableOpacity>
                 </>
               )}
 
               {selected?.status === 1 && (
                 <TouchableOpacity
-                  className="flex-row items-center gap-3 mb-6 "
+                  className="mb-6 flex-row items-center gap-3 "
                   onPress={handleCancel}>
                   <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
-                  <Text className="text-lg font-semibold text-gray-600">Cancel the request</Text>
+                  <Text className="text-lg font-semibold text-gray-600">{t('request.management.modal.actions.cancel')}</Text>
                 </TouchableOpacity>
               )}
 
               <TouchableOpacity
-                className="flex-row items-center justify-center py-3 bg-gray-600 rounded-lg "
+                className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3 "
                 onPress={handleCloseModal}>
-                <Text className="text-lg font-semibold text-white">Close</Text>
+                <Text className="text-lg font-semibold text-white">{t('request.management.modal.actions.close')}</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

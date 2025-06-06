@@ -3,10 +3,12 @@
     "button": {
       "search": "Search",
       "cancel": "Cancel",
+      "confirm": "Confirm",
       "delete": "Delete",
       "save": "Save"
     },
     "status": {
+      "all": "All",
       "pending": "Pending",
       "approved": "Approved",
       "rejected": "Rejected",
@@ -23,7 +25,8 @@
       "employee": "Employee"
     },
     "noData": {
-      "vehicle": "No vehicle data available"
+      "vehicle": "No vehicle data available",
+      "requestHistory": "User has not requested any vehicles"
     }
   },
 
@@ -78,5 +81,187 @@
     },
     "quickAction": "Quick Action",
     "incoming": "Incoming"
+  },
+
+  "notification": {
+    "title": "Notifications",
+    "empty": "User does not have any notification yet!",
+    "markAllReadSuccess": "All notifications marked as read.",
+    "markReadSuccess": "Notification marked as read.",
+    "markAllReadError": "Failed to mark all as read.",
+    "unread": "Unread"
+  },
+
+  "request": {
+    "create": {
+      "title": "New Request",
+      "tabs": {
+        "date": "Date",
+        "vehicle": "Vehicle",
+        "destination": "Destination",
+        "confirm": "Confirm"
+      },
+      "tripType": {
+        "day": "Day trip",
+        "multi": "Multi-day trip"
+      },
+      "vehiclePicker": {
+        "title": "Available Vehicle",
+        "searchPlaceholder": "Search plate, type or brand..."
+      },
+      "dateLabel": "Date",
+      "confirm": {
+        "sectionTitle": {
+          "info": "Request Information",
+          "purpose": "Purpose",
+          "driver": "Driver Required?"
+        },
+        "label": {
+          "time": "Time",
+          "vehicle": "Vehicle",
+          "detailedPurpose": "Detailed Purpose"
+        },
+        "placeholder": {
+          "purpose": "e.g., Business trip, external meeting, guest pickup/drop-off"
+        },
+        "switchText": {
+          "assign": "Assign a driver",
+          "self": "Drive by self"
+        }
+      },
+      "button": {
+        "next": "Next",
+        "back": "Back",
+        "confirm": "Confirm",
+        "confirming": "Confirming...",
+        "loading": "Loading vehicle available..."
+      },
+      "toast": {
+        "vehicleRequired": {
+          "title": "Action Required",
+          "message": "Please select a vehicle to continue."
+        },
+        "purposeRequired": {
+          "title": "Purpose Required",
+          "message": "Please specify the purpose of your trip to continue."
+        },
+        "success": {
+          "title": "All Set!",
+          "message": "We’ve received your reservation."
+        },
+        "fail": {
+          "title": "Failed",
+          "message": "Reservation could not be submitted."
+        },
+        "error": {
+          "title": "Request Failed",
+          "message": "We couldn’t complete your reservation. Please try again."
+        }
+      }
+    },
+    "list": {
+      "label": {
+        "start": "Start",
+        "end": "End",
+        "date": "Date"
+      }
+    },
+    "history": {
+      "title": "History Request"
+    },
+    "management": {
+      "searchPlaceholder": "Search username, phone or email ...",
+      "totalRequest": "Total Request",
+      "expand": {
+        "hide": "Hide details ▲",
+        "show": "Show details ▼"
+      },
+      "clearFilter": "Clear filter",
+      "modal": {
+        "title": "Options for request ID #",
+        "actions": {
+          "detail": "Request details",
+          "approveWithAssign": "Approve and assign a driver",
+          "approve": "Approve the request",
+          "reject": "Reject the request",
+          "cancel": "Cancel the request",
+          "close": "Close"
+        }
+      }
+    },
+    "detail": {
+      "title": "Request detail",
+      "submitted": "Submitted request",
+      "requestId": "Request ID",
+      "status": "Status",
+      "thisRequestWas": "This request was",
+      "by": "by",
+      "rejectionTitle": "Rejection Details",
+      "cancellationTitle": "Cancellation Details",
+      "noInfo": "No information",
+      "info": {
+        "section": "Request Information",
+        "requestBy": "Request by",
+        "date": "Date",
+        "dateRange": "Date range",
+        "vehicle": "Vehicle",
+        "purpose": "Purpose",
+        "driverRequired": "Driver required",
+        "driverAssign": "Assign a driver",
+        "driverSelf": "Drive by self",
+        "requestDate": "Request date"
+      },
+      "driver": {
+        "section": "Driver Information",
+        "name": "Driver",
+        "phone": "Phone"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "cancel": "Cancel",
+        "usingVehicle": "Using Vehicle",
+        "endUsage": "End Usage",
+        "loading": "Loading...",
+        "ending": "Ending...",
+        "remind": {
+          "sent": "✓ Reminder sent",
+          "urgent": "Urgent: Return overdue vehicle",
+          "soon": "Due soon: Remind return",
+          "normal": "Remind for return vehicle"
+        }
+      },
+      "lastUpdated": "Last updated:",
+      "toast": {
+        "startUsing": {
+          "title": "Start Vehicle Usage",
+          "message": "Are you sure you want to start using the vehicle?"
+        },
+        "startUsingSuccess": {
+          "title": "Vehicle usage started successfully",
+          "message": "You can now use the vehicle. Please remember to end usage when finished."
+        },
+        "startUsingError": {
+          "title": "Cannot use vehicle",
+          "message": "Vehicle can only be used on the scheduled date."
+        },
+        "endUsage": {
+          "title": "End Vehicle Usage",
+          "message": "Are you sure you want to end the vehicle usage?"
+        },
+        "endUsageSuccess": {
+          "title": "Vehicle usage ended successfully",
+          "message": "The vehicle has been returned and the request is now marked as complete."
+        },
+        "remind": {
+          "title": "Send Reminder",
+          "message": "Are you sure you want to send a reminder to use the vehicle?"
+        },
+        "remindSuccess": {
+          "title": "Reminder sent",
+          "message": "The user has been reminded to start vehicle usage."
+        }
+      }
+    }
   }
 }

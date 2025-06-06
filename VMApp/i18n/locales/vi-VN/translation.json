@@ -3,10 +3,12 @@
     "button": {
       "search": "Tìm kiếm",
       "cancel": "Hủy",
+      "confirm": "Xác nhận",
       "delete": "Xóa",
       "save": "Lưu"
     },
     "status": {
+      "all": "Tất cả",
       "pending": "Đang chờ",
       "approved": "Đã phê duyệt",
       "rejected": "Bị từ chối",
@@ -23,7 +25,8 @@
       "employee": "Nhân viên"
     },
     "noData": {
-      "vehicle": "Không có dữ liệu phương tiện"
+      "vehicle": "Không có dữ liệu phương tiện",
+      "requestHistory": "Người dùng chưa có yêu cầu nào ở trạng thái này!"
     }
   },
 
@@ -78,5 +81,187 @@
     },
     "quickAction": "Hành động nhanh",
     "incoming": "Sắp tới"
+  },
+
+  "notification": {
+    "title": "Thông báo",
+    "empty": "Người dùng hiện chưa có thông báo nào!",
+    "markAllReadSuccess": "Tất cả thông báo đã được đánh dấu là đã đọc.",
+    "markReadSuccess": "Thông báo đã được đánh dấu là đã đọc.",
+    "markAllReadError": "Không thể đánh dấu tất cả là đã đọc.",
+    "unread": "Chưa đọc"
+  },
+
+  "request": {
+    "create": {
+      "title": "Yêu Cầu Mới",
+      "tabs": {
+        "date": "Ngày",
+        "vehicle": "Phương Tiện",
+        "destination": "Điểm Đến",
+        "confirm": "Xác Nhận"
+      },
+      "tripType": {
+        "day": "Đi Trong Ngày",
+        "multi": "Đi Nhiều Ngày"
+      },
+      "vehiclePicker": {
+        "title": "Phương Tiện Khả Dụng",
+        "searchPlaceholder": "Tìm theo biển số, loại hoặc hãng xe..."
+      },
+      "dateLabel": "Ngày",
+      "confirm": {
+        "sectionTitle": {
+          "info": "Thông Tin Yêu Cầu",
+          "purpose": "Mục Đích",
+          "driver": "Cần Tài Xế?"
+        },
+        "label": {
+          "time": "Thời Gian",
+          "vehicle": "Phương Tiện",
+          "detailedPurpose": "Mục Đích Chi Tiết"
+        },
+        "placeholder": {
+          "purpose": "ví dụ: Công tác, họp bên ngoài, đón/trả khách"
+        },
+        "switchText": {
+          "assign": "Chỉ định tài xế",
+          "self": "Tự lái"
+        }
+      },
+      "button": {
+        "next": "Tiếp Theo",
+        "back": "Quay Lại",
+        "confirm": "Xác Nhận",
+        "confirming": "Đang Xác Nhận...",
+        "loading": "Đang tải phương tiện khả dụng..."
+      },
+      "toast": {
+        "vehicleRequired": {
+          "title": "Cần Thao Tác",
+          "message": "Vui lòng chọn phương tiện để tiếp tục."
+        },
+        "purposeRequired": {
+          "title": "Cần Mục Đích",
+          "message": "Vui lòng nhập mục đích chuyến đi để tiếp tục."
+        },
+        "success": {
+          "title": "Hoàn Tất!",
+          "message": "Chúng tôi đã nhận được yêu cầu đặt xe của bạn."
+        },
+        "fail": {
+          "title": "Thất Bại",
+          "message": "Không thể gửi yêu cầu đặt xe."
+        },
+        "error": {
+          "title": "Gửi Yêu Cầu Thất Bại",
+          "message": "Chúng tôi không thể hoàn tất yêu cầu. Vui lòng thử lại."
+        }
+      }
+    },
+    "list": {
+      "label": {
+        "start": "Bắt đầu",
+        "end": "Kết thúc",
+        "date": "Ngày"
+      }
+    },
+    "history": {
+      "title": "Lịch sử yêu cầu"
+    },
+    "management": {
+      "searchPlaceholder": "Tìm theo tên người dùng, số điện thoại hoặc email...",
+      "totalRequest": "Tổng Số Yêu Cầu",
+      "expand": {
+        "hide": "Ẩn chi tiết ▲",
+        "show": "Hiện chi tiết ▼"
+      },
+      "clearFilter": "Xóa bộ lọc",
+      "modal": {
+        "title": "Tùy chọn cho yêu cầu mã #",
+        "actions": {
+          "detail": "Xem chi tiết yêu cầu",
+          "approveWithAssign": "Phê duyệt và chỉ định tài xế",
+          "approve": "Phê duyệt yêu cầu",
+          "reject": "Từ chối yêu cầu",
+          "cancel": "Hủy yêu cầu",
+          "close": "Đóng"
+        }
+      }
+    },
+    "detail": {
+      "title": "Chi Tiết Yêu Cầu",
+      "submitted": "Yêu cầu đã gửi",
+      "requestId": "Mã Yêu Cầu",
+      "status": "Trạng thái",
+      "thisRequestWas": "Yêu cầu này đã được",
+      "by": "bởi",
+      "rejectionTitle": "Chi Tiết Từ Chối",
+      "cancellationTitle": "Chi Tiết Hủy Yêu Cầu",
+      "noInfo": "Không có thông tin",
+      "info": {
+        "section": "Thông Tin Yêu Cầu",
+        "requestBy": "Người yêu cầu",
+        "date": "Ngày",
+        "dateRange": "Khoảng thời gian",
+        "vehicle": "Phương tiện",
+        "purpose": "Mục đích",
+        "driverRequired": "Yêu cầu tài xế",
+        "driverAssign": "Chỉ định tài xế",
+        "driverSelf": "Tự lái",
+        "requestDate": "Ngày gửi yêu cầu"
+      },
+      "driver": {
+        "section": "Thông Tin Tài Xế",
+        "name": "Tài xế",
+        "phone": "Số điện thoại"
+      },
+      "actions": {
+        "approve": "Phê Duyệt",
+        "reject": "Từ Chối",
+        "cancel": "Hủy",
+        "usingVehicle": "Bắt Đầu Sử Dụng Xe",
+        "endUsage": "Kết Thúc Sử Dụng",
+        "loading": "Đang tải...",
+        "ending": "Đang kết thúc...",
+        "remind": {
+          "sent": "✓ Đã gửi nhắc nhở",
+          "urgent": "Khẩn cấp: Xe quá hạn trả",
+          "soon": "Sắp đến hạn: Nhắc nhở trả xe",
+          "normal": "Nhắc nhở trả xe"
+        }
+      },
+      "lastUpdated": "Cập nhật lần cuối:",
+      "toast": {
+        "startUsing": {
+          "title": "Bắt Đầu Sử Dụng Xe",
+          "message": "Bạn có chắc muốn bắt đầu sử dụng phương tiện này không?"
+        },
+        "startUsingSuccess": {
+          "title": "Bắt đầu sử dụng xe thành công",
+          "message": "Bạn có thể bắt đầu sử dụng xe. Vui lòng nhớ kết thúc khi đã xong."
+        },
+        "startUsingError": {
+          "title": "Không thể sử dụng xe",
+          "message": "Phương tiện chỉ được sử dụng vào ngày đã được lên lịch."
+        },
+        "endUsage": {
+          "title": "Kết Thúc Sử Dụng Xe",
+          "message": "Bạn có chắc muốn kết thúc việc sử dụng xe không?"
+        },
+        "endUsageSuccess": {
+          "title": "Kết thúc sử dụng xe thành công",
+          "message": "Phương tiện đã được trả và yêu cầu đã được đánh dấu hoàn thành."
+        },
+        "remind": {
+          "title": "Gửi Nhắc Nhở",
+          "message": "Bạn có chắc muốn gửi nhắc nhở sử dụng phương tiện không?"
+        },
+        "remindSuccess": {
+          "title": "Đã gửi nhắc nhở",
+          "message": "Người dùng đã được nhắc nhở bắt đầu sử dụng xe."
+        }
+      }
+    }
   }
 }

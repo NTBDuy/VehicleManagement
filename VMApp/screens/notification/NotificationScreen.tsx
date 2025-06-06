@@ -10,14 +10,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useAuth } from 'contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { NotificationService } from 'services/notificationService';
 import { UserService } from 'services/userService';
 import { formatTime } from 'utils/datetimeUtils';
@@ -28,8 +21,10 @@ import Notification from 'types/Notification';
 import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
 import LoadingData from '@/components/ui/LoadingData';
+import { useTranslation } from 'react-i18next';
 
 const NotificationScreen = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [userNotifications, setUserNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -134,7 +129,7 @@ const NotificationScreen = () => {
           n.notificationId === notification.notificationId ? { ...n, isRead: true } : n
         )
       );
-      showToast.success('Success', 'Notification marked as read.');
+      showToast.success(t('notification.markReadSuccess'));
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
     }
@@ -151,10 +146,10 @@ const NotificationScreen = () => {
         prevNotifications.map((n) => ({ ...n, isRead: true }))
       );
 
-      showToast.success('Success', 'All notifications marked as read.');
+      showToast.success(t('notification.markAllReadSuccess'));
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
-      showToast.error('Error', 'Failed to mark all as read.');
+      showToast.error('Error', t('notification.markAllReadError'));
     }
   };
 
@@ -173,14 +168,16 @@ const NotificationScreen = () => {
       <View className="flex-row items-start">
         <NotificationIcon type={item.type} />
 
-        <View className="flex-1 ml-3">
+        <View className="ml-3 flex-1">
           <Text className="mb-3 text-base leading-6 text-gray-800">{item.message}</Text>
           <View className="flex-row items-center justify-between">
             <Text className="text-xs text-gray-400">{formatTime(item.createdAt)}</Text>
             {!item.isRead && (
               <View className="flex-row items-center">
                 <View className="mr-1.5 h-2 w-2 rounded-full bg-blue-500" />
-                <Text className="text-xs font-semibold text-blue-600">Unread</Text>
+                <Text className="text-xs font-semibold text-blue-600">
+                  {t('notification.unread')}
+                </Text>
               </View>
             )}
           </View>
@@ -191,10 +188,12 @@ const NotificationScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
-        title="Notifications"
+        title={t('notification.title')}
         backBtn
         rightElement={
-          <TouchableOpacity onPress={handleMakeAllRead} className="p-2 bg-white rounded-full shadow-sm">
+          <TouchableOpacity
+            onPress={handleMakeAllRead}
+            className="rounded-full bg-white p-2 shadow-sm">
             <FontAwesomeIcon icon={faListCheck} size={18} color="#374151" />
           </TouchableOpacity>
         }
@@ -203,12 +202,12 @@ const NotificationScreen = () => {
       {isLoading ? (
         <LoadingData />
       ) : (
-        <View className="flex-1 mx-6">
+        <View className="mx-6 flex-1">
           <FlatList
             data={userNotifications}
             keyExtractor={(item) => item.notificationId.toString()}
             renderItem={renderNotificationItem}
-            ListEmptyComponent={<EmptyList title="User do not have any notification yet!" />}
+            ListEmptyComponent={<EmptyList title={t('notification.empty')} />}
             showsVerticalScrollIndicator={false}
             contentContainerClassName="py-4"
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

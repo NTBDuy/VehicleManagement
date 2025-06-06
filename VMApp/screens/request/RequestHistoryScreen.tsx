@@ -9,9 +9,11 @@ import Request from 'types/Request';
 import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
 import RequestItem from '@/components/request/HistoryRequestItem';
+import { useTranslation } from 'react-i18next';
 
 const RequestHistoryScreen = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [userRequest, setUserRequest] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState(4);
@@ -58,13 +60,13 @@ const RequestHistoryScreen = () => {
   }, [userRequest, searchQuery, currentStatusFilter]);
 
   const filterOptions = [
-    { id: 6, name: 'All' },
-    { id: 0, name: 'Pending' },
-    { id: 1, name: 'Approved' },
-    { id: 2, name: 'Rejected' },
-    { id: 3, name: 'Cancelled' },
-    { id: 4, name: 'In Progress' },
-    { id: 5, name: 'Done' },
+    { id: 6, name: t('common.status.all')},
+    { id: 0, name: t('common.status.pending')},
+    { id: 1, name: t('common.status.approved')},
+    { id: 2, name: t('common.status.rejected')},
+    { id: 3, name: t('common.status.cancelled')},
+    { id: 4, name: t('common.status.inProgress')},
+    { id: 5, name: t('common.status.done')},
   ];
 
   useEffect(() => {
@@ -116,14 +118,14 @@ const RequestHistoryScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
-        title="History Request"
+        title={t('request.history.title')}
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder="Search plate, brand, type ..."
+        placeholder={t('request.create.vehiclePicker.searchPlaceholder')}
         handleClearFilters={handleClearFilters}
       />
-      <View className="flex-1 mx-6">
+      <View className="mx-6 flex-1">
         <View className="my-4">
           <FlatList
             horizontal
@@ -145,7 +147,7 @@ const RequestHistoryScreen = () => {
         <FlatList
           data={filteredRequest}
           renderItem={renderRequestItem}
-          ListEmptyComponent={<EmptyList title="User has not requested any vehicles" />}
+          ListEmptyComponent={<EmptyList title={t('common.noData.requestHistory')} />}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         />
       </View>

@@ -7,12 +7,14 @@ import { getColorByStatus } from 'utils/requestUtils';
 import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 import Request from 'types/Request';
+import { useTranslation } from 'react-i18next';
 
 interface RequestItemProps {
   item: Request;
 }
 
 const RequestItem = ({ item }: RequestItemProps) => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
 
   const handleViewDetail = (item: Request) => {
@@ -46,12 +48,12 @@ const RequestItem = ({ item }: RequestItemProps) => {
        <View className="mr-4">
           {item.startTime !== item.endTime ? (
             <View>
-              <Text className="text-xs text-gray-500">Start: {formatDate(item.startTime)}</Text>
-              <Text className="text-xs text-gray-500">End: {formatDate(item.endTime)}</Text>
+              <Text className="text-xs text-gray-500">{t('request.list.label.start')}: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">{t('request.list.label.end')}: {formatDate(item.endTime)}</Text>
             </View>
           ) : (
             <View>
-              <Text className="text-xs text-gray-500">Date: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">{t('request.list.label.date')}: {formatDate(item.startTime)}</Text>
             </View>
           )}
         </View>

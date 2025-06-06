@@ -5,6 +5,7 @@ import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 import Vehicle from 'types/Vehicle';
 import { useMemo, useState } from 'react';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
 
 interface VehiclePickerComponentProps {
   availableVehicle: Vehicle[];
@@ -17,6 +18,8 @@ const RequestVehiclePicker = ({
   setSelectedVehicle,
   selectedVehicle,
 }: VehiclePickerComponentProps) => {
+  const { t } = useTranslation();
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredVehicle = useMemo(() => {
@@ -32,7 +35,7 @@ const RequestVehiclePicker = ({
           item.model.toLocaleLowerCase().toLowerCase().includes(q)
       );
     }
-    
+
     return filtered;
   }, [availableVehicle, searchQuery]);
 
@@ -44,7 +47,7 @@ const RequestVehiclePicker = ({
     <TouchableOpacity
       onPress={() => setSelectedVehicle(item)}
       className={`mb-4 flex-row items-center rounded-2xl ${selectedVehicle == item ? 'bg-blue-100' : 'bg-gray-100'}  px-2 py-4`}>
-      <View className="items-center justify-center w-12 h-12 ml-2 mr-4 bg-blue-300 rounded-full">
+      <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">
           <FontAwesomeIcon icon={getVehicleTypeIcon(item.type)} size={24} color="#0d4d87" />
         </Text>
@@ -61,23 +64,23 @@ const RequestVehiclePicker = ({
   return (
     <View className="flex-1 px-2">
       <View className="mb-2">
-        <View className="px-4 bg-gray-50 ">
-          <Text className="text-lg font-semibold text-gray-800">Available Vehicle</Text>
+        <View className="bg-gray-50 px-4 ">
+          <Text className="text-lg font-semibold text-gray-800">{t('request.create.vehiclePicker.title')}</Text>
         </View>
       </View>
       <View className="mx-2 mb-6">
-        <View className="flex-row items-center px-4 py-3 bg-white border border-gray-200 rounded-full shadow-sm">
+        <View className="flex-row items-center rounded-full border border-gray-200 bg-white px-4 py-3 shadow-sm">
           <FontAwesomeIcon icon={faSearch} size={18} color="#6b7280" />
           <TextInput
-            className="flex-1 ml-3 text-base text-gray-800"
-            placeholder="Search plate, type or brand..."
+            className="ml-3 flex-1 text-base text-gray-800"
+            placeholder={t('request.create.vehiclePicker.searchPlaceholder')}
             placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={handleSearch}
           />
         </View>
       </View>
-      <View className="px-2 mb-20">
+      <View className="mb-20 px-2">
         <FlatList
           data={filteredVehicle}
           renderItem={renderVehicleItem}
