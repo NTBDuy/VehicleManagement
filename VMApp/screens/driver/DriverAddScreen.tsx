@@ -4,7 +4,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { isValid, parseISO } from 'date-fns';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import Driver from '@/types/Driver';
 
@@ -21,7 +21,6 @@ const DriverAddScreen = () => {
     yearsOfExperience: 0,
     isActive: false,
   };
-
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [driverData, setDriverData] = useState<Driver>(initialDriverData);
@@ -31,6 +30,7 @@ const DriverAddScreen = () => {
   useFocusEffect(
     useCallback(() => {
       setDriverData(initialDriverData);
+      setErrors({});
     }, [])
   );
 
@@ -51,8 +51,12 @@ const DriverAddScreen = () => {
       newErrors.phoneNumber = t('validate.regex.phone') as any;
     }
 
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
     if (!driverData.licenseIssuedDate?.trim()) {
       newErrors.licenseIssuedDate = t('validate.required.licenseIssueDate') as any;
+    } else if (!dateRegex.test(driverData.licenseIssuedDate)) {
+      newErrors.licenseIssuedDate = t('validate.regex.licenseIssueDate');
     } else if (!isValid(parseISO(driverData.licenseIssuedDate))) {
       newErrors.licenseIssuedDate = t('validate.regex.licenseIssueDate');
     }
@@ -67,38 +71,29 @@ const DriverAddScreen = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!validateForm()) {
-      Alert.alert(`${t('validate.error.title')}`, `${t('validate.error.title')}`);
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
       return;
     }
 
-    Alert.alert(
-      `${t('driver.toast.add.confirm.title')}`,
-      `${t('driver.toast.add.confirm.message')}`,
-      [
-        { text: `${t('common.button.cancel')}`, style: 'cancel' },
-        {
-          text: `${t('common.button.create')}`,
-          onPress: async () => {
-            setIsLoading(true);
-            try {
-              const data = await DriverService.createDriver(driverData);
-              setDriverData(data);
-              showToast.success(
-                `${t('driver.toast.add.success.title')}`,
-                `${t('driver.toast.add.success.message')}`
-              );
-              navigation.navigate('DriverDetail', { driverData: data });
-            } catch (error) {
-              console.log(error);
-            } finally {
-              setIsLoading(false);
-            }
-          },
-        },
-      ]
-    );
+    setIsLoading(true);
+    try {
+      const data = await DriverService.createDriver(driverData);
+      setDriverData(data);
+      showToast.success(
+        `${t('common.success.title')}`,
+        `${t('common.success.created', { item: t('common.items.driver') })}`
+      );
+      navigation.navigate('DriverDetail', { driverData: data });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -118,13 +113,13 @@ const DriverAddScreen = () => {
           </View>
           <View className="p-4">
             <InputField
-              label={t('driver.detail.section.fullname')}
+              label={t('common.fields.fullname')}
               value={driverData.fullName || ''}
               onChangeText={(text) => setDriverData({ ...driverData, fullName: text })}
               error={errors.fullName as string}
             />
             <InputField
-              label={t('driver.detail.section.phone')}
+              label={t('common.fields.phone')}
               value={driverData.phoneNumber || ''}
               onChangeText={(text) => setDriverData({ ...driverData, phoneNumber: text })}
               placeholder="e.g. 0912345678"
@@ -161,7 +156,7 @@ const DriverAddScreen = () => {
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
             disabled={isLoading}>
-            <Text className="font-semibold text-gray-700">Cancel</Text>
+            <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -171,7 +166,7 @@ const DriverAddScreen = () => {
             onPress={handleCreate}
             disabled={isLoading}>
             <Text className="font-semibold text-white">
-              {isLoading ? 'Adding...' : 'Add Driver'}
+              {isLoading ? `${t('common.button.adding')}` : `${t('common.button.add')}`}
             </Text>
           </TouchableOpacity>
         </View>

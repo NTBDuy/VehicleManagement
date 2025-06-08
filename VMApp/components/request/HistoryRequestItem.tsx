@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity, Text, View } from 'react-native';
 import { formatDate } from 'utils/datetimeUtils';
-import { getColorByStatus } from 'utils/requestUtils';
+import { getRequestBorderColor } from 'utils/requestUtils';
 import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 import Request from 'types/Request';
@@ -24,7 +24,7 @@ const RequestItem = ({ item }: RequestItemProps) => {
   return (
     <TouchableOpacity
       onPress={() => handleViewDetail(item)}
-      className={`mb-4 mt-1 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.status)}`}>
+      className={`mb-4 mt-1 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getRequestBorderColor(item.status)}`}>
       <View className="flex-row items-center">
         <View className="items-center justify-center w-12 h-12 ml-2 mr-4 bg-blue-300 rounded-full">
           <Text className="text-xl font-semibold text-white">
@@ -53,7 +53,7 @@ const RequestItem = ({ item }: RequestItemProps) => {
             </View>
           ) : (
             <View>
-              <Text className="text-xs text-gray-500">{t('request.list.label.date')}: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">{t('common.fields.date')}: {formatDate(item.startTime)}</Text>
             </View>
           )}
         </View>

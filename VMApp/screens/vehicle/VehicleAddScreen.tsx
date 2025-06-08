@@ -3,12 +3,12 @@ import { useCallback, useState } from 'react';
 import { TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
+import { useTranslation } from 'react-i18next';
 
 import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
-import { useTranslation } from 'react-i18next';
 
 const VehicleAddScreen = () => {
   const initialVehicleData = {
@@ -20,7 +20,6 @@ const VehicleAddScreen = () => {
     status: 0,
     lastMaintenance: '',
   };
-
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
@@ -44,19 +43,19 @@ const VehicleAddScreen = () => {
     const newErrors: Partial<Vehicle> = {};
 
     if (!vehicleData.licensePlate.trim()) {
-      newErrors.licensePlate = t('vehicle.validate.plate');
+      newErrors.licensePlate = t('validate.required.plate');
     }
 
     if (!vehicleData.brand.trim()) {
-      newErrors.brand = t('vehicle.validate.brand');
+      newErrors.brand = t('validate.required.brand');
     }
 
     if (!vehicleData.model.trim()) {
-      newErrors.model = t('vehicle.validate.model');
+      newErrors.model = t('validate.required.model');
     }
 
     if (!vehicleData.type) {
-      newErrors.type = t('vehicle.validate.type');
+      newErrors.type = t('validate.required.type');
     }
 
     setErrors(newErrors);
@@ -66,8 +65,8 @@ const VehicleAddScreen = () => {
   const handleAddVehicle = async () => {
     if (!validateForm()) {
       showToast.error(
-        `${t('vehicle.validate.error.title')}`,
-        `${t('vehicle.validate.error.message')}`
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
       );
       return;
     }
@@ -75,8 +74,8 @@ const VehicleAddScreen = () => {
       setIsLoading(true);
       const data = await VehicleService.createVehicle(vehicleData);
       showToast.success(
-        `${t('vehicle.toast.add.success.title')}`,
-        `${t('vehicle.toast.add.success.message')}`
+        `${t('common.success.title')}`,
+        `${t('common.success.created', { item: t('common.items.vehicle') })}`
       );
       navigation.navigate('VehicleDetail', { vehicleData: data });
     } catch (error) {
@@ -151,7 +150,7 @@ const VehicleAddScreen = () => {
             disabled={isLoading}
             className={`items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 '}`}>
             <Text className="font-bold text-white">
-              {isLoading ? `${t('vehicle.add.actions.adding')}` : `${t('vehicle.add.actions.add')}`}
+              {isLoading ? `${t('common.button.adding')}` : `${t('common.button.add')}`}
             </Text>
           </TouchableOpacity>
         </View>

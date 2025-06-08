@@ -1,5 +1,10 @@
 import { DriverService } from '@/services/driverService';
-import { getStatusLabel, getStatusStyle, getUserInitials } from '@/utils/userUtils';
+import {
+  getUserBackgroundColor,
+  getUserInitials,
+  getUserLabelEn,
+  getUserLabelVi,
+} from '@/utils/userUtils';
 import { faChevronRight, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -15,13 +20,14 @@ import LoadingData from '@/components/ui/LoadingData';
 
 const DriverManagement = () => {
   const navigation = useNavigation<any>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLocale = i18n.language;
+  const isViCurrent = currentLocale === 'vi-VN';
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState(2);
-
   const filterOptions = [
     { id: 2, name: t('common.status.all') },
     { id: 0, name: t('common.status.active') },
@@ -74,10 +80,12 @@ const DriverManagement = () => {
   };
 
   const renderBadgeStatus = (status: boolean) => {
-    const bgColor = getStatusStyle(status);
+    const bgColor = getUserBackgroundColor(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">{getStatusLabel(status)}</Text>
+        <Text className="text-xs font-medium text-white">
+          {isViCurrent ? getUserLabelVi(status) : getUserLabelEn(status)}
+        </Text>
       </View>
     );
   };
@@ -138,7 +146,7 @@ const DriverManagement = () => {
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder={t('driver.management.searchPlaceholder')}
+        placeholder={t('common.searchPlaceholder.driver')}
         handleClearFilters={handleClearFilters}
       />
 

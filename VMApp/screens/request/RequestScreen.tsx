@@ -7,29 +7,30 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FlatList,
   Modal,
-  TouchableOpacity,
   RefreshControl,
   SafeAreaView,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate } from 'utils/datetimeUtils';
-import { getColorByStatus } from 'utils/requestUtils';
+import { getRequestBorderColor } from 'utils/requestUtils';
 import { getUserInitials } from 'utils/userUtils';
 
 import Request from 'types/Request';
 
-import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
+import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
+import StatusCard from '@/components/ui/StatusCardComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
-import { useTranslation } from 'react-i18next';
 
 const RequestScreen = () => {
   const navigation = useNavigation<any>();
@@ -102,11 +103,11 @@ const RequestScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      getRequestsData();
+      fetchRequestsData();
     }, [])
   );
 
-  const getRequestsData = async () => {
+  const fetchRequestsData = async () => {
     try {
       setIsLoading(true);
       const data = await RequestService.getAllRequests();
@@ -119,29 +120,10 @@ const RequestScreen = () => {
     }
   };
 
-  const StatusCard = ({
-    label,
-    keyword,
-    count,
-    bgColor,
-  }: {
-    label: string;
-    keyword: string;
-    count: number;
-    bgColor: string;
-  }) => (
-    <TouchableOpacity
-      onPress={() => handleStatusFilter(keyword)}
-      className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
-      <Text className="text-base font-medium text-white">{label}</Text>
-      <Text className="text-lg font-bold text-white">{count}</Text>
-    </TouchableOpacity>
-  );
-
   const renderRequestItem = ({ item }: { item: Request }) => (
     <TouchableOpacity
       onPress={() => handleRequestOption(item)}
-      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getColorByStatus(item.status)}`}>
+      className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getRequestBorderColor(item.status)}`}>
       <View className="flex-row items-center">
         <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
           <Text className="text-lg font-bold text-white">
@@ -167,7 +149,7 @@ const RequestScreen = () => {
           ) : (
             <View>
               <Text className="text-xs text-gray-500">
-                {t('request.list.label.date')}: {formatDate(item.startTime)}
+                {t('common.fields.date')}: {formatDate(item.startTime)}
               </Text>
             </View>
           )}
@@ -232,7 +214,7 @@ const RequestScreen = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getRequestsData();
+    fetchRequestsData();
   };
 
   const handleApproveConfirm = async (driverId: string | null, note: string) => {
@@ -244,19 +226,19 @@ const RequestScreen = () => {
       await RequestService.approveRequest(selected!.requestId);
     }
 
-    await getRequestsData();
+    await fetchRequestsData();
   };
 
   const handleRejectConfirm = async (reason: string) => {
     const reasonData = { reason };
     await RequestService.rejectRequest(selected!.requestId, reasonData);
-    await getRequestsData();
+    await fetchRequestsData();
   };
 
   const handleCancelConfirm = async (reason: string) => {
     const reasonData = { reason };
     await RequestService.cancelRequest(selected!.requestId, reasonData);
-    await getRequestsData();
+    await fetchRequestsData();
   };
 
   return (
@@ -266,7 +248,7 @@ const RequestScreen = () => {
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder={t('request.management.searchPlaceholder')}
+        placeholder={t('common.searchPlaceholder.request')}
         handleClearFilters={handleClearFilters}
       />
 
@@ -291,36 +273,42 @@ const RequestScreen = () => {
                 keyword="Pending"
                 count={requestStat.pending}
                 bgColor="bg-amber-500"
+                onPress={handleStatusFilter}
               />
               <StatusCard
                 label={t('common.status.approved')}
                 keyword="Approved"
                 count={requestStat.approved}
                 bgColor="bg-emerald-500"
+                onPress={handleStatusFilter}
               />
               <StatusCard
                 label={t('common.status.rejected')}
                 keyword="Rejected"
                 count={requestStat.rejected}
                 bgColor="bg-red-500"
+                onPress={handleStatusFilter}
               />
               <StatusCard
                 label={t('common.status.cancelled')}
                 keyword="Cancelled"
                 count={requestStat.cancelled}
                 bgColor="bg-slate-500"
+                onPress={handleStatusFilter}
               />
               <StatusCard
                 label={t('common.status.inProgress')}
                 keyword="In Progress"
                 count={requestStat.inProgress}
                 bgColor="bg-blue-500"
+                onPress={handleStatusFilter}
               />
               <StatusCard
                 label={t('common.status.done')}
                 keyword="Done"
                 count={requestStat.done}
                 bgColor="bg-green-600"
+                onPress={handleStatusFilter}
               />
             </View>
           )}
@@ -340,7 +328,7 @@ const RequestScreen = () => {
             renderItem={renderRequestItem}
             keyExtractor={(item) => item.requestId.toString()}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={<EmptyList title="No request found!" />}
+            ListEmptyComponent={<EmptyList />}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
         )}
@@ -371,7 +359,7 @@ const RequestScreen = () => {
                 onPress={handleViewDetail}>
                 <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
                 <Text className="text-lg font-semibold text-blue-600">
-                  {t('request.management.modal.actions.detail')}
+                  {t('common.button.detail')}
                 </Text>
               </TouchableOpacity>
 
@@ -383,8 +371,8 @@ const RequestScreen = () => {
                     <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
                     <Text className="text-lg font-semibold text-green-600">
                       {selected.isDriverRequired
-                        ? `${t('request.management.modal.actions.approveWithAssign')}`
-                        : `${t('request.management.modal.actions.approve')}`}
+                        ? `${t('common.button.approveWithAssign')}`
+                        : `${t('common.button.approve')}`}
                     </Text>
                   </TouchableOpacity>
 
@@ -393,7 +381,7 @@ const RequestScreen = () => {
                     onPress={handleReject}>
                     <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
                     <Text className="text-lg font-semibold text-red-600">
-                      {t('request.management.modal.actions.reject')}
+                      {t('common.button.reject')}
                     </Text>
                   </TouchableOpacity>
                 </>
@@ -405,7 +393,7 @@ const RequestScreen = () => {
                   onPress={handleCancel}>
                   <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
                   <Text className="text-lg font-semibold text-gray-600">
-                    {t('request.management.modal.actions.cancel')}
+                    {t('common.button.cancel')}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -413,9 +401,7 @@ const RequestScreen = () => {
               <TouchableOpacity
                 className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3 "
                 onPress={handleCloseModal}>
-                <Text className="text-lg font-semibold text-white">
-                  {t('request.management.modal.actions.close')}
-                </Text>
+                <Text className="text-lg font-semibold text-white">{t('common.button.close')}</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

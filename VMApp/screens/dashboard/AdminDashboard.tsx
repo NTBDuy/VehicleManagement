@@ -1,16 +1,15 @@
-import { faBell } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { chartConfig } from '@/config/charConfig';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dimensions,
-  TouchableOpacity,
   RefreshControl,
   SafeAreaView,
   ScrollView,
   Text,
-  View,
+  View
 } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { UserService } from 'services/userService';
@@ -20,15 +19,16 @@ import User from 'types/User';
 import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
+import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
+import NotificationButton from '@/components/ui/NotificationButton';
 import StatItem from '@/components/ui/StatItemComponent';
 import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
-import { useTranslation } from 'react-i18next';
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const navigation = useNavigation<any>();
+  const screenWidth = Dimensions.get('window').width;
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -51,11 +51,9 @@ const AdminDashboard = () => {
     return { total, employee, manager, admin };
   }, [users]);
 
-  const screenWidth = Dimensions.get('window').width;
-
   useFocusEffect(
     useCallback(() => {
-      getStatData();
+      fetchStatData();
       countUnread();
     }, [])
   );
@@ -70,7 +68,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const getStatData = async () => {
+  const fetchStatData = async () => {
     try {
       setIsLoading(true);
       const vehiclesData = await VehicleService.getAllVehicles();
@@ -89,7 +87,7 @@ const AdminDashboard = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getStatData();
+    fetchStatData();
   };
 
   const vehicleChartData = [
@@ -116,36 +114,11 @@ const AdminDashboard = () => {
     },
   ].filter((item) => item.count > 0);
 
-  const chartConfig = {
-    backgroundColor: '#ffffff',
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(55, 65, 81, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
         title={`${t('dashboard.view.admin')}`}
-        rightElement={
-          <TouchableOpacity
-            className="relative rounded-full bg-white p-2"
-            onPress={() => navigation.navigate('Notification')}>
-            <FontAwesomeIcon icon={faBell} size={18} />
-            {notificationCount > 0 && (
-              <View className="absolute -right-2 -top-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500">
-                <Text className="text-center text-xs font-bold text-white">
-                  {notificationCount > 99 ? '99+' : notificationCount}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        }
+        rightElement={<NotificationButton notificationCount={notificationCount} />}
       />
 
       <ScrollView
@@ -161,26 +134,46 @@ const AdminDashboard = () => {
           <View>
             <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
               <View className="bg-gray-50 px-4 py-3">
-                <Text className="text-lg font-semibold text-gray-800">{t('dashboard.user.stat')}</Text>
+                <Text className="text-lg font-semibold text-gray-800">
+                  {t('dashboard.stats.users')}
+                </Text>
               </View>
 
               <View className="p-4">
-                <StatItem label={t('dashboard.user.total')} value={userStat.total} />
+                <StatItem label={t('common.status.total')} value={userStat.total} />
                 <StatItem label={t('common.role.admin')} value={userStat.admin} status="admin" />
-                <StatItem label={t('common.role.manager')} value={userStat.manager} status="manager" />
-                <StatItem label={t('common.role.employee')} value={userStat.employee} status="employee" />
+                <StatItem
+                  label={t('common.role.manager')}
+                  value={userStat.manager}
+                  status="manager"
+                />
+                <StatItem
+                  label={t('common.role.employee')}
+                  value={userStat.employee}
+                  status="employee"
+                />
               </View>
             </View>
 
             <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
               <View className="bg-gray-50 px-4 py-3">
-                <Text className="text-lg font-semibold text-gray-800">{t('dashboard.vehicle.stat')}</Text>
+                <Text className="text-lg font-semibold text-gray-800">
+                  {t('dashboard.stats.vehicles')}
+                </Text>
               </View>
 
               <View className="p-4">
-                <StatItem label={t('dashboard.vehicle.total')} value={vehicleStat.total} />
-                <StatItem label={t('common.status.available')} value={vehicleStat.available} status="available" />
-                <StatItem label={t('common.status.inUse')} value={vehicleStat.inUse} status="inUse" />
+                <StatItem label={t('common.status.total')} value={vehicleStat.total} />
+                <StatItem
+                  label={t('common.status.available')}
+                  value={vehicleStat.available}
+                  status="available"
+                />
+                <StatItem
+                  label={t('common.status.inUse')}
+                  value={vehicleStat.inUse}
+                  status="inUse"
+                />
                 <StatItem
                   label={t('common.status.maintenance')}
                   value={vehicleStat.underMaintenance}
@@ -208,9 +201,7 @@ const AdminDashboard = () => {
                     />
                   </View>
                 ) : (
-                  <View className="items-center py-8">
-                    <Text className="text-center text-gray-500">No vehicle data available</Text>
-                  </View>
+                  <EmptyList />
                 )}
               </View>
             </View>

@@ -2,15 +2,15 @@ import { faCircleInfo, faEdit, faLock } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Image,
-  TouchableOpacity,
   SafeAreaView,
   ScrollView,
-  Switch,
   Text,
-  View,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
@@ -23,6 +23,7 @@ import InputField from '@/components/ui/InputFieldComponent';
 const UserEditScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const { userData: initialUserData } = route.params as { userData: User };
   const [userData, setUserData] = useState<User>(initialUserData);
   const [errors, setErrors] = useState<Partial<User>>({});
@@ -38,28 +39,28 @@ const UserEditScreen = () => {
   };
 
   const roles = [
-    { label: 'Employee', value: 1 },
-    { label: 'Manager', value: 2 },
-    { label: 'Admin', value: 0 },
+    { label: t('common.role.employee'), value: 1 },
+    { label: t('common.role.manager'), value: 2 },
+    { label: t('common.role.admin'), value: 0 },
   ];
 
   const validateForm = (): boolean => {
     const newErrors: Partial<User> = {};
 
     if (!userData.fullName?.trim()) {
-      newErrors.fullName = 'Full name is required' as any;
+      newErrors.fullName = t('validate.required.fullname') as any;
     }
 
     if (!userData.email?.trim()) {
-      newErrors.email = 'Email is required' as any;
+      newErrors.email = t('validate.required.email') as any;
     } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
-      newErrors.email = 'Please enter a valid email' as any;
+      newErrors.email = `${t('validate.regex.email')}` as any;
     }
 
     if (!userData.phoneNumber?.trim()) {
       newErrors.phoneNumber = t('validate.required.phone') as any;
     } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = 'Please enter a valid phone number' as any;
+      newErrors.phoneNumber = `${t('validate.regex.phone')}` as any;
     }
 
     setErrors(newErrors);
@@ -68,54 +69,86 @@ const UserEditScreen = () => {
 
   const handleUpdate = () => {
     if (!validateForm()) {
-      Alert.alert(`${t('validate.error.title')}`, `${t('validate.error.title')}`);
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
       return;
     }
 
-    Alert.alert('Update User', 'Are you sure you want to update this user?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Update',
-        onPress: async () => {
-          setIsLoading(true);
-          try {
-            const data = await UserService.updateUser(userData.userId, userData);
-            setUserData(data);
-            setHasChanges(false);
-            showToast.success('Success', 'User updated successfully!');
-          } catch (error) {
-            console.log(error);
-          } finally {
-            setIsLoading(false);
-          }
+    Alert.alert(
+      `${t('common.confirmation.title.update', { item: t('common.items.user') })}`,
+      `${t('common.confirmation.message.update', { item: t('common.items.user') })}`,
+      [
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
+        {
+          text: `${t('common.button.update')}`,
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              const data = await UserService.updateUser(userData.userId, userData);
+              setUserData(data);
+              setHasChanges(false);
+              showToast.success(
+                `${t('common.success.title')}`,
+                `${t('common.success.updated', { item: t('common.items.user') })}`
+              );
+            } catch (error) {
+              console.log(error);
+            } finally {
+              setIsLoading(false);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
-  // Phát triển sau - Coming Soon!
   const handleResetPassword = () => {
-    Alert.alert('Reset Password', `Reset password for ${userData.fullName || userData.username}?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Reset',
-        style: 'destructive',
-        onPress: () => {
-          console.log('Reset password for user:', userData.userId);
-          Alert.alert('Success', 'Password reset link has been sent to user email');
+    Alert.alert(
+      `${t('common.confirmation.title.reset')}`,
+      `${t('common.confirmation.message.reset', {
+        user: userData?.fullName || userData?.username,
+      })}`,
+      [
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
+        {
+          text: `${t('common.button.reset')}`,
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setIsLoading(true);
+              await UserService.reset(userData!.userId);
+              showToast.success(
+                `${t('common.success.passwordReset')}`
+              );
+            } catch (error) {
+              console.log('Error resetting password:', error);
+              showToast.error(
+                `${t('common.error.title')}`,
+                `${t('common.error.generic')}`
+              );
+            } finally {
+              setIsLoading(false);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleCancel = () => {
     if (hasChanges) {
       Alert.alert(
-        'Discard Changes',
-        'You have unsaved changes. Are you sure you want to discard them?',
+        `${t('common.confirmation.title.discardChanges')}`,
+        `${t('common.confirmation.message.discardChanges')}`,
         [
-          { text: 'Keep Editing', style: 'cancel' },
-          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+          { text: `${t('common.button.keepEdit')}`, style: 'cancel' },
+          {
+            text: `${t('common.button.discard')}`,
+            style: 'destructive',
+            onPress: () => navigation.goBack(),
+          },
         ]
       );
     } else {
@@ -125,53 +158,53 @@ const UserEditScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      
       <Header
         backBtn
         customTitle={
-          <View>
-            <Text className="text-xl font-bold text-gray-800">Edit User #{userData.userId}</Text>
-            {hasChanges && <Text className="text-xs text-orange-600">Unsaved changes</Text>}
+          <View className="items-center">
+            <Text className="text-xl font-bold text-gray-800">{t('user.edit.title')}</Text>
+            <Text className="text-xl font-bold text-gray-800">#{userData.userId}</Text>
+            {hasChanges && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
           </View>
         }
       />
 
-      
       <ScrollView className="flex-1 px-6">
-        {/** Profile Picture */}
-        <View className="items-center mb-6">
+        <View className="mb-6 items-center">
           <View className="relative">
             <Image
-              className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
+              className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
               source={require('@/assets/images/user-default.jpg')}
             />
-            <TouchableOpacity className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
+            <TouchableOpacity className="absolute bottom-0 right-0 rounded-full border-2 border-white bg-blue-500 p-2">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Personal Information Section */}
-        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Personal Information</Text>
+        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              {' '}
+              {t('user.detail.informationTitle')}
+            </Text>
           </View>
           <View className="p-4">
             <InputField
-              label="Full Name"
+              label={t('common.fields.fullname')}
               value={userData.fullName || ''}
               onChangeText={(text) => updateUserData('fullName', text)}
               error={errors.fullName as string}
             />
             <InputField
-              label="Email"
+              label={t('common.fields.email')}
               value={userData.email || ''}
               onChangeText={(text) => updateUserData('email', text)}
               keyboardType="email-address"
               error={errors.email as string}
             />
             <InputField
-              label="Phone Number"
+              label={t('common.fields.phone')}
               value={userData.phoneNumber || ''}
               onChangeText={(text) => updateUserData('phoneNumber', text)}
               placeholder="e.g. 0912345678"
@@ -181,33 +214,36 @@ const UserEditScreen = () => {
           </View>
         </View>
 
-        {/* User Details Section */}
-        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">User Details</Text>
+        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('user.detail.detailTitle')}
+            </Text>
           </View>
           <View className="p-4">
-            <View className="p-4 mb-6 border border-blue-200 rounded-2xl bg-blue-50">
+            <View className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-4">
               <View className="flex-row items-center">
                 <FontAwesomeIcon icon={faCircleInfo} size={24} color="#1e40af" />
-                <View className="flex-1 ml-4">
-                  <Text className="font-semibold text-blue-800 ">Username cannot be modified</Text>
+                <View className="ml-4 flex-1">
+                  <Text className="font-semibold text-blue-800 ">
+                    {t('user.edit.cannotModified')}
+                  </Text>
                 </View>
               </View>
             </View>
 
             <View className="mb-4">
               <Text className="mb-2 text-sm text-gray-600">
-                Role <Text className="text-red-500">*</Text>
+                {t('common.fields.role')} <Text className="text-red-500">*</Text>
               </Text>
-              <View className="flex-row flex-wrap gap-2">
+              <View className="flex-col flex-wrap gap-2">
                 {roles.map((role) => {
                   const isSelected = userData.role === role.value;
                   return (
                     <TouchableOpacity
                       key={role.value}
                       onPress={() => updateUserData('role', role.value)}
-                      className={`min-w-[30%] flex-1 items-center rounded-xl border-2 px-4 py-3 ${
+                      className={`w-[100%] flex-1 items-center rounded-xl border-2 px-4 py-3 ${
                         isSelected ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'
                       }`}>
                       <Text
@@ -221,48 +257,32 @@ const UserEditScreen = () => {
                 })}
               </View>
             </View>
-
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm text-gray-600">User Status</Text>
-              <View className="flex-row items-center">
-                <Text
-                  className={`mr-2 text-sm ${userData.status ? 'text-green-600' : 'text-gray-500'}`}>
-                  {userData.status ? 'Active' : 'Inactive'}
-                </Text>
-                <Switch
-                  value={userData.status}
-                  onValueChange={(value) => updateUserData('status', value)}
-                  trackColor={{ false: '#e5e7eb', true: '#10b981' }}
-                  thumbColor={userData.status ? '#fff' : '#f9fafb'}
-                />
-              </View>
-            </View>
           </View>
         </View>
 
-        {/** Password Section */}
-        <View className="mb-6 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Security</Text>
+        <View className="mb-6 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('common.fields.security')}
+            </Text>
           </View>
           <View className="p-4">
             <TouchableOpacity
-              className="flex-row items-center px-4 py-3 border border-gray-300 rounded-xl bg-gray-50"
+              className="flex-row items-center rounded-xl border border-gray-300 bg-gray-50 px-4 py-3"
               onPress={handleResetPassword}>
               <FontAwesomeIcon icon={faLock} size={16} color="#6b7280" />
-              <Text className="ml-3 text-gray-700">Reset Password</Text>
-              <Text className="ml-auto text-sm text-blue-600">Send Reset Link</Text>
+              <Text className="ml-3 text-gray-700">{t('common.button.reset')}</Text>
+              <Text className="ml-auto text-sm text-blue-600">{t('common.button.sendReset')}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        
-        <View className="flex-row justify-between mt-4 mb-8">
+        <View className="mb-8 mt-4 flex-row justify-between">
           <TouchableOpacity
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
             disabled={isLoading}>
-            <Text className="font-semibold text-gray-700">Cancel</Text>
+            <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -272,7 +292,7 @@ const UserEditScreen = () => {
             onPress={handleUpdate}
             disabled={isLoading || !hasChanges}>
             <Text className="font-semibold text-white">
-              {isLoading ? `${t('common.button.updating')}` : 'Update User'}
+              {isLoading ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
             </Text>
           </TouchableOpacity>
         </View>

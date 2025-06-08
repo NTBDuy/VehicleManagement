@@ -1,8 +1,9 @@
+import { BaseApiClient } from '@/services/baseApiClient';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AuthService } from 'services/authService';
 import { LoginRequest } from 'types/LoginRequest';
 import { showToast } from 'utils/toast';
-import { BaseApiClient } from '@/services/baseApiClient';
 
 import User from 'types/User';
 
@@ -36,7 +37,8 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -75,6 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: LoginRequest) => {
     try {
       const response = await AuthService.login(credentials);
+      showToast.success(`${t('common.success.login', { user: response.user.fullName })}!`);
       setUser(response.user);
     } catch (error) {
       throw error;
@@ -84,11 +87,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await AuthService.logout();
-      showToast.success('Logout Successful', 'You have been logged out. See you again soon!');
+      showToast.success(t('common.success.logout'));
       setUser(null);
     } catch (error) {
       console.error('Error during logout:', error);
-      showToast.error('Logout Failed', 'Something went wrong. Please try again.');
+      showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
     }
   };
 

@@ -1,0 +1,570 @@
+{
+  "common": {
+    "vms": "Vehicle Management System",
+    "items": {
+      "user": "User",
+      "driver": "Driver",
+      "vehicle": "Vehicle",
+      "request": "Request",
+      "maintenance": "Maintenance"
+    },
+    "button": {
+      "search": "Search",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "save": "Save",
+      "keepEdit": "Keep Editing",
+      "discard": "Discard",
+      "yesIAmSure": "Yes, I am sure",
+      "create": "Create",
+      "creating": "Creating...",
+      "update": "Update",
+      "updating": "Updating...",
+      "loading": "Loading...",
+      "next": "Next",
+      "back": "Back",
+      "close": "Close",
+      "add": "Add",
+      "adding": "Adding...",
+      "edit": "Edit",
+      "detail": "Details",
+      "remove": "Remove",
+      "approve": "Approve",
+      "processing": "Processing...",
+      "reject": "Reject",
+      "schedule": "Schedule",
+      "reschedule": "Reschedule",
+      "begin": "Begin",
+      "beginning": "Beginning...",
+      "done": "Done",
+      "gettingDone": "Getting done...",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "reset": "Reset Password",
+      "sendReset": "Send Reset Link",
+      "usingVehicle": "Using Vehicle",
+      "endUsage": "End Usage",
+      "ending": "Ending...",
+      "remind": {
+        "sent": "✓ Reminder sent",
+        "urgent": "Urgent: Return overdue vehicle",
+        "soon": "Due soon: Remind return",
+        "normal": "Remind for return vehicle"
+      },
+      "approveWithAssign": "Approve and assign a driver",
+      "maintenance": "Schedule maintenance",
+      "scheduleNow": "Schedule Now"
+    },
+    "status": {
+      "all": "All",
+      "total": "Total",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "inProgress": "In Progress",
+      "done": "Done",
+      "available": "Available",
+      "inUse": "In Use",
+      "maintenance": "Under Maintenance",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "role": {
+      "admin": "Admin",
+      "manager": "Manager",
+      "employee": "Employee"
+    },
+    "noData": {
+      "generic": "No data available",
+      "display": "There is no data to display right now.",
+      "vehicle": "No vehicle data available",
+      "requestHistory": "User has not requested any vehicles"
+    },
+    "expand": {
+      "hide": "Hide details ▲",
+      "show": "Show details ▼"
+    },
+    "unsaved": "Unsaved changes",
+    "loadingData": "Loading data",
+    "lastUpdated": "Last updated",
+    "tryAgain": "Try Again",
+    "soon": "Coming Soon!",
+    "searchPlaceholder": {
+      "vehicle": "Search plate, type or brand...",
+      "user": "Search username, phone or email...",
+      "driver": "Search name or phone...",
+      "request": "Search user or vehicle information..."
+    },
+    "confirmation": {
+      "title": {
+        "update": "Update Information",
+        "delete": "Delete {{item}}",
+        "activate": "Activate {{item}}",
+        "deactivate": "Deactivate {{item}}",
+        "reset": "Reset Password",
+        "discardChanges": "Discard Changes",
+        "reject": "Reject Request",
+        "cancel": "Cancel Request",
+        "schedule": "Confirm Schedule",
+        "reschedule": "Reschedule Maintenance",
+        "beginMaintenance": "Begin Maintenance",
+        "completeMaintenance": "Complete Maintenance"
+      },
+      "message": {
+        "update": "Are you sure you want to update this {{item}}?",
+        "delete": "Are you sure you want to delete this {{item}}?",
+        "activate": "Are you sure you want to activate {{item}}?",
+        "deactivate": "Are you sure you want to deactivate {{item}}?",
+        "reset": "Reset password for {{user}}?",
+        "discardChanges": "You have unsaved changes. Are you sure you want to discard them?",
+        "reject": "Are you sure want to reject this request?",
+        "cancel": "Are you sure you want to cancel this request?",
+        "schedule": "Are you sure you want to schedule this maintenance?",
+        "reschedule": "Are you sure you want to reschedule maintenance?",
+        "beginMaintenance": "Are you sure you want to begin this maintenance?",
+        "completeMaintenance": "Are you sure you want to complete this maintenance?"
+      }
+    },
+    "success": {
+      "title": "Success",
+      "profile": "Your information has been updated.",
+      "created": "{{item}} created successfully",
+      "updated": "{{item}} updated successfully",
+      "deleted": "{{item}} deleted successfully",
+      "activated": "{{item}} has been activated successfully",
+      "deactivated": "{{item}} has been deactivated successfully",
+      "passwordReset": "Password reset link has been sent to user email",
+      "passwordChange": "Your password has been changed successfully!",
+      "approved": "Request approved successfully",
+      "schedule": "Maintenance scheduled successfully!",
+      "reschedule": "Your maintenance schedule was rescheduled successfully!",
+      "beginMaintenance": "Maintenance has begun",
+      "completeMaintenance": "Maintenance has been completed",
+      "login": "Welcome {{user}}",
+      "logout": "You have been logged out. See you again soon!"
+    },
+    "error": {
+      "title": "Error",
+      "validation": {
+        "title": "Validation Error",
+        "message": "Please fix the errors below"
+      },
+      "failed": "Failed to {{action}} {{item}}",
+      "generic": "Something went wrong. Please try again.",
+      "endDate": "You must select an end date if you choose multiple dates.",
+      "login": "Please enter both username and password to continue.",
+      "screen": "Oops! Something went wrong. Try again."
+    },
+    "fields": {
+      "fullname": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "username": "Username",
+      "password": "Password",
+      "role": "Role",
+      "status": "Status",
+      "date": "Date",
+      "description": "Description",
+      "estimate": "Estimated Time",
+      "purpose": "Purpose",
+      "to": "to",
+      "reason": "Reason",
+      "enter": "Enter",
+      "security": "Security",
+      "noInfo": "No information",
+      "notSchedule": "Not scheduled",
+      "noItem": "No items found"
+    }
+  },
+
+  "validate": {
+    "regex": {
+      "phone": "Please enter a valid phone number (9-10 digits)",
+      "password": "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+      "email": "'Please enter a valid email'",
+      "licenseIssueDate": "Please enter a valid date (YYYY-MM-DD)",
+      "notMatch": "Password and confirmation password do not match",
+      "differentPassword": "New password must be different from current password",
+      "yearOfExperience": "Years of experience must be a non-negative number"
+    },
+    "required": {
+      "fullname": "Full name is required",
+      "currentPassword": "Current password is required",
+      "newPassword": "New password is required",
+      "confirmPassword": "Confirm password is required",
+      "email": "Email is required",
+      "username": "Username is required",
+      "password": "Password is required",
+      "phone": "Phone number is required",
+      "license": "License number is required",
+      "licenseIssueDate": "License issue date is required",
+      "yearOfExperience": "Years of experience are required",
+      "estimate": "Estimated time is required",
+      "description": "Description is required",
+      "plate": "License plate is required",
+      "brand": "Brand is required",
+      "model": "Model is required",
+      "type": "Type is required",
+      "driver": "Please select a driver before approving",
+      "reasonCancel": "Please provide a reason of at least 6 characters before cancelling.",
+      "reasonReject": "Please provide a reason of at least 6 characters before rejecting."
+    }
+  },
+
+  "auth": {
+    "title": "Login",
+    "loggingIn": "Logging in...",
+    "signOut": {
+      "label": "Log out",
+      "title": "Sign Out",
+      "message": "Are you sure you want to sign out?"
+    }
+  },
+
+  "sidebar": {
+    "title": "Vehicle Management",
+    "newRequest": "New Request",
+    "history": {
+      "personal": "Personal History Request",
+      "all": "History Request"
+    },
+    "setting": "Setting",
+    "management": {
+      "user": "User Management",
+      "vehicle": "Vehicle Management",
+      "maintenance": "Maintenance Management",
+      "driver": "Driver Management",
+      "request": "Request Management"
+    }
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "view": {
+      "admin": "Admin Dashboard",
+      "manager": "Management Dashboard",
+      "employee": "Employee Dashboard"
+    },
+    "stats": {
+      "users": "User Statistics",
+      "vehicles": "Vehicle Statistics",
+      "requests": "Request Statistics"
+    },
+    "quickAction": "Quick Action",
+    "incoming": "Incoming"
+  },
+
+  "notification": {
+    "title": "Notifications",
+    "empty": "User does not have any notification yet!",
+    "markAllReadSuccess": "All notifications marked as read.",
+    "markReadSuccess": "Notification marked as read.",
+    "markAllReadError": "Failed to mark all as read.",
+    "unread": "Unread"
+  },
+
+  "request": {
+    "create": {
+      "title": "New Request",
+      "tabs": {
+        "date": "Date",
+        "vehicle": "Vehicle",
+        "destination": "Destination",
+        "confirm": "Confirm"
+      },
+      "tripType": {
+        "day": "Day trip",
+        "multi": "Multi-day trip"
+      },
+      "vehiclePicker": {
+        "title": "Available Vehicle"
+      },
+      "confirm": {
+        "sectionTitle": {
+          "info": "Request Information",
+          "purpose": "Purpose",
+          "driver": "Driver Required?"
+        },
+        "label": {
+          "time": "Time",
+          "vehicle": "Vehicle",
+          "detailedPurpose": "Detailed Purpose"
+        },
+        "placeholder": {
+          "purpose": "e.g., Business trip, external meeting, guest pickup/drop-off"
+        },
+        "switchText": {
+          "assign": "Assign a driver",
+          "self": "Drive by self"
+        }
+      },
+      "toast": {
+        "vehicleRequired": {
+          "title": "Action Required",
+          "message": "Please select a vehicle to continue."
+        },
+        "purposeRequired": {
+          "title": "Purpose Required",
+          "message": "Please specify the purpose of your trip to continue."
+        },
+        "success": {
+          "title": "All Set!",
+          "message": "We've received your reservation."
+        },
+        "fail": {
+          "title": "Failed",
+          "message": "Reservation could not be submitted."
+        },
+        "error": {
+          "title": "Request Failed",
+          "message": "We couldn't complete your reservation. Please try again."
+        }
+      }
+    },
+    "list": {
+      "label": {
+        "start": "Start",
+        "end": "End"
+      }
+    },
+    "history": {
+      "title": "History Request"
+    },
+    "management": {
+      "totalRequest": "Total Request",
+      "clearFilter": "Clear filter",
+      "modal": {
+        "title": "Options for request ID #"
+      }
+    },
+    "detail": {
+      "title": "Request detail",
+      "submitted": "Submitted request",
+      "requestId": "Request ID",
+      "thisRequestWas": "This request was",
+      "by": "by",
+      "rejectionTitle": "Rejection Details",
+      "cancellationTitle": "Cancellation Details",
+      "noInfo": "No information",
+      "info": {
+        "section": "Request Information",
+        "requestBy": "Request by",
+        "dateRange": "Date range",
+        "vehicle": "Vehicle",
+        "driverRequired": "Driver required",
+        "driverAssign": "Assign a driver",
+        "driverSelf": "Drive by self",
+        "requestDate": "Request date"
+      },
+      "driver": {
+        "section": "Driver Information",
+        "name": "Driver"
+      },
+      "toast": {
+        "startUsing": {
+          "title": "Start Vehicle Usage",
+          "message": "Are you sure you want to start using the vehicle?"
+        },
+        "startUsingSuccess": {
+          "title": "Vehicle usage started successfully",
+          "message": "You can now use the vehicle. Please remember to end usage when finished."
+        },
+        "startUsingError": {
+          "title": "Cannot use vehicle",
+          "message": "Vehicle can only be used on the scheduled date."
+        },
+        "endUsage": {
+          "title": "End Vehicle Usage",
+          "message": "Are you sure you want to end the vehicle usage?"
+        },
+        "endUsageSuccess": {
+          "title": "Vehicle usage ended successfully",
+          "message": "The vehicle has been returned and the request is now marked as complete."
+        },
+        "remind": {
+          "title": "Send Reminder",
+          "message": "Are you sure you want to send a reminder to use the vehicle?"
+        },
+        "remindSuccess": {
+          "title": "Reminder sent",
+          "message": "The user has been reminded to start vehicle usage."
+        }
+      }
+    },
+    "modal": {
+      "approve": {
+        "title": "Approve Request",
+        "driverSection": {
+          "noDriverRequired": "No Driver Required",
+          "noDriverRequiredMention": "This request can be processed without assigning a driver.",
+          "assign": "Driver Assignment",
+          "mention": "Please select a driver for this request",
+          "select": "Select Driver",
+          "placeholder": "Choose a driver...",
+          "selected": "✓ Driver selected successfully",
+          "noDriver": "There are no drivers available for this request from"
+        },
+        "note": "Note (Optional)",
+        "placeholder": "Add any additional notes..."
+      }
+    }
+  },
+
+  "vehicle": {
+    "management": {
+      "title": "Vehicle Management",
+      "summary": "Summary",
+      "totalVehicle": "Total Vehicle"
+    },
+    "modal": {
+      "title": "Options for plate number #"
+    },
+    "detail": {
+      "title": "Vehicle Detail",
+      "vehicleId": "Vehicle ID #",
+      "sectionInfo": {
+        "title": "Vehicle Information",
+        "label": {
+          "plate": "Plate number",
+          "type": "Type",
+          "brand": "Brand",
+          "model": "Model",
+          "brandAndModel": "Brand & Model",
+          "createAt": "Create At",
+          "lastMaintenance": "Last maintenance"
+        }
+      },
+      "sectionMaintenance": {
+        "title": "Maintenance",
+        "label": {
+          "last": "Last time",
+          "next": "Next time",
+          "notSchedule": "Not scheduled"
+        }
+      }
+    },
+    "add": {
+      "title": "Add New Vehicle"
+    },
+    "edit": {
+      "title": "Update Vehicle"
+    }
+  },
+
+  "maintenance": {
+    "management": {
+      "title": "Maintenance Management",
+      "totalSchedule": "Total Schedule"
+    },
+    "detail": {
+      "title": "Maintenance Details",
+      "maintenanceId": "Maintenance ID",
+      "modal": {
+        "title": "Reschedule Maintenance"
+      }
+    },
+    "schedule": {
+      "title": "Schedule Maintenance",
+      "section": {
+        "title": "Schedule next maintenance",
+        "selectedDate": "Selected maintenance date"
+      },
+      "estimate": "Estimated Time (days)"
+    }
+  },
+
+  "driver": {
+    "management": {
+      "title": "Driver Management"
+    },
+    "detail": {
+      "title": "Driver ID",
+      "section": {
+        "title": "Driver Information",
+        "license": "License Number",
+        "licenseDate": "License Issued Date",
+        "experience": "Year of Experience"
+      }
+    },
+    "add": {
+      "title": "Create New Driver"
+    },
+    "edit": {
+      "title": "Update Driver Information"
+    }
+  },
+
+  "user": {
+    "management": {
+      "title": "User Management",
+      "totalUser": "Total Users",
+      "modal": {
+        "title": "Options for"
+      }
+    },
+    "detail": {
+      "title": "User Detail ID",
+      "informationTitle": "Personal Information",
+      "detailTitle": "User Details"
+    },
+    "add": {
+      "title": "Create New User",
+      "automaticallyGenerated": "Username and password will be automatically generated",
+      "passwordDefault": "Default password will be: P@ssword123"
+    },
+    "edit": {
+      "title": "Edit User",
+      "cannotModified": "Username cannot be modified"
+    },
+    "editProfile": {
+      "title": "Edit Profile",
+      "section": {
+        "title": "User Information"
+      }
+    }
+  },
+  "setting": {
+    "title": "Account Setting",
+    "label": {
+      "user": "Update your information",
+      "password": "Change your password",
+      "language": "Change your language",
+      "term": "Terms and Conditions",
+      "privacy": "Privacy Policy",
+      "signOut": "Sign Out"
+    },
+    "info": {
+      "user": "Edit your personal details",
+      "password": "Update your security credentials",
+      "language": "Change application language",
+      "term": "Read our terms of service",
+      "privacy": "Learn about data protection",
+      "signOut": "Log out of your account"
+    },
+    "selectLanguage": "Select Language",
+    "languageChanged": "Language changed successfully",
+    "languageChangeError": "Failed to change language",
+    "changePassword": {
+      "header": "Change Password",
+      "title": "Update Your Password",
+      "subTitle": "Choose a strong password to keep your account secure",
+      "section": {
+        "title": "Password Information",
+        "label": {
+          "current": "Current Password",
+          "new": "New Password",
+          "confirm": "Confirm New Password"
+        }
+      },
+      "requirement": {
+        "title": "Password Requirements",
+        "require1": "At least 8 characters long",
+        "require2": "Include at least one uppercase letter, one lowercase letter, one number, and one special character",
+        "require3": "Different from your current password"
+      }
+    }
+  }
+}

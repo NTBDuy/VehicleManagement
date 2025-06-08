@@ -1,14 +1,15 @@
+import { formatDate } from '@/utils/datetimeUtils';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
-  TouchableOpacity,
   Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -19,7 +20,7 @@ import { showToast } from 'utils/toast';
 import Driver from 'types/Driver';
 
 import InputField from '@/components/ui/InputFieldComponent';
-import { formatDate } from '@/utils/datetimeUtils';
+
 interface ApproveModalProps {
   visible: boolean;
   onClose: () => void;
@@ -36,16 +37,15 @@ type ItemDropDownPicker = {
   value: string;
 };
 
-const ApproveModal: React.FC<ApproveModalProps> = ({
+const ApproveModal = ({
   visible,
   onClose,
   onApprove,
   isDriverRequired,
-  title = 'Approve Request',
-  approveButtonText = 'Approve',
   startTime,
   endTime,
-}) => {
+}: ApproveModalProps) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -62,7 +62,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   useEffect(() => {
     if (visible) {
-      getAvailableDrivers();
+      fetchAvailableDrivers();
     }
   }, [visible]);
 
@@ -76,13 +76,16 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
     }
   }, [drivers]);
 
-  const getAvailableDrivers = async () => {
+  const fetchAvailableDrivers = async () => {
     setLoading(true);
     try {
       const dataDrivers = await DriverService.getAvailableDrivers(startTime, endTime);
       setDrivers(dataDrivers);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load drivers. Please try again.');
+      showToast.error(
+        `${t('common.error.title')}`,
+        `${t('common.error.failed', { action: 'loading', item: 'driver' })}`
+      );
     } finally {
       setLoading(false);
     }
@@ -90,7 +93,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
 
   const validateForm = (): boolean => {
     if (isDriverRequired && !selectedDriver) {
-      showToast.error('Driver Required', 'Please select a driver before approving.');
+      showToast.error(t('validate.required.driver'));
       return false;
     }
     return true;
@@ -101,7 +104,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
     setIsApproving(true);
     try {
       await onApprove(selectedDriver, note.trim());
-      showToast.success('Success', 'Request approved successfully');
+      showToast.success(`${t('common.success.title')}`, `${t('common.success.approved')}`);
       resetForm();
       onClose();
     } catch (error) {
@@ -119,10 +122,12 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
   if (loading) {
     return (
       <Modal transparent visible={visible} animationType="slide">
-        <TouchableOpacity onPress={onClose} className="items-center justify-center flex-1 bg-black/30">
+        <TouchableOpacity
+          onPress={onClose}
+          className="flex-1 items-center justify-center bg-black/30">
           <TouchableOpacity onPress={(e) => e.stopPropagation()}>
-            <View className="p-6 bg-white rounded-lg">
-              <Text className="text-center">Loading drivers...</Text>
+            <View className="rounded-lg bg-white p-6">
+              <Text className="text-center">{t('common.button.loading')}</Text>
             </View>
           </TouchableOpacity>
         </TouchableOpacity>
@@ -136,32 +141,36 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? -24 : 0}>
-        <TouchableOpacity onPress={onClose} className="justify-end flex-1 bg-black/30">
+        <TouchableOpacity onPress={onClose} className="flex-1 justify-end bg-black/30">
           <TouchableOpacity onPress={(e) => e.stopPropagation()}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View className="p-6 pb-12 rounded-t-2xl bg-gray-50">
-                {/* Header */}
-                <Text className="mb-4 text-lg font-bold text-center text-gray-800">{title}</Text>
+              <View className="rounded-t-2xl bg-gray-50 p-6 pb-12">
+                <Text className="mb-4 text-center text-lg font-bold text-gray-800">
+                  {t('request.modal.approve.title')}
+                </Text>
 
-                {/* Driver Assignment Section */}
                 {!isDriverRequired ? (
-                  <View className="p-4 mb-6 border border-blue-200 rounded-2xl bg-blue-50">
+                  <View className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-4">
                     <View className="flex-row items-center">
                       <FontAwesomeIcon icon={faCircleInfo} size={24} color="#1e40af" />
-                      <View className="flex-1 ml-4">
-                        <Text className="mb-1 font-semibold text-blue-800">No Driver Required</Text>
+                      <View className="ml-4 flex-1">
+                        <Text className="mb-1 font-semibold text-blue-800">
+                          {t('request.modal.approve.driverSection.noDriverRequired')}
+                        </Text>
                         <Text className="text-sm text-blue-600">
-                          This request can be processed without assigning a driver.
+                          {t('request.modal.approve.driverSection.noDriverRequiredMention')}
                         </Text>
                       </View>
                     </View>
                   </View>
                 ) : (
-                  <View className="mb-6 bg-white border border-gray-200 rounded-2xl">
-                    <View className="px-4 py-3 border-b border-gray-200 bg-gray-50">
-                      <Text className="text-lg font-semibold text-gray-800">Driver Assignment</Text>
+                  <View className="mb-6 rounded-2xl border border-gray-200 bg-white">
+                    <View className="border-b border-gray-200 bg-gray-50 px-4 py-3">
+                      <Text className="text-lg font-semibold text-gray-800">
+                        {t('request.modal.approve.driverSection.assign')}
+                      </Text>
                       <Text className="mt-1 text-sm text-gray-600">
-                        Please select a driver for this request
+                        {t('request.modal.approve.driverSection.mention')}
                       </Text>
                     </View>
 
@@ -169,7 +178,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
                       <View className="p-4">
                         <View style={{ zIndex: open ? 1000 : 0 }}>
                           <Text className="mb-2 text-sm font-medium text-gray-700">
-                            Select Driver *
+                            {t('request.modal.approve.driverSection.select')} *
                           </Text>
                           <DropDownPicker
                             open={open}
@@ -178,7 +187,7 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
                             setOpen={setOpen}
                             setValue={setSelectedDriver}
                             setItems={setItems}
-                            placeholder="Choose a driver..."
+                            placeholder={t('request.modal.approve.driverSection.placeholder')}
                             style={{
                               borderColor: selectedDriver ? '#10B981' : '#D1D5DB',
                               borderRadius: 8,
@@ -197,46 +206,46 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
                         </View>
 
                         {selectedDriver && (
-                          <View className="p-3 mt-3 border border-green-200 rounded-lg bg-green-50">
+                          <View className="mt-3 rounded-lg border border-green-200 bg-green-50 p-3">
                             <Text className="text-sm text-green-800">
-                              ✓ Driver selected successfully
+                              {t('request.modal.approve.driverSection.selected')}
                             </Text>
                           </View>
                         )}
                       </View>
                     ) : (
-                      <View className="p-3 border border-red-200 rounded-lg bg-red-50">
+                      <View className="rounded-lg border border-red-200 bg-red-50 p-3">
                         <Text className="text-sm text-red-800">
-                          There are no drivers available for this request from
-                          {formatDate(startTime)} to {formatDate(endTime)}.
+                          {t('request.modal.approve.driverSection.noDriver')}
+                          {formatDate(startTime)} {t('common.fields.to')} {formatDate(endTime)}.
                         </Text>
                       </View>
                     )}
                   </View>
                 )}
 
-                {/* Note Section */}
                 {isDriverRequired && (
                   <View className="mb-6">
                     <InputField
-                      label="Note (Optional)"
+                      label={t('request.modal.approve.note')}
                       value={note}
                       onChangeText={setNote}
                       require={false}
                       multiline
                       numberOfLines={3}
-                      placeholder="Add any additional notes..."
+                      placeholder={t('request.modal.approve.placeholder')}
                     />
                   </View>
                 )}
 
-                {/* Action Buttons */}
                 <View className="flex-row justify-between space-x-3">
                   <TouchableOpacity
                     className="w-[48%] items-center justify-center rounded-lg bg-gray-600 py-4 "
                     onPress={handleClose}
                     disabled={isApproving}>
-                    <Text className="text-lg font-semibold text-white">Cancel</Text>
+                    <Text className="text-lg font-semibold text-white">
+                      {t('common.button.cancel')}
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     className={`w-[48%] items-center justify-center rounded-lg py-4 ${
@@ -247,7 +256,9 @@ const ApproveModal: React.FC<ApproveModalProps> = ({
                     onPress={handleApprove}
                     disabled={(isDriverRequired && !selectedDriver) || isApproving}>
                     <Text className="text-lg font-semibold text-white">
-                      {isApproving ? 'Processing...' : approveButtonText}
+                      {isApproving
+                        ? `${t('common.button.processing')}`
+                        : `${t('common.button.approve')}`}
                     </Text>
                   </TouchableOpacity>
                 </View>

@@ -1,3 +1,31 @@
+import { StatusConfig } from '@/types/StatusConfig';
+
+const STATUS_CONFIG = new Map<boolean, StatusConfig>([
+  [true, { labelEn: 'Active', labelVi: 'Hoạt động', color: 'green-500' }],
+  [false, { labelEn: 'Inactive', labelVi: 'Không hoạt động', color: 'red-500' }],
+]);
+
+const DEFAULT_CONFIG: StatusConfig = {
+  labelEn: 'Unknown',
+  labelVi: 'Không xác định',
+  color: 'gray-500',
+};
+
+export const getUserBackgroundColor = (status: boolean): string => {
+  const config = STATUS_CONFIG.get(status) ?? DEFAULT_CONFIG;
+  return `bg-${config.color}`;
+};
+
+export const getUserLabelEn = (status: boolean): string => {
+  const config = STATUS_CONFIG.get(status) ?? DEFAULT_CONFIG;
+  return config.labelEn;
+};
+
+export const getUserLabelVi = (status: boolean): string => {
+  const config = STATUS_CONFIG.get(status) ?? DEFAULT_CONFIG;
+  return config.labelVi;
+};
+
 export const getUserInitials = (fullname?: string, email?: string): string => {
   if (fullname && fullname.trim() !== '') {
     const words = fullname.trim().split(' ');
@@ -21,12 +49,4 @@ export const formatVietnamPhoneNumber = (phoneNumber: string): string => {
   }
 
   return phoneNumber;
-};
-
-export const getStatusLabel = (status: boolean): string => {
-  return status ? 'Active' : 'Deactivate';
-};
-
-export const getStatusStyle = (status: boolean): string => {
-  return status ? 'bg-green-500' : 'bg-red-500';
 };

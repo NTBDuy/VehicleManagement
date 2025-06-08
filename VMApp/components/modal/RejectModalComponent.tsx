@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
-  TouchableOpacity,
   Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -18,19 +19,26 @@ interface RejectModalProps {
   onClose: () => void;
   onReject: (reason: string) => void;
 }
+interface ReasonProps {
+  reason: string;
+}
 
-const RejectModal: React.FC<RejectModalProps> = ({ visible, onClose, onReject }) => {
+const RejectModal = ({ visible, onClose, onReject }: RejectModalProps) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState('');
   const [isReject, setIsReject] = useState(false);
+  const [errors, setErrors] = useState<Partial<ReasonProps>>({});
 
   const validateForm = (): boolean => {
+    const newErrors: Partial<ReasonProps> = {};
+
     if (!reason || reason.trim().length <= 5) {
-      showToast.error(
-        'Reason Required',
-        'Please provide a reason with at least 6 characters before rejecting.'
-      );
+      newErrors.reason = t('validate.required.reasonReject');
+      setErrors(newErrors);
       return false;
     }
+
+    setErrors({});
     return true;
   };
 
@@ -39,7 +47,7 @@ const RejectModal: React.FC<RejectModalProps> = ({ visible, onClose, onReject })
     setIsReject(true);
     try {
       await onReject(reason.trim());
-      showToast.success('Success', 'Request reject successfully');
+      showToast.success(`${t('common.success.title')}`, 'Request reject successfully');
       setReason('');
       onClose();
     } catch (error) {
@@ -61,32 +69,43 @@ const RejectModal: React.FC<RejectModalProps> = ({ visible, onClose, onReject })
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <TouchableOpacity onPress={onClose} className="justify-end flex-1 bg-black/30">
+          <TouchableOpacity onPress={onClose} className="flex-1 justify-end bg-black/30">
             <TouchableOpacity onPress={(e) => e.stopPropagation()}>
-              <View className="p-6 pb-12 rounded-t-2xl bg-gray-50">
-                <Text className="mb-6 text-lg font-bold text-center">Reject Request</Text>
+              <View className="rounded-t-2xl bg-gray-50 p-6 pb-12">
+                <Text className="mb-6 text-center text-lg font-bold">
+                  {t('common.confirmation.title.reject')}
+                </Text>
 
                 <View className="mb-4">
                   <Text className="text-lg font-semibold text-gray-800">
-                    Are you sure want to reject this request?
+                    {t('common.confirmation.message.reject')}
                   </Text>
                 </View>
 
                 <View className="mb-6">
-                  <InputField label="Reason" value={reason} onChangeText={setReason} />
+                  <InputField
+                    label={t('common.fields.reason')}
+                    value={reason}
+                    onChangeText={setReason}
+                    error={errors.reason as string}
+                  />
                 </View>
 
                 <View className="flex-row justify-between">
                   <TouchableOpacity
                     className="w-[48%] items-center justify-center rounded-lg bg-gray-600 py-3 "
                     onPress={handleClose}>
-                    <Text className="text-lg font-semibold text-white">Close</Text>
+                    <Text className="text-lg font-semibold text-white">
+                      {t('common.button.close')}
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     className="w-[48%] items-center justify-center rounded-lg bg-red-600 py-3 "
                     onPress={handleReject}>
                     <Text className="text-lg font-semibold text-white">
-                      {isReject ? 'Rejecting....' : 'Reject'}
+                      {isReject
+                        ? `${t('common.button.processing')}`
+                        : `${t('common.button.reject')}`}
                     </Text>
                   </TouchableOpacity>
                 </View>

@@ -61,7 +61,7 @@ export class UserService extends BaseApiClient {
   }
 
   // Reset mật khẩu cho người dùng
-  static async resetPassword(id: number): Promise<void> {
+  static async reset(id: number): Promise<void> {
     return this.request<void>(`/user/${id}/reset-password`, {
       method: 'PUT',
     });

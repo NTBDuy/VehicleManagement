@@ -6,11 +6,12 @@ import {
   faHome,
   faPeopleGroup,
   faTools,
-  faUsers
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 
 import DriverAddScreen from '@/screens/driver/DriverAddScreen';
 import DriverDetailsScreen from '@/screens/driver/DriverDetailsScreen';
@@ -37,7 +38,6 @@ import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
-import { useTranslation } from 'react-i18next';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();
@@ -111,23 +111,22 @@ function HistoryStackScreen() {
 function MaintenanceStackScreen() {
   return (
     <MaintenanceStack.Navigator screenOptions={{ headerShown: false }}>
-      <MaintenanceStack.Screen name='Maintenance' component={MaintenanceManagement}/>
-      <MaintenanceStack.Screen name='MaintenanceDetails' component={MaintenanceDetailScreen}/>
+      <MaintenanceStack.Screen name="Maintenance" component={MaintenanceManagement} />
+      <MaintenanceStack.Screen name="MaintenanceDetails" component={MaintenanceDetailScreen} />
     </MaintenanceStack.Navigator>
-  )
+  );
 }
 
 function DriverStackScreen() {
   return (
     <DriverStack.Navigator screenOptions={{ headerShown: false }}>
-      <DriverStack.Screen name='DriverManagement' component={DriverManagement}/>
-      <DriverStack.Screen name='DriverDetail' component={DriverDetailsScreen}/>
-      <DriverStack.Screen name='DriverEdit' component={DriverEditScreen}/>
-      <DriverStack.Screen name='DriverAdd' component={DriverAddScreen}/>
+      <DriverStack.Screen name="DriverManagement" component={DriverManagement} />
+      <DriverStack.Screen name="DriverDetail" component={DriverDetailsScreen} />
+      <DriverStack.Screen name="DriverEdit" component={DriverEditScreen} />
+      <DriverStack.Screen name="DriverAdd" component={DriverAddScreen} />
     </DriverStack.Navigator>
-  )
+  );
 }
-
 
 export default function AdminNavigator() {
   const { t } = useTranslation();
@@ -190,7 +189,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faCarSide} color={color} size={size} />
           ),
-          title:  t('sidebar.management.vehicle'),
+          title: t('sidebar.management.vehicle'),
         }}
       />
 
@@ -201,7 +200,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faTools} color={color} size={size} />
           ),
-          title:  t('sidebar.management.maintenance'),
+          title: t('sidebar.management.maintenance'),
           headerShown: false,
         }}
       />
@@ -213,7 +212,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faPeopleGroup} color={color} size={size} />
           ),
-          title:  t('sidebar.management.driver'),
+          title: t('sidebar.management.driver'),
           headerShown: false,
         }}
       />
@@ -225,7 +224,7 @@ export default function AdminNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faGear} color={color} size={size} />
           ),
-          title:  t('sidebar.setting'),
+          title: t('sidebar.setting'),
         }}
       />
     </Drawer.Navigator>

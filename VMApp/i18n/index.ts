@@ -1,15 +1,15 @@
-import i18next from "i18next";
-import { initReactI18next } from "react-i18next";
-import translationEN from "./locales/en-US/translation.json";
-import translationVI from "./locales/vi-VN/translation.json";
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import translationEN from './locales/en/translation.json';
+import translationVI from './locales/vi/translation.json';
 
 const resources = {
-  "en-US": { translation: translationEN },
-  "vi-VN": { translation: translationVI }
+  'en': { translation: translationEN },
+  'vi': { translation: translationVI },
 };
 
 i18next.use(initReactI18next).init({
-  lng: "en-US",
+  lng: 'en',
   debug: true,
-  resources
+  resources,
 });

@@ -1,0 +1,582 @@
+{
+  "common": {
+    "vms": "Hệ Thống \nQuản Lý Phương Tiện",
+    "items": {
+      "user": "người dùng",
+      "driver": "tài xế",
+      "vehicle": "phương tiện",
+      "request": "yêu cầu",
+      "maintenance": "bảo trì"
+    },
+    "button": {
+      "search": "Tìm kiếm",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "keepEdit": "Tiếp tục chỉnh sửa",
+      "discard": "Huỷ bỏ",
+      "yesIAmSure": "Có, tôi chắc chắn",
+      "create": "Tạo",
+      "creating": "Đang tạo...",
+      "update": "Cập nhật thông tin",
+      "updating": "Đang cập nhật...",
+      "loading": "Đang tải...",
+      "next": "Tiếp theo",
+      "back": "Quay lại",
+      "close": "Đóng",
+      "add": "Thêm",
+      "adding": "Đang thêm...",
+      "edit": "Sửa",
+      "detail": "Chi tiết",
+      "remove": "Xóa",
+      "approve": "Phê duyệt",
+      "processing": "Đang xử lý...",
+      "reject": "Từ chối",
+      "schedule": "Lên lịch",
+      "reschedule": "Dời lịch",
+      "begin": "Bắt đầu",
+      "beginning": "Đang bắt đầu...",
+      "done": "Hoàn thành",
+      "gettingDone": "Đang hoàn thành...",
+      "activate": "Kích hoạt",
+      "deactivate": "Vô hiệu hóa",
+      "reset": "Đặt lại mật khẩu",
+      "sendReset": "Gửi yêu cầu",
+      "usingVehicle": "Sử dụng phương tiện",
+      "endUsage": "Kết thúc sử dụng",
+      "ending": "Đang kết thúc...",
+      "remind": {
+        "sent": "✓ Đã gửi nhắc nhở",
+        "urgent": "Khẩn cấp: Trả xe quá hạn",
+        "soon": "Sắp đến hạn: Nhắc nhở trả xe",
+        "normal": "Nhắc nhở trả xe"
+      },
+      "approveWithAssign": "Phê duyệt và phân công tài xế",
+      "maintenance": "Lên lịch bảo trì",
+      "scheduleNow": "Lên lịch ngay"
+    },
+    "status": {
+      "all": "Tất cả",
+      "total": "Tổng",
+      "pending": "Chờ duyệt",
+      "approved": "Đã duyệt",
+      "rejected": "Đã từ chối",
+      "cancelled": "Đã hủy",
+      "inProgress": "Đang tiến hành",
+      "done": "Hoàn thành",
+      "available": "Khả dụng",
+      "inUse": "Đang sử dụng",
+      "maintenance": "Đang bảo trì",
+      "active": "Hoạt động",
+      "inactive": "Không hoạt động"
+    },
+    "role": {
+      "admin": "Quản trị viên",
+      "manager": "Quản lý",
+      "employee": "Nhân viên"
+    },
+    "noData": {
+      "generic": "Không có dữ liệu",
+      "display": "Hiện không có dữ liệu để hiển thị.",
+      "vehicle": "Không có dữ liệu xe",
+      "requestHistory": "Người dùng chưa yêu cầu xe nào"
+    },
+    "expand": {
+      "hide": "Ẩn chi tiết ▲",
+      "show": "Hiện chi tiết ▼"
+    },
+    "unsaved": "Thay đổi chưa lưu",
+    "loadingData": "Đang tải dữ liệu",
+    "lastUpdated": "Cập nhật lần cuối",
+    "tryAgain": "Thử lại",
+    "soon": "Sắp ra mắt!",
+    "searchPlaceholder": {
+      "vehicle": "Tìm biển số, loại xe hoặc thương hiệu...",
+      "user": "Tìm tên người dùng, số điện thoại hoặc email...",
+      "driver": "Tìm tên hoặc số điện thoại...",
+      "request": "Tìm theo người dùng hoặc thông tin phương tiện..."
+    },
+    "confirmation": {
+      "title": {
+        "update": "Cập nhật thông tin",
+        "delete": "Xóa {{item}}",
+        "activate": "Kích hoạt {{item}}",
+        "deactivate": "Vô hiệu hóa {{item}}",
+        "reset": "Đặt lại mật khẩu",
+        "discardChanges": "Hủy thay đổi",
+        "reject": "Từ chối yêu cầu",
+        "cancel": "Huỷ bỏ yêu cầu",
+        "schedule": "Xác nhận lên lịch",
+        "reschedule": "Dời lịch bảo trì",
+        "beginMaintenance": "Bắt đầu bảo trì",
+        "completeMaintenance": "Hoàn tất bảo trì"
+      },
+      "message": {
+        "update": "Bạn có chắc chắn muốn cập nhật {{item}} này không?",
+        "delete": "Bạn có chắc chắn muốn xóa {{item}} này không?",
+        "activate": "Bạn có chắc chắn muốn kích hoạt {{item}} không?",
+        "deactivate": "Bạn có chắc chắn muốn vô hiệu hóa {{item}} không?",
+        "reset": "Đặt lại mật khẩu cho {{user}}?",
+        "discardChanges": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn hủy chúng không?",
+        "reject": "Bạn có chắc chắn muốn từ chối yêu cầu này?",
+        "cancel": "Bạn có chắc chắn muốn huỷ bỏ yêu cầu này?",
+        "schedule": "Bạn có chắc chắn muốn lên lịch bảo trì này không?",
+        "reschedule": "Bạn có chắc chắn muốn dời lịch lại bảo trì không?",
+        "beginMaintenance": "Bạn có chắc chắn muốn bắt đầu bảo trì này không?",
+        "completeMaintenance": "Bạn có chắc chắn muốn hoàn tất bảo trì này không?"
+      }
+    },
+    "success": {
+      "title": "Thành công",
+      "profile": "Thông tin cá nhân của bạn đã được cập nhật.",
+      "created": "Tạo {{item}} thành công",
+      "updated": "Cập nhật {{item}} thành công",
+      "deleted": "Xóa {{item}} thành công",
+      "activated": "{{item}} đã được kích hoạt thành công",
+      "deactivated": "{{item}} đã được vô hiệu hóa thành công",
+      "passwordReset": "Liên kết đặt lại mật khẩu đã được gửi đến email người dùng",
+      "passwordChange": "Mật khẩu của bạn đã được thay đổi thành công!",
+      "approved": "Yêu cầu đã được chấp thuận",
+      "schedule": "Đã lên lịch bảo trì thành công!",
+      "reschedule": "Lịch bảo trì của bạn đã được dời thành công!",
+      "beginMaintenance": "Bảo trì đã được bắt đầu",
+      "completeMaintenance": "Bảo trì đã được hoàn tất",
+      "login": "Chào mừng {{user}}",
+      "logout": "Bạn đã đăng xuất. Hẹn gặp lại bạn sớm!"
+    },
+    "error": {
+      "title": "Lỗi",
+      "validation": {
+        "title": "Lỗi định dạng",
+        "message": "Vui lòng sửa các lỗi ở dưới"
+      },
+      "failed": "Không thể {{action}} {{item}}",
+      "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+      "endDate": "Bạn phải chọn ngày kết thúc nếu chọn đi nhiều ngày.",
+      "login": "Vui lòng nhập cả tên người dùng và mật khẩu để tiếp tục.",
+      "screen": "Ôi không! Đã xảy ra lỗi. Vui lòng thử lại."
+    },
+    "fields": {
+      "fullname": "Họ và tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "username": "Tên người dùng",
+      "password": "Mật khẩu",
+      "role": "Vai trò",
+      "status": "Trạng thái",
+      "date": "Ngày",
+      "description": "Mô tả",
+      "estimate": "Thời gian ước tính",
+      "purpose": "Mục đích",
+      "to": "đến",
+      "reason": "Lý do",
+      "enter": "Nhập",
+      "security": "Bảo mật",
+      "noInfo": "Không có thông tin",
+      "notSchedule": "Chưa lên lịch",
+      "noItem": "Không tìm thấy mục nào"
+    }
+  },
+
+  "validate": {
+    "regex": {
+      "phone": "Vui lòng nhập số điện thoại hợp lệ (9-10 chữ số)",
+      "password": "Mật khẩu phải có ít nhất 8 ký tự và bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+      "email": "Vui lòng nhập đúng định dạng email",
+      "licenseIssueDate": "Vui lòng nhập ngày hợp lệ (YYYY-MM-DD)",
+      "notMatch": "Mật khẩu và mật khẩu xác nhận không khớp",
+      "differentPassword": "Mật khẩu mới phải khác mật khẩu hiện tại.",
+      "yearOfExperience": "Số năm kinh nghiệm phải là số không âm"
+    },
+    "required": {
+      "fullname": "Họ và tên là bắt buộc",
+      "currentPassword": "Mật khẩu hiện tại là bắt buộc",
+      "newPassword": "Mật khẩu mới là bắt buộc",
+      "confirmPassword": "Xác nhận lại mật khẩu là bắt buộc",
+      "email": "Email là bắt buộc",
+      "username": "Tên người dùng là bắt buộc",
+      "password": "Mật khẩu là bắt buộc",
+      "phone": "Số điện thoại là bắt buộc",
+      "license": "Số giấy phép lái xe là bắt buộc",
+      "licenseIssueDate": "Ngày cấp giấy phép lái xe là bắt buộc",
+      "yearOfExperience": "Số năm kinh nghiệm là bắt buộc",
+      "estimate": "Thời gian ước tính là bắt buộc",
+      "description": "Mô tả là bắt buộc",
+      "plate": "Biển số xe là bắt buộc",
+      "brand": "Thương hiệu là bắt buộc",
+      "model": "Mẫu xe là bắt buộc",
+      "type": "Loại xe là bắt buộc",
+      "driver": "Vui lòng chọn tài xế trước khi chấp thuận",
+      "reasonCancel": "Vui lòng nhập lý do với ít nhất 6 ký tự trước khi hủy.",
+      "reasonReject": "Vui lòng nhập lý do với ít nhất 6 ký tự trước khi từ chối."
+    }
+  },
+
+  "auth": {
+    "title": "Đăng nhập",
+    "loggingIn": "Đang đăng nhập...",
+    "signOut": {
+      "label": "Đăng xuất",
+      "title": "Đăng xuất",
+      "message": "Bạn có chắc chắn muốn đăng xuất không?"
+    }
+  },
+
+  "sidebar": {
+    "title": "Quản lý phương tiện",
+    "newRequest": "Yêu cầu mới",
+    "history": {
+      "personal": "Lịch sử yêu cầu cá nhân",
+      "all": "Lịch sử yêu cầu"
+    },
+    "setting": "Cài đặt",
+    "management": {
+      "user": "Quản lý người dùng",
+      "vehicle": "Quản lý phương tiện",
+      "maintenance": "Quản lý bảo trì",
+      "driver": "Quản lý tài xế",
+      "request": "Quản lý yêu cầu"
+    }
+  },
+
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "welcome": "Chào mừng trở lại",
+    "view": {
+      "admin": "Bảng điều khiển quản trị",
+      "manager": "Bảng điều khiển quản lý",
+      "employee": "Bảng điều khiển nhân viên"
+    },
+    "stats": {
+      "users": "Thống kê người dùng",
+      "vehicles": "Thống kê phương tiện",
+      "requests": "Thống kê yêu cầu"
+    },
+    "quickAction": "Thao tác nhanh",
+    "incoming": "Sắp tới"
+  },
+
+  "notification": {
+    "title": "Thông báo",
+    "empty": "Người dùng chưa có thông báo nào!",
+    "markAllReadSuccess": "Đã đánh dấu tất cả thông báo là đã đọc.",
+    "markReadSuccess": "Đã đánh dấu thông báo là đã đọc.",
+    "markAllReadError": "Không thể đánh dấu tất cả là đã đọc.",
+    "unread": "Chưa đọc"
+  },
+
+  "request": {
+    "create": {
+      "title": "Yêu cầu mới",
+      "tabs": {
+        "date": "Ngày",
+        "vehicle": "Phương tiện",
+        "destination": "Điểm đến",
+        "confirm": "Xác nhận"
+      },
+      "tripType": {
+        "day": "Chuyến đi trong ngày",
+        "multi": "Chuyến đi nhiều ngày"
+      },
+      "vehiclePicker": {
+        "title": "Phương tiện có sẵn"
+      },
+      "confirm": {
+        "sectionTitle": {
+          "info": "Thông tin yêu cầu",
+          "purpose": "Mục đích",
+          "driver": "Cần tài xế?"
+        },
+        "label": {
+          "time": "Thời gian",
+          "vehicle": "Phương tiện",
+          "detailedPurpose": "Mục đích chi tiết"
+        },
+        "placeholder": {
+          "purpose": "ví dụ: Công tác, họp bên ngoài, đón/tiễn khách"
+        },
+        "switchText": {
+          "assign": "Phân công tài xế",
+          "self": "Tự lái"
+        }
+      },
+      "toast": {
+        "vehicleRequired": {
+          "title": "Cần thực hiện",
+          "message": "Vui lòng chọn phương tiện để tiếp tục."
+        },
+        "purposeRequired": {
+          "title": "Cần mục đích",
+          "message": "Vui lòng chỉ rõ mục đích chuyến đi để tiếp tục."
+        },
+        "success": {
+          "title": "Hoàn tất!",
+          "message": "Chúng tôi đã nhận được yêu cầu đặt xe của bạn."
+        },
+        "fail": {
+          "title": "Thất bại",
+          "message": "Không thể gửi yêu cầu đặt xe."
+        },
+        "error": {
+          "title": "Yêu cầu thất bại",
+          "message": "Chúng tôi không thể hoàn thành yêu cầu đặt xe của bạn. Vui lòng thử lại."
+        }
+      }
+    },
+    "list": {
+      "label": {
+        "start": "Bắt đầu",
+        "end": "Kết thúc"
+      }
+    },
+    "history": {
+      "title": "Lịch sử yêu cầu"
+    },
+    "management": {
+      "totalRequest": "Tổng yêu cầu",
+      "clearFilter": "Xóa bộ lọc",
+      "modal": {
+        "title": "Tùy chọn cho yêu cầu ID #"
+      }
+    },
+    "detail": {
+      "title": "Chi tiết yêu cầu",
+      "submitted": "Yêu cầu đã gửi",
+      "requestId": "ID yêu cầu",
+      "thisRequestWas": "Yêu cầu này",
+      "by": "bởi",
+      "rejectionTitle": "Chi tiết từ chối",
+      "cancellationTitle": "Chi tiết hủy bỏ",
+      "noInfo": "Không có thông tin",
+      "info": {
+        "section": "Thông tin yêu cầu",
+        "requestBy": "Yêu cầu bởi",
+        "dateRange": "Khoảng thời gian",
+        "vehicle": "Phương tiện",
+        "driverRequired": "Cần tài xế",
+        "driverAssign": "Phân công tài xế",
+        "driverSelf": "Tự lái",
+        "requestDate": "Ngày yêu cầu"
+      },
+      "driver": {
+        "section": "Thông tin tài xế",
+        "name": "Tài xế"
+      },
+      "toast": {
+        "startUsing": {
+          "title": "Bắt đầu sử dụng phương tiện",
+          "message": "Bạn có chắc chắn muốn bắt đầu sử dụng phương tiện không?"
+        },
+        "startUsingSuccess": {
+          "title": "Bắt đầu sử dụng phương tiện thành công",
+          "message": "Bây giờ bạn có thể sử dụng phương tiện. Vui lòng nhớ kết thúc sử dụng khi hoàn thành."
+        },
+        "startUsingError": {
+          "title": "Không thể sử dụng phương tiện",
+          "message": "Phương tiện chỉ có thể được sử dụng vào ngày đã lên lịch."
+        },
+        "endUsage": {
+          "title": "Kết thúc sử dụng phương tiện",
+          "message": "Bạn có chắc chắn muốn kết thúc sử dụng phương tiện không?"
+        },
+        "endUsageSuccess": {
+          "title": "Kết thúc sử dụng phương tiện thành công",
+          "message": "Phương tiện đã được trả lại và yêu cầu hiện được đánh dấu là hoàn thành."
+        },
+        "remind": {
+          "title": "Gửi nhắc nhở",
+          "message": "Bạn có chắc chắn muốn gửi nhắc nhở sử dụng phương tiện không?"
+        },
+        "remindSuccess": {
+          "title": "Đã gửi nhắc nhở",
+          "message": "Người dùng đã được nhắc nhở bắt đầu sử dụng phương tiện."
+        }
+      }
+    },
+    "modal": {
+      "title": "Tùy chọn cho yêu cầu ID #",
+      "actions": {
+        "approveWithAssign": "Phê duyệt và phân công tài xế"
+      },
+      "approve": {
+        "title": "Phê duyệt yêu cầu",
+        "driverSection": {
+          "noDriverRequired": "Không cần tài xế",
+          "noDriverRequiredMention": "Yêu cầu này có thể xử lý mà không cần chỉ định tài xế.",
+          "assign": "Phân công tài xế",
+          "mention": "Vui lòng chọn tài xế cho yêu cầu này",
+          "select": "Chọn tài xế",
+          "placeholder": "Chọn tài xế...",
+          "selected": "✓ Đã chọn tài xế thành công",
+          "noDriver": "Không có tài xế nào khả dụng cho yêu cầu từ"
+        },
+        "note": "Ghi chú (Tùy chọn)",
+        "placeholder": "Thêm ghi chú bổ sung..."
+      },
+      "reject": {
+        "title": "Từ chối yêu cầu",
+        "confirm": "Bạn có chắc chắn muốn từ chối yêu cầu này không?"
+      },
+      "cancel": {
+        "title": "Hủy yêu cầu",
+        "confirm": "Bạn có chắc chắn muốn hủy yêu cầu này không?"
+      }
+    }
+  },
+
+  "vehicle": {
+    "management": {
+      "title": "Quản lý phương tiện",
+      "summary": "Tóm tắt",
+      "totalVehicle": "Tổng phương tiện"
+    },
+    "modal": {
+      "title": "Tùy chọn cho xe #"
+    },
+    "detail": {
+      "title": "Chi tiết phương tiện",
+      "vehicleId": "ID phương tiện #",
+      "sectionInfo": {
+        "title": "Thông tin phương tiện",
+        "label": {
+          "plate": "Biển số",
+          "type": "Loại",
+          "brand": "Thương hiệu",
+          "model": "Mẫu",
+          "brandAndModel": "Thương hiệu & Mẫu",
+          "createAt": "Tạo lúc",
+          "lastMaintenance": "Bảo trì lần cuối"
+        }
+      },
+      "sectionMaintenance": {
+        "title": "Bảo trì",
+        "label": {
+          "last": "Lần cuối",
+          "next": "Lần tiếp theo",
+          "notSchedule": "Chưa lên lịch"
+        }
+      }
+    },
+    "add": {
+      "title": "Thêm phương tiện mới"
+    },
+    "edit": {
+      "title": "Cập nhật phương tiện"
+    }
+  },
+
+  "maintenance": {
+    "management": {
+      "title": "Quản lý bảo trì",
+      "totalSchedule": "Tổng lịch bảo trì"
+    },
+    "detail": {
+      "title": "Chi tiết bảo trì",
+      "maintenanceId": "ID bảo trì",
+      "modal": {
+        "title": "Dời lịch bảo trì"
+      }
+    },
+    "schedule": {
+      "title": "Lên lịch bảo trì",
+      "section": {
+        "title": "Lên lịch bảo trì tiếp theo",
+        "selectedDate": "Ngày bảo trì đã chọn"
+      },
+      "estimate": "Thời gian ước tính (ngày)"
+    }
+  },
+
+  "driver": {
+    "management": {
+      "title": "Quản lý tài xế"
+    },
+    "detail": {
+      "title": "ID tài xế",
+      "section": {
+        "title": "Thông tin tài xế",
+        "license": "Số giấy phép lái xe",
+        "licenseDate": "Ngày cấp giấy phép",
+        "experience": "Năm kinh nghiệm"
+      }
+    },
+    "add": {
+      "title": "Tạo tài xế mới"
+    },
+    "edit": {
+      "title": "Cập nhật thông tin tài xế"
+    }
+  },
+
+  "user": {
+    "management": {
+      "title": "Quản lý người dùng",
+      "totalUser": "Tổng người dùng",
+      "modal": {
+        "title": "Tùy chọn cho"
+      }
+    },
+    "detail": {
+      "title": "Chi tiết người dùng ID",
+      "informationTitle": "Thông tin cá nhân",
+      "detailTitle": "Chi tiết người dùng"
+    },
+    "add": {
+      "title": "Tạo người dùng mới",
+      "automaticallyGenerated": "Tên người dùng và mật khẩu sẽ được tạo tự động",
+      "passwordDefault": "Mật khẩu mặc định sẽ là: P@ssword123"
+    },
+    "edit": {
+      "title": "Cập nhật thông tin người dùng",
+      "cannotModified": "Không thể sửa tên đăng nhập (Username) của người dùng"
+    },
+    "editProfile": {
+      "title": "Cập nhật thông tin cá nhân",
+      "section": {
+        "title": "Thông tin người dùng"
+      }
+    }
+  },
+  "setting": {
+    "title": "Cài đặt tài khoản",
+    "label": {
+      "user": "Cập nhật thông tin của bạn",
+      "password": "Thay đổi mật khẩu",
+      "language": "Thay đổi ngôn ngữ",
+      "term": "Điều khoản và Điều kiện",
+      "privacy": "Chính sách Bảo mật",
+      "signOut": "Đăng xuất"
+    },
+    "info": {
+      "user": "Chỉnh sửa thông tin cá nhân",
+      "password": "Cập nhật thông tin bảo mật",
+      "language": "Thay đổi ngôn ngữ hiển thị của ứng dụng",
+      "term": "Đọc điều khoản dịch vụ của chúng tôi",
+      "privacy": "Tìm hiểu về chính sách bảo mật dữ liệu",
+      "signOut": "Đăng xuất khỏi tài khoản của bạn"
+    },
+    "selectLanguage": "Chọn ngôn ngữ",
+    "languageChanged": "Thay đổi ngôn ngữ thành công",
+    "languageChangeError": "Thay đổi ngôn ngữ thất bại",
+    "changePassword": {
+      "header": "Thay đổi mật khẩu",
+      "title": "Cập nhật mật khẩu của bạn",
+      "subTitle": "Hãy chọn một mật khẩu mạnh để bảo vệ tài khoản của bạn",
+      "section": {
+        "title": "Thông tin mật khẩu",
+        "label": {
+          "current": "Mật khẩu hiện tại",
+          "new": "Mật khẩu mới",
+          "confirm": "Xác nhận mật khẩu mới"
+        }
+      },
+      "requirement": {
+        "title": "Yêu cầu về mật khẩu",
+        "require1": "Ít nhất 8 ký tự",
+        "require2": "Bao gồm ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt",
+        "require3": "Khác với mật khẩu hiện tại của bạn"
+      }
+    }
+  }
+}

@@ -1,9 +1,4 @@
-import {
-  faCar,
-  faCarSide,
-  faTruckPickup,
-  faVanShuttle,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCar, faCarSide, faTruckPickup, faVanShuttle } from '@fortawesome/free-solid-svg-icons';
 
 export const getVehicleTypeIcon = (type: string) => {
   switch (type) {
@@ -19,3 +14,19 @@ export const getVehicleTypeIcon = (type: string) => {
       return faCar;
   }
 };
+
+export const getVehicleBackground = (status: number): string => {
+  const styles = ['bg-green-500', 'bg-blue-500', 'bg-orange-500'];
+  return styles[status] ?? 'bg-gray-500';
+};
+
+export const getVehicleLabelEn = (status: number): string => {
+  const label = ['Available', 'InUse', 'UnderMaintenance'];
+  return label[status] ?? 'Unknown';
+};
+
+export const getVehicleLabelVi = (status: number): string => {
+  const label = ['Khả dụng', 'Đang sử dụng', 'Bảo trì'];
+  return label[status] ?? 'Không xác định';
+};
+

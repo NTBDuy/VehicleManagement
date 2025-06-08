@@ -15,13 +15,18 @@ import { NotificationService } from 'services/notificationService';
 import { UserService } from 'services/userService';
 import { formatTime } from 'utils/datetimeUtils';
 import { showToast } from 'utils/toast';
+import { useTranslation } from 'react-i18next';
 
 import Notification from 'types/Notification';
 
 import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import { useTranslation } from 'react-i18next';
+import {
+  getNotificationBackgroundColor,
+  getNotificationBorderColor,
+  getNotificationIcon,
+} from '@/utils/notificationUtils';
 
 const NotificationScreen = () => {
   const { t } = useTranslation();
@@ -32,11 +37,11 @@ const NotificationScreen = () => {
 
   useEffect(() => {
     if (user) {
-      getNotificationsByUser();
+      fetchNotificationData();
     }
   }, [user]);
 
-  const getNotificationsByUser = async () => {
+  const fetchNotificationData = async () => {
     try {
       setIsLoading(true);
       const data = await UserService.getUserNotifications();
@@ -50,73 +55,14 @@ const NotificationScreen = () => {
   };
 
   const NotificationIcon = ({ type }: { type: string }) => {
-    const getIconConfig = () => {
-      switch (type) {
-        case 'SendRequestSuccess':
-          return { bgColor: 'bg-purple-500', icon: faCarSide };
-        case 'RequestApproved':
-          return { bgColor: 'bg-green-500', icon: faCheck };
-        case 'VehicleReturned':
-          return { bgColor: 'bg-green-500', icon: faCarSide };
-        case 'RequestRejected':
-          return { bgColor: 'bg-red-500', icon: faXmark };
-        case 'RequestCancelled':
-          return { bgColor: 'bg-orange-500', icon: faXmark };
-        case 'NewRequestSubmitted':
-          return { bgColor: 'bg-orange-500', icon: faCarSide };
-        case 'VehicleInUse':
-          return { bgColor: 'bg-orange-500', icon: faCarSide };
-        case 'MaintenanceScheduled':
-          return { bgColor: 'bg-blue-500', icon: faTools };
-        case 'UserDeactivated':
-          return { bgColor: 'bg-red-500', icon: faWarning };
-        case 'RemindReturn':
-          return { bgColor: 'bg-orange-500', icon: faWarning };
-        case 'System':
-          return { bgColor: 'bg-gray-500', icon: faBell };
-        default:
-          return { bgColor: 'bg-gray-500', icon: faBell };
-      }
-    };
-
-    const iconConfig = getIconConfig();
+    const bgColor = getNotificationBackgroundColor(type);
+    const icon = getNotificationIcon(type);
 
     return (
-      <View className={`h-10 w-10 rounded-full ${iconConfig.bgColor} items-center justify-center`}>
-        <Text className="text-base font-bold text-white">
-          <FontAwesomeIcon icon={iconConfig.icon} color="#fff" size={24} />
-        </Text>
+      <View className={`h-10 w-10 rounded-full ${bgColor} items-center justify-center`}>
+        <FontAwesomeIcon icon={icon} color="#fff" size={20} />
       </View>
     );
-  };
-
-  const getBorderColor = (type: string) => {
-    switch (type) {
-      case 'SendRequestSuccess':
-        return 'border-l-purple-500';
-      case 'RequestApproved':
-        return 'border-l-green-500';
-      case 'VehicleReturned':
-        return 'border-l-green-500';
-      case 'RequestRejected':
-        return 'border-l-red-500';
-      case 'RequestCancelled':
-        return 'border-l-orange-500';
-      case 'NewRequestSubmitted':
-        return 'border-l-orange-500';
-      case 'VehicleInUse':
-        return 'border-l-orange-500';
-      case 'MaintenanceScheduled':
-        return 'border-l-blue-500';
-      case 'UserDeactivated':
-        return 'border-l-red-500';
-      case 'RemindReturn':
-        return 'border-l-orange-500';
-      case 'System':
-        return 'border-l-gray-500';
-      default:
-        return 'border-l-gray-500';
-    }
   };
 
   const handleMakeRead = async (notification: Notification) => {
@@ -132,6 +78,7 @@ const NotificationScreen = () => {
       showToast.success(t('notification.markReadSuccess'));
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
+      showToast.error(t('notification.markReadError'));
     }
   };
 
@@ -141,27 +88,24 @@ const NotificationScreen = () => {
 
     try {
       await NotificationService.makeAllRead();
-
       setUserNotifications((prevNotifications) =>
         prevNotifications.map((n) => ({ ...n, isRead: true }))
       );
-
       showToast.success(t('notification.markAllReadSuccess'));
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
-      showToast.error('Error', t('notification.markAllReadError'));
     }
   };
 
   const onRefresh = () => {
     setRefreshing(true);
-    getNotificationsByUser();
+    fetchNotificationData();
   };
 
   const renderNotificationItem = ({ item }: { item: Notification }) => (
     <TouchableOpacity
       onPress={() => handleMakeRead(item)}
-      className={`mb-3 rounded-xl border-l-4 bg-white p-4 ${getBorderColor(item.type)} shadow-sm ${
+      className={`mb-3 rounded-xl border-l-4 bg-white p-4 ${getNotificationBorderColor(item.type)} shadow-sm ${
         !item.isRead ? 'bg-slate-50' : ''
       }`}
       activeOpacity={0.7}>
@@ -185,6 +129,7 @@ const NotificationScreen = () => {
       </View>
     </TouchableOpacity>
   );
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header

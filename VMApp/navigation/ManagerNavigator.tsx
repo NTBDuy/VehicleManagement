@@ -9,6 +9,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 
 import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 import MaintenanceDetailScreen from '@/screens/vehicle/MaintenanceDetailScreen';
@@ -28,7 +29,6 @@ import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
-import { useTranslation } from 'react-i18next';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();

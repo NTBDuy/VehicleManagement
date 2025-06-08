@@ -2,7 +2,16 @@ import { faCircleInfo, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { Image, TouchableOpacity, SafeAreaView, ScrollView, Switch, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 
@@ -24,6 +33,7 @@ const UserAddScreen = () => {
   };
 
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [userData, setUserData] = useState<User>(initialUserData);
   const [errors, setErrors] = useState<Partial<User>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -33,30 +43,30 @@ const UserAddScreen = () => {
       setUserData(initialUserData);
     }, [])
   );
-  
+
   const roles = [
-    { label: 'Employee', value: 1 },
-    { label: 'Manager', value: 2 },
-    { label: 'Admin', value: 0 },
+    { label: t('common.role.employee'), value: 1 },
+    { label: t('common.role.manager'), value: 2 },
+    { label: t('common.role.admin'), value: 0 },
   ];
 
   const validateForm = (): boolean => {
     const newErrors: Partial<User> = {};
 
     if (!userData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
+      newErrors.fullName = t('validate.required.fullname');
     }
 
     if (!userData.email.trim()) {
-      newErrors.email = 'email is required';
+      newErrors.email = t('validate.required.email');
     } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = `${t('validate.regex.email')}`;
     }
 
     if (!userData.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'phoneNumber number is required';
+      newErrors.phoneNumber = `${t('validate.required.phone')}`;
     } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = 'Please enter a valid phone number';
+      newErrors.phoneNumber = `${t('validate.regex.phone')}`;
     }
 
     setErrors(newErrors);
@@ -65,13 +75,19 @@ const UserAddScreen = () => {
 
   const handleCreateUser = async () => {
     if (!validateForm()) {
-      showToast.error('Validation Error', 'Please fix the errors above');
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
       return;
     }
     try {
       setIsLoading(true);
       const data = await UserService.createUser(userData);
-      showToast.success('Success', 'User created successfully!');
+      showToast.success(
+        `${t('common.success.title')}`,
+        `${t('common.success.created', { item: t('common.items.user') })}`
+      );
       navigation.navigate('UserDetail', { userData: data });
     } catch (error) {
       console.log(error);
@@ -82,44 +98,43 @@ const UserAddScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      {/* HEADER */}
-      <Header backBtn title="Create New User" />
-      {/* BODY */}
+      <Header backBtn title={t('user.add.title')} />
       <ScrollView className="flex-1 px-6">
-        {/* Profile Picture Section */}
-        <View className="items-center mb-6">
+        <View className="mb-6 items-center">
           <View className="relative">
             <Image
-              className="w-24 h-24 mt-4 border-2 border-gray-200 rounded-full"
+              className="mt-4 h-24 w-24 rounded-full border-2 border-gray-200"
               source={require('@/assets/images/user-default.jpg')}
             />
-            <TouchableOpacity className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
+            <TouchableOpacity className="absolute bottom-0 right-0 rounded-full border-2 border-white bg-blue-500 p-2">
               <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Personal Information Section */}
-        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">Personal Information</Text>
+        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              {' '}
+              {t('user.detail.informationTitle')}
+            </Text>
           </View>
           <View className="p-4">
             <InputField
-              label="Full Name"
+              label={t('common.fields.fullname')}
               value={userData.fullName}
               onChangeText={(text) => setUserData({ ...userData, fullName: text })}
               error={errors.fullName}
             />
             <InputField
-              label="Email"
+              label={t('common.fields.email')}
               value={userData.email}
               onChangeText={(text) => setUserData({ ...userData, email: text })}
               keyboardType="email-address"
               error={errors.email}
             />
             <InputField
-              label="Phone Number"
+              label={t('common.fields.phone')}
               value={userData.phoneNumber}
               onChangeText={(text) => setUserData({ ...userData, phoneNumber: text })}
               placeholder="e.g. 0912345678"
@@ -129,37 +144,37 @@ const UserAddScreen = () => {
           </View>
         </View>
 
-        {/* User Details Section */}
-        <View className="mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">User Details</Text>
+        <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              {' '}
+              {t('user.detail.detailTitle')}
+            </Text>
           </View>
           <View className="p-4">
-            <View className="p-4 mb-6 border border-blue-200 rounded-2xl bg-blue-50">
+            <View className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-4">
               <View className="flex-row items-center">
                 <FontAwesomeIcon icon={faCircleInfo} size={24} color="#1e40af" />
-                <View className="flex-1 ml-4">
+                <View className="ml-4 flex-1">
                   <Text className="mb-1 font-semibold text-blue-800">
-                    Username and password will be automatically generated
+                    {t('user.add.automaticallyGenerated')}
                   </Text>
-                  <Text className="text-sm text-blue-600">
-                    Default password will be: P@ssword123
-                  </Text>
+                  <Text className="text-sm text-blue-600">{t('user.add.passwordDefault')}</Text>
                 </View>
               </View>
             </View>
             <View className="mb-4">
               <Text className="mb-2 text-sm text-gray-600">
-                Role <Text className="text-red-500">*</Text>
+                {t('common.fields.role')} <Text className="text-red-500">*</Text>
               </Text>
-              <View className="flex-row flex-wrap gap-2">
+              <View className="flex-col flex-wrap gap-2">
                 {roles.map((role) => {
                   const isSelected = userData.role === role.value;
                   return (
                     <TouchableOpacity
                       key={role.value}
                       onPress={() => setUserData({ ...userData, role: role.value })}
-                      className={`min-w-[30%] flex-1 items-center rounded-xl border-2 px-4 py-3 ${
+                      className={`w-[100%] flex-1 items-center rounded-xl border-2 px-4 py-3 ${
                         isSelected ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'
                       }`}>
                       <Text
@@ -174,7 +189,7 @@ const UserAddScreen = () => {
               </View>
             </View>
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm text-gray-600">User status</Text>
+              <Text className="text-sm text-gray-600">{t('common.fields.status')}</Text>
               <View className="flex-row items-center">
                 <Text
                   className={`mr-2 text-sm ${userData.status ? 'text-green-600' : 'text-gray-500'}`}>
@@ -191,14 +206,13 @@ const UserAddScreen = () => {
           </View>
         </View>
 
-        {/* Action Button */}
-        <View className="mt-4 mb-8">
+        <View className="mb-8 mt-4">
           <TouchableOpacity
             className={`items-center rounded-xl py-4 shadow-sm ${isLoading ? 'bg-gray-500' : 'bg-blue-600 '}`}
             disabled={isLoading}
             onPress={handleCreateUser}>
             <Text className="text-lg font-semibold text-white">
-              {isLoading ? 'Creating...' : 'Create User'}
+              {isLoading ? `${t('common.button.creating')}` : `${t('common.button.create')}`}
             </Text>
           </TouchableOpacity>
         </View>

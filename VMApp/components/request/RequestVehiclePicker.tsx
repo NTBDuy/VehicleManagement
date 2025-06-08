@@ -1,15 +1,15 @@
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { FlatList, TouchableOpacity, Text, TextInput, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 import Vehicle from 'types/Vehicle';
-import { useMemo, useState } from 'react';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { useTranslation } from 'react-i18next';
 
 interface VehiclePickerComponentProps {
   availableVehicle: Vehicle[];
-  setSelectedVehicle: React.Dispatch<React.SetStateAction<Vehicle | undefined>>;
+  setSelectedVehicle: (value: Vehicle) => void;
   selectedVehicle: Vehicle | undefined;
 }
 
@@ -19,9 +19,8 @@ const RequestVehiclePicker = ({
   selectedVehicle,
 }: VehiclePickerComponentProps) => {
   const { t } = useTranslation();
-
   const [searchQuery, setSearchQuery] = useState('');
-
+  
   const filteredVehicle = useMemo(() => {
     let filtered = [...availableVehicle];
     const q = searchQuery.toLowerCase();
@@ -65,7 +64,9 @@ const RequestVehiclePicker = ({
     <View className="flex-1 px-2">
       <View className="mb-2">
         <View className="bg-gray-50 px-4 ">
-          <Text className="text-lg font-semibold text-gray-800">{t('request.create.vehiclePicker.title')}</Text>
+          <Text className="text-lg font-semibold text-gray-800">
+            {t('request.create.vehiclePicker.title')}
+          </Text>
         </View>
       </View>
       <View className="mx-2 mb-6">
@@ -73,7 +74,7 @@ const RequestVehiclePicker = ({
           <FontAwesomeIcon icon={faSearch} size={18} color="#6b7280" />
           <TextInput
             className="ml-3 flex-1 text-base text-gray-800"
-            placeholder={t('request.create.vehiclePicker.searchPlaceholder')}
+            placeholder={t('common.searchPlaceholder.vehicle')}
             placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={handleSearch}

@@ -2,12 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BaseToast, ErrorToast, ToastConfigParams } from 'react-native-toast-message';
 
-const CustomSuccessToast: React.FC<ToastConfigParams<any>> = ({ text1, text2, onPress }) => (
-  <TouchableOpacity 
-    style={[styles.toastContainer, styles.successToast]} 
+const CustomSuccessToast = ({ text1, text2, onPress }: ToastConfigParams<any>) => (
+  <TouchableOpacity
+    style={[styles.toastContainer, styles.successToast]}
     onPress={onPress}
-    activeOpacity={0.8}
-  >
+    activeOpacity={0.8}>
     <View style={styles.iconContainer}>
       <Text style={styles.successIcon}>✓</Text>
     </View>
@@ -18,12 +17,11 @@ const CustomSuccessToast: React.FC<ToastConfigParams<any>> = ({ text1, text2, on
   </TouchableOpacity>
 );
 
-const CustomErrorToast: React.FC<ToastConfigParams<any>> = ({ text1, text2, onPress }) => (
-  <TouchableOpacity 
-    style={[styles.toastContainer, styles.errorToast]} 
+const CustomErrorToast = ({ text1, text2, onPress }: ToastConfigParams<any>) => (
+  <TouchableOpacity
+    style={[styles.toastContainer, styles.errorToast]}
     onPress={onPress}
-    activeOpacity={0.8}
-  >
+    activeOpacity={0.8}>
     <View style={styles.iconContainer}>
       <Text style={styles.errorIcon}>✕</Text>
     </View>
@@ -34,12 +32,11 @@ const CustomErrorToast: React.FC<ToastConfigParams<any>> = ({ text1, text2, onPr
   </TouchableOpacity>
 );
 
-const CustomInfoToast: React.FC<ToastConfigParams<any>> = ({ text1, text2, onPress }) => (
-  <TouchableOpacity 
-    style={[styles.toastContainer, styles.infoToast]} 
+const CustomInfoToast = ({ text1, text2, onPress }: ToastConfigParams<any>) => (
+  <TouchableOpacity
+    style={[styles.toastContainer, styles.infoToast]}
     onPress={onPress}
-    activeOpacity={0.8}
-  >
+    activeOpacity={0.8}>
     <View style={styles.iconContainer}>
       <Text style={styles.infoIcon}>ℹ</Text>
     </View>
@@ -54,7 +51,7 @@ export const toastConfig = {
   success: (props: ToastConfigParams<any>) => <CustomSuccessToast {...props} />,
   error: (props: ToastConfigParams<any>) => <CustomErrorToast {...props} />,
   info: (props: ToastConfigParams<any>) => <CustomInfoToast {...props} />,
-  
+
   defaultSuccess: (props: ToastConfigParams<any>) => (
     <BaseToast
       {...props}
@@ -64,7 +61,7 @@ export const toastConfig = {
       text2Style={styles.defaultSubtitle}
     />
   ),
-  
+
   defaultError: (props: ToastConfigParams<any>) => (
     <ErrorToast
       {...props}

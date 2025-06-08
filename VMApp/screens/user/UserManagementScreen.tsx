@@ -11,36 +11,33 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   FlatList,
   Modal,
-  TouchableOpacity,
   RefreshControl,
   SafeAreaView,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { UserService } from 'services/userService';
-import { getRoleLabel, getRoleStyle } from 'utils/roleUtils';
+import { getRoleBackgroundColor, getRoleLabelEn, getRoleLabelVi } from 'utils/roleUtils';
 import { showToast } from 'utils/toast';
 import { getUserInitials } from 'utils/userUtils';
 
 import User from 'types/User';
 
-import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
+import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
-
-const filterOptions = [
-  { id: 3, name: 'All' },
-  { id: 0, name: 'Administrator' },
-  { id: 2, name: 'Manager' },
-  { id: 1, name: 'Employee' },
-];
 
 const UserManagementScreen = () => {
   const navigation = useNavigation<any>();
+  const { t, i18n } = useTranslation();
+  const currentLocale = i18n.language;
+  const isViCurrent = currentLocale === 'vi-VN';
   const [users, setUsers] = useState<User[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
@@ -48,6 +45,13 @@ const UserManagementScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const filterOptions = [
+    { id: 3, name: t('common.status.all') },
+    { id: 0, name: t('common.role.admin') },
+    { id: 2, name: t('common.role.manager') },
+    { id: 1, name: t('common.role.employee') },
+  ];
 
   const filteredUsers = useMemo(() => {
     let filtered = [...users];
@@ -80,11 +84,11 @@ const UserManagementScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      getUsersData();
+      fetchUsersData();
     }, [])
   );
 
-  const getUsersData = async () => {
+  const fetchUsersData = async () => {
     try {
       setIsLoading(true);
       const data = await UserService.getAllUsers();
@@ -99,10 +103,12 @@ const UserManagementScreen = () => {
   };
 
   const renderBadgeUserRole = ({ role }: { role: number }) => {
-    const bgColor = getRoleStyle(role);
+    const bgColor = getRoleBackgroundColor(role);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">{getRoleLabel(role)}</Text>
+        <Text className="text-xs font-medium text-white">
+          {isViCurrent ? getRoleLabelVi(role) : getRoleLabelEn(role)}
+        </Text>
       </View>
     );
   };
@@ -164,26 +170,28 @@ const UserManagementScreen = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getUsersData();
+    fetchUsersData();
   };
 
   const onResetPassword = async () => {
     Alert.alert(
-      'Reset Password',
-      `Are you sure you want to reset password for ${selected?.fullName || selected?.username}?`,
+      `${t('common.confirmation.title.reset')}`,
+      `${t('common.confirmation.message.reset', {
+        user: selected?.fullName || selected?.username,
+      })}`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
         {
-          text: 'Reset',
+          text: `${t('common.button.reset')}`,
           style: 'destructive',
           onPress: async () => {
             try {
               setIsLoading(true);
-              await UserService.resetPassword(selected!.userId);
-              Alert.alert('Success', 'Password reset link has been sent to user email');
+              await UserService.reset(selected!.userId);
+              showToast.success(`${t('common.success.passwordReset')}`);
             } catch (error) {
               console.log('Error resetting password:', error);
-              Alert.alert('Error', 'Failed to reset password');
+              showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
             } finally {
               setIsLoading(false);
             }
@@ -195,26 +203,32 @@ const UserManagementScreen = () => {
 
   const onToggleStatus = () => {
     if (selected) {
-      const action = selected.status ? 'deactivate' : 'activate';
-      const actionText = selected.status ? 'Deactivate' : 'Activate';
+      const isActivate = selected.status;
 
       Alert.alert(
-        `${actionText} User`,
-        `Are you sure you want to ${action} ${selected.fullName || selected.username}?`,
+        isActivate
+          ? `${t('common.confirmation.title.deactivate', { item: selected.fullName })}`
+          : `${t('common.confirmation.title.activate', { item: selected.fullName })}`,
+        isActivate
+          ? `${t('common.confirmation.message.deactivate', { item: selected.fullName })}`
+          : `${t('common.confirmation.message.activate', { item: selected.fullName })}`,
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: `${t('common.button.cancel')}`, style: 'cancel' },
           {
-            text: actionText,
+            text: t('common.button.yesIAmSure'),
             style: selected.status ? 'destructive' : 'default',
             onPress: async () => {
               setIsLoading(true);
               try {
                 await UserService.toggleStatus(selected?.userId);
-                showToast.success('Success', 'User status changed successfully!');
-                getUsersData();
+                isActivate
+                  ? `${t('common.success.deactivated', { item: selected.fullName })}`
+                  : `${t('common.success.activated', { item: selected.fullName })}`;
+                fetchUsersData();
                 handleCloseModal();
               } catch (error) {
-                console.log(error);
+                console.log('Error toggling status:', error);
+                Alert.alert(`${t('common.error.title')}`, `${t('common.error.generic')}?`);
               } finally {
                 setIsLoading(false);
               }
@@ -228,7 +242,7 @@ const UserManagementScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
-        title="User Management"
+        title={t('user.management.title')}
         rightElement={
           <TouchableOpacity className="rounded-full bg-white p-2" onPress={handleAddUser}>
             <FontAwesomeIcon icon={faUserPlus} size={18} />
@@ -237,7 +251,7 @@ const UserManagementScreen = () => {
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder="Search username, phone or email ..."
+        placeholder={t('common.searchPlaceholder.user')}
         handleClearFilters={handleClearFilters}
       />
 
@@ -268,7 +282,7 @@ const UserManagementScreen = () => {
             renderItem={renderUserItem}
             keyExtractor={(item) => item.userId.toString()}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={<EmptyList title="No users found!" icon={faPersonCircleQuestion} />}
+            ListEmptyComponent={<EmptyList icon={faPersonCircleQuestion} />}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
         )}
@@ -277,7 +291,7 @@ const UserManagementScreen = () => {
       {users.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
           <Text className="text-center text-sm font-medium text-gray-500">
-            Total Users:{' '}
+            {t('user.management.totalUser')}:{' '}
             <Text className="text-lg font-bold text-gray-800">{filteredUsers.length}</Text>
           </Text>
         </View>
@@ -292,7 +306,7 @@ const UserManagementScreen = () => {
           <TouchableOpacity onPress={(e) => e.stopPropagation()}>
             <View className="rounded-t-2xl bg-white p-6 pb-12">
               <Text className="mb-6 text-center text-lg font-bold">
-                Options for #{selected?.username}
+                {t('user.management.modal.title')} #{selected?.username}
               </Text>
 
               <TouchableOpacity
@@ -302,7 +316,9 @@ const UserManagementScreen = () => {
                   handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">User details</Text>
+                <Text className="text-lg font-semibold text-blue-600">
+                  {t('common.button.detail')}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -312,7 +328,9 @@ const UserManagementScreen = () => {
                   handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">Edit profile</Text>
+                <Text className="text-lg font-semibold text-blue-600">
+                  {t('common.button.update')}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -322,7 +340,9 @@ const UserManagementScreen = () => {
                   handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faKey} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">Reset password</Text>
+                <Text className="text-lg font-semibold text-blue-600">
+                  {t('common.button.reset')}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -337,14 +357,16 @@ const UserManagementScreen = () => {
                 />
                 <Text
                   className={`text-lg font-semibold ${selected?.status ? 'text-red-600' : 'text-green-600'}`}>
-                  {selected?.status ? 'Deactivate user' : 'Activate user'}
+                  {selected?.status
+                    ? `${t('common.button.deactivate')}`
+                    : `${t('common.button.activate')}`}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
                 onPress={handleCloseModal}>
-                <Text className="text-lg font-semibold text-white">Close</Text>
+                <Text className="text-lg font-semibold text-white">{t('common.button.close')}</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

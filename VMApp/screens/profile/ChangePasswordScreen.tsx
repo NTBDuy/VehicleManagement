@@ -2,7 +2,8 @@ import { faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
-import { Alert, TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 
@@ -23,20 +24,19 @@ interface PasswordErrors {
 
 const ChangePasswordScreen = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<PasswordErrors>({});
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
     confirm: false,
   });
-
   const [passwordData, setPasswordData] = useState<ChangePasswordData>({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
-
-  const [errors, setErrors] = useState<PasswordErrors>({});
 
   const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
     setShowPasswords((prev) => ({
@@ -49,26 +49,27 @@ const ChangePasswordScreen = () => {
     const newErrors: PasswordErrors = {};
 
     if (!passwordData.currentPassword.trim()) {
-      newErrors.currentPassword = 'Current password is required';
+      newErrors.currentPassword = t('common.required.currentPassword');
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!passwordData.newPassword.trim()) {
-      newErrors.newPassword = 'New password is required';
-    } else if (passwordData.newPassword.length < 6) {
-      newErrors.newPassword = 'Password must be at least 6 characters long';
+      newErrors.newPassword = t('common.required.newPassword');
+    } else if (!passwordRegex.test(passwordData.newPassword)) {
+      newErrors.newPassword = t('validate.regex.password');
     }
 
     if (!passwordData.confirmPassword.trim()) {
-      newErrors.confirmPassword = 'Confirm password is required';
+      newErrors.confirmPassword = t('common.required.confirmPassword');
     } else if (passwordData.newPassword !== passwordData.confirmPassword) {
-      newErrors.confirmPassword = 'Password and confirmation password do not match';
+      newErrors.confirmPassword = t('common.regex.notMatch');
     }
 
     if (
       passwordData.currentPassword === passwordData.newPassword &&
       passwordData.newPassword.trim()
     ) {
-      newErrors.newPassword = 'New password must be different from current password';
+      newErrors.newPassword = t('common.regex.differentPassword');
     }
 
     setErrors(newErrors);
@@ -77,7 +78,10 @@ const ChangePasswordScreen = () => {
 
   const handleChangePassword = async () => {
     if (!validateForm()) {
-      showToast.error('Validation Error', 'Please fix the errors above');
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
       return;
     }
 
@@ -89,7 +93,7 @@ const ChangePasswordScreen = () => {
         ConfirmPassword: passwordData.confirmPassword,
       };
       await UserService.changePassword(changePasswordDTO);
-      showToast.success('Success!', 'Your password has been changed successfully.');
+      showToast.success(`${t('common.success.title')}`, `${t('common.success.passwordChange')}`);
       setPasswordData({
         currentPassword: '',
         newPassword: '',
@@ -98,13 +102,7 @@ const ChangePasswordScreen = () => {
       navigation.goBack();
     } catch (error: any) {
       console.log('Change password error:', error);
-      if (error.response?.data?.message) {
-        showToast.error('Error', error.response.data.message);
-      } else if (error.message) {
-        showToast.error('Error', error.message);
-      } else {
-        showToast.error('Error', 'Failed to change password. Please try again.');
-      }
+      showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
     } finally {
       setIsLoading(false);
     }
@@ -116,11 +114,15 @@ const ChangePasswordScreen = () => {
 
     if (hasChanges) {
       Alert.alert(
-        'Discard Changes',
-        'You have unsaved changes. Are you sure you want to discard them?',
+        `${t('common.confirmation.title.discardChanges')}`,
+        `${t('common.confirmation.message.discardChanges')}`,
         [
-          { text: 'Keep Editing', style: 'cancel' },
-          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+          { text: `${t('common.button.keepEdit')}`, style: 'cancel' },
+          {
+            text: `${t('common.button.discard')}`,
+            style: 'destructive',
+            onPress: () => navigation.goBack(),
+          },
         ]
       );
     } else {
@@ -136,39 +138,43 @@ const ChangePasswordScreen = () => {
       <Header
         customTitle={
           <View>
-            <Text className="text-xl font-bold text-gray-800">Change Password</Text>
-            {hasChanges && <Text className="text-xs text-orange-600">Unsaved changes</Text>}
+            <Text className="text-xl font-bold text-gray-800">
+              {t('setting.changePassword.header')}
+            </Text>
+            {hasChanges && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
           </View>
         }
         backBtn
       />
 
       <ScrollView className="px-6">
-        {/* Header Icon */}
         <View className="mb-2 items-center">
           <View className="mt-4 rounded-full bg-blue-100 p-6">
             <FontAwesomeIcon icon={faLock} size={32} color="#3b82f6" />
           </View>
-          <Text className="mt-4 text-lg font-semibold text-gray-700">Update Your Password</Text>
+          <Text className="mt-4 text-lg font-semibold text-gray-700">
+            {t('setting.changePassword.title')}
+          </Text>
           <Text className="mt-1 text-center text-sm text-gray-500">
-            Choose a strong password to keep your account secure
+            {t('setting.changePassword.subTitle')}
           </Text>
         </View>
 
         <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
-            <Text className="text-lg font-semibold text-gray-800">Password Information</Text>
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('setting.changePassword.section.title')}
+            </Text>
           </View>
 
           <View className="p-4">
             <View className="mb-4">
               <InputField
-                label="Current Password"
+                label={t('setting.changePassword.section.label.current')}
                 value={passwordData.currentPassword}
                 onChangeText={(text) => setPasswordData({ ...passwordData, currentPassword: text })}
                 error={errors.currentPassword}
                 secureTextEntry={!showPasswords.current}
-                placeholder="Enter your current password"
                 rightIcon={
                   <TouchableOpacity onPress={() => togglePasswordVisibility('current')}>
                     <FontAwesomeIcon
@@ -183,12 +189,11 @@ const ChangePasswordScreen = () => {
 
             <View className="mb-4">
               <InputField
-                label="New Password"
+                label={t('setting.changePassword.section.label.new')}
                 value={passwordData.newPassword}
                 onChangeText={(text) => setPasswordData({ ...passwordData, newPassword: text })}
                 error={errors.newPassword}
                 secureTextEntry={!showPasswords.new}
-                placeholder="Enter your new password (min 6 characters)"
                 rightIcon={
                   <TouchableOpacity onPress={() => togglePasswordVisibility('new')}>
                     <FontAwesomeIcon
@@ -203,12 +208,11 @@ const ChangePasswordScreen = () => {
 
             <View>
               <InputField
-                label="Confirm New Password"
+                label={t('setting.changePassword.section.label.confirm')}
                 value={passwordData.confirmPassword}
                 onChangeText={(text) => setPasswordData({ ...passwordData, confirmPassword: text })}
                 error={errors.confirmPassword}
                 secureTextEntry={!showPasswords.confirm}
-                placeholder="Confirm your new password"
                 rightIcon={
                   <TouchableOpacity onPress={() => togglePasswordVisibility('confirm')}>
                     <FontAwesomeIcon
@@ -224,11 +228,17 @@ const ChangePasswordScreen = () => {
         </View>
 
         <View className="mb-6 rounded-xl bg-blue-50 p-4">
-          <Text className="mb-2 text-sm font-medium text-blue-900">Password Requirements:</Text>
-          <Text className="text-xs text-blue-700">• At least 6 characters long</Text>
-          <Text className="text-xs text-blue-700">• Different from your current password</Text>
+          <Text className="mb-2 text-sm font-medium text-blue-900">
+            {t('setting.changePassword.requirement.title')}:
+          </Text>
           <Text className="text-xs text-blue-700">
-            • Use a mix of letters, numbers, and symbols for better security
+            • {t('setting.changePassword.requirement.require1')}
+          </Text>
+          <Text className="text-xs text-blue-700">
+            • {t('setting.changePassword.requirement.require2')}
+          </Text>
+          <Text className="text-xs text-blue-700">
+            • {t('setting.changePassword.requirement.require3')}
           </Text>
         </View>
 
@@ -237,7 +247,7 @@ const ChangePasswordScreen = () => {
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
             disabled={isLoading}>
-            <Text className="font-semibold text-gray-700">Cancel</Text>
+            <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -247,7 +257,9 @@ const ChangePasswordScreen = () => {
             onPress={handleChangePassword}
             disabled={isLoading || !hasChanges}>
             <Text className="font-semibold text-white">
-              {isLoading ? `${t('common.button.updating')}` : 'Change Password'}
+              {isLoading
+                ? `${t('common.button.updating')}`
+                : `${t('setting.changePassword.header')}`}
             </Text>
           </TouchableOpacity>
         </View>

@@ -1,29 +1,35 @@
-import { SafeAreaView, View, Text, TouchableOpacity, Modal, Alert } from 'react-native';
+import { VehicleService } from '@/services/vehicleService';
+import { formatDate, formatDatetime } from '@/utils/datetimeUtils';
+import {
+  getMaintenanceBackgroundColor,
+  getMaintenanceLabelEn,
+  getMaintenanceLabelVi,
+} from '@/utils/maintenanceUtils';
+import { showToast } from '@/utils/toast';
+import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useRoute } from '@react-navigation/core';
 import { useEffect, useState } from 'react';
-import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
+import { useTranslation } from 'react-i18next';
+import { Alert, Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { DateData } from 'react-native-calendars';
 
 import Header from '@/components/layout/HeaderComponent';
-import MaintenanceSchedule from '@/types/MaintenanceSchedule';
 import InfoRow from '@/components/ui/InfoRowComponent';
-import { getBgColorByStatus, getStatusLabel } from '@/utils/maintenanceUtils';
-import { formatDate, formatDatetime } from '@/utils/datetimeUtils';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Calendar, DateData } from 'react-native-calendars';
-import { VehicleService } from '@/services/vehicleService';
-import { showToast } from '@/utils/toast';
-import { useTranslation } from 'react-i18next';
+import MyCalendar from '@/components/ui/MyCalendar';
+import MaintenanceSchedule from '@/types/MaintenanceSchedule';
 
 const MaintenanceDetailScreen = () => {
+  const { t, i18n } = useTranslation();
+  const today = new Date().toISOString().split('T')[0];
   const route = useRoute();
-  const { t } = useTranslation();
+  const currentLocale = i18n.language;
   const { maintenanceData: initialMaintenanceData } = route.params as {
     maintenanceData: MaintenanceSchedule;
   };
   const [maintenance, setMaintenance] = useState<MaintenanceSchedule>(initialMaintenanceData);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const today = new Date().toISOString().split('T')[0];
   const [selectedStartDate, setSelectedStartDate] = useState<string>(today);
   const [selectedEndDate, setSelectedEndDate] = useState<string>(today);
   const [hasChanges, setHasChanges] = useState(false);
@@ -66,10 +72,14 @@ const MaintenanceDetailScreen = () => {
   };
 
   const renderBadgeMaintenanceStatus = (status: number) => {
-    const bgColor = getBgColorByStatus(status);
+    const bgColor = getMaintenanceBackgroundColor(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">{getStatusLabel(status)}</Text>
+        <Text className="text-xs font-medium text-white">
+          {currentLocale === 'vi-VN'
+            ? getMaintenanceLabelVi(status)
+            : getMaintenanceLabelEn(status)}
+        </Text>
       </View>
     );
   };
@@ -106,12 +116,12 @@ const MaintenanceDetailScreen = () => {
   const handleConfirmReschedule = () => {
     try {
       Alert.alert(
-        `${t('maintenance.toast.reschedule.confirm.title')}`,
-        `${t('maintenance.toast.reschedule.confirm.message')}`,
+        `${t('common.confirmation.title.reschedule')}`,
+        `${t('common.confirmation.message.reschedule')}`,
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: `${t('common.button.cancel')}`, style: 'cancel' },
           {
-            text: 'Yes, I am sure',
+            text: `${t('common.button.yesIAmSure')}`,
             style: 'default',
             onPress: async () => {
               try {
@@ -124,16 +134,13 @@ const MaintenanceDetailScreen = () => {
                 );
                 setMaintenance(response);
                 showToast.success(
-                  `${t('maintenance.toast.reschedule.success.title')}`,
-                  `${t('maintenance.toast.reschedule.success.message')}`
+                  `${t('common.success.title')}`,
+                  `${t('common.success.reschedule')}`
                 );
                 setIsModalVisible(false);
               } catch (error) {
                 console.log('Error rescheduling maintenance:', error);
-                Alert.alert(
-                  `${t('maintenance.toast.reschedule.error.title')}`,
-                  `${t('maintenance.toast.reschedule.error.message')}`
-                );
+                Alert.alert(`${t('common.error.title')}`, `${t('common.error.generic')}`);
               }
             },
           },
@@ -150,15 +157,15 @@ const MaintenanceDetailScreen = () => {
     try {
       Alert.alert(
         isBegin
-          ? `${t('maintenance.toast.changeStatus.begin.confirm.title')}`
-          : `${t('maintenance.toast.changeStatus.complete.confirm.title')}`,
+          ? `${t('common.confirmation.title.beginMaintenance')}`
+          : `${t('common.confirmation.title.completeMaintenance')}`,
         isBegin
-          ? `${t('maintenance.toast.changeStatus.begin.confirm.message')}`
-          : `${t('maintenance.toast.changeStatus.complete.confirm.message')}`,
+          ? `${t('common.confirmation.message.beginMaintenance')}`
+          : `${t('common.confirmation.message.completeMaintenance')}`,
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: `${t('common.button.cancel')}`, style: 'cancel' },
           {
-            text: 'Yes, I am sure',
+            text: `${t('common.button.yesIAmSure')}`,
             style: 'default',
             onPress: async () => {
               setIsLoading(true);
@@ -168,24 +175,15 @@ const MaintenanceDetailScreen = () => {
                   status
                 );
                 showToast.success(
+                  `${t('common.success.title')}`,
                   isBegin
-                    ? `${t('maintenance.toast.changeStatus.begin.success.title')}`
-                    : `${t('maintenance.toast.changeStatus.complete.success.title')}`,
-                  isBegin
-                    ? `${t('maintenance.toast.changeStatus.begin.success.message')}`
-                    : `${t('maintenance.toast.changeStatus.complete.success.message')}`
+                    ? `${t('common.success.beginMaintenance')}`
+                    : `${t('common.success.completeMaintenance')}`
                 );
                 setMaintenance(res);
               } catch (error) {
                 console.log('Error toggling status:', error);
-                Alert.alert(
-                  isBegin
-                    ? `${t('maintenance.toast.changeStatus.begin.error.title')}`
-                    : `${t('maintenance.toast.changeStatus.complete.error.title')}`,
-                  isBegin
-                    ? `${t('maintenance.toast.changeStatus.begin.error.message')}`
-                    : `${t('maintenance.toast.changeStatus.complete.error.message')}`
-                );
+                Alert.alert(`${t('common.error.title')}`, `${t('common.error.generic')}`);
               } finally {
                 setIsLoading(false);
               }
@@ -233,7 +231,7 @@ const MaintenanceDetailScreen = () => {
                 </View>
                 <View className="flex-1">
                   <Text className="mb-1 text-sm font-semibold text-orange-700">
-                    {t('maintenance.detail.description')}
+                    {t('common.fields.description')}
                   </Text>
                   <Text className="text-sm leading-5 text-orange-600">
                     {maintenance.description}
@@ -254,11 +252,11 @@ const MaintenanceDetailScreen = () => {
           <View className="p-4">
             <InfoRow
               label={t('vehicle.detail.sectionInfo.label.plate')}
-              value={maintenance.vehicle.licensePlate || 'No information'}
+              value={maintenance.vehicle.licensePlate || t('common.fields.noInfo')}
             />
             <InfoRow
               label={t('vehicle.detail.sectionInfo.label.type')}
-              value={maintenance.vehicle.type || 'No information'}
+              value={maintenance.vehicle.type || t('common.fields.noInfo')}
             />
             <InfoRow
               label={t('vehicle.detail.sectionInfo.label.brandAndModel')}
@@ -269,7 +267,7 @@ const MaintenanceDetailScreen = () => {
                     {maintenance.vehicle.brand} {maintenance.vehicle.model}
                   </Text>
                 ) : (
-                  <Text className="font-semibold text-gray-700">No information</Text>
+                  <Text className="font-semibold text-gray-700">{t('common.fields.noInfo')}</Text>
                 )
               }
               isLast
@@ -283,9 +281,7 @@ const MaintenanceDetailScreen = () => {
               <TouchableOpacity
                 className="w-[48%] items-center rounded-xl bg-orange-500 py-4 shadow-sm "
                 onPress={handleReschedule}>
-                <Text className="font-semibold text-white">
-                  {t('maintenance.detail.actions.reschedule')}
-                </Text>
+                <Text className="font-semibold text-white">{t('common.button.reschedule')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -293,9 +289,7 @@ const MaintenanceDetailScreen = () => {
                 disabled={isLoading}
                 onPress={() => handleChangeStatus(1)}>
                 <Text className="font-semibold text-white">
-                  {isLoading
-                    ? `${t('maintenance.detail.actions.beginning')}`
-                    : `${t('maintenance.detail.actions.begin')}`}
+                  {isLoading ? `${t('common.button.beginning')}` : `${t('common.button.begin')}`}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -309,9 +303,7 @@ const MaintenanceDetailScreen = () => {
               disabled={isLoading}
               onPress={() => handleChangeStatus(2)}>
               <Text className="font-semibold text-white">
-                {isLoading
-                  ? `${t('maintenance.detail.actions.gettingDone')}`
-                  : `${t('maintenance.detail.actions.done')}`}
+                {isLoading ? `${t('common.button.gettingDone')}` : `${t('common.button.done')}`}
               </Text>
             </TouchableOpacity>
           </View>
@@ -319,7 +311,7 @@ const MaintenanceDetailScreen = () => {
 
         <View className="mt-4">
           <Text className="text-right text-sm font-medium text-gray-500">
-            {t('maintenance.detail.lastUpdated')}: {formatDatetime(maintenance.lastUpdateAt)}
+            {t('common.lastUpdated')}: {formatDatetime(maintenance.lastUpdateAt)}
           </Text>
         </View>
 
@@ -344,25 +336,12 @@ const MaintenanceDetailScreen = () => {
                   </TouchableOpacity>
                 </View>
                 <View className="p-4">
-                  <Calendar
+                  <MyCalendar
                     markingType="period"
                     markedDates={getMarkedDates()}
                     onDayPress={(day) => handleDayPress(day)}
-                    theme={{
-                      textSectionTitleColor: '#94a3b8',
-                      selectedDayBackgroundColor: '#3b82f6',
-                      selectedDayTextColor: '#ffffff',
-                      todayTextColor: '#3b82f6',
-                      arrowColor: '#3b82f6',
-                      selectedDotColor: '#fff',
-                    }}
                     minDate={today}
-                    style={{
-                      borderRadius: 12,
-                      overflow: 'hidden',
-                    }}
                   />
-
                   <View className="mt-4">
                     <TouchableOpacity
                       className={`${hasChanges ? 'items-center rounded-xl bg-blue-500 py-4 shadow-sm ' : 'items-center rounded-xl bg-gray-300 py-4 shadow-sm'}`}

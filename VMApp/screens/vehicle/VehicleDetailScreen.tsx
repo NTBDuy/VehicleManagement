@@ -1,27 +1,32 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { TouchableOpacity, SafeAreaView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
-import { getVehicleTypeIcon } from 'utils/vehicleUtils';
+import {
+  getVehicleBackground,
+  getVehicleLabelEn,
+  getVehicleLabelVi,
+  getVehicleTypeIcon,
+} from 'utils/vehicleUtils';
 
 import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
 import InfoRow from '@/components/ui/InfoRowComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
 
 const VehicleDetailScreen = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLocale = i18n.language;
   const route = useRoute();
   const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
   const navigation = useNavigation<any>();
-
   const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -48,37 +53,12 @@ const VehicleDetailScreen = () => {
   };
 
   const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
-    const getStatusStyle = (status: number) => {
-      switch (status) {
-        case 0:
-          return 'bg-green-500';
-        case 1:
-          return 'bg-blue-500';
-        case 2:
-          return 'bg-gray-500';
-        default:
-          return 'bg-gray-500';
-      }
-    };
-
-    const getStatusLabel = (status: number) => {
-      switch (status) {
-        case 0:
-          return 'Available';
-        case 1:
-          return 'InUse';
-        case 2:
-          return 'UnderMaintenance';
-        default:
-          return 'Unknown';
-      }
-    };
-
-    const bgColor = getStatusStyle(status);
-
+    const bgColor = getVehicleBackground(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">{getStatusLabel(status)}</Text>
+        <Text className="text-xs font-medium text-white">
+          {currentLocale == 'vi-VN' ? getVehicleLabelVi(status) : getVehicleLabelEn(status)}
+        </Text>
       </View>
     );
   };
@@ -114,7 +94,8 @@ const VehicleDetailScreen = () => {
                   </View>
                   <View>
                     <Text className="text-sm text-gray-500">
-                      {t('vehicle.detail.vehicleId')} #{vehicleData.vehicleId}
+                      {t('vehicle.detail.vehicleId')}
+                      {vehicleData.vehicleId}
                     </Text>
                     <Text className="text-lg font-bold text-gray-800">
                       {vehicleData.licensePlate}
@@ -128,12 +109,20 @@ const VehicleDetailScreen = () => {
 
           <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
             <View className="bg-gray-50 px-4 py-3">
-              <Text className="text-lg font-semibold text-gray-800">{t('vehicle.detail.sectionInfo.title')}</Text>
+              <Text className="text-lg font-semibold text-gray-800">
+                {t('vehicle.detail.sectionInfo.title')}
+              </Text>
             </View>
 
             <View className="p-4">
-              <InfoRow label={t('vehicle.detail.sectionInfo.label.plate')} value={vehicleData.licensePlate || 'No information'} />
-              <InfoRow label={t('vehicle.detail.sectionInfo.label.type')} value={vehicleData.type || 'No information'} />
+              <InfoRow
+                label={t('vehicle.detail.sectionInfo.label.plate')}
+                value={vehicleData.licensePlate || t('common.fields.noInfo')}
+              />
+              <InfoRow
+                label={t('vehicle.detail.sectionInfo.label.type')}
+                value={vehicleData.type || t('common.fields.noInfo')}
+              />
               <InfoRow
                 label={t('vehicle.detail.sectionInfo.label.brandAndModel')}
                 value=""
@@ -143,13 +132,13 @@ const VehicleDetailScreen = () => {
                       {vehicleData.brand} {vehicleData.model}
                     </Text>
                   ) : (
-                    <Text className="font-semibold text-gray-700">No information</Text>
+                    <Text className="font-semibold text-gray-700">{t('common.fields.noInfo')}</Text>
                   )
                 }
               />
               <InfoRow
                 label={t('vehicle.detail.sectionInfo.label.createAt')}
-                value={formatDatetime(vehicleData.createAt) || 'No information'}
+                value={formatDatetime(vehicleData.createdAt) || t('common.fields.noInfo')}
                 isLast
               />
             </View>
@@ -157,17 +146,19 @@ const VehicleDetailScreen = () => {
 
           <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
             <View className="bg-gray-50 px-4 py-3">
-              <Text className="text-lg font-semibold text-gray-800">{t('vehicle.detail.sectionMaintenance.title')}</Text>
+              <Text className="text-lg font-semibold text-gray-800">
+                {t('vehicle.detail.sectionMaintenance.title')}
+              </Text>
             </View>
 
             <View className="p-4">
               <InfoRow
                 label={t('vehicle.detail.sectionMaintenance.label.last')}
-                value={formatDate(vehicleData.lastMaintenance) || 'No information'}
+                value={formatDate(vehicleData.lastMaintenance) || t('common.fields.noInfo')}
               />
               <InfoRow
                 label={t('vehicle.detail.sectionMaintenance.label.next')}
-                value={formatDate(vehicleData.nextMaintenance) || 'Not scheduled'}
+                value={formatDate(vehicleData.nextMaintenance) || t('common.fields.notSchedule')}
                 isLast
               />
 
@@ -178,7 +169,9 @@ const VehicleDetailScreen = () => {
                     onPress={() => {
                       navigation.navigate('ScheduleMaintenance', { vehicleData });
                     }}>
-                    <Text className="text-center font-semibold text-white">{t('vehicle.detail.sectionMaintenance.actions.schedule')}</Text>
+                    <Text className="text-center font-semibold text-white">
+                      {t('common.button.schedule')}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -186,7 +179,7 @@ const VehicleDetailScreen = () => {
           </View>
           <View className="mt-4">
             <Text className="text-right text-sm font-medium text-gray-500">
-              {t('vehicle.detail.lastUpdated')}: {formatDatetime(vehicleData.lastUpdateAt)}
+              {t('common.lastUpdated')}: {formatDatetime(vehicleData.lastUpdateAt)}
             </Text>
           </View>
         </View>

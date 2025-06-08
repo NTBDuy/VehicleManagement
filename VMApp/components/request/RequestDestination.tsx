@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Switch, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { formatDayMonth } from 'utils/datetimeUtils';
 
 import Vehicle from 'types/Vehicle';
 
-import InfoRow from '@/components/ui/InfoRowComponent';
-import InputField from '@/components/ui/InputFieldComponent';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faLocation, faLocationDot, faLocationPin } from '@fortawesome/free-solid-svg-icons';
 
 interface ConfirmComponentProps {
   startDate: string;
   endDate: string;
   selectedVehicle: Vehicle | undefined;
   purpose: string;
-  setPurpose: React.Dispatch<React.SetStateAction<string>>;
+  setPurpose: (value: string) => void;
   isAssignDriver: boolean;
-  setIsAssignDriver: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAssignDriver: (value: boolean) => void;
 }
 
 const RequestDestination = ({

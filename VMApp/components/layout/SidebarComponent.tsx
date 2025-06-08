@@ -1,16 +1,15 @@
-import React from 'react';
-import { Alert, View, Text } from 'react-native';
-import { DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCar, faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
 import { useAuth } from 'contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { Alert, Text, View } from 'react-native';
 
 interface SidebarProps {
   [key: string]: any;
 }
 
-const SidebarComponent: React.FC<SidebarProps> = (props) => {
+const SidebarComponent = (props: SidebarProps) => {
   const { logout } = useAuth();
   const { t } = useTranslation();
 

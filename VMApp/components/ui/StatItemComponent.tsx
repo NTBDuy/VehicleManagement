@@ -1,5 +1,11 @@
 import { View, Text } from 'react-native';
 
+interface StatItemProps {
+  label: string;
+  value: number;
+  status?: string;
+}
+
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'available':
@@ -14,22 +20,22 @@ const getStatusColor = (status: string) => {
       return 'text-green-600';
     case 'manager':
       return 'text-blue-600';
-    case 'total' :
+    case 'total':
       return 'text-gray-600';
-    case 'pending' :
+    case 'pending':
       return 'text-orange-600';
-    case 'approved' :
+    case 'approved':
       return 'text-green-600';
-    case 'rejected' :
+    case 'rejected':
       return 'text-red-600';
-    case 'cancelled' :
+    case 'cancelled':
       return 'text-gray-600';
     default:
       return 'text-gray-800';
   }
 };
 
-const StatItem = ({ label, value, status }: { label: string; value: number; status?: string }) => (
+const StatItem = ({ label, value, status }: StatItemProps) => (
   <View className="flex-row items-center justify-between py-2">
     <Text className="text-gray-700">{label}</Text>
     <Text className={`font-semibold ${status ? getStatusColor(status) : 'text-gray-800'}`}>

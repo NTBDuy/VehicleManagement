@@ -1,19 +1,12 @@
 import { formatDate } from '@/utils/datetimeUtils';
-import { getColorByStatus } from '@/utils/maintenanceUtils';
+import { getMaintenanceBorderColor } from '@/utils/maintenanceUtils';
 import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FlatList,
-  RefreshControl,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 
 import MaintenanceSchedule from 'types/MaintenanceSchedule';
@@ -33,7 +26,7 @@ const MaintenanceManagement = () => {
 
   const filterOptions = [
     { id: 3, name: t('common.status.all') },
-    { id: 0, name: t('common.status.pending') },
+    { id: 0, name: t('dashboard.incoming') },
     { id: 1, name: t('common.status.inProgress') },
     { id: 2, name: t('common.status.done') },
   ];
@@ -113,7 +106,7 @@ const MaintenanceManagement = () => {
       onPress={() => {
         handleViewDetail(item);
       }}
-      className={`mb-4 flex-row items-center rounded-2xl border-r-2 border-t-2 bg-gray-100 px-2 py-4 ${getColorByStatus(item.status)}`}>
+      className={`mb-4 flex-row items-center rounded-2xl border-r-2 border-t-2 bg-gray-100 px-2 py-4 ${getMaintenanceBorderColor(item.status)}`}>
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">
           <FontAwesomeIcon icon={getVehicleTypeIcon(item.vehicle.type)} size={24} color="#0d4d87" />
@@ -139,7 +132,7 @@ const MaintenanceManagement = () => {
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder={t('maintenance.management.searchPlaceholder')}
+        placeholder={t('common.searchPlaceholder.vehicle')}
         handleClearFilters={handleClearFilters}
       />
 

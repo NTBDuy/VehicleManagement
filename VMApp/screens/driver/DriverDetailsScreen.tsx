@@ -12,16 +12,16 @@ import Driver from 'types/Driver';
 import Header from '@/components/layout/HeaderComponent';
 import InfoRow from '@/components/ui/InfoRowComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import NoDataAvailable from '@/components/ui/NoDataAvailable';
+import ErrorComponent from '@/components/ui/ErrorComponent';
 
 const DriverDetailsScreen = () => {
+  const navigation = useNavigation<any>();
   const route = useRoute();
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isButtonActionLoading, setIsButtonActionLoading] = useState(false);
   const { driverData: initialDriverData } = (route.params as { driverData?: Driver }) || {};
   const [driverData, setDriverData] = useState<Driver | undefined>(initialDriverData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isButtonActionLoading, setIsButtonActionLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -43,16 +43,8 @@ const DriverDetailsScreen = () => {
     }
   };
 
-  const handleRetry = () => {
-    if (driverData?.driverId) {
-      fetchDriverData(driverData?.driverId);
-    } else {
-      navigation.goBack();
-    }
-  };
-
   if (!driverData) {
-    return <NoDataAvailable onRetry={() => handleRetry()} />;
+    return <ErrorComponent />;
   }
 
   const handleEdit = () => {
@@ -64,11 +56,11 @@ const DriverDetailsScreen = () => {
 
     Alert.alert(
       isActivate
-        ? `${t('driver.toast.toggleStatus.activate.confirm.title')}`
-        : `${t('driver.toast.toggleStatus.deactivate.confirm.title')}`,
+        ? `${t('common.confirmation.title.deactivate', { item: driverData.fullName })}`
+        : `${t('common.confirmation.title.activate', { item: driverData.fullName })}`,
       isActivate
-        ? `${t('driver.toast.toggleStatus.activate.confirm.message')}?`
-        : `${t('driver.toast.toggleStatus.deactivate.confirm.message')}?`,
+        ? `${t('common.confirmation.message.deactivate', { item: driverData.fullName })}`
+        : `${t('common.confirmation.message.activate', { item: driverData.fullName })}`,
       [
         { text: `${t('common.button.cancel')}`, style: 'cancel' },
         {
@@ -80,23 +72,13 @@ const DriverDetailsScreen = () => {
               await DriverService.toggleStatus(driverData?.driverId);
               showToast.success(
                 isActivate
-                  ? `${t('driver.toast.toggleStatus.activate.success.title')}`
-                  : `${t('driver.toast.toggleStatus.deactivate.success.title')}`,
-                isActivate
-                  ? `${t('driver.toast.toggleStatus.activate.success.message')}?`
-                  : `${t('driver.toast.toggleStatus.deactivate.success.message')}?`
+                  ? `${t('common.success.deactivated', { item: driverData.fullName })}`
+                  : `${t('common.success.activated', { item: driverData.fullName })}`
               );
               await fetchDriverData(driverData.driverId);
             } catch (error) {
               console.log('Error toggling isActive:', error);
-              Alert.alert(
-                isActivate
-                  ? `${t('driver.toast.toggleStatus.activate.error.title')}`
-                  : `${t('driver.toast.toggleStatus.deactivate.error.title')}`,
-                isActivate
-                  ? `${t('driver.toast.toggleStatus.activate.error.message')}?`
-                  : `${t('driver.toast.toggleStatus.deactivate.error.message')}?`
-              );
+              Alert.alert(`${t('common.error.title')}`, `${t('common.error.generic')}?`);
             } finally {
               setIsButtonActionLoading(false);
             }
@@ -145,11 +127,11 @@ const DriverDetailsScreen = () => {
             </View>
             <View className="p-4">
               <InfoRow
-                label={t('driver.detail.section.fullname')}
+                label={t('common.fields.fullname')}
                 value={driverData.fullName || 'Not provided'}
               />
               <InfoRow
-                label={t('driver.detail.section.phone')}
+                label={t('common.fields.phone')}
                 value={
                   driverData.phoneNumber
                     ? formatVietnamPhoneNumber(driverData.phoneNumber)
@@ -169,7 +151,7 @@ const DriverDetailsScreen = () => {
                 value={driverData.yearsOfExperience.toString() || 'Not provided'}
               />
               <InfoRow
-                label={t('driver.detail.section.status')}
+                label={t('common.fields.status')}
                 value=""
                 valueComponent={
                   <View
@@ -198,8 +180,8 @@ const DriverDetailsScreen = () => {
                 {isButtonActionLoading
                   ? `${t('common.button.loading')}`
                   : driverData.isActive
-                    ? `${t('common.status.deactivate')}`
-                    : `${t('common.status.active')}`}
+                    ? `${t('common.button.deactivate')}`
+                    : `${t('common.button.activate')}`}
               </Text>
             </TouchableOpacity>
 
@@ -207,7 +189,7 @@ const DriverDetailsScreen = () => {
               className="w-[48%] items-center rounded-xl bg-blue-600 py-4 shadow-sm "
               onPress={handleEdit}
               disabled={isLoading}>
-              <Text className="font-semibold text-white">{t('driver.edit.actions.update')}</Text>
+              <Text className="font-semibold text-white">{t('common.button.update')}</Text>
             </TouchableOpacity>
           </View>
         </View>

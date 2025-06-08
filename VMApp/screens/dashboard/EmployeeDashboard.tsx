@@ -1,22 +1,30 @@
-import { faBell, faCalendarDays, faCalendarPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDays, faCalendarPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useMemo, useState } from 'react';
-import { TouchableOpacity, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import {
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { UserService } from 'services/userService';
 
 import Request from 'types/Request';
 
-import LoadingData from '@/components/ui/LoadingData';
 import Header from '@/components/layout/HeaderComponent';
 import RequestItem from '@/components/request/HistoryRequestItem';
+import LoadingData from '@/components/ui/LoadingData';
+import NotificationButton from '@/components/ui/NotificationButton';
 import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
-import { useTranslation } from 'react-i18next';
 
 const EmployeeDashboard = () => {
   const navigation = useNavigation<any>();
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [notificationCount, setNotificationCount] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -32,7 +40,7 @@ const EmployeeDashboard = () => {
 
   useFocusEffect(
     useCallback(() => {
-      getRequestByUserID();
+      fetchRequestData();
       countUnread();
     }, [])
   );
@@ -47,7 +55,7 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const getRequestByUserID = async () => {
+  const fetchRequestData = async () => {
     try {
       setIsLoading(true);
       const data = await UserService.getUserRequests();
@@ -62,28 +70,14 @@ const EmployeeDashboard = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getRequestByUserID();
+    fetchRequestData();
   };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      
       <Header
         title={t('dashboard.view.employee')}
-        rightElement={
-          <TouchableOpacity
-            className="relative p-2 bg-white rounded-full"
-            onPress={() => navigation.navigate('Notification')}>
-            <FontAwesomeIcon icon={faBell} size={18} />
-            {notificationCount > 0 && (
-              <View className="absolute -right-2 -top-2 h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500">
-                <Text className="text-xs font-bold text-center text-white">
-                  {notificationCount > 99 ? '99+' : notificationCount}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        }
+        rightElement={<NotificationButton notificationCount={notificationCount} />}
       />
 
       <ScrollView
@@ -91,9 +85,11 @@ const EmployeeDashboard = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {user && <WelcomeSection user={user} />}
 
-        <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
-          <View className="px-4 py-3 bg-gray-50">
-            <Text className="text-lg font-semibold text-gray-800">{t('dashboard.quickAction')}</Text>
+        <View className="overflow-hidden rounded-2xl bg-white shadow-sm">
+          <View className="bg-gray-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('dashboard.quickAction')}
+            </Text>
           </View>
 
           <View className="flex-row justify-between p-4">
@@ -123,12 +119,14 @@ const EmployeeDashboard = () => {
         ) : (
           <View>
             {stat.inProgress.length > 0 && (
-              <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-                <View className="px-4 py-3 bg-gray-50">
-                  <Text className="text-lg font-semibold text-gray-800">{t('common.status.inProgress')}</Text>
+              <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+                <View className="bg-gray-50 px-4 py-3">
+                  <Text className="text-lg font-semibold text-gray-800">
+                    {t('common.status.inProgress')}
+                  </Text>
                 </View>
-                
-                <View className="p-4 -mb-4">
+
+                <View className="-mb-4 p-4">
                   <View>
                     {stat.inProgress.slice(0, 1).map((item) => (
                       <RequestItem item={item} key={item.requestId} />
@@ -137,14 +135,16 @@ const EmployeeDashboard = () => {
                 </View>
               </View>
             )}
-            
+
             {stat.pending.length > 0 && (
-              <View className="overflow-hidden bg-white shadow-sm rounded-2xl">
-                <View className="px-4 py-3 bg-gray-50">
-                  <Text className="text-lg font-semibold text-gray-800">{t('common.status.pending')} </Text>
+              <View className="overflow-hidden rounded-2xl bg-white shadow-sm">
+                <View className="bg-gray-50 px-4 py-3">
+                  <Text className="text-lg font-semibold text-gray-800">
+                    {t('common.status.pending')}{' '}
+                  </Text>
                 </View>
 
-                <View className="p-4 -mb-4">
+                <View className="-mb-4 p-4">
                   <View>
                     {stat.pending.slice(0, 3).map((item) => (
                       <RequestItem item={item} key={item.requestId} />
@@ -155,12 +155,14 @@ const EmployeeDashboard = () => {
             )}
 
             {stat.incoming.length > 0 && (
-              <View className="mb-2 overflow-hidden bg-white shadow-sm rounded-2xl">
-                <View className="px-4 py-3 bg-gray-50">
-                  <Text className="text-lg font-semibold text-gray-800">{t('dashboard.incoming')}</Text>
+              <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
+                <View className="bg-gray-50 px-4 py-3">
+                  <Text className="text-lg font-semibold text-gray-800">
+                    {t('dashboard.incoming')}
+                  </Text>
                 </View>
 
-                <View className="p-4 -mb-4">
+                <View className="-mb-4 p-4">
                   <View>
                     {stat.incoming.slice(0, 3).map((item) => (
                       <RequestItem item={item} key={item.requestId} />

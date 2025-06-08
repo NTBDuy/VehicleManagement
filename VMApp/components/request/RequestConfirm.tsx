@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { formatDayMonth } from 'utils/datetimeUtils';
+import { formatDayMonthEn, formatDayMonthVi } from 'utils/datetimeUtils';
 
 import Vehicle from 'types/Vehicle';
 
@@ -14,9 +14,9 @@ interface ConfirmComponentProps {
   endDate: string;
   selectedVehicle: Vehicle | undefined;
   purpose: string;
-  setPurpose: React.Dispatch<React.SetStateAction<string>>;
+  setPurpose: (value: string) => void;
   isAssignDriver: boolean;
-  setIsAssignDriver: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAssignDriver: (value: boolean) => void;
 }
 
 const RequestConfirm = ({
@@ -28,16 +28,20 @@ const RequestConfirm = ({
   isAssignDriver,
   setIsAssignDriver,
 }: ConfirmComponentProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLocale = i18n.language;
+  const isViCurrent = currentLocale === 'vi-VN';
 
-  const toggleSwitchDriver = () => setIsAssignDriver((previousState) => !previousState);
+  const toggleSwitchDriver = () => setIsAssignDriver(!isAssignDriver);
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View>
         <View className="rounded-2xl bg-white">
           <View className="bg-gray-50 px-4 pb-3">
-            <Text className="text-lg font-semibold text-gray-800">{t('request.create.confirm.sectionTitle.info')}</Text>
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('request.create.confirm.sectionTitle.info')}
+            </Text>
           </View>
 
           <View className="p-4">
@@ -46,7 +50,8 @@ const RequestConfirm = ({
               value=""
               valueComponent={
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                  {formatDayMonth(startDate)} - {formatDayMonth(endDate)}
+                  {isViCurrent ? formatDayMonthVi(startDate) : formatDayMonthEn(startDate)} -
+                  {isViCurrent ? formatDayMonthVi(endDate) : formatDayMonthEn(endDate)}
                 </Text>
               }
             />
@@ -64,7 +69,9 @@ const RequestConfirm = ({
         </View>
         <View className="mt-4 rounded-2xl bg-white">
           <View className="bg-gray-50 px-4 pb-3">
-            <Text className="text-lg font-semibold text-gray-800">{t('request.create.confirm.sectionTitle.purpose')}</Text>
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('request.create.confirm.sectionTitle.purpose')}
+            </Text>
           </View>
           <View className="p-4">
             <InputField
@@ -80,7 +87,9 @@ const RequestConfirm = ({
         </View>
         <View className="mt-4 rounded-2xl bg-white">
           <View className="bg-gray-50 px-4 pb-3">
-            <Text className="text-lg font-semibold text-gray-800">{t('request.create.confirm.sectionTitle.driver')}</Text>
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('request.create.confirm.sectionTitle.driver')}
+            </Text>
           </View>
           <View className="p-4">
             <View className="mb-2">
@@ -94,7 +103,9 @@ const RequestConfirm = ({
                   className="-m-2 scale-75"
                 />
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                  {isAssignDriver ? `${t('request.create.confirm.switchText.assign')}` : `${t('request.create.confirm.switchText.self')}`}
+                  {isAssignDriver
+                    ? `${t('request.create.confirm.switchText.assign')}`
+                    : `${t('request.create.confirm.switchText.self')}`}
                 </Text>
               </View>
             </View>

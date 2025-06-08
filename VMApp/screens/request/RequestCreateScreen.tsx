@@ -1,4 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
+import { RequestService } from '@/services/requestService';
 import { VehicleService } from '@/services/vehicleService';
 import { showToast } from '@/utils/toast';
 import {
@@ -11,17 +12,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { TouchableOpacity, SafeAreaView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
 import Vehicle from '@/types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
 import RequestConfirm from '@/components/request/RequestConfirm';
 import RequestDatePicker from '@/components/request/RequestDatePicker';
-import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
-import { RequestService } from '@/services/requestService';
 import RequestDestination from '@/components/request/RequestDestination';
-import { useTranslation } from 'react-i18next';
+import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
 
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
@@ -110,7 +110,11 @@ const RequestCreateScreen = () => {
     />
   );
 
-  const getAvailableVehicle = async () => {
+  const fetchAvailableVehicle = async () => {
+    if (endDate == '') {
+      showToast.error(t('common.error.endDate'));
+      return;
+    }
     try {
       setIsLoading(true);
       const data = await VehicleService.getAvailableVehicles(
@@ -128,12 +132,18 @@ const RequestCreateScreen = () => {
 
   const validateData = (): boolean => {
     if (!selectedVehicle?.vehicleId) {
-      showToast.error(`${t('request.create.toast.vehicleRequired.title')}`,`${t('request.create.toast.vehicleRequired.message')}`);
+      showToast.error(
+        `${t('request.create.toast.vehicleRequired.title')}`,
+        `${t('request.create.toast.vehicleRequired.message')}`
+      );
       setActiveTab(1);
       return false;
     }
     if (purpose.trim() === '') {
-      showToast.error(`${t('request.create.toast.purposeRequired.title')}`,`${t('request.create.toast.purposeRequired.message')}`);
+      showToast.error(
+        `${t('request.create.toast.purposeRequired.title')}`,
+        `${t('request.create.toast.purposeRequired.message')}`
+      );
       return false;
     }
     return true;
@@ -153,15 +163,24 @@ const RequestCreateScreen = () => {
       };
       const response = await RequestService.createRequest(requestData);
       if (response) {
-        showToast.success(`${t('request.create.toast.success.title')}`,`${t('request.create.toast.success.message')}`);
+        showToast.success(
+          `${t('request.create.toast.success.title')}`,
+          `${t('request.create.toast.success.message')}`
+        );
         clearContent();
         navigation.getParent()?.navigate('HistoryStack');
       } else {
-        showToast.error(`${t('request.create.toast.fail.title')}`,`${t('request.create.toast.fail.message')}`);
+        showToast.error(
+          `${t('request.create.toast.fail.title')}`,
+          `${t('request.create.toast.fail.message')}`
+        );
       }
     } catch (error) {
       console.error('Reservation error:', error);
-      showToast.error(`${t('request.create.toast.requestError.title')}`,`${t('request.create.toast.requestError.message')}`);
+      showToast.error(
+        `${t('request.create.toast.requestError.title')}`,
+        `${t('request.create.toast.requestError.message')}`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -189,7 +208,14 @@ const RequestCreateScreen = () => {
                 key={tab.id}
                 className={`flex-1 items-center py-4`}
                 disabled={isDisabled}
-                onPress={() => setActiveTab(tab.id)}>
+                onPress={() => {
+                  if (availableVehicle.length == 0) {
+                    setSelectedVehicle(undefined);
+                    fetchAvailableVehicle();
+                  } else {
+                    setActiveTab(tab.id);
+                  }
+                }}>
                 <View className="flex-row items-center">
                   <View
                     className={`mt-2 h-[1] ${
@@ -223,9 +249,9 @@ const RequestCreateScreen = () => {
           <TouchableOpacity
             className={`mt-4 w-full py-4 ${isDisabled && !isLoading ? 'bg-gray-400' : 'bg-blue-400 '} rounded-2xl `}
             disabled={isDisabled && !isLoading}
-            onPress={getAvailableVehicle}>
+            onPress={fetchAvailableVehicle}>
             <Text className="text-center text-lg font-bold text-white">
-              {isLoading ? `${t('request.create.button.loading')}` : `${t('request.create.button.next')}`}
+              {isLoading ? `${t('common.button.loading')}` : `${t('common.button.next')}`}
             </Text>
           </TouchableOpacity>
         )}
@@ -234,13 +260,17 @@ const RequestCreateScreen = () => {
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.back')}</Text>
+              <Text className="text-center text-lg font-bold text-white">
+                {t('common.button.back')}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
               onPress={() => setActiveTab(activeTab + 1)}>
-              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.next')}</Text>
+              <Text className="text-center text-lg font-bold text-white">
+                {t('common.button.next')}
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -250,13 +280,17 @@ const RequestCreateScreen = () => {
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.back')}</Text>
+              <Text className="text-center text-lg font-bold text-white">
+                {t('common.button.back')}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
               onPress={() => setActiveTab(activeTab + 1)}>
-              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.next')}</Text>
+              <Text className="text-center text-lg font-bold text-white">
+                {t('common.button.next')}
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -265,7 +299,9 @@ const RequestCreateScreen = () => {
             <TouchableOpacity
               className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
               onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">{t('request.create.button.back')}</Text>
+              <Text className="text-center text-lg font-bold text-white">
+                {t('common.button.back')}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -273,7 +309,7 @@ const RequestCreateScreen = () => {
               onPress={handleConfirm}
               disabled={isLoading}>
               <Text className="text-center text-lg font-bold text-white">
-                {isLoading ? `${t('request.create.button.confirming')}` : `${t('request.create.button.confirm')}`}
+                {isLoading ? `${t('common.button.processing')}` : `${t('common.button.confirm')}`}
               </Text>
             </TouchableOpacity>
           </View>

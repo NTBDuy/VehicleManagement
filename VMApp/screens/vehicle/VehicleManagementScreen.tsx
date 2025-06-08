@@ -1,3 +1,4 @@
+import { useAuth } from '@/contexts/AuthContext';
 import {
   faCalendarCheck,
   faCarBurst,
@@ -11,31 +12,37 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FlatList,
   Modal,
-  TouchableOpacity,
   RefreshControl,
   SafeAreaView,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
-import { getVehicleTypeIcon } from 'utils/vehicleUtils';
+import {
+  getVehicleBackground,
+  getVehicleLabelEn,
+  getVehicleLabelVi,
+  getVehicleTypeIcon,
+} from 'utils/vehicleUtils';
 
 import Vehicle from 'types/Vehicle';
 
-import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
+import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
+import StatusCard from '@/components/ui/StatusCardComponent';
 
 const VehicleManagementScreen = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLocale = i18n.language;
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<Vehicle>();
@@ -84,11 +91,11 @@ const VehicleManagementScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      getVehiclesData();
+      fetchVehiclesData();
     }, [])
   );
 
-  const getVehiclesData = async () => {
+  const fetchVehiclesData = async () => {
     try {
       setIsLoading(true);
       const data = await VehicleService.getAllVehicles();
@@ -103,59 +110,15 @@ const VehicleManagementScreen = () => {
   };
 
   const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
-    const getStatusStyle = (status: number) => {
-      switch (status) {
-        case 0:
-          return 'bg-green-500';
-        case 1:
-          return 'bg-blue-500';
-        case 3:
-          return 'bg-gray-500';
-        default:
-          return 'bg-orange-500';
-      }
-    };
-
-    const getStatusLabel = (status: number) => {
-      switch (status) {
-        case 0:
-          return 'Available';
-        case 1:
-          return 'InUse';
-        case 2:
-          return 'UnderMaintenance';
-        default:
-          return 'Unknown';
-      }
-    };
-
-    const bgColor = getStatusStyle(status);
-
+    const bgColor = getVehicleBackground(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">{getStatusLabel(status)}</Text>
+        <Text className="text-xs font-medium text-white">
+          {currentLocale == 'vi-VN' ? getVehicleLabelVi(status) : getVehicleLabelEn(status)}
+        </Text>
       </View>
     );
   };
-
-  const StatusCard = ({
-    label,
-    count,
-    bgColor,
-    keyword,
-  }: {
-    label: string;
-    count: number;
-    bgColor: string;
-    keyword: string;
-  }) => (
-    <TouchableOpacity
-      onPress={() => handleStatusFilter(keyword)}
-      className={`w-[48%] flex-row items-center justify-between rounded-2xl ${bgColor} px-4 py-2 shadow-sm`}>
-      <Text className="text-base font-medium text-white">{label}</Text>
-      <Text className="text-lg font-bold text-white">{count}</Text>
-    </TouchableOpacity>
-  );
 
   const renderVehicleItem = ({ item }: { item: Vehicle }) => (
     <TouchableOpacity
@@ -227,7 +190,7 @@ const VehicleManagementScreen = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getVehiclesData();
+    fetchVehiclesData();
   };
 
   const onRemoveVehicle = async () => {
@@ -238,7 +201,7 @@ const VehicleManagementScreen = () => {
           `${t('vehicle.toast.remove.success.title')}`,
           `${t('vehicle.toast.remove.success.message')}`
         );
-        getVehiclesData();
+        fetchVehiclesData();
         handleCloseModal();
       }
     } catch (error) {
@@ -260,7 +223,7 @@ const VehicleManagementScreen = () => {
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder={t('vehicle.management.searchPlaceholder')}
+        placeholder={t('common.searchPlaceholder.vehicle')}
         handleClearFilters={handleClearFilters}
       />
 
@@ -284,38 +247,42 @@ const VehicleManagementScreen = () => {
                 keyword="Total"
                 count={vehicleStat.total}
                 bgColor="bg-gray-400"
+                onPress={handleStatusFilter}
               />
               <StatusCard
                 label={t('common.status.available')}
                 keyword="Available"
                 count={vehicleStat.available}
                 bgColor="bg-green-500"
+                onPress={handleStatusFilter}
               />
               <StatusCard
                 label={t('common.status.inUse')}
                 keyword="InUse"
                 count={vehicleStat.inUse}
                 bgColor="bg-blue-500"
+                onPress={handleStatusFilter}
               />
               <StatusCard
                 label={t('common.status.maintenance')}
                 keyword="Maintenance"
                 count={vehicleStat.underMaintenance}
                 bgColor="bg-orange-500"
+                onPress={handleStatusFilter}
               />
             </View>
           )}
         </View>
 
         {isLoading ? (
-          <LoadingData text="vehicles" />
+          <LoadingData />
         ) : (
           <FlatList
             data={filteredVehicles}
             renderItem={renderVehicleItem}
             keyExtractor={(item) => item.vehicleId.toString()}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={<EmptyList title="No vehicles found!" icon={faCarBurst} />}
+            ListEmptyComponent={<EmptyList icon={faCarBurst} />}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
         )}
@@ -339,7 +306,8 @@ const VehicleManagementScreen = () => {
           <TouchableOpacity onPress={(e) => e.stopPropagation()}>
             <View className="rounded-t-2xl bg-white p-6 pb-12">
               <Text className="mb-6 text-center text-lg font-bold">
-                {t('vehicle.modal.title')}{selected?.licensePlate}
+                {t('vehicle.modal.title')}
+                {selected?.licensePlate}
               </Text>
 
               <TouchableOpacity
@@ -349,7 +317,9 @@ const VehicleManagementScreen = () => {
                   handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">{t('vehicle.modal.actions.detail')}</Text>
+                <Text className="text-lg font-semibold text-blue-600">
+                  {t('common.button.detail')}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -359,7 +329,9 @@ const VehicleManagementScreen = () => {
                   handleCloseModal();
                 }}>
                 <FontAwesomeIcon icon={faEdit} size={20} color="#ca8a04" />
-                <Text className="text-lg font-semibold text-yellow-600">{t('vehicle.modal.actions.edit')}</Text>
+                <Text className="text-lg font-semibold text-yellow-600">
+                  {t('common.button.update')}
+                </Text>
               </TouchableOpacity>
 
               {selected?.status !== 2 && selected?.nextMaintenanceId == null && (
@@ -371,7 +343,7 @@ const VehicleManagementScreen = () => {
                   }}>
                   <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#059669" />
                   <Text className="text-lg font-semibold text-emerald-600">
-                    {t('vehicle.modal.actions.maintenance')}
+                    {t('common.button.maintenance')}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -382,13 +354,15 @@ const VehicleManagementScreen = () => {
                   onRemoveVehicle();
                 }}>
                 <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
-                <Text className="text-lg font-semibold text-red-600">{t('vehicle.modal.actions.remove')}</Text>
+                <Text className="text-lg font-semibold text-red-600">
+                  {t('common.button.remove')}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
                 onPress={handleCloseModal}>
-                <Text className="text-lg font-semibold text-white">{t('vehicle.modal.actions.close')}</Text>
+                <Text className="text-lg font-semibold text-white">{t('common.button.close')}</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

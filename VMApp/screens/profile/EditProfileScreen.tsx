@@ -3,18 +3,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import { Alert, Image, TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 
 import User from 'types/User';
 
-import ErrorComponent from '@/components/ui/ErrorComponent';
 import Header from '@/components/layout/HeaderComponent';
+import ErrorComponent from '@/components/ui/ErrorComponent';
 import InputField from '@/components/ui/InputFieldComponent';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const { user, setUser } = useAuth();
   const [userData, setUserData] = useState<User>();
   const [isLoading, setIsLoading] = useState(false);
@@ -42,19 +44,19 @@ const EditProfileScreen = () => {
     const newErrors: Partial<User> = {};
 
     if (!userData?.fullName?.trim()) {
-      newErrors.fullName = 'Full name is required' as any;
+      newErrors.fullName = `${t('validate.required.fullname')}` as any;
     }
 
     if (!userData?.email?.trim()) {
-      newErrors.email = 'email is required' as any;
+      newErrors.email = `${t('validate.required.email')}` as any;
     } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
-      newErrors.email = 'Please enter a valid email' as any;
+      newErrors.email = `${t('validate.regex.email')}` as any;
     }
 
     if (!userData?.phoneNumber?.trim()) {
-      newErrors.phoneNumber = 'phoneNumber number is required' as any;
+      newErrors.phoneNumber = `${t('validate.required.phone')}` as any;
     } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = 'Please enter a valid phoneNumber number' as any;
+      newErrors.phoneNumber = `${t('validate.regex.phone')}` as any;
     }
 
     setErrors(newErrors);
@@ -64,14 +66,17 @@ const EditProfileScreen = () => {
   const handleUpdateProfile = async (data: Partial<User>) => {
     if (!user) return;
     if (!validateForm()) {
-      showToast.error('Validation Error', 'Please fix the errors above');
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
       return;
     }
     try {
       setIsLoading(true);
       const updated = await UserService.updateProfile(data);
       setUser(updated);
-      showToast.success('Saved!', 'Your info has been updated.');
+      showToast.success(`${t('common.success.title')}`, `${t('common.success.profile')}`);
     } catch (error) {
       console.log(error);
     } finally {
@@ -82,11 +87,15 @@ const EditProfileScreen = () => {
   const handleCancel = () => {
     if (hasChanges) {
       Alert.alert(
-        'Discard Changes',
-        'You have unsaved changes. Are you sure you want to discard them?',
+        `${t('common.confirmation.title.discardChanges')}`,
+        `${t('common.confirmation.message.discardChanges')}`,
         [
-          { text: 'Keep Editing', style: 'cancel' },
-          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+          { text: `${t('common.button.keepEdit')}`, style: 'cancel' },
+          {
+            text: `${t('common.button.discard')}`,
+            style: 'destructive',
+            onPress: () => navigation.goBack(),
+          },
         ]
       );
     } else {
@@ -98,9 +107,9 @@ const EditProfileScreen = () => {
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
         customTitle={
-          <View>
-            <Text className="text-xl font-bold text-gray-800">Edit Profile</Text>
-            {hasChanges && <Text className="text-xs text-orange-600">Unsaved changes</Text>}
+          <View className="items-center">
+            <Text className="text-xl font-bold text-gray-800">{t('user.editProfile.title')}</Text>
+            {hasChanges && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
           </View>
         }
         backBtn
@@ -108,39 +117,41 @@ const EditProfileScreen = () => {
 
       {userData ? (
         <ScrollView className="px-6">
-          <View className="items-center mb-4">
+          <View className="mb-4 items-center">
             <View className="relative">
               <Image
-                className="mt-4 border-4 border-white rounded-full shadow-md h-28 w-28"
+                className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
                 source={require('@/assets/images/user-default.jpg')}
               />
-              <TouchableOpacity className="absolute bottom-0 right-0 p-2 bg-blue-500 border-2 border-white rounded-full">
+              <TouchableOpacity className="absolute bottom-0 right-0 rounded-full border-2 border-white bg-blue-500 p-2">
                 <FontAwesomeIcon icon={faEdit} size={14} color="#fff" />
               </TouchableOpacity>
             </View>
           </View>
 
-          <View className="mt-4 mb-4 overflow-hidden bg-white shadow-sm rounded-2xl">
-            <View className="px-4 py-3 bg-gray-50">
-              <Text className="text-lg font-semibold text-gray-800">User Information</Text>
+          <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+            <View className="bg-gray-50 px-4 py-3">
+              <Text className="text-lg font-semibold text-gray-800">
+                {t('user.editProfile.section.title')}
+              </Text>
             </View>
 
             <View className="p-4">
               <InputField
-                label="Fullname"
+                label={t('common.fields.fullname')}
                 value={userData.fullName}
                 onChangeText={(text) => setUserData({ ...userData!, fullName: text })}
                 error={errors.fullName as string}
               />
               <InputField
-                label="email"
+                label={t('common.fields.email')}
                 value={userData?.email}
                 onChangeText={(text) => setUserData({ ...userData!, email: text })}
                 error={errors.email as string}
                 keyboardType="email-address"
               />
               <InputField
-                label="phoneNumber Number"
+                label={t('common.fields.phone')}
                 value={userData?.phoneNumber}
                 onChangeText={(text) => setUserData({ ...userData!, phoneNumber: text })}
                 error={errors.phoneNumber as string}
@@ -149,13 +160,13 @@ const EditProfileScreen = () => {
               />
             </View>
           </View>
-          
-          <View className="flex-row items-center justify-between mt-4 mb-8">
+
+          <View className="mb-8 mt-4 flex-row items-center justify-between">
             <TouchableOpacity
               className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
               onPress={handleCancel}
               disabled={isLoading}>
-              <Text className="font-semibold text-gray-700">Cancel</Text>
+              <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -165,7 +176,7 @@ const EditProfileScreen = () => {
               onPress={() => handleUpdateProfile(userData)}
               disabled={isLoading || !hasChanges}>
               <Text className="font-semibold text-white">
-                {isLoading ? `${t('common.button.updating')}` : 'Update User'}
+                {isLoading ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
               </Text>
             </TouchableOpacity>
           </View>

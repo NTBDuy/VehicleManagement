@@ -1,6 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
-import { Alert, TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
 
@@ -8,7 +9,7 @@ import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
-import { useTranslation } from 'react-i18next';
+
 const VehicleEditScreen = () => {
   const route = useRoute();
   const { t } = useTranslation();
@@ -38,19 +39,19 @@ const VehicleEditScreen = () => {
     const newErrors: Partial<Vehicle> = {};
 
     if (!vehicleData.licensePlate.trim()) {
-      newErrors.licensePlate = t('vehicle.validate.plate');
+      newErrors.licensePlate = t('validate.required.plate');
     }
 
     if (!vehicleData.brand.trim()) {
-      newErrors.brand = t('vehicle.validate.brand');
+      newErrors.brand = t('validate.required.brand');
     }
 
     if (!vehicleData.model.trim()) {
-      newErrors.model = t('vehicle.validate.modal');
+      newErrors.model = t('validate.required.modal');
     }
 
     if (!vehicleData.type) {
-      newErrors.type = t('vehicle.validate.type');
+      newErrors.type = t('validate.required.type');
     }
 
     setErrors(newErrors);
@@ -60,18 +61,18 @@ const VehicleEditScreen = () => {
   const handleUpdateVehicle = () => {
     if (!validateForm()) {
       showToast.error(
-        `${t('vehicle.validate.error.title')}`,
-        `${t('vehicle.validate.error.message')}`
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
       );
       return;
     }
     Alert.alert(
-      `${t('vehicle.validate.toast.update.confirm.title')}`,
-      `${t('vehicle.validate.toast.update.confirm.message')}`,
+      `${t('common.confirmation.title.update', { item: t('common.items.vehicle') })}`,
+      `${t('common.confirmation.message.update', { item: t('common.items.vehicle') })}`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: `${t('common.button.cancel')}`, style: 'cancel' },
         {
-          text: 'Update',
+          text: `${t('common.button.update')}`,
           onPress: async () => {
             setIsLoading(true);
             try {
@@ -79,8 +80,8 @@ const VehicleEditScreen = () => {
               const data = await VehicleService.updateVehicle(vehicleData.vehicleId, vehicleData);
               setVehicleData(data);
               showToast.success(
-                `${t('vehicle.validate.toast.update.success.title')}`,
-                `${t('vehicle.validate.toast.update.success.message')}`
+                `${t('common.success.title')}`,
+                `${t('common.success.updated', { item: t('common.items.vehicle') })}`
               );
             } catch (error) {
               console.log(error);
@@ -96,11 +97,15 @@ const VehicleEditScreen = () => {
   const handleCancel = () => {
     if (hasChanges) {
       Alert.alert(
-        `${t('vehicle.toast.remove.cancel.title')}`,
-        `${t('vehicle.toast.remove.cancel.message')}`,
+        `${t('common.confirmation.title.discardChanges')}`,
+        `${t('common.confirmation.message.discardChanges')}`,
         [
-          { text: 'Keep Editing', style: 'cancel' },
-          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+          { text: `${t('common.button.keepEdit')}`, style: 'cancel' },
+          {
+            text: `${t('common.button.discard')}`,
+            style: 'destructive',
+            onPress: () => navigation.goBack(),
+          },
         ]
       );
     } else {
@@ -179,16 +184,14 @@ const VehicleEditScreen = () => {
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
             disabled={isLoading}>
-            <Text className="font-semibold text-gray-700">Cancel</Text>
+            <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleUpdateVehicle}
             disabled={isLoading}
             className={`w-[48%] items-center rounded-xl py-4 ${isLoading ? 'bg-gray-500' : 'bg-blue-500 '}`}>
             <Text className="font-bold text-white">
-              {isLoading
-                ? `${t('vehicle.edit.actions.updating')}`
-                : `${t('vehicle.edit.actions.update')}`}
+              {isLoading ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
             </Text>
           </TouchableOpacity>
         </View>

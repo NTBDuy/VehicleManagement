@@ -7,6 +7,7 @@ import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'r
 import { RequestService } from 'services/requestService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
+import { getRequestBackgroundColor, getRequestLabelEn } from '@/utils/requestUtils';
 
 import Assignment from 'types/Assignment';
 import Request from 'types/Request';
@@ -35,13 +36,18 @@ const RequestDetailScreen = () => {
   useFocusEffect(
     useCallback(() => {
       setAssignmentData(null);
-      if (requestData.isDriverRequired && requestData.status !== 2 && requestData.status !== 0) {
-        getAssignmentData(requestData.requestId);
+      if (
+        requestData.isDriverRequired &&
+        requestData.status !== 2 &&
+        requestData.status !== 3 &&
+        requestData.status !== 0
+      ) {
+        fetchAssignmentData(requestData.requestId);
       }
     }, [requestData])
   );
 
-  const getAssignmentData = async (requestId: number) => {
+  const fetchAssignmentData = async (requestId: number) => {
     try {
       const data = await RequestService.getAssignmentDetails(requestId);
       setAssignmentData(data);
@@ -51,49 +57,10 @@ const RequestDetailScreen = () => {
   };
 
   const renderBadgeRequestStatus = ({ status }: { status: number }) => {
-    const getStatusStyle = (status: number) => {
-      switch (status) {
-        case 0:
-          return 'bg-amber-600';
-        case 1:
-          return 'bg-emerald-600';
-        case 2:
-          return 'bg-red-600';
-        case 3:
-          return 'bg-slate-600';
-        case 4:
-          return 'bg-blue-600';
-        case 5:
-          return 'bg-green-600';
-        default:
-          return 'bg-gray-600';
-      }
-    };
-
-    const getStatusLabel = (status: number) => {
-      switch (status) {
-        case 0:
-          return 'Pending';
-        case 1:
-          return 'Approved';
-        case 2:
-          return 'Rejected';
-        case 3:
-          return 'Cancelled';
-        case 4:
-          return 'In Progress';
-        case 5:
-          return 'Done';
-        default:
-          return 'Unknown';
-      }
-    };
-
-    const bgColor = getStatusStyle(status);
-
+    const bgColor = getRequestBackgroundColor(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">{getStatusLabel(status)}</Text>
+        <Text className="text-xs font-medium text-white">{getRequestLabelEn(status)}</Text>
       </View>
     );
   };
@@ -288,7 +255,7 @@ const RequestDetailScreen = () => {
               {requestData.status !== 0 && (
                 <View className="mt-4 rounded-2xl border border-blue-200 bg-white/90 p-4 shadow-sm">
                   <Text className="text-base leading-relaxed text-gray-700">
-                    <Text className="font-semibold"> {t('request.detail.status')}: </Text>
+                    <Text className="font-semibold">{t('common.fields.status')}: </Text>
                     {t('request.detail.thisRequestWas')}{' '}
                     <Text
                       className={`font-bold ${
@@ -352,13 +319,13 @@ const RequestDetailScreen = () => {
             <View className="p-4">
               <InfoRow
                 label={t('request.detail.info.requestBy')}
-                value={requestData.user?.fullName || 'No information'}
+                value={requestData.user?.fullName || t('common.fields.noInfo')}
               />
               <InfoRow
                 label={
                   !isASameDate
                     ? `${t('request.detail.info.dateRange')}`
-                    : `${t('request.detail.info.date')}`
+                    : `${t('common.fields.date')}`
                 }
                 value=""
                 valueComponent={
@@ -380,12 +347,16 @@ const RequestDetailScreen = () => {
                 }
               />
               <InfoRow
-                label={t('request.detail.info.purpose')}
-                value={requestData.purpose || 'No information'}
+                label={t('common.fields.purpose')}
+                value={requestData.purpose || t('common.fields.noInfo')}
               />
               <InfoRow
                 label={t('request.detail.info.driverRequired')}
-                value={requestData.isDriverRequired ? 'Assign a driver' : 'Drive by self'}
+                value={
+                  requestData.isDriverRequired
+                    ? `${t('request.create.confirm.switchText.assign')}`
+                    : `${t('request.create.confirm.switchText.self')}`
+                }
               />
               <InfoRow
                 label={t('request.detail.info.requestDate')}
@@ -406,12 +377,13 @@ const RequestDetailScreen = () => {
               <View className="p-4">
                 <InfoRow
                   label={t('request.detail.driver.name')}
-                  value={assignmentData?.driver.fullName || 'No information'}
+                  value={assignmentData?.driver.fullName || t('common.fields.noInfo')}
                 />
                 <InfoRow
-                  label={t('request.detail.driver.phone')}
+                  label={t('common.fields.phone')}
                   value={
-                    formatVietnamPhoneNumber(assignmentData?.driver.phoneNumber) || 'No information'
+                    formatVietnamPhoneNumber(assignmentData?.driver.phoneNumber) ||
+                    t('common.fields.noInfo')
                   }
                   isLast
                 />
@@ -426,17 +398,13 @@ const RequestDetailScreen = () => {
                   <TouchableOpacity
                     className="w-[48%] items-center rounded-xl bg-green-600 py-4 shadow-sm "
                     onPress={handleApprove}>
-                    <Text className="font-semibold text-white">
-                      {t('request.detail.actions.approve')}
-                    </Text>
+                    <Text className="font-semibold text-white">{t('common.button.approve')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     className="w-[48%] items-center rounded-xl bg-red-600 py-4 shadow-sm "
                     onPress={handleReject}>
-                    <Text className="font-semibold text-white">
-                      {t('request.detail.actions.reject')}
-                    </Text>
+                    <Text className="font-semibold text-white">{t('common.button.reject')}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -446,9 +414,7 @@ const RequestDetailScreen = () => {
                   <TouchableOpacity
                     className="items-center rounded-xl bg-gray-500 py-4 shadow-sm "
                     onPress={handleCancel}>
-                    <Text className="font-semibold text-white">
-                      {t('request.detail.actions.cancel')}
-                    </Text>
+                    <Text className="font-semibold text-white">{t('common.button.cancel')}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -467,12 +433,12 @@ const RequestDetailScreen = () => {
                     disabled={isReminderSent}>
                     <Text className="font-semibold text-white">
                       {isReminderSent
-                        ? `${t('request.detail.actions.remind.sent')}`
+                        ? `${t('common.button.remind.sent')}`
                         : isOverdue(requestData.endTime)
-                          ? `${t('request.detail.actions.remind.urgent')}`
+                          ? `${t('common.button.remind.urgent')}`
                           : isNearDueDate(requestData.endTime)
-                            ? `${t('request.detail.actions.remind.soon')}`
-                            : `${t('request.detail.actions.remind.normal')}`}
+                            ? `${t('common.button.remind.soon')}`
+                            : `${t('common.button.remind.normal')}`}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -487,9 +453,7 @@ const RequestDetailScreen = () => {
                   <TouchableOpacity
                     className={`items-center rounded-xl bg-gray-600 py-4 shadow-sm  `}
                     onPress={handleCancel}>
-                    <Text className="font-semibold text-white">
-                      {t('request.detail.actions.cancel')}
-                    </Text>
+                    <Text className="font-semibold text-white">{t('common.button.cancel')}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -498,9 +462,7 @@ const RequestDetailScreen = () => {
                   <TouchableOpacity
                     className="w-[48%] items-center rounded-xl bg-gray-600 py-4 shadow-sm "
                     onPress={handleCancel}>
-                    <Text className="font-semibold text-white">
-                      {t('request.detail.actions.cancel')}
-                    </Text>
+                    <Text className="font-semibold text-white">{t('common.button.cancel')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -509,8 +471,8 @@ const RequestDetailScreen = () => {
                     onPress={handleUsingVehicle}>
                     <Text className="font-semibold text-white">
                       {isUsingLoading
-                        ? `${t('request.detail.actions.loading')}`
-                        : `${t('request.detail.actions.usingVehicle')}`}
+                        ? `${t('common.button.loading')}`
+                        : `${t('common.button.usingVehicle')}`}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -523,8 +485,8 @@ const RequestDetailScreen = () => {
                     onPress={handleEndUsage}>
                     <Text className="font-semibold text-white">
                       {isEndUsageLoading
-                        ? `${t('request.detail.actions.ending')}`
-                        : `${t('request.detail.actions.endUsage')}`}
+                        ? `${t('common.button.ending')}`
+                        : `${t('common.button.endUsage')}`}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -534,7 +496,7 @@ const RequestDetailScreen = () => {
 
           <View className="mt-4">
             <Text className="text-right text-sm font-medium text-gray-500">
-              {t('request.detail.lastUpdated')}: {formatDatetime(requestData.lastUpdateAt)}
+              {t('common.lastUpdated')}: {formatDatetime(requestData.lastUpdateAt)}
             </Text>
           </View>
         </View>

@@ -1,19 +1,29 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch, Text, View } from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import { formatDayMonth } from 'utils/datetimeUtils';
+import { DateData } from 'react-native-calendars';
+import { formatDayMonthEn, formatDayMonthVi } from 'utils/datetimeUtils';
 
 import InfoRow from '@/components/ui/InfoRowComponent';
+import MyCalendar from '@/components/ui/MyCalendar';
 
 interface DatePickerComponentProps {
   isMultiDayTrip: boolean;
-  setIsMultiDayTrip: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsMultiDayTrip: (value: boolean) => void;
   startDate: string;
   endDate: string;
-  setStartDate: React.Dispatch<React.SetStateAction<string>>;
-  setEndDate: React.Dispatch<React.SetStateAction<string>>;
-  setIsDisable: React.Dispatch<React.SetStateAction<boolean>>;
+  setStartDate: (value: string) => void;
+  setEndDate: (value: string) => void;
+  setIsDisable: (value: boolean) => void;
+}
+
+interface MarkedDate {
+  startingDay?: boolean;
+  endingDay?: boolean;
+  color?: string;
+  textColor?: string;
+  selected?: boolean;
+  disableTouchEvent?: boolean;
 }
 
 const RequestDatePicker = ({
@@ -25,13 +35,16 @@ const RequestDatePicker = ({
   setEndDate,
   setIsDisable,
 }: DatePickerComponentProps) => {
-  const { t } = useTranslation();
-  const [today] = useState(new Date().toISOString().split('T')[0]);
+  const { t, i18n } = useTranslation();
+  const currentLocale = i18n.language;
+  const isViCurrent = currentLocale === 'vi-VN';
+  const [today] = useState<string>(new Date().toISOString().split('T')[0]);
 
-  const toggleSwitch = () => setIsMultiDayTrip((previousState) => !previousState);
+  const toggleSwitch = (): void => setIsMultiDayTrip(!isMultiDayTrip);
 
-  const getMarkedDates = () => {
-    let marked: { [date: string]: any } = {};
+  const getMarkedDates = (): { [date: string]: MarkedDate } => {
+    let marked: { [date: string]: MarkedDate } = {};
+
     if (startDate) {
       marked[startDate] = {
         startingDay: true,
@@ -39,6 +52,7 @@ const RequestDatePicker = ({
         textColor: 'white',
       };
     }
+
     if (endDate) {
       marked[endDate] = {
         endingDay: true,
@@ -51,7 +65,10 @@ const RequestDatePicker = ({
         current.setDate(current.getDate() + 1);
         const d = current.toISOString().split('T')[0];
         if (d !== endDate) {
-          marked[d] = { color: '#93c5fd', textColor: 'black' };
+          marked[d] = {
+            color: '#93c5fd',
+            textColor: 'black',
+          };
         }
       }
     }
@@ -59,7 +76,7 @@ const RequestDatePicker = ({
     return marked;
   };
 
-  const onDayPress = (day: any) => {
+  const onDayPress = (day: DateData): void => {
     const date = day.dateString;
     if (!startDate || (startDate && endDate)) {
       setStartDate(date);
@@ -69,6 +86,15 @@ const RequestDatePicker = ({
       setEndDate('');
     } else {
       setEndDate(date);
+    }
+  };
+
+  const handleDayPress = (day: DateData): void => {
+    setIsDisable(false);
+    if (isMultiDayTrip) {
+      onDayPress(day);
+    } else {
+      setStartDate(day.dateString);
     }
   };
 
@@ -85,51 +111,49 @@ const RequestDatePicker = ({
             className="-m-2 scale-75"
           />
           <Text className="ml-2 text-sm text-gray-600">
-            {isMultiDayTrip ? `${t('request.create.tripType.multi')}` : `${t('request.create.tripType.day')}`}
+            {isMultiDayTrip
+              ? `${t('request.create.tripType.multi')}`
+              : `${t('request.create.tripType.day')}`}
           </Text>
         </View>
       </View>
+
       {isMultiDayTrip ? (
         <InfoRow
-          label={t('request.create.dateLabel')}
+          label={t('common.fields.date')}
           value=""
           valueComponent={
             <View className="flex-row">
-              <Text className="font-semibold text-gray-800">{formatDayMonth(startDate)} - </Text>
-              <Text className="font-semibold text-gray-800">{formatDayMonth(endDate)}</Text>
+              <Text className="font-semibold text-gray-800">
+                {isViCurrent ? formatDayMonthVi(startDate) : formatDayMonthEn(startDate)} -{' '}
+              </Text>
+              <Text className="font-semibold text-gray-800">
+                {isViCurrent ? formatDayMonthVi(endDate) : formatDayMonthEn(endDate)}
+              </Text>
             </View>
           }
         />
       ) : (
-        <InfoRow label={t('request.create.dateLabel')} value={formatDayMonth(startDate)} />
+        <InfoRow
+          label={t('common.fields.date')}
+          value={isViCurrent ? formatDayMonthVi(startDate) : formatDayMonthEn(startDate)}
+        />
       )}
+
       <View className="mt-4">
-        <Calendar
+        <MyCalendar
           markingType={isMultiDayTrip ? 'period' : undefined}
           markedDates={
             isMultiDayTrip
               ? getMarkedDates()
               : {
-                  [startDate]: { selected: true, disableTouchEvent: true },
+                  [startDate]: {
+                    selected: true,
+                  },
                 }
           }
-          onDayPress={(day) => {
-            setIsDisable(false);
-            isMultiDayTrip ? onDayPress(day) : setStartDate(day.dateString);
-          }}
-          theme={{
-            textSectionTitleColor: '#94a3b8',
-            selectedDayBackgroundColor: '#3b82f6',
-            selectedDayTextColor: '#ffffff',
-            todayTextColor: '#3b82f6',
-            arrowColor: '#3b82f6',
-            selectedDotColor: '#fff',
-          }}
+          onDayPress={handleDayPress}
           minDate={today}
-          style={{
-            borderRadius: 12,
-            overflow: 'hidden',
-          }}
         />
       </View>
     </View>

@@ -31,6 +31,9 @@ export class BaseApiClient {
         },
       });
     } catch (e: any) {
+      if (this.onUnauthorized) {
+        this.onUnauthorized();
+      }
       showToast.error('Network Error', e.message || 'Connection failed');
       throw e;
     }

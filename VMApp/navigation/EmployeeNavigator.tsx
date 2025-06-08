@@ -7,7 +7,9 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 
+import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 import HomeScreen from 'screens/dashboard/EmployeeDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
 import EditProfileScreen from 'screens/profile/EditProfileScreen';
@@ -15,10 +17,8 @@ import SettingScreen from 'screens/profile/SettingScreen';
 import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 import HistoryRequestScreen from 'screens/request/RequestHistoryScreen';
-import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
-import { useTranslation } from 'react-i18next';
 
 const Drawer = createDrawerNavigator();
 const DashboardStack = createNativeStackNavigator();

@@ -1,15 +1,15 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, TouchableOpacity, RefreshControl, SafeAreaView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { UserService } from 'services/userService';
 
 import Request from 'types/Request';
 
-import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
 import RequestItem from '@/components/request/HistoryRequestItem';
-import { useTranslation } from 'react-i18next';
+import EmptyList from '@/components/ui/EmptyListComponent';
 
 const RequestHistoryScreen = () => {
   const { user } = useAuth();
@@ -60,13 +60,13 @@ const RequestHistoryScreen = () => {
   }, [userRequest, searchQuery, currentStatusFilter]);
 
   const filterOptions = [
-    { id: 6, name: t('common.status.all')},
-    { id: 0, name: t('common.status.pending')},
-    { id: 1, name: t('common.status.approved')},
-    { id: 2, name: t('common.status.rejected')},
-    { id: 3, name: t('common.status.cancelled')},
-    { id: 4, name: t('common.status.inProgress')},
-    { id: 5, name: t('common.status.done')},
+    { id: 6, name: t('common.status.all') },
+    { id: 0, name: t('common.status.pending') },
+    { id: 1, name: t('common.status.approved') },
+    { id: 2, name: t('common.status.rejected') },
+    { id: 3, name: t('common.status.cancelled') },
+    { id: 4, name: t('common.status.inProgress') },
+    { id: 5, name: t('common.status.done') },
   ];
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const RequestHistoryScreen = () => {
   useFocusEffect(
     useCallback(() => {
       if (user) {
-        getRequestByUserID();
+        fetchRequestByUserID();
         setActiveFilter(6);
       }
     }, [user])
@@ -85,7 +85,7 @@ const RequestHistoryScreen = () => {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setActiveFilter(6);
-    getRequestByUserID();
+    fetchRequestByUserID();
   }, []);
 
   const handleSearch = (text: string): void => {
@@ -101,7 +101,7 @@ const RequestHistoryScreen = () => {
     setSearchQuery('');
   };
 
-  const getRequestByUserID = async () => {
+  const fetchRequestByUserID = async () => {
     try {
       const data = await UserService.getUserRequests();
       return setUserRequest(data);
@@ -122,7 +122,7 @@ const RequestHistoryScreen = () => {
         searchSection
         searchQuery={searchQuery}
         handleSearch={handleSearch}
-        placeholder={t('request.create.vehiclePicker.searchPlaceholder')}
+        placeholder={t('common.searchPlaceholder.vehicle')}
         handleClearFilters={handleClearFilters}
       />
       <View className="mx-6 flex-1">

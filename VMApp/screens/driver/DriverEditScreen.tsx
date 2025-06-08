@@ -3,6 +3,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { isValid, parseISO } from 'date-fns';
 
 import Driver from '@/types/Driver';
 
@@ -12,8 +13,8 @@ import { DriverService } from '@/services/driverService';
 
 const DriverEditScreen = () => {
   const route = useRoute();
-  const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const { driverData: initialDriverData } = route.params as { driverData: Driver };
   const [driverData, setDriverData] = useState<Driver>(initialDriverData);
   const [errors, setErrors] = useState<Partial<Driver>>({});
@@ -45,10 +46,14 @@ const DriverEditScreen = () => {
       newErrors.phoneNumber = t('validate.regex.phone') as any;
     }
 
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
     if (!driverData.licenseIssuedDate?.trim()) {
       newErrors.licenseIssuedDate = t('validate.required.licenseIssueDate') as any;
-    } else if (isNaN(Date.parse(driverData.licenseIssuedDate))) {
-      newErrors.licenseIssuedDate = 'Please enter a valid date (e.g. YYYY-MM-DD)' as any;
+    } else if (!dateRegex.test(driverData.licenseIssuedDate)) {
+      newErrors.licenseIssuedDate = t('validate.regex.licenseIssueDate');
+    } else if (!isValid(parseISO(driverData.licenseIssuedDate))) {
+      newErrors.licenseIssuedDate = t('validate.regex.licenseIssueDate');
     }
 
     if (driverData.yearsOfExperience == null || isNaN(driverData.yearsOfExperience)) {
@@ -63,13 +68,16 @@ const DriverEditScreen = () => {
 
   const handleUpdate = () => {
     if (!validateForm()) {
-      Alert.alert(`${t('validate.error.title')}`, `${t('validate.error.title')}`);
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
       return;
     }
 
     Alert.alert(
-      `${t('driver.toast.update.confirm.title')}`,
-      `${t('driver.toast.update.confirm.message')}`,
+      `${t('common.confirmation.title.update', { item: t('common.items.driver') })}`,
+      `${t('common.confirmation.message.update', { item: t('common.items.driver') })}`,
       [
         { text: `${t('common.button.cancel')}`, style: 'cancel' },
         {
@@ -81,8 +89,8 @@ const DriverEditScreen = () => {
               setDriverData(data);
               setHasChanges(false);
               showToast.success(
-                `${t('driver.toast.update.success.title')}`,
-                `${t('driver.toast.update.success.message')}`
+                `${t('common.success.title')}`,
+                `${t('common.success.updated', { item: t('common.items.driver') })}`
               );
             } catch (error) {
               console.log(error);
@@ -98,11 +106,15 @@ const DriverEditScreen = () => {
   const handleCancel = () => {
     if (hasChanges) {
       Alert.alert(
-        'Discard Changes',
-        'You have unsaved changes. Are you sure you want to discard them?',
+        `${t('common.confirmation.title.discardChanges')}`,
+        `${t('common.confirmation.message.discardChanges')}`,
         [
           { text: `${t('common.button.keepEdit')}`, style: 'cancel' },
-          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+          {
+            text: `${t('common.button.discard')}`,
+            style: 'destructive',
+            onPress: () => navigation.goBack(),
+          },
         ]
       );
     } else {
@@ -115,11 +127,10 @@ const DriverEditScreen = () => {
       <Header
         backBtn
         customTitle={
-          <View>
-            <Text className="text-xl font-bold text-gray-800">
-              Edit Driver #{driverData.driverId}
-            </Text>
-            {hasChanges && <Text className="text-xs text-orange-600">Unsaved changes</Text>}
+          <View className="items-center">
+            <Text className="text-xl font-bold text-gray-800">{t('driver.edit.title')}</Text>
+            <Text className="text-xl font-bold text-gray-800">#{driverData.driverId}</Text>
+            {hasChanges && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
           </View>
         }
       />
@@ -133,13 +144,13 @@ const DriverEditScreen = () => {
           </View>
           <View className="p-4">
             <InputField
-              label={t('driver.detail.section.fullname')}
+              label={t('common.fields.fullname')}
               value={driverData.fullName || ''}
               onChangeText={(text) => updateDriverData('fullName', text)}
               error={errors.fullName as string}
             />
             <InputField
-              label={t('driver.detail.section.phone')}
+              label={t('common.fields.phone')}
               value={driverData.phoneNumber || ''}
               onChangeText={(text) => updateDriverData('phoneNumber', text)}
               placeholder="e.g. 0912345678"
@@ -163,7 +174,10 @@ const DriverEditScreen = () => {
             <InputField
               label={t('driver.detail.section.experience')}
               value={driverData.yearsOfExperience.toString()}
-              onChangeText={(text) => updateDriverData('yearsOfExperience', text)}
+              onChangeText={(text) => {
+                const num = text === '' ? 0 : Number(text);
+                updateDriverData('yearsOfExperience', num);
+              }}
               keyboardType="numeric"
               error={errors.yearsOfExperience?.toString()}
             />
