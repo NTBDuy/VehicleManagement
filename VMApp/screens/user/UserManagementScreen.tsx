@@ -36,8 +36,7 @@ import LoadingData from '@/components/ui/LoadingData';
 const UserManagementScreen = () => {
   const navigation = useNavigation<any>();
   const { t, i18n } = useTranslation();
-  const currentLocale = i18n.language;
-  const isViCurrent = currentLocale === 'vi-VN';
+  const isViCurrent = i18n.language === 'vi-VN';
   const [users, setUsers] = useState<User[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);

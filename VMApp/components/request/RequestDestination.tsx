@@ -1,63 +1,110 @@
-import { useState } from 'react';
-import { Switch, Text, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-
-import Vehicle from 'types/Vehicle';
-
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import {
+  faArrowRight,
+  faChevronRight,
+  faHistory,
+  faLocationCrosshairs,
+  faLocationDot,
+  faMap,
+  faMapLocationDot,
+  faPlusCircle,
+  faStar,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
-interface ConfirmComponentProps {
-  startDate: string;
-  endDate: string;
-  selectedVehicle: Vehicle | undefined;
-  purpose: string;
-  setPurpose: (value: string) => void;
-  isAssignDriver: boolean;
-  setIsAssignDriver: (value: boolean) => void;
+import InputField from '@/components/ui/InputFieldComponent';
+import { useState } from 'react';
+
+interface ConfirmComponentProps {}
+interface Location {
+  id: string;
+  name: string;
+  address: string;
+  type: 'recent' | 'favorite' | 'search';
 }
 
-const RequestDestination = ({
-  startDate,
-  endDate,
-  selectedVehicle,
-  purpose,
-  setPurpose,
-  isAssignDriver,
-  setIsAssignDriver,
-}: ConfirmComponentProps) => {
-  const [isMultipleDestination, setIsMultipleDestination] = useState(false);
-  const toggleSwitch = () => setIsMultipleDestination((previousState) => !previousState);
+const RequestDestination = () => {
+  const [startLocation, setStartLocation] = useState('');
+  const [endLocation, setEndLocation] = useState('');
+
+  const recentLocations: Location[] = [
+    { id: '1', name: 'Nhà', address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM', type: 'favorite' },
+    { id: '2', name: 'Công ty', address: '456 Lê Văn Việt, Quận 9, TP.HCM', type: 'favorite' },
+    {
+      id: '3',
+      name: 'Bitexco Financial Tower',
+      address: '2 Hải Triều, Quận 1, TP.HCM',
+      type: 'recent',
+    },
+    {
+      id: '4',
+      name: 'Landmark 81',
+      address: '720A Điện Biên Phủ, Bình Thạnh, TP.HCM',
+      type: 'recent',
+    },
+  ];
+
+  const renderLocationItem = (item: Location) => {
+    return (
+      <View className="flex-row items-center border-b border-gray-100 px-4 py-4">
+        <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+          <FontAwesomeIcon
+            icon={item.type === 'favorite' ? faStar : faHistory}
+            color={item.type === 'favorite' ? '#FFD700' : '#666'}
+          />
+        </View>
+        <View className="flex-1">
+          <Text className="text-base font-semibold text-gray-900">{item.name}</Text>
+          <Text className="mt-1 text-sm text-gray-500">{item.address}</Text>
+        </View>
+        <FontAwesomeIcon icon={faChevronRight} color="#ccc" />
+      </View>
+    );
+  };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View>
-        <View className="mt-6">
-          <View className="mb-1 flex-row items-center">
-            <Switch
-              trackColor={{ false: '#d1d5db', true: '#3b82f6' }}
-              thumbColor={isMultipleDestination ? '#fff' : '#f3f4f6'}
-              ios_backgroundColor="#d1d5db"
-              onValueChange={toggleSwitch}
-              value={isMultipleDestination}
-              className="-m-2 scale-75"
-            />
-            <Text className="ml-2 text-sm text-gray-600">
-              {isMultipleDestination ? 'Multi-des' : 'one-des'}
-            </Text>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+      <View className="bg-gray-50 px-4 pb-3">
+        <Text className="text-lg font-semibold text-gray-800">Chọn điểm đi - điểm đến</Text>
+      </View>
+      <View className="flex rounded-2xl bg-white px-4 py-6">
+        <View className="px-2">
+          <View className="flex-row items-center">
+            <FontAwesomeIcon icon={faLocationDot} color="#2986cc" size={24} />
+            <View className="ml-4 flex-1">
+              <InputField label="Điểm đi" onChangeText={setStartLocation} value={startLocation} />
+            </View>
+          </View>
+          <View className="flex-row items-center">
+            <FontAwesomeIcon icon={faLocationDot} color="#cc0000" size={24} />
+            <View className="ml-4 flex-1">
+              <InputField label="Điểm đến" onChangeText={setEndLocation} value={endLocation} />
+            </View>
           </View>
         </View>
-        <View className="mt-4 rounded-2xl bg-white px-6 py-4">
-          <View className="flex-row">
-            <FontAwesomeIcon icon={faLocationDot} color="#2986cc" size={24} />
-            <Text>Điểm đi</Text>
-          </View>
-          <View className="mt-4 flex-row">
-            <FontAwesomeIcon icon={faLocationDot} color="#cc0000" size={24} />
-            <Text>Điểm đến</Text>
-          </View>
+        <View className="mt-2 flex-row items-center gap-2 px-2">
+          <TouchableOpacity className="flex-1 flex-row items-center justify-center rounded-lg bg-blue-100 px-2 py-3">
+            <FontAwesomeIcon icon={faLocationCrosshairs} color="#1d4ed8" size={18} />
+            <Text className="ml-2 font-medium text-blue-700">Vị trí hiện tại</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="flex-1 flex-row items-center justify-center rounded-lg bg-green-100 px-2 py-3">
+            <FontAwesomeIcon icon={faMapLocationDot} color="#15803d" size={18} />
+            <Text className="ml-2 font-medium text-green-700">Chọn trên bản đồ</Text>
+          </TouchableOpacity>
         </View>
       </View>
+
+      <View className="mt-4 bg-gray-50 px-4 pb-3">
+        <Text className="text-lg font-semibold text-gray-800">Địa điểm gần đây</Text>
+      </View>
+      <View className="flex rounded-2xl bg-white px-4 py-6">
+        {recentLocations.slice(0, 6).map(renderLocationItem)}
+      </View>
+      <TouchableOpacity className="mx-4 mt-4 flex-row items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-4">
+        <FontAwesomeIcon icon={faPlusCircle} size={24} color="#666" />
+        <Text className="ml-2 font-medium text-gray-600">Thêm địa điểm mới</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

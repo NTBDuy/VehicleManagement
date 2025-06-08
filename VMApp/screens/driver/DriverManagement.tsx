@@ -21,8 +21,7 @@ import LoadingData from '@/components/ui/LoadingData';
 const DriverManagement = () => {
   const navigation = useNavigation<any>();
   const { t, i18n } = useTranslation();
-  const currentLocale = i18n.language;
-  const isViCurrent = currentLocale === 'vi-VN';
+  const isViCurrent = i18n.language === 'vi-VN';
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

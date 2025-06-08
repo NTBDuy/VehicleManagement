@@ -7,7 +7,7 @@ import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'r
 import { RequestService } from 'services/requestService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
-import { getRequestBackgroundColor, getRequestLabelEn } from '@/utils/requestUtils';
+import { getRequestBackgroundColor, getRequestLabelEn, getRequestLabelEnVi } from '@/utils/requestUtils';
 
 import Assignment from 'types/Assignment';
 import Request from 'types/Request';
@@ -21,7 +21,8 @@ import RejectModal from 'components/modal/RejectModalComponent';
 const RequestDetailScreen = () => {
   const route = useRoute();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isViCurrent = i18n.language === 'vi-VN';
   const { requestData: initialRequestData } = route.params as { requestData: Request };
   const [requestData, setRequestData] = useState<Request>(initialRequestData);
   const [isASameDate] = useState(initialRequestData.startTime == initialRequestData.endTime);
@@ -60,7 +61,7 @@ const RequestDetailScreen = () => {
     const bgColor = getRequestBackgroundColor(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">{getRequestLabelEn(status)}</Text>
+        <Text className="text-xs font-medium text-white">{isViCurrent ? getRequestLabelEnVi(status) : getRequestLabelEn(status)}</Text>
       </View>
     );
   };

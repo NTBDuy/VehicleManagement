@@ -42,7 +42,7 @@ const VehicleManagementScreen = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
-  const currentLocale = i18n.language;
+  const isViCurrent = i18n.language === 'vi-VN';
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<Vehicle>();
@@ -114,7 +114,7 @@ const VehicleManagementScreen = () => {
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
         <Text className="text-xs font-medium text-white">
-          {currentLocale == 'vi-VN' ? getVehicleLabelVi(status) : getVehicleLabelEn(status)}
+          {isViCurrent ? getVehicleLabelVi(status) : getVehicleLabelEn(status)}
         </Text>
       </View>
     );

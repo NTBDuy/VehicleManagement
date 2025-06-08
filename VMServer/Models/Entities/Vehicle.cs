@@ -32,11 +32,15 @@ namespace VMServer.Models.Entities
         public Status Status { get; set; }
 
         public DateTime? LastMaintenance { get; set; }
-        
+
         public DateTime? NextMaintenance { get; set; }
 
         [ForeignKey("MaintenanceSchedule")]
         public int? NextMaintenanceId { get; set; }
+
+        [Column(TypeName = "decimal(10,1)")]
+        [Range(0, 9999999999.9)]
+        public decimal CurrentOdometer { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

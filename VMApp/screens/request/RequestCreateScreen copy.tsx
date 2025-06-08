@@ -39,9 +39,9 @@ const RequestCreateScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const tabs = [
-    { id: 0, title: t('request.create.tabs.destination'), icon: faLocation },
-    { id: 1, title: t('request.create.tabs.date'), icon: faCalendarDays },
-    { id: 2, title: t('request.create.tabs.vehicle'), icon: faCarSide },
+    { id: 0, title: t('request.create.tabs.date'), icon: faCalendarDays },
+    { id: 1, title: t('request.create.tabs.vehicle'), icon: faCarSide },
+    { id: 2, title: t('request.create.tabs.destination'), icon: faLocation },
     { id: 3, title: t('request.create.tabs.confirm'), icon: faCalendarCheck },
   ];
 
@@ -54,11 +54,11 @@ const RequestCreateScreen = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
-        return renderDestinationComponent();
+        return renderDateComponent();
       case 1:
         return renderVehicleComponent();
       case 2:
-        return renderDateComponent();
+        return renderDestinationComponent();
       case 3:
         return renderConfirmComponent();
       default:
