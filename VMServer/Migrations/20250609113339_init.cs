@@ -66,6 +66,7 @@ namespace VMServer.Migrations
                     LastMaintenance = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NextMaintenance = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NextMaintenanceId = table.Column<int>(type: "int", nullable: true),
+                    CurrentOdometer = table.Column<decimal>(type: "decimal(10,1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastUpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -132,6 +133,8 @@ namespace VMServer.Migrations
                     VehicleId = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartLocation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    EndLocation = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Purpose = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     IsDriverRequired = table.Column<bool>(type: "bit", nullable: false),

@@ -207,10 +207,15 @@
       "brand": "Brand is required",
       "model": "Model is required",
       "type": "Type is required",
+      "startLocation": "You need to choose a start location.",
+      "endLocation": "You need to choose an end location.",
+      "purpose": "Please specify the purpose of your trip to continue.",
+      "currentOdometer": "Current odometer is required",
       "driver": "Please select a driver before approving",
       "reasonCancel": "Please provide a reason of at least 6 characters before cancelling.",
       "reasonReject": "Please provide a reason of at least 6 characters before rejecting."
-    }
+    },
+    "maxDecimal": "Only up to 1 decimal places are allowed."
   },
 
   "auth": {
@@ -270,15 +275,16 @@
     "create": {
       "title": "New Request",
       "tabs": {
-        "date": "Date",
+        "time": "Time",
         "vehicle": "Vehicle",
-        "destination": "Destination",
+        "location": "Location",
         "confirm": "Confirm"
       },
       "tripType": {
         "day": "Day trip",
         "multi": "Multi-day trip"
       },
+      "infoDatePicker": "If you change the selected date, we’ll update the list of available vehicles for you.",
       "vehiclePicker": {
         "title": "Available Vehicle"
       },
@@ -291,6 +297,8 @@
         "label": {
           "time": "Time",
           "vehicle": "Vehicle",
+          "startLocation": "Departure point",
+          "endLocation": "Destination",
           "detailedPurpose": "Detailed Purpose"
         },
         "placeholder": {
@@ -305,10 +313,6 @@
         "vehicleRequired": {
           "title": "Action Required",
           "message": "Please select a vehicle to continue."
-        },
-        "purposeRequired": {
-          "title": "Purpose Required",
-          "message": "Please specify the purpose of your trip to continue."
         },
         "success": {
           "title": "All Set!",
@@ -353,6 +357,8 @@
         "section": "Request Information",
         "requestBy": "Request by",
         "dateRange": "Date range",
+        "startLocation": "Departure point",
+        "endLocation": "Destination",
         "vehicle": "Vehicle",
         "driverRequired": "Driver required",
         "driverAssign": "Assign a driver",
@@ -434,7 +440,8 @@
           "model": "Model",
           "brandAndModel": "Brand & Model",
           "createAt": "Create At",
-          "lastMaintenance": "Last maintenance"
+          "lastMaintenance": "Last maintenance",
+          "currentOdometer": "Current odometer"
         }
       },
       "sectionMaintenance": {

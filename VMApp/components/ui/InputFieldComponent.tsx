@@ -1,20 +1,21 @@
 import { View, Text, TextInput } from 'react-native';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface InputFieldProps {
   label: string;
-  value: string | undefined;
+  value: string | number;
   require?: boolean;
   onChangeText: (text: string) => void;
   placeholder?: string;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'phone-pad' | 'numeric';
+  keyboardType?: 'default' | 'email-address' | 'phone-pad' | 'numeric' | 'decimal-pad';
   editable?: boolean;
   error?: string;
   multiline?: boolean;
   numberOfLines?: number;
   rightIcon?: ReactNode;
+  onFocus?: () => void;
 }
 
 const InputField = ({
@@ -30,8 +31,33 @@ const InputField = ({
   multiline,
   numberOfLines,
   rightIcon,
+  onFocus,
 }: InputFieldProps) => {
   const { t } = useTranslation();
+
+  const [inputValue, setInputValue] = useState(value?.toString() || '');
+
+  useEffect(() => {
+    setInputValue(value?.toString() || '');
+  }, [value]);
+
+  const handleDecimalChange = (text: string) => {
+    const sanitized = text.replace(',', '.');
+    const regex = /^(\d+)?([.]?\d*)?$/;
+
+    if (sanitized === '' || regex.test(sanitized)) {
+      setInputValue(sanitized);
+      onChangeText(sanitized);
+    }
+  };
+
+  const handleChangeText = (text: string) => {
+    if (keyboardType === 'decimal-pad') {
+      handleDecimalChange(text);
+    } else {
+      onChangeText(text);
+    }
+  };
 
   return (
     <View className="mb-4">
@@ -48,16 +74,17 @@ const InputField = ({
                 ? 'border-gray-300 bg-white focus:border-blue-500'
                 : 'border-gray-200 bg-gray-100'
           }`}
-          value={value}
-          onChangeText={onChangeText}
+          value={keyboardType === 'decimal-pad' ? inputValue : value?.toString()}
+          onChangeText={handleChangeText}
+          keyboardType={keyboardType}
           placeholder={placeholder || `${t('common.fields.enter')} ${label.toLowerCase()}`}
           placeholderTextColor="#A0AEC0"
           secureTextEntry={secureTextEntry}
-          keyboardType={keyboardType}
           editable={editable}
           autoCapitalize={keyboardType === 'email-address' ? 'none' : 'words'}
           multiline={multiline}
           numberOfLines={numberOfLines}
+          onFocus={onFocus}
         />
 
         {rightIcon && (

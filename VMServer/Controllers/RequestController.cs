@@ -75,6 +75,8 @@ namespace VMServer.Controllers
                 VehicleId = dto.VehicleId,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime,
+                StartLocation = dto.StartLocation,
+                EndLocation = dto.EndLocation,
                 Purpose = dto.Purpose,
                 IsDriverRequired = dto.IsDriverRequired,
                 Status = RequestStatus.Pending

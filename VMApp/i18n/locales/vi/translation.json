@@ -207,10 +207,15 @@
       "brand": "Thương hiệu là bắt buộc",
       "model": "Mẫu xe là bắt buộc",
       "type": "Loại xe là bắt buộc",
+      "startLocation": "Bạn cần chọn điểm bắt đầu.",
+      "endLocation": "Bạn cần chọn điểm kết thúc.",
+      "purpose": "Vui lòng chỉ rõ mục đích chuyến đi để tiếp tục.",
+      "currentOdometer": "Odo hiện tại là bắt buộc",
       "driver": "Vui lòng chọn tài xế trước khi chấp thuận",
       "reasonCancel": "Vui lòng nhập lý do với ít nhất 6 ký tự trước khi hủy.",
       "reasonReject": "Vui lòng nhập lý do với ít nhất 6 ký tự trước khi từ chối."
-    }
+    },
+    "maxDecimal": "Chỉ được nhập tối đa 1 chữ số thập phân."
   },
 
   "auth": {
@@ -270,15 +275,16 @@
     "create": {
       "title": "Yêu cầu mới",
       "tabs": {
-        "date": "Ngày",
+        "time": "Thời gian",
         "vehicle": "Phương tiện",
-        "destination": "Điểm đến",
+        "location": "Địa điểm",
         "confirm": "Xác nhận"
       },
       "tripType": {
         "day": "Chuyến đi trong ngày",
         "multi": "Chuyến đi nhiều ngày"
       },
+      "infoDatePicker": "Khi thay đổi ngày đã chọn trước đó, ứng dụng sẽ lấy lại danh sách xe khả dụng mới.",
       "vehiclePicker": {
         "title": "Phương tiện có sẵn"
       },
@@ -291,6 +297,8 @@
         "label": {
           "time": "Thời gian",
           "vehicle": "Phương tiện",
+          "startLocation": "Điểm đi",
+          "endLocation": "Điểm đến",
           "detailedPurpose": "Mục đích chi tiết"
         },
         "placeholder": {
@@ -305,10 +313,6 @@
         "vehicleRequired": {
           "title": "Cần thực hiện",
           "message": "Vui lòng chọn phương tiện để tiếp tục."
-        },
-        "purposeRequired": {
-          "title": "Cần mục đích",
-          "message": "Vui lòng chỉ rõ mục đích chuyến đi để tiếp tục."
         },
         "success": {
           "title": "Hoàn tất!",
@@ -353,6 +357,8 @@
         "section": "Thông tin yêu cầu",
         "requestBy": "Yêu cầu bởi",
         "dateRange": "Khoảng thời gian",
+        "startLocation": "Điểm đi",
+        "endLocation": "Điểm đến",
         "vehicle": "Phương tiện",
         "driverRequired": "Cần tài xế",
         "driverAssign": "Phân công tài xế",
@@ -446,7 +452,8 @@
           "model": "Mẫu",
           "brandAndModel": "Thương hiệu & Mẫu",
           "createAt": "Tạo lúc",
-          "lastMaintenance": "Bảo trì lần cuối"
+          "lastMaintenance": "Bảo trì lần cuối",
+          "currentOdometer": "Odo hiện tại"
         }
       },
       "sectionMaintenance": {

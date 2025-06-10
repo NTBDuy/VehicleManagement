@@ -137,6 +137,10 @@ const VehicleDetailScreen = () => {
                 }
               />
               <InfoRow
+                label={t('vehicle.detail.sectionInfo.label.currentOdometer')}
+                value={vehicleData.currentOdometer?.toString() || t('common.fields.noInfo')}
+              />
+              <InfoRow
                 label={t('vehicle.detail.sectionInfo.label.createAt')}
                 value={formatDatetime(vehicleData.createdAt) || t('common.fields.noInfo')}
                 isLast

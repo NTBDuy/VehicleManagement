@@ -23,6 +23,12 @@ import RequestDatePicker from '@/components/request/RequestDatePicker';
 import RequestDestination from '@/components/request/RequestDestination';
 import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
 
+interface validateError {
+  startLocation: string;
+  endLocation: string;
+  purpose: string;
+}
+
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
@@ -35,13 +41,16 @@ const RequestCreateScreen = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>();
   const [purpose, setPurpose] = useState('');
   const [isAssignDriver, setIsAssignDriver] = useState(false);
-  const [isDisabled, setIsDisable] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [startLocation, setStartLocation] = useState('');
+  const [endLocation, setEndLocation] = useState('');
+  const [errors, setErrors] = useState<Partial<validateError>>({});
 
   const tabs = [
-    { id: 0, title: t('request.create.tabs.destination'), icon: faLocation },
-    { id: 1, title: t('request.create.tabs.date'), icon: faCalendarDays },
-    { id: 2, title: t('request.create.tabs.vehicle'), icon: faCarSide },
+    { id: 0, title: t('request.create.tabs.time'), icon: faCalendarDays },
+    { id: 1, title: t('request.create.tabs.vehicle'), icon: faCarSide },
+    { id: 2, title: t('request.create.tabs.location'), icon: faLocation },
     { id: 3, title: t('request.create.tabs.confirm'), icon: faCalendarCheck },
   ];
 
@@ -54,11 +63,11 @@ const RequestCreateScreen = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
-        return renderDestinationComponent();
+        return renderDateComponent();
       case 1:
         return renderVehicleComponent();
       case 2:
-        return renderDateComponent();
+        return renderDestinationComponent();
       case 3:
         return renderConfirmComponent();
       default:
@@ -74,7 +83,8 @@ const RequestCreateScreen = () => {
       endDate={endDate}
       setStartDate={setStartDate}
       setEndDate={setEndDate}
-      setIsDisable={setIsDisable}
+      setIsDisabled={setIsDisabled}
+      handleClearList={clearAvailableList}
     />
   );
 
@@ -86,17 +96,28 @@ const RequestCreateScreen = () => {
     />
   );
 
-  const renderDestinationComponent = () => <RequestDestination />;
+  const renderDestinationComponent = () => (
+    <RequestDestination
+      startLocation={startLocation}
+      setStartLocation={setStartLocation}
+      endLocation={endLocation}
+      setEndLocation={setEndLocation}
+      errors={errors}
+    />
+  );
 
   const renderConfirmComponent = () => (
     <RequestConfirm
       startDate={startDate}
       endDate={endDate}
+      startLocation={startLocation}
+      endLocation={endLocation}
       selectedVehicle={selectedVehicle}
       purpose={purpose}
       setPurpose={setPurpose}
       isAssignDriver={isAssignDriver}
       setIsAssignDriver={setIsAssignDriver}
+      errors={errors.purpose || ''}
     />
   );
 
@@ -121,6 +142,8 @@ const RequestCreateScreen = () => {
   };
 
   const validateData = (): boolean => {
+    const newErrors: Partial<validateError> = {};
+
     if (!selectedVehicle?.vehicleId) {
       showToast.error(
         `${t('request.create.toast.vehicleRequired.title')}`,
@@ -129,29 +152,44 @@ const RequestCreateScreen = () => {
       setActiveTab(1);
       return false;
     }
-    if (purpose.trim() === '') {
-      showToast.error(
-        `${t('request.create.toast.purposeRequired.title')}`,
-        `${t('request.create.toast.purposeRequired.message')}`
-      );
-      return false;
+
+    if (startLocation == '') {
+      newErrors.startLocation = `${t('validate.required.startLocation')}`;
+      setActiveTab(2);
     }
-    return true;
+
+    if (endLocation == '') {
+      newErrors.endLocation = `${t('validate.required.endLocation')}`;
+      setActiveTab(2);
+    }
+
+    if (purpose.trim() === '') {
+      newErrors.purpose = t('validate.required.purpose');
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const clearAvailableList = () => {
+    setAvailableVehicle([]);
   };
 
   const handleConfirm = async () => {
     if (!validateData()) return;
     try {
       setIsLoading(true);
-      const requestData = {
+      const requestDTO = {
         userId: user?.userId,
         vehicleId: selectedVehicle?.vehicleId,
         startTime: startDate,
+        startLocation: startLocation,
+        endLocation: endLocation,
         endTime: isMultiDayTrip ? endDate : startDate,
         purpose: purpose,
         isDriverRequired: isAssignDriver,
       };
-      const response = await RequestService.createRequest(requestData);
+      const response = await RequestService.createRequest(requestDTO);
       if (response) {
         showToast.success(
           `${t('request.create.toast.success.title')}`,
@@ -182,8 +220,10 @@ const RequestCreateScreen = () => {
     setPurpose('');
     setStartDate(new Date().toISOString().split('T')[0]);
     setEndDate(new Date().toISOString().split('T')[0]);
+    setStartLocation('');
+    setEndLocation('');
     setIsMultiDayTrip(false);
-    setIsDisable(true);
+    setIsDisabled(true);
   };
 
   return (
@@ -197,14 +237,9 @@ const RequestCreateScreen = () => {
               <TouchableOpacity
                 key={tab.id}
                 className={`flex-1 items-center py-4`}
-                disabled={isDisabled}
+                disabled={availableVehicle.length === 0}
                 onPress={() => {
-                  if (availableVehicle.length == 0) {
-                    setSelectedVehicle(undefined);
-                    fetchAvailableVehicle();
-                  } else {
-                    setActiveTab(tab.id);
-                  }
+                  setActiveTab(tab.id);
                 }}>
                 <View className="flex-row items-center">
                   <View
@@ -231,14 +266,14 @@ const RequestCreateScreen = () => {
             ))}
           </View>
         </View>
-        <View className="mb-24 flex-1">{renderTabContent()}</View>
+        <View className="flex-1">{renderTabContent()}</View>
       </View>
 
-      <View className="absolute bottom-0 left-0 right-0 bg-gray-50 px-6 pb-12">
+      <View className="bg-gray-50 px-6 pb-4">
         {activeTab === 0 && (
           <TouchableOpacity
             className={`mt-4 w-full py-4 ${isDisabled && !isLoading ? 'bg-gray-400' : 'bg-blue-400 '} rounded-2xl `}
-            disabled={isDisabled && !isLoading}
+            // disabled={isDisabled && !isLoading}
             onPress={fetchAvailableVehicle}>
             <Text className="text-center text-lg font-bold text-white">
               {isLoading ? `${t('common.button.loading')}` : `${t('common.button.next')}`}

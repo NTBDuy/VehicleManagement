@@ -11,5 +11,11 @@ module.exports = {
     {
       pattern: /(border|bg)-(orange|green|red|gray|emerald|amber|blue|yellow|slate)-(400|500|600)/,
     },
+    {
+      pattern: /border-l-(purple|green|red|orange|blue|gray)-500/,
+    },
+    {
+      pattern: /bg-(purple|green|red|orange|blue|gray)-500/,
+    },
   ],
 };

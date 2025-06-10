@@ -125,6 +125,7 @@ namespace VMServer.Controllers
                 Type = dto.Type,
                 Brand = dto.Brand,
                 Model = dto.Model,
+                CurrentOdometer = dto.CurrentOdometer,
                 Status = Status.Available,
                 CreatedAt = DateTime.Now,
                 LastUpdateAt = DateTime.Now

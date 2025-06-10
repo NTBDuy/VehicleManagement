@@ -67,7 +67,7 @@ const RejectModal = ({ visible, onClose, onReject }: RejectModalProps) => {
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <TouchableOpacity onPress={onClose} className="flex-1 justify-end bg-black/30">
             <TouchableOpacity onPress={(e) => e.stopPropagation()}>

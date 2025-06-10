@@ -6,6 +6,8 @@ namespace VMServer.Models.DTOs
         public int VehicleId { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public required string StartLocation { get; set; }
+        public required string EndLocation { get; set; }
         public required string Purpose { get; set; }
         public bool IsDriverRequired { get; set; }
     }

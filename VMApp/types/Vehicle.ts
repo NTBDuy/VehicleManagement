@@ -1,7 +1,7 @@
 export enum status {
   Available = 0,
   InUse = 1,
-  UnderMaintenance = 2
+  UnderMaintenance = 2,
 }
 
 export default interface Vehicle {
@@ -14,6 +14,7 @@ export default interface Vehicle {
   lastMaintenance?: string;
   nextMaintenance?: string;
   nextMaintenanceId?: number;
+  currentOdometer: number;
   createdAt?: string;
   lastUpdateAt?: string;
 }

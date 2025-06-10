@@ -14,7 +14,8 @@ interface DatePickerComponentProps {
   endDate: string;
   setStartDate: (value: string) => void;
   setEndDate: (value: string) => void;
-  setIsDisable: (value: boolean) => void;
+  setIsDisabled: (value: boolean) => void;
+  handleClearList: () => void;
 }
 
 interface MarkedDate {
@@ -33,7 +34,8 @@ const RequestDatePicker = ({
   endDate,
   setStartDate,
   setEndDate,
-  setIsDisable,
+  setIsDisabled,
+  handleClearList,
 }: DatePickerComponentProps) => {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language;
@@ -90,7 +92,8 @@ const RequestDatePicker = ({
   };
 
   const handleDayPress = (day: DateData): void => {
-    setIsDisable(false);
+    setIsDisabled(false);
+    handleClearList();
     if (isMultiDayTrip) {
       onDayPress(day);
     } else {
@@ -155,6 +158,11 @@ const RequestDatePicker = ({
           onDayPress={handleDayPress}
           minDate={today}
         />
+        <View className="mt-3 rounded-xl bg-blue-50 p-4">
+          <Text className="text-sm font-medium text-blue-900">
+            Khi thay đổi ngày đã chọn trước đó ứng dụng sẽ lấy danh sách xe khả dụng mới!
+          </Text>
+        </View>
       </View>
     </View>
   );

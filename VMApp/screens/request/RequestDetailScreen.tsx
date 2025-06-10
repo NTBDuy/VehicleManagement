@@ -7,7 +7,11 @@ import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'r
 import { RequestService } from 'services/requestService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
-import { getRequestBackgroundColor, getRequestLabelEn, getRequestLabelEnVi } from '@/utils/requestUtils';
+import {
+  getRequestBackgroundColor,
+  getRequestLabelEn,
+  getRequestLabelEnVi,
+} from '@/utils/requestUtils';
 
 import Assignment from 'types/Assignment';
 import Request from 'types/Request';
@@ -61,7 +65,9 @@ const RequestDetailScreen = () => {
     const bgColor = getRequestBackgroundColor(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">{isViCurrent ? getRequestLabelEnVi(status) : getRequestLabelEn(status)}</Text>
+        <Text className="text-xs font-medium text-white">
+          {isViCurrent ? getRequestLabelEnVi(status) : getRequestLabelEn(status)}
+        </Text>
       </View>
     );
   };
@@ -336,6 +342,14 @@ const RequestDetailScreen = () => {
                       : `${formatDate(requestData.startTime)}`}
                   </Text>
                 }
+              />
+              <InfoRow
+                label={t('request.detail.info.startLocation')}
+                value={requestData.startLocation || t('common.fields.noInfo')}
+              />
+              <InfoRow
+                label={t('request.detail.info.endLocation')}
+                value={requestData.endLocation || t('common.fields.noInfo')}
               />
               <InfoRow
                 label={t('request.detail.info.vehicle')}

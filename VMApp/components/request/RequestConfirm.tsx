@@ -9,24 +9,34 @@ import InfoRow from '@/components/ui/InfoRowComponent';
 import InputField from '@/components/ui/InputFieldComponent';
 import { useTranslation } from 'react-i18next';
 
+interface validateError {
+  purpose: string;
+}
+
 interface ConfirmComponentProps {
   startDate: string;
   endDate: string;
+  startLocation: string;
+  endLocation: string;
   selectedVehicle: Vehicle | undefined;
   purpose: string;
   setPurpose: (value: string) => void;
   isAssignDriver: boolean;
   setIsAssignDriver: (value: boolean) => void;
+  errors: string
 }
 
 const RequestConfirm = ({
   startDate,
   endDate,
+  startLocation,
+  endLocation,
   selectedVehicle,
   purpose,
   setPurpose,
   isAssignDriver,
   setIsAssignDriver,
+  errors
 }: ConfirmComponentProps) => {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language;
@@ -63,6 +73,24 @@ const RequestConfirm = ({
                   {selectedVehicle?.brand} {selectedVehicle?.model} #{selectedVehicle?.licensePlate}
                 </Text>
               }
+            />
+            <InfoRow
+              label={t('request.create.confirm.label.startLocation')}
+              value=""
+              valueComponent={
+                <Text className="max-w-[60%] text-right font-semibold text-gray-800">
+                  {startLocation}
+                </Text>
+              }
+            />
+            <InfoRow
+              label={t('request.create.confirm.label.endLocation')}
+              value=""
+              valueComponent={
+                <Text className="max-w-[60%] text-right font-semibold text-gray-800">
+                  {endLocation}
+                </Text>
+              }
               isLast
             />
           </View>
@@ -82,6 +110,7 @@ const RequestConfirm = ({
               require={false}
               multiline={true}
               numberOfLines={4}
+              error={errors}
             />
           </View>
         </View>

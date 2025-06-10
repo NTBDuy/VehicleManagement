@@ -1,31 +1,48 @@
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import {
-  faArrowRight,
   faChevronRight,
   faHistory,
   faLocationCrosshairs,
   faLocationDot,
-  faMap,
   faMapLocationDot,
   faPlusCircle,
   faStar,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import InputField from '@/components/ui/InputFieldComponent';
 import { useState } from 'react';
 
-interface ConfirmComponentProps {}
+interface validateError {
+  startLocation: string;
+  endLocation: string;
+  purpose: string;
+}
+
+interface LocationComponentProps {
+  startLocation: string;
+  endLocation: string;
+  setStartLocation: (value: string) => void;
+  setEndLocation: (value: string) => void;
+  errors: Partial<validateError>;
+}
 interface Location {
   id: string;
   name: string;
   address: string;
+  long?: number;
+  lat?: number;
   type: 'recent' | 'favorite' | 'search';
 }
 
-const RequestDestination = () => {
-  const [startLocation, setStartLocation] = useState('');
-  const [endLocation, setEndLocation] = useState('');
+const RequestDestination = ({
+  startLocation,
+  endLocation,
+  setStartLocation,
+  setEndLocation,
+  errors
+}: LocationComponentProps) => {
+  const [activeInput, setActiveInput] = useState<'from' | 'to' | null>(null);
 
   const recentLocations: Location[] = [
     { id: '1', name: 'Nhà', address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM', type: 'favorite' },
@@ -44,9 +61,23 @@ const RequestDestination = () => {
     },
   ];
 
+  const handlePressSelectLocation = (item: Location) => {
+    if (activeInput == 'from') {
+      const location = item.address;
+      setStartLocation(location);
+    } else {
+      const location = item.address;
+      setEndLocation(location);
+    }
+  };
+
   const renderLocationItem = (item: Location) => {
+
     return (
-      <View className="flex-row items-center border-b border-gray-100 px-4 py-4">
+      <TouchableOpacity
+        key={item.id}
+        onPress={() => handlePressSelectLocation(item)}
+        className="flex-row items-center border-b border-gray-100 px-4 py-4">
         <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-100">
           <FontAwesomeIcon
             icon={item.type === 'favorite' ? faStar : faHistory}
@@ -58,7 +89,7 @@ const RequestDestination = () => {
           <Text className="mt-1 text-sm text-gray-500">{item.address}</Text>
         </View>
         <FontAwesomeIcon icon={faChevronRight} color="#ccc" />
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -72,13 +103,25 @@ const RequestDestination = () => {
           <View className="flex-row items-center">
             <FontAwesomeIcon icon={faLocationDot} color="#2986cc" size={24} />
             <View className="ml-4 flex-1">
-              <InputField label="Điểm đi" onChangeText={setStartLocation} value={startLocation} />
+              <InputField
+                label="Điểm đi"
+                onChangeText={setStartLocation}
+                value={startLocation}
+                onFocus={() => setActiveInput('from')}
+                error={errors.startLocation}
+              />
             </View>
           </View>
           <View className="flex-row items-center">
             <FontAwesomeIcon icon={faLocationDot} color="#cc0000" size={24} />
             <View className="ml-4 flex-1">
-              <InputField label="Điểm đến" onChangeText={setEndLocation} value={endLocation} />
+              <InputField
+                label="Điểm đến"
+                onChangeText={setEndLocation}
+                value={endLocation}
+                onFocus={() => setActiveInput('to')}
+                error={errors.endLocation}
+              />
             </View>
           </View>
         </View>

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250607074412_init")]
+    [Migration("20250609113339_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -185,6 +185,11 @@ namespace VMServer.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("EndLocation")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
@@ -195,6 +200,11 @@ namespace VMServer.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("StartLocation")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -289,6 +299,9 @@ namespace VMServer.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CurrentOdometer")
+                        .HasColumnType("decimal(10,1)");
 
                     b.Property<DateTime?>("LastMaintenance")
                         .HasColumnType("datetime2");

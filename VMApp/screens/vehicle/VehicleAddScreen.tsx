@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { TouchableOpacity, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { TouchableOpacity, SafeAreaView, ScrollView, Text, View, TextInput } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ const VehicleAddScreen = () => {
     type: '',
     brand: '',
     model: '',
+    currentOdometer: 0,
     status: 0,
     lastMaintenance: '',
   };
@@ -25,6 +26,7 @@ const VehicleAddScreen = () => {
   const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Vehicle>>({});
+  const [odometerInput, setOdometerInput] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -58,6 +60,15 @@ const VehicleAddScreen = () => {
       newErrors.type = t('validate.required.type');
     }
 
+    if (!odometerInput || isNaN(Number(odometerInput))) {
+      newErrors.currentOdometer = t('validate.required.currentOdometer') as any;
+    } else {
+      const decimalPart = odometerInput.split('.')[1];
+      if (decimalPart && decimalPart.length > 1) {
+        newErrors.currentOdometer = t('validate.maxDecimal', { max: 2 }) as any;
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -72,6 +83,7 @@ const VehicleAddScreen = () => {
     }
     try {
       setIsLoading(true);
+      vehicleData.currentOdometer = parseFloat(odometerInput);
       const data = await VehicleService.createVehicle(vehicleData);
       showToast.success(
         `${t('common.success.title')}`,
@@ -85,6 +97,15 @@ const VehicleAddScreen = () => {
     }
   };
 
+  const handleOdometerChange = (text: string) => {
+    const sanitized = text.replace(',', '.');
+    const regex = /^(\d+)?([.]?\d*)?$/;
+
+    if (sanitized === '' || regex.test(sanitized)) {
+      setOdometerInput(sanitized);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header backBtn title="Add New Vehicle" />
@@ -92,7 +113,9 @@ const VehicleAddScreen = () => {
       <ScrollView className="px-6">
         <View className="mb-4 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
-            <Text className="text-lg font-semibold text-gray-800">{t('vehicle.detail.sectionInfo.title')}</Text>
+            <Text className="text-lg font-semibold text-gray-800">
+              {t('vehicle.detail.sectionInfo.title')}
+            </Text>
           </View>
 
           <View className="p-4">
@@ -140,6 +163,13 @@ const VehicleAddScreen = () => {
               value={vehicleData.model}
               onChangeText={(text) => setVehicleData({ ...vehicleData, model: text })}
               error={errors.model}
+            />
+            <InputField
+              label={t('vehicle.detail.sectionInfo.label.currentOdometer')}
+              value={odometerInput}
+              onChangeText={handleOdometerChange}
+              keyboardType="decimal-pad"
+              error={errors.currentOdometer as any}
             />
           </View>
         </View>
