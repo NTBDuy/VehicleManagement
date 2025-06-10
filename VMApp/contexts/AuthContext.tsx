@@ -6,6 +6,7 @@ import { LoginRequest } from 'types/LoginRequest';
 import { showToast } from 'utils/toast';
 
 import User from 'types/User';
+import { LoginResponse } from '@/types/LoginResponse';
 
 interface AuthContextType {
   user: User | null;
@@ -77,10 +78,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (credentials: LoginRequest) => {
     try {
       const response = await AuthService.login(credentials);
-      showToast.success(`${t('common.success.login', { user: response.user.fullName })}!`);
-      setUser(response.user);
+
+      if ('success' in response && response.success === false) {
+        switch (response.statusCode) {
+          case 423:
+            showToast.error(t('common.error.accountLocked'));
+            break;
+          case 401:
+            showToast.error(t('common.error.invalidCredentials'));
+            break;
+          case 400:
+            showToast.error(t('common.error.badRequest'));
+            break;
+          default:
+            showToast.error(t('common.error.title'), t('common.error.generic'));
+            break;
+        }
+        return;
+      }
+
+      const loginData = response as LoginResponse;
+
+      showToast.success(`${t('common.success.login', { user: loginData.user.fullName })}!`);
+      setUser(loginData.user);
     } catch (error) {
-      throw error;
+      console.error('Login error:', error);
+      showToast.error(t('common.error.title'), t('common.error.network'));
     }
   };
 

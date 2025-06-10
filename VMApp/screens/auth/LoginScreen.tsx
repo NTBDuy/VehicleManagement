@@ -86,7 +86,8 @@ const LoginScreen = () => {
     try {
       await login({ username: username.trim(), password });
     } catch (error) {
-      showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
+      console.log(error)
+      // showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,5 @@
 import { showToast } from '@/utils/toast';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ import RejectModal from 'components/modal/RejectModalComponent';
 
 const RequestDetailScreen = () => {
   const route = useRoute();
+  const navigation = useNavigation<any>();
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const isViCurrent = i18n.language === 'vi-VN';
@@ -146,9 +147,9 @@ const RequestDetailScreen = () => {
               const response = await RequestService.usingVehicle(requestData.requestId);
               setRequestData(response);
               showToast.success(
-                `${t('request.detail.toast.startUsingSuccess.title')}`,
                 `${t('request.detail.toast.startUsingSuccess.message')}`
               );
+              navigation.navigate('InProgress', { requestData });
             } catch (error) {
               console.log(error);
             } finally {

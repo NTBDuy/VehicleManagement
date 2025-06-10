@@ -155,7 +155,10 @@
       "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
       "endDate": "Bạn phải chọn ngày kết thúc nếu chọn đi nhiều ngày.",
       "login": "Vui lòng nhập cả tên người dùng và mật khẩu để tiếp tục.",
-      "screen": "Ôi không! Đã xảy ra lỗi. Vui lòng thử lại."
+      "screen": "Ôi không! Đã xảy ra lỗi. Vui lòng thử lại.",
+      "accountLocked": "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ với quản trị viên.",
+      "invalidCredentials": "Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại.",
+      "badRequest": "Yêu cầu không hợp lệ. Vui lòng kiểm tra dữ liệu và thử lại."
     },
     "fields": {
       "fullname": "Họ và tên",

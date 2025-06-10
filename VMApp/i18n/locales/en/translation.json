@@ -155,7 +155,10 @@
       "generic": "Something went wrong. Please try again.",
       "endDate": "You must select an end date if you choose multiple dates.",
       "login": "Please enter both username and password to continue.",
-      "screen": "Oops! Something went wrong. Try again."
+      "screen": "Oops! Something went wrong. Try again.",
+      "accountLocked": "The account has been deactivated. Please contact the admin.",
+      "invalidCredentials": "Invalid username or password. Please try again.",
+      "badRequest": "Invalid request. Please check your input and try again."
     },
     "fields": {
       "fullname": "Full Name",

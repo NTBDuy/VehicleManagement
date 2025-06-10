@@ -17,6 +17,7 @@ import SettingScreen from 'screens/profile/SettingScreen';
 import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 import HistoryRequestScreen from 'screens/request/RequestHistoryScreen';
+import RequestInProgress from 'screens/request/RequestInProgress';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -34,6 +35,7 @@ function DashboardStackScreen() {
       <DashboardStack.Screen name="RequestDetail" component={RequestDetailScreen} />
       <DashboardStack.Screen name="NewRequestStack" component={NewRequest} />
       <DashboardStack.Screen name="HistoryStack" component={HistoryRequestScreen} />
+      <DashboardStack.Screen name="InProgress" component={RequestInProgress} />
     </DashboardStack.Navigator>
   );
 }
@@ -51,6 +53,7 @@ function HistoryStackScreen() {
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
       <HistoryStack.Screen name="HistoryScreen" component={HistoryRequestScreen} />
       <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
+      <HistoryStack.Screen name="InProgress" component={RequestInProgress} />
     </HistoryStack.Navigator>
   );
 }

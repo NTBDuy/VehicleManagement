@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface InputFieldProps {
-  label: string;
+  label?: string;
   value: string | number;
   require?: boolean;
   onChangeText: (text: string) => void;
@@ -61,9 +61,11 @@ const InputField = ({
 
   return (
     <View className="mb-4">
-      <Text className="mb-1 text-sm text-gray-600">
-        {label} {require && <Text className="text-red-500">*</Text>}
-      </Text>
+      {label && (
+        <Text className="mb-1 text-sm text-gray-600">
+          {label} {require && <Text className="text-red-500">*</Text>}
+        </Text>
+      )}
 
       <View className="relative">
         <TextInput
@@ -77,7 +79,7 @@ const InputField = ({
           value={keyboardType === 'decimal-pad' ? inputValue : value?.toString()}
           onChangeText={handleChangeText}
           keyboardType={keyboardType}
-          placeholder={placeholder || `${t('common.fields.enter')} ${label.toLowerCase()}`}
+          placeholder={placeholder || `${t('common.fields.enter')} ${label && label!.toLowerCase()}`}
           placeholderTextColor="#A0AEC0"
           secureTextEntry={secureTextEntry}
           editable={editable}

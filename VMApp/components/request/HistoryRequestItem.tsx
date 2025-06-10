@@ -17,16 +17,26 @@ const RequestItem = ({ item }: RequestItemProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
 
+  const handleViewDetailInProgress = (item: Request) => {
+    navigation.navigate('InProgress', { requestData: item });
+  };
+
   const handleViewDetail = (item: Request) => {
     navigation.navigate('RequestDetail', { requestData: item });
   };
 
   return (
     <TouchableOpacity
-      onPress={() => handleViewDetail(item)}
+      onPress={() => {
+        if (item.status == 4) {
+          handleViewDetailInProgress(item);
+        } else {
+          handleViewDetail(item);
+        }
+      }}
       className={`mb-4 mt-1 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getRequestBorderColor(item.status)}`}>
       <View className="flex-row items-center">
-        <View className="items-center justify-center w-12 h-12 ml-2 mr-4 bg-blue-300 rounded-full">
+        <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
           <Text className="text-xl font-semibold text-white">
             <FontAwesomeIcon
               icon={getVehicleTypeIcon(item.vehicle?.type || 'Sedan')}
@@ -36,7 +46,7 @@ const RequestItem = ({ item }: RequestItemProps) => {
           </Text>
         </View>
 
-        <View className="flex-1 ml-1">
+        <View className="ml-1 flex-1">
           <Text className="text-base font-semibold text-gray-800">
             {item.vehicle?.licensePlate}
           </Text>
@@ -45,21 +55,27 @@ const RequestItem = ({ item }: RequestItemProps) => {
           </Text>
         </View>
 
-       <View className="mr-4">
+        <View className="mr-4">
           {item.startTime !== item.endTime ? (
             <View>
-              <Text className="text-xs text-gray-500">{t('request.list.label.start')}: {formatDate(item.startTime)}</Text>
-              <Text className="text-xs text-gray-500">{t('request.list.label.end')}: {formatDate(item.endTime)}</Text>
+              <Text className="text-xs text-gray-500">
+                {t('request.list.label.start')}: {formatDate(item.startTime)}
+              </Text>
+              <Text className="text-xs text-gray-500">
+                {t('request.list.label.end')}: {formatDate(item.endTime)}
+              </Text>
             </View>
           ) : (
             <View>
-              <Text className="text-xs text-gray-500">{t('common.fields.date')}: {formatDate(item.startTime)}</Text>
+              <Text className="text-xs text-gray-500">
+                {t('common.fields.date')}: {formatDate(item.startTime)}
+              </Text>
             </View>
           )}
         </View>
 
         <View className="items-end">
-            <FontAwesomeIcon icon={faChevronRight} color="#9ca3af" />
+          <FontAwesomeIcon icon={faChevronRight} color="#9ca3af" />
         </View>
       </View>
     </TouchableOpacity>

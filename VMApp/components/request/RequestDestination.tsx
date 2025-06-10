@@ -42,7 +42,7 @@ const RequestDestination = ({
   setEndLocation,
   errors
 }: LocationComponentProps) => {
-  const [activeInput, setActiveInput] = useState<'from' | 'to' | null>(null);
+  const [activeInput, setActiveInput] = useState<'from' | 'to' | null>('from');
 
   const recentLocations: Location[] = [
     { id: '1', name: 'Nhà', address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM', type: 'favorite' },
