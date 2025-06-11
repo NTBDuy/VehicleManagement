@@ -36,6 +36,7 @@ import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
+import RequestInProgress from 'screens/request/RequestInProgress';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -104,6 +105,7 @@ function HistoryStackScreen() {
     <HistoryStack.Navigator screenOptions={{ headerShown: false }}>
       <HistoryStack.Screen name="HistoryScreen" component={HistoryRequestScreen} />
       <HistoryStack.Screen name="RequestDetail" component={RequestDetailScreen} />
+      <HistoryStack.Screen name="InProgress" component={RequestInProgress} />
     </HistoryStack.Navigator>
   );
 }

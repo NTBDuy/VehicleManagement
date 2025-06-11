@@ -3,7 +3,18 @@ import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/nativ
 import { useAuth } from 'contexts/AuthContext';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  Linking,
+  Platform,
+  RefreshControl,
+} from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
@@ -12,6 +23,7 @@ import {
   getRequestLabelEn,
   getRequestLabelEnVi,
 } from '@/utils/requestUtils';
+import ImageView from 'react-native-image-viewing';
 
 import Assignment from 'types/Assignment';
 import Request from 'types/Request';
@@ -21,6 +33,9 @@ import InfoRow from '@/components/ui/InfoRowComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
+import CheckPoint from '@/types/CheckPoint';
+import { API_CONFIG } from 'config/apiConfig';
+import ImageViewing from 'react-native-image-viewing';
 
 const RequestDetailScreen = () => {
   const route = useRoute();
@@ -38,6 +53,11 @@ const RequestDetailScreen = () => {
   const [isUsingLoading, setIsUsingLoading] = useState(false);
   const [isEndUsageLoading, setIsEndUsageLoading] = useState(false);
   const [isReminderSent, setIsReminderSent] = useState(false);
+  const [checkPoint, setCheckPoint] = useState<CheckPoint[]>([]);
+  const baseUrl = API_CONFIG.BASE_URL;
+  const [visible, setIsVisible] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string>('');
+  const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -49,6 +69,27 @@ const RequestDetailScreen = () => {
         requestData.status !== 0
       ) {
         fetchAssignmentData(requestData.requestId);
+      }
+    }, [requestData])
+  );
+
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      const data = await RequestService.getRequestDetails(requestData.requestId);
+      setRequestData(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      setAssignmentData(null);
+      if (requestData.status == 4 || requestData.status == 5) {
+        fetchCheckPoint(requestData.requestId);
       }
     }, [requestData])
   );
@@ -71,6 +112,106 @@ const RequestDetailScreen = () => {
         </Text>
       </View>
     );
+  };
+
+  const handleMapsView = (lat: number, long: number) => {
+    const scheme = Platform.select({
+      ios: 'maps:0,0?q=',
+      android: 'geo:0,0?q=',
+    });
+
+    const latLng = `${lat},${long}`;
+    const label = 'Destination';
+    const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`,
+    });
+
+    if (url) {
+      Linking.openURL(url).catch((err) => console.error('Failed to open map:', err));
+    }
+  };
+
+  const handlePhotoPress = (photo: any) => {
+    console.log('Photo pressed:', `${baseUrl}/request/files/${photo.name}`);
+    setCurrentImage(`${baseUrl}/request/files/${photo.name}`);
+    setIsVisible(true);
+  };
+
+  const renderPhotos = (item: CheckPoint) => {
+    if (!item.photos) return null;
+    console.log(`${baseUrl}/request/files/${item.photos[0].name}`);
+
+    return (
+      <View className="mb-3" key={item.checkPointId}>
+        <Text className="mb-2 text-sm font-semibold text-gray-800">
+          Hình ảnh ({item.photos.length})
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+          {item.photos.map((photo) => (
+            <TouchableOpacity
+              key={photo.photoId}
+              className="mr-2"
+              onPress={() => handlePhotoPress(photo)}>
+              <Image
+                source={{ uri: `${baseUrl}/request/files/${photo.name}` }}
+                className="h-20 w-20 rounded-lg"
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  };
+
+  const renderCheckPointItem = (item: CheckPoint, index: number) => (
+    <View
+      className={`border-gray-100 ${index == checkPoint.length - 1 ? 'pt-2' : 'border-b py-2 '}`}
+      key={item.checkPointId}>
+      <View className="mb-3 flex-row items-center justify-between">
+        <View
+          className={`rounded-full px-3 py-1.5 ${
+            item.type === 0 ? 'bg-green-500' : 'bg-orange-500'
+          }`}>
+          <Text className="text-sm font-semibold text-white">
+            {item.type === 0 ? 'Check-in' : 'Check-out'}
+          </Text>
+        </View>
+        <View className="items-end">
+          <Text className="text-base font-semibold text-gray-800">
+            {formatDatetime(item.createdAt)}
+          </Text>
+        </View>
+      </View>
+
+      <TouchableOpacity
+        className="mb-3 flex-row items-center rounded-lg bg-gray-50 p-3"
+        onPress={() => handleMapsView(item.latitude, item.longitude)}>
+        <Text className="mr-2 text-sm text-gray-600">Vị trí:</Text>
+        <Text className="flex-1 font-mono text-sm text-gray-800">
+          {item.latitude.toFixed(6)}, {item.longitude.toFixed(6)}
+        </Text>
+      </TouchableOpacity>
+
+      {item.photos.length > 0 && renderPhotos(item)}
+
+      {item.note && (
+        <View className="mb-3 rounded-lg bg-gray-50 p-3">
+          <Text className="mb-2 text-sm font-semibold text-gray-800">Ghi chú</Text>
+          <Text className="text-sm leading-5 text-gray-800">{item.note}</Text>
+        </View>
+      )}
+    </View>
+  );
+
+  const fetchCheckPoint = async (requestId: number) => {
+    try {
+      const data = await RequestService.checkPointList(requestId);
+      setCheckPoint(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleApprove = () => {
@@ -146,9 +287,7 @@ const RequestDetailScreen = () => {
               setIsUsingLoading(true);
               const response = await RequestService.usingVehicle(requestData.requestId);
               setRequestData(response);
-              showToast.success(
-                `${t('request.detail.toast.startUsingSuccess.message')}`
-              );
+              showToast.success(`${t('request.detail.toast.startUsingSuccess.message')}`);
               navigation.navigate('InProgress', { requestData });
             } catch (error) {
               console.log(error);
@@ -235,7 +374,9 @@ const RequestDetailScreen = () => {
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header title={t('request.detail.title')} backBtn />
 
-      <ScrollView className="mb-8 flex-1">
+      <ScrollView
+        className="mb-8 flex-1"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className="px-4">
           <View className="mb-4 mt-6 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-lg">
             <View className="bg-blue-50 p-6">
@@ -377,8 +518,15 @@ const RequestDetailScreen = () => {
               <InfoRow
                 label={t('request.detail.info.requestDate')}
                 value={formatDate(requestData.createdAt)}
-                isLast
+                isLast={!requestData.totalDistance}
               />
+              {requestData.totalDistance && (
+                <InfoRow
+                  label="Quãng đường đã đi"
+                  value={`${requestData.totalDistance.toString()} Km`}
+                  isLast
+                />
+              )}
             </View>
           </View>
 
@@ -403,6 +551,18 @@ const RequestDetailScreen = () => {
                   }
                   isLast
                 />
+              </View>
+            </View>
+          )}
+
+          {checkPoint.length > 0 && (
+            <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800">Trạng thái sử dụng</Text>
+              </View>
+
+              <View className="p-4">
+                {checkPoint.map((item, index) => renderCheckPointItem(item, index))}
               </View>
             </View>
           )}
@@ -516,6 +676,13 @@ const RequestDetailScreen = () => {
             </Text>
           </View>
         </View>
+
+        <ImageViewing
+          images={[{ uri: currentImage }]}
+          imageIndex={0}
+          visible={visible}
+          onRequestClose={() => setIsVisible(false)}
+        />
       </ScrollView>
 
       <ApproveModal

@@ -4,6 +4,8 @@ using VMServer.Models.DTOs;
 using VMServer.Models.Entities;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text;
 
 namespace VMServer.Controllers
 {
@@ -12,10 +14,13 @@ namespace VMServer.Controllers
     public class RequestController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        public RequestController(AppDbContext dbContext)
+        public readonly IWebHostEnvironment _environment;
+        public RequestController(AppDbContext dbContext, IWebHostEnvironment environment)
         {
             _dbContext = dbContext;
+            _environment = environment;
         }
+
         // GET: api/request
         // Lấy danh sách toàn bộ yêu cầu
         [Authorize(Roles = "Administrator, Manager")]
@@ -29,6 +34,24 @@ namespace VMServer.Controllers
                 .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
             return Ok(requests);
+        }
+
+        // GET: api/request/{requestId}
+        // Lấy yêu cầu chi tiết
+        [Authorize]
+        [HttpGet("{requestId}")]
+        public async Task<IActionResult> GetRequestDetails(int requestId)
+        {
+            var request = await _dbContext.Requests
+               .Include(r => r.User)
+               .Include(r => r.Vehicle)
+               .Include(r => r.ActionByUser)
+               .FirstOrDefaultAsync(r => r.RequestId == requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            return Ok(request);
         }
 
         // GET: api/request/{requestId}/assignment
@@ -97,6 +120,25 @@ namespace VMServer.Controllers
             await _dbContext.SaveChangesAsync();
 
             return Ok(newRequest);
+        }
+
+        // GET: api/request/{requestId}/check-point
+        // Lấy danh sách check point
+        [Authorize]
+        [HttpGet("{requestId}/check-point")]
+        public async Task<IActionResult> CheckPointList(int requestId)
+        {
+            var request = await _dbContext.Requests.FindAsync(requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            var checkPoints = await _dbContext.CheckPoints
+                .Where(c => c.RequestId == requestId)
+                .Include(c => c.Photos)
+                .ToListAsync();
+
+            return Ok(checkPoints);
         }
 
         // PUT: api/request/{requestId}/approve
@@ -290,6 +332,59 @@ namespace VMServer.Controllers
             return Ok(request);
         }
 
+        // POST: api/request/{requestId}/check-point
+        // Lưu check point
+        [Authorize]
+        [HttpPost("{requestId}/check-point")]
+        public async Task<IActionResult> CheckPoint(int requestId, [FromForm] CheckPointDTO dto)
+        {
+            var request = await _dbContext.Requests.FindAsync(requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            var isCheckIn = dto.Type == CheckPointType.CheckIn;
+            var folderPath = Path.Combine("uploads", isCheckIn ? "CheckIn" : "CheckOut", DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("MM"));
+            Directory.CreateDirectory(folderPath);
+
+            var newCheckPoint = new CheckPoint
+            {
+                RequestId = requestId,
+                Type = dto.Type,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
+                Note = dto.Note,
+                CreatedBy = dto.CreatedBy,
+            };
+
+            _dbContext.CheckPoints.Add(newCheckPoint);
+            await _dbContext.SaveChangesAsync();
+
+            foreach (var photo in dto.Photos)
+            {
+                var fileName = $"{(isCheckIn ? "CheckIn" : "CheckOut")}_{request.RequestId}_{DateTime.Now:yyyyMMdd_HHmmssfff}_{Guid.NewGuid().ToString().Substring(0, 6)}.jpg";
+                var filePath = Path.Combine(folderPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await photo.CopyToAsync(stream);
+                }
+
+                var newCheckPointPhoto = new CheckPointPhoto
+                {
+                    CheckPointId = newCheckPoint.CheckPointId,
+                    FilePath = filePath,
+                    Name = fileName
+                };
+
+                _dbContext.CheckPointPhotos.Add(newCheckPointPhoto);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Upload thành công" });
+        }
+
         // PUT: api/request/{requestId}/end-usage
         // kết thúc sử dụng phương tiện
         [Authorize]
@@ -334,6 +429,22 @@ namespace VMServer.Controllers
                 _dbContext.Notifications.Add(overdueNotification);
             }
 
+            var locations = await _dbContext.CheckPoints
+                .Where(c => c.RequestId == requestId)
+                .OrderBy(c => c.CheckPointId)
+                .Select(c => new { c.Latitude, c.Longitude })
+                .ToListAsync();
+
+            double totalDistance = 0.0;
+
+            for (int i = 1; i < locations.Count; i++)
+            {
+                totalDistance += await GetDistanceFromApiAsync(
+                    (double)locations[i - 1].Latitude, (double)locations[i - 1].Longitude,
+                    (double)locations[i].Latitude, (double)locations[i].Longitude);
+            }
+
+            request.TotalDistance = totalDistance;
             request.Vehicle.Status = Status.Available;
             request.Status = RequestStatus.Done;
             request.LastUpdateAt = DateTime.Now;
@@ -365,6 +476,98 @@ namespace VMServer.Controllers
 
             await _dbContext.SaveChangesAsync();
             return Ok(request);
+        }
+
+        [HttpGet("{requestId}/test-calculate-distance")]
+        public async Task<IActionResult> CalculateDistance(int requestId)
+        {
+            var request = await _dbContext.Requests.FindAsync(requestId);
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            var locations = await _dbContext.CheckPoints
+                .Where(c => c.RequestId == requestId)
+                .OrderBy(c => c.CheckPointId)
+                .Select(c => new { c.Latitude, c.Longitude })
+                .ToListAsync();
+
+            double totalDistance = 0.0;
+
+            for (int i = 1; i < locations.Count; i++)
+            {
+                totalDistance += await GetDistanceFromApiAsync(
+                    (double)locations[i - 1].Latitude, (double)locations[i - 1].Longitude,
+                    (double)locations[i].Latitude, (double)locations[i].Longitude);
+            }
+
+            return Ok(new { TotalDistanceInKm = totalDistance, Points = locations });
+        }
+        private async Task<double> GetDistanceFromApiAsync(double lat1, double lon1, double lat2, double lon2)
+        {
+            using var client = new HttpClient();
+
+            var requestBody = new
+            {
+                locations = new List<List<double>>
+                {
+                    new List<double> { lon1, lat1 },
+                    new List<double> { lon2, lat2 }
+                },
+                metrics = new[] { "distance" },
+                units = "km"
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+
+            client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf62482e4d450cd9e2432a8d0378563bb2f076");
+
+            var response = await client.PostAsync("https://api.openrouteservice.org/v2/matrix/driving-car", content);
+            response.EnsureSuccessStatusCode();
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<DistanceMatrixResponse>(responseContent);
+
+            return result?.distances?[0]?[1] ?? -1;
+        }
+
+
+        // private double Haversine(double lat1, double lon1, double lat2, double lon2)
+        // {
+        //     const double R = 6371;
+        //     var dLat = DegreesToRadians(lat2 - lat1);
+        //     var dLon = DegreesToRadians(lon2 - lon1);
+
+        //     var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+        //             Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
+        //             Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+        //     var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        //     return R * c;
+        // }
+
+        // private double DegreesToRadians(double degrees)
+        // {
+        //     return degrees * (Math.PI / 180);
+        // }
+
+        // GET: api/request/file/{filename}
+        // Lấy hình ảnh
+        [HttpGet("files/{fileName}")]
+        public IActionResult GetFile(string fileName)
+        {
+            string[] parts = fileName.Split('_');
+            string datePart = parts[2];
+
+            string type = parts[0];
+            string year = datePart.Substring(0, 4);
+            string month = datePart.Substring(4, 2);
+
+            var filePath = Path.Combine("uploads", type, year, month, fileName);
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, "image/jpeg");
         }
 
         // PUT: api/request/{requestId}/remind-return

@@ -33,7 +33,6 @@ namespace VMServer.Models.Entities
         [MaxLength(255)]
         public string EndLocation { get; set; } = null!;
 
-
         [Required]
         [MaxLength(255)]
         public string Purpose { get; set; } = null!;
@@ -51,6 +50,9 @@ namespace VMServer.Models.Entities
         public int? ActionBy { get; set; }
 
         public string? CancelOrRejectReason { get; set; }
+
+        [Column(TypeName = "decimal(10,2)")]
+        public double? TotalDistance { get; set; }
 
         public User? User { get; set; }
 

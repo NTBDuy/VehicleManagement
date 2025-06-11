@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250611035744_checkPointTable")]
+    partial class checkPointTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,10 +66,10 @@ namespace VMServer.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(10,6)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(10,6)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
@@ -272,9 +275,6 @@ namespace VMServer.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("TotalDistance")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -422,11 +422,13 @@ namespace VMServer.Migrations
 
             modelBuilder.Entity("VMServer.Models.Entities.CheckPointPhoto", b =>
                 {
-                    b.HasOne("VMServer.Models.Entities.CheckPoint", null)
+                    b.HasOne("VMServer.Models.Entities.CheckPoint", "CheckPoint")
                         .WithMany("Photos")
                         .HasForeignKey("CheckPointId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CheckPoint");
                 });
 
             modelBuilder.Entity("VMServer.Models.Entities.MaintenanceSchedule", b =>

@@ -11,30 +11,31 @@ import {
   faImage,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useRoute } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Alert, 
-  SafeAreaView, 
-  ScrollView, 
-  Text, 
-  TouchableOpacity, 
-  View, 
+import {
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
   Image,
   ActionSheetIOS,
-  Platform
+  Platform,
 } from 'react-native';
 import { showToast } from '@/utils/toast';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
 
 import Request from 'types/Request';
 
 import Header from '@/components/layout/HeaderComponent';
 import ErrorComponent from '@/components/ui/ErrorComponent';
 import InputField from '@/components/ui/InputFieldComponent';
+import { RequestService } from '@/services/requestService';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LocationType {
   latitude: number;
@@ -50,7 +51,9 @@ interface ImageType {
 
 const RequestInProgress = () => {
   const route = useRoute();
+  const { user } = useAuth();
   const { t } = useTranslation();
+  const navigation = useNavigation<any>();
   const { requestData: initialRequestData } = route.params as { requestData: Request };
   const [requestData, setRequestData] = useState<Request>(initialRequestData);
   const [isASameDate] = useState(initialRequestData.startTime == initialRequestData.endTime);
@@ -63,6 +66,12 @@ const RequestInProgress = () => {
   useEffect(() => {
     requestPermissions();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.getParent()?.navigate('HistoryStack');
+    }, [requestData])
+  );
 
   const requestPermissions = async () => {
     let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
@@ -87,42 +96,29 @@ const RequestInProgress = () => {
 
   const showImagePickerOptions = (isBefore: boolean) => {
     const currentImages = isBefore ? beforeImages : afterImages;
-    
+
     if (currentImages.length >= 2) {
       showToast.error('Tối đa 2 ảnh cho mỗi phần');
       return;
     }
 
-    const options = [
-      'Chụp ảnh',
-      'Chọn từ thư viện',
-      'Hủy'
-    ];
-
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options,
-          cancelButtonIndex: 2,
+          options: ['Chụp ảnh', 'Hủy'],
+          cancelButtonIndex: 1,
         },
         (buttonIndex) => {
           if (buttonIndex === 0) {
             openCamera(isBefore);
-          } else if (buttonIndex === 1) {
-            openImageLibrary(isBefore);
           }
         }
       );
     } else {
-      Alert.alert(
-        'Chọn ảnh',
-        'Bạn muốn chụp ảnh mới hay chọn từ thư viện?',
-        [
-          { text: 'Chụp ảnh', onPress: () => openCamera(isBefore) },
-          { text: 'Chọn từ thư viện', onPress: () => openImageLibrary(isBefore) },
-          { text: 'Hủy', style: 'cancel' }
-        ]
-      );
+      Alert.alert('Chụp ảnh', 'Bạn muốn chụp ảnh mới?', [
+        { text: 'Chụp ảnh', onPress: () => openCamera(isBefore) },
+        { text: 'Hủy', style: 'cancel' },
+      ]);
     }
   };
 
@@ -144,9 +140,9 @@ const RequestInProgress = () => {
         };
 
         if (isBefore) {
-          setBeforeImages(prev => [...prev, newImage]);
+          setBeforeImages((prev) => [...prev, newImage]);
         } else {
-          setAfterImages(prev => [...prev, newImage]);
+          setAfterImages((prev) => [...prev, newImage]);
         }
 
         showToast.success('Đã thêm ảnh thành công!');
@@ -157,81 +153,48 @@ const RequestInProgress = () => {
     }
   };
 
-  const openImageLibrary = async (isBefore: boolean) => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const newImage: ImageType = {
-          uri: result.assets[0].uri,
-          width: result.assets[0].width,
-          height: result.assets[0].height,
-          type: result.assets[0].type,
-        };
-
-        if (isBefore) {
-          setBeforeImages(prev => [...prev, newImage]);
-        } else {
-          setAfterImages(prev => [...prev, newImage]);
-        }
-
-        showToast.success('Đã thêm ảnh thành công!');
-      }
-    } catch (error) {
-      console.error('Image library error:', error);
-      showToast.error('Không thể chọn ảnh. Vui lòng thử lại.');
-    }
-  };
-
   const removeImage = (index: number, isBefore: boolean) => {
-    Alert.alert(
-      'Xóa ảnh',
-      'Bạn có chắc chắn muốn xóa ảnh này?',
-      [
-        { text: 'Hủy', style: 'cancel' },
-        {
-          text: 'Xóa',
-          style: 'destructive',
-          onPress: () => {
-            if (isBefore) {
-              setBeforeImages(prev => prev.filter((_, i) => i !== index));
-            } else {
-              setAfterImages(prev => prev.filter((_, i) => i !== index));
-            }
-            showToast.success('Đã xóa ảnh');
+    Alert.alert('Xóa ảnh', 'Bạn có chắc chắn muốn xóa ảnh này?', [
+      { text: 'Hủy', style: 'cancel' },
+      {
+        text: 'Xóa',
+        style: 'destructive',
+        onPress: () => {
+          if (isBefore) {
+            setBeforeImages((prev) => prev.filter((_, i) => i !== index));
+          } else {
+            setAfterImages((prev) => prev.filter((_, i) => i !== index));
           }
-        }
-      ]
-    );
+          showToast.success('Đã xóa ảnh');
+        },
+      },
+    ]);
   };
 
-  const renderImages = (images: ImageType[], isBefore: boolean) => { 
+  const renderImages = (images: ImageType[], isBefore: boolean, isSuccess: boolean) => {
     if (images.length === 0) return null;
 
     return (
-      <View className="mt-4">
-        <Text className="mb-2 text-sm font-medium text-gray-600">
+      <View className="mt-2">
+        <Text className={`mb-2 text-sm font-medium text-gray-600 ${isSuccess && 'text-center'}`}>
           Ảnh đã chọn ({images.length}/2):
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
           {images.map((image, index) => (
-            <View key={index} className="mr-3 relative mb-2">
+            <View key={index} className={`relative mb-2 ${index == 0 && 'mr-3'}`}>
               <Image
                 source={{ uri: image.uri }}
                 className="h-20 w-20 rounded-lg"
                 resizeMode="cover"
               />
-              <TouchableOpacity
-                onPress={() => removeImage(index, isBefore)}
-                className="absolute -right-2 -bottom-2 h-6 w-6 items-center justify-center rounded-full bg-red-500 shadow-sm"
-                activeOpacity={0.7}>
-                <FontAwesomeIcon icon={faTrash} size={10} color="#fff" />
-              </TouchableOpacity>
+              {!isSuccess && (
+                <TouchableOpacity
+                  onPress={() => removeImage(index, isBefore)}
+                  className="absolute -bottom-2 -right-2 h-6 w-6 items-center justify-center rounded-full bg-red-500 shadow-sm"
+                  activeOpacity={0.7}>
+                  <FontAwesomeIcon icon={faTrash} size={10} color="#fff" />
+                </TouchableOpacity>
+              )}
             </View>
           ))}
         </ScrollView>
@@ -241,11 +204,9 @@ const RequestInProgress = () => {
 
   const handleCheckIn = async () => {
     if (beforeImages.length === 0) {
-      Alert.alert(
-        'Thiếu ảnh',
-        'Vui lòng chụp ít nhất 1 ảnh xe trước khi check-in',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Thiếu ảnh', 'Vui lòng chụp ít nhất 1 ảnh xe trước khi check-in', [
+        { text: 'OK' },
+      ]);
       return;
     }
 
@@ -258,24 +219,34 @@ const RequestInProgress = () => {
 
       setCheckInLocation(newCheckInLocation);
 
-      console.log(
-        'Your location is: ' + newCheckInLocation.latitude + ' ' + newCheckInLocation.longitude
-      );
+      const formData = new FormData();
+      formData.append('type', '0');
+      formData.append('latitude', newCheckInLocation.latitude.toString());
+      formData.append('longitude', newCheckInLocation.longitude.toString());
+      formData.append('note', note || '');
+      formData.append('createdBy', user?.userId.toString() as string);
+      formData.append('createdAt', new Date().toISOString());
+      beforeImages.forEach((image, index) => {
+        formData.append('photos', {
+          uri: image.uri,
+          type: 'image/jpeg',
+          name: `checkin_${Date.now()}_${index}.jpg`,
+        } as any);
+      });
 
-      showToast.success('Check-in thành công!');
+      const success = await RequestService.checkPoint(requestData.requestId, formData);
+      if (success) showToast.success('Check-in thành công');
+      else showToast.error('Check-in thất bại');
     } catch (error) {
       console.error('Check-in error:', error);
-      showToast.error('Không thể lấy vị trí. Vui lòng thử lại.');
     }
   };
 
   const handleCheckOut = async () => {
     if (afterImages.length === 0) {
-      Alert.alert(
-        'Thiếu ảnh',
-        'Vui lòng chụp ít nhất 1 ảnh xe trước khi check-out',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Thiếu ảnh', 'Vui lòng chụp ít nhất 1 ảnh xe trước khi check-out', [
+        { text: 'OK' },
+      ]);
       return;
     }
 
@@ -288,19 +259,34 @@ const RequestInProgress = () => {
 
       setCheckOutLocation(newCheckOutLocation);
 
-      console.log(
-        'Your location is: ' + newCheckOutLocation.latitude + ' ' + newCheckOutLocation.longitude
-      );
+      const formData = new FormData();
+      formData.append('type', '1');
+      formData.append('latitude', newCheckOutLocation.latitude.toString());
+      formData.append('longitude', newCheckOutLocation.longitude.toString());
+      formData.append('note', note || '');
+      formData.append('createdBy', user?.userId.toString() as string);
+      formData.append('createdAt', new Date().toISOString());
+      beforeImages.forEach((image, index) => {
+        formData.append('photos', {
+          uri: image.uri,
+          type: 'image/jpeg',
+          name: `checkOut_${Date.now()}_${index}.jpg`,
+        } as any);
+      });
 
-      Alert.alert(
-        'Check-out thành công',
-        `Bạn đã Check-in tại ${checkInLocation?.latitude}, ${checkInLocation?.longitude} và Check-out tại ${newCheckOutLocation.latitude}, ${newCheckOutLocation.longitude}`
-      );
-
-      showToast.success('Check-out thành công!');
+      const success = await RequestService.checkPoint(requestData.requestId, formData);
+      if (success) {
+        showToast.success('Check-out thành công');
+        try {
+          const response = await RequestService.endUsageVehicle(requestData.requestId);
+          navigation.navigate('RequestDetail', { requestData: response });
+          showToast.success(`${t('request.detail.toast.endUsageSuccess.message')}`);
+        } catch (error) {
+          console.log(error);
+        }
+      } else showToast.error('Check-out thất bại');
     } catch (error) {
       console.error('Check-out error:', error);
-      showToast.error('Không thể lấy vị trí. Vui lòng thử lại.');
     }
   };
 
@@ -381,19 +367,21 @@ const RequestInProgress = () => {
                   <Text className="mb-3 text-base font-semibold text-gray-800">
                     Hình ảnh xe (trước khi sử dụng)
                   </Text>
-                  
+
                   <TouchableOpacity
                     onPress={() => showImagePickerOptions(true)}
-                    className="items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 active:border-blue-400 active:bg-blue-50"
+                    className="mb-2 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 active:border-blue-400 active:bg-blue-50"
                     activeOpacity={0.7}>
                     <FontAwesomeIcon icon={faCamera} color="#9CA3AF" size={32} />
                     <Text className="mt-3 text-base font-medium text-gray-700">
                       Chụp hoặc tải ảnh lên
                     </Text>
-                    <Text className="mt-1 text-sm text-gray-500">Tối đa 2 ảnh ({beforeImages.length}/2)</Text>
+                    <Text className="mt-1 text-sm text-gray-500">
+                      Tối đa 2 ảnh ({beforeImages.length}/2)
+                    </Text>
                   </TouchableOpacity>
-                  
-                  {renderImages(beforeImages, true)}
+
+                  {renderImages(beforeImages, true, false)}
                 </View>
 
                 <View className="border-t border-gray-100 p-4">
@@ -414,6 +402,7 @@ const RequestInProgress = () => {
                   <Text className="mt-3 text-base font-medium text-gray-700">
                     Check-in thành công
                   </Text>
+                  <View className="flex-1">{renderImages(beforeImages, true, true)}</View>
                   <Text className="mt-1 text-sm text-gray-500">
                     {checkInLocation.latitude}, {checkInLocation.longitude}
                   </Text>
@@ -423,19 +412,21 @@ const RequestInProgress = () => {
                   <Text className="mb-3 text-base font-semibold text-gray-800">
                     Hình ảnh xe (sau khi sử dụng)
                   </Text>
-                  
+
                   <TouchableOpacity
                     onPress={() => showImagePickerOptions(false)}
-                    className="items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 active:border-blue-400 active:bg-blue-50"
+                    className="mb-2 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 active:border-blue-400 active:bg-blue-50"
                     activeOpacity={0.7}>
                     <FontAwesomeIcon icon={faCamera} color="#9CA3AF" size={32} />
                     <Text className="mt-3 text-base font-medium text-gray-700">
                       Chụp hoặc tải ảnh lên
                     </Text>
-                    <Text className="mt-1 text-sm text-gray-500">Tối đa 2 ảnh ({afterImages.length}/2)</Text>
+                    <Text className="mt-1 text-sm text-gray-500">
+                      Tối đa 2 ảnh ({afterImages.length}/2)
+                    </Text>
                   </TouchableOpacity>
-                  
-                  {renderImages(afterImages, false)}
+
+                  {renderImages(afterImages, false, false)}
                 </View>
 
                 <View className="border-t border-gray-100 p-4">

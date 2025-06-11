@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250611073322_checkPointTableDecimal6")]
+    partial class checkPointTableDecimal6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,9 +274,6 @@ namespace VMServer.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("TotalDistance")
-                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");

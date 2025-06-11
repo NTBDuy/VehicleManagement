@@ -26,6 +26,7 @@ export default interface Request {
     actionBy: number;
     actionByUser: User;
     cancelOrRejectReason?: string;
+    totalDistance?: number;
     user?: User;
     vehicle?: Vehicle
 }

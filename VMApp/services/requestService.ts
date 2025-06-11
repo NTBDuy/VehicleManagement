@@ -1,11 +1,17 @@
 import { BaseApiClient } from 'services/baseApiClient';
 import Request from 'types/Request';
 import Assignment from 'types/Assignment';
+import CheckPoint from '@/types/CheckPoint';
 
 export class RequestService extends BaseApiClient {
   // Lấy tất cả yêu cầu
   static async getAllRequests(): Promise<Request[]> {
     return this.request<Request[]>('/request');
+  }
+
+  // Lấy chi tiết yêu cầu
+  static async getRequestDetails(id: number): Promise<Request> {
+    return this.request<Request>(`/request/${id}`);
   }
 
   // Lấy thông tin gán định tài xế
@@ -44,6 +50,22 @@ export class RequestService extends BaseApiClient {
     });
   }
 
+  // Check-in
+  static async checkPoint(id: number, formData: any): Promise<boolean> {
+    try {
+      await this.request<void>(`/request/${id}/check-point`, {
+        method: 'POST',
+        body: formData,
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static async checkPointList(id: number): Promise<CheckPoint[]> {
+    return this.request<CheckPoint[]>(`/request/${id}/check-point`);
+  }
   // End usage vehicle
   static async endUsageVehicle(id: number): Promise<Request> {
     return this.request<Request>(`/request/${id}/end-usage`, {
@@ -54,7 +76,7 @@ export class RequestService extends BaseApiClient {
   static async remindVehicle(id: number): Promise<void> {
     return this.request<void>(`/request/${id}/remind-return`, {
       method: 'PUT',
-    })
+    });
   }
 
   // Từ chối yêu cầu

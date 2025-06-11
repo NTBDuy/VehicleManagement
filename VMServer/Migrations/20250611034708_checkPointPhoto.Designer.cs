@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250611034708_checkPointPhoto")]
+    partial class checkPointPhoto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,66 +49,6 @@ namespace VMServer.Migrations
                     b.HasIndex("RequestId");
 
                     b.ToTable("Assignments");
-                });
-
-            modelBuilder.Entity("VMServer.Models.Entities.CheckPoint", b =>
-                {
-                    b.Property<int>("CheckPointId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CheckPointId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(10,6)");
-
-                    b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(10,6)");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RequestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("CheckPointId");
-
-                    b.ToTable("CheckPoints");
-                });
-
-            modelBuilder.Entity("VMServer.Models.Entities.CheckPointPhoto", b =>
-                {
-                    b.Property<int>("PhotoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PhotoId"));
-
-                    b.Property<int>("CheckPointId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PhotoId");
-
-                    b.HasIndex("CheckPointId");
-
-                    b.ToTable("CheckPointPhotos");
                 });
 
             modelBuilder.Entity("VMServer.Models.Entities.Driver", b =>
@@ -272,9 +215,6 @@ namespace VMServer.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("TotalDistance")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -420,15 +360,6 @@ namespace VMServer.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("VMServer.Models.Entities.CheckPointPhoto", b =>
-                {
-                    b.HasOne("VMServer.Models.Entities.CheckPoint", null)
-                        .WithMany("Photos")
-                        .HasForeignKey("CheckPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("VMServer.Models.Entities.MaintenanceSchedule", b =>
                 {
                     b.HasOne("VMServer.Models.Entities.Vehicle", "Vehicle")
@@ -474,11 +405,6 @@ namespace VMServer.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("VMServer.Models.Entities.CheckPoint", b =>
-                {
-                    b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
         }

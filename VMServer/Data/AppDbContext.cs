@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<MaintenanceSchedule> MaintenanceSchedules { get; set; }
     public DbSet<Driver> Drivers { get; set; }
     public DbSet<Assignment> Assignments { get; set; }
+    public DbSet<CheckPoint> CheckPoints { get; set; }
+    public DbSet<CheckPointPhoto> CheckPointPhotos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

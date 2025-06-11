@@ -8,7 +8,7 @@ const STATUS_CONFIG: Record<StatusNumber, StatusConfig> = {
   2: { labelEn: 'Rejected', labelVi: 'Đã từ chối', color: 'red-600' },
   3: { labelEn: 'Cancelled', labelVi: 'Đã huỷ', color: 'slate-600' },
   4: { labelEn: 'In Progress', labelVi: 'Đang sử dụng', color: 'blue-600' },
-  5: { labelEn: 'Done', labelVi: 'Hoàn thành', color: 'green-700' },
+  5: { labelEn: 'Done', labelVi: 'Hoàn thành', color: 'green-600' },
 };
 
 const DEFAULT_CONFIG: StatusConfig = {
