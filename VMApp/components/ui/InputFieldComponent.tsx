@@ -1,4 +1,4 @@
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, Pressable } from 'react-native';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,6 +16,7 @@ interface InputFieldProps {
   numberOfLines?: number;
   rightIcon?: ReactNode;
   onFocus?: () => void;
+  onPress?: () => void;
 }
 
 const InputField = ({
@@ -32,6 +33,7 @@ const InputField = ({
   numberOfLines,
   rightIcon,
   onFocus,
+  onPress,
 }: InputFieldProps) => {
   const { t } = useTranslation();
 
@@ -79,7 +81,9 @@ const InputField = ({
           value={keyboardType === 'decimal-pad' ? inputValue : value?.toString()}
           onChangeText={handleChangeText}
           keyboardType={keyboardType}
-          placeholder={placeholder || `${t('common.fields.enter')} ${label && label!.toLowerCase()}`}
+          placeholder={
+            placeholder || `${t('common.fields.enter')} ${label && label!.toLowerCase()}`
+          }
           placeholderTextColor="#A0AEC0"
           secureTextEntry={secureTextEntry}
           editable={editable}
@@ -87,6 +91,7 @@ const InputField = ({
           multiline={multiline}
           numberOfLines={numberOfLines}
           onFocus={onFocus}
+          onPress={onPress}
         />
 
         {rightIcon && (

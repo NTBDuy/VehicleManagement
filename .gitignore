@@ -97,3 +97,6 @@ _ReSharper*/
 
 # Dotnet environment config
 .env
+
+# Upload images folder 
+VMServer/uploads/

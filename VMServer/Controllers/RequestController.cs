@@ -15,10 +15,14 @@ namespace VMServer.Controllers
     {
         private readonly AppDbContext _dbContext;
         public readonly IWebHostEnvironment _environment;
-        public RequestController(AppDbContext dbContext, IWebHostEnvironment environment)
+        private readonly string _apiKey;
+
+        public RequestController(AppDbContext dbContext, IWebHostEnvironment environment, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _environment = environment;
+            _apiKey = configuration["OpenRouteService:ApiKey"]
+                ?? throw new InvalidOperationException("Missing OpenRouteService API key in configuration.");
         }
 
         // GET: api/request
@@ -502,6 +506,7 @@ namespace VMServer.Controllers
 
             return Ok(new { TotalDistanceInKm = totalDistance, Points = locations });
         }
+
         private async Task<double> GetDistanceFromApiAsync(double lat1, double lon1, double lat2, double lon2)
         {
             using var client = new HttpClient();
@@ -519,7 +524,7 @@ namespace VMServer.Controllers
 
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
 
-            client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf62482e4d450cd9e2432a8d0378563bb2f076");
+            client.DefaultRequestHeaders.Add("Authorization", _apiKey);
 
             var response = await client.PostAsync("https://api.openrouteservice.org/v2/matrix/driving-car", content);
             response.EnsureSuccessStatusCode();
@@ -529,26 +534,6 @@ namespace VMServer.Controllers
 
             return result?.distances?[0]?[1] ?? -1;
         }
-
-
-        // private double Haversine(double lat1, double lon1, double lat2, double lon2)
-        // {
-        //     const double R = 6371;
-        //     var dLat = DegreesToRadians(lat2 - lat1);
-        //     var dLon = DegreesToRadians(lon2 - lon1);
-
-        //     var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-        //             Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
-        //             Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-
-        //     var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-        //     return R * c;
-        // }
-
-        // private double DegreesToRadians(double degrees)
-        // {
-        //     return degrees * (Math.PI / 180);
-        // }
 
         // GET: api/request/file/{filename}
         // Lấy hình ảnh

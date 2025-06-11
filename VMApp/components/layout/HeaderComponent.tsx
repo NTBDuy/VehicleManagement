@@ -14,6 +14,8 @@ interface HeaderProps {
   handleSearch?: any;
   placeholder?: string;
   handleClearFilters?: any;
+  isHiddenLeftComponent?: boolean;
+  isOverlay?: boolean;
 }
 
 const Header = ({
@@ -26,34 +28,44 @@ const Header = ({
   handleSearch,
   placeholder,
   handleClearFilters,
+  isHiddenLeftComponent,
+  isOverlay = false,
 }: HeaderProps) => {
   const navigation = useNavigation();
 
   return (
-    <View className="-mt-20 overflow-hidden rounded-b-[40px] bg-blue-300 shadow-md">
-      <View className="flex-row items-start justify-between px-6 pt-20 mt-10 mb-6">
-        {backBtn ? (
-          <TouchableOpacity onPress={() => navigation.goBack()} className="p-2 bg-white rounded-full">
-            <FontAwesomeIcon icon={faArrowLeft} size={18} />
-          </TouchableOpacity>
+    <View className={`${isOverlay ? '-mt-8' : '-mt-24'} overflow-hidden rounded-b-[40px] bg-blue-300 shadow-md`}>
+      <View className="mb-6 mt-10 flex-row items-start justify-between px-6 pt-20">
+        {!isHiddenLeftComponent ? (
+          <View>
+            {backBtn ? (
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                className="rounded-full bg-white p-2">
+                <FontAwesomeIcon icon={faArrowLeft} size={18} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+                className="rounded-full bg-white p-2">
+                <FontAwesomeIcon icon={faBars} size={18} />
+              </TouchableOpacity>
+            )}
+          </View>
         ) : (
-          <TouchableOpacity
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            className="p-2 bg-white rounded-full">
-            <FontAwesomeIcon icon={faBars} size={18} />
-          </TouchableOpacity>
+          <View className="w-8"></View>
         )}
 
-        {customTitle ? customTitle : <Text className="text-2xl font-bold">{title}</Text>}
+        {customTitle ? customTitle : <Text className="text-2xl font-bold text-white">{title}</Text>}
 
         {rightElement ? rightElement : <View className="w-8"></View>}
       </View>
 
       {searchSection && (
-        <View className="flex-row items-center px-4 py-3 mx-4 mb-6 rounded-full bg-white/40 ">
+        <View className="mx-4 mb-6 flex-row items-center rounded-full bg-white/40 px-4 py-3">
           <FontAwesomeIcon icon={faMagnifyingGlass} size={16} color="#000" />
           <TextInput
-            className="flex-1 ml-3 "
+            className="ml-3 flex-1"
             placeholder={placeholder}
             placeholderTextColor="gray"
             value={searchQuery}
