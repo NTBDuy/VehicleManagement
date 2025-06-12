@@ -300,8 +300,8 @@
         "label": {
           "time": "Thời gian",
           "vehicle": "Phương tiện",
-          "startLocation": "Điểm đi",
-          "endLocation": "Điểm đến",
+          "startLocation": "Điểm xuất phát",
+          "endLocation": "Điểm kết thúc",
           "detailedPurpose": "Mục đích chi tiết"
         },
         "placeholder": {
@@ -360,8 +360,8 @@
         "section": "Thông tin yêu cầu",
         "requestBy": "Yêu cầu bởi",
         "dateRange": "Khoảng thời gian",
-        "startLocation": "Điểm đi",
-        "endLocation": "Điểm đến",
+        "startLocation": "Điểm xuất phát",
+        "endLocation": "Điểm kết thúc",
         "vehicle": "Phương tiện",
         "driverRequired": "Cần tài xế",
         "driverAssign": "Phân công tài xế",

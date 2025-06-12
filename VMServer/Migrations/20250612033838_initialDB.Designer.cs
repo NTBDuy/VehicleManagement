@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250611074240_totalDistance")]
-    partial class totalDistance
+    [Migration("20250612033838_initialDB")]
+    partial class initialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -295,6 +295,47 @@ namespace VMServer.Migrations
                     b.ToTable("Requests");
                 });
 
+            modelBuilder.Entity("VMServer.Models.Entities.RequestLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("decimal(10,6)");
+
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("decimal(10,6)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.ToTable("RequestLocations");
+                });
+
             modelBuilder.Entity("VMServer.Models.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -479,9 +520,23 @@ namespace VMServer.Migrations
                     b.Navigation("Vehicle");
                 });
 
+            modelBuilder.Entity("VMServer.Models.Entities.RequestLocation", b =>
+                {
+                    b.HasOne("VMServer.Models.Entities.Request", null)
+                        .WithMany("Locations")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("VMServer.Models.Entities.CheckPoint", b =>
                 {
                     b.Navigation("Photos");
+                });
+
+            modelBuilder.Entity("VMServer.Models.Entities.Request", b =>
+                {
+                    b.Navigation("Locations");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,5 +10,6 @@ namespace VMServer.Models.DTOs
         public required string EndLocation { get; set; }
         public required string Purpose { get; set; }
         public bool IsDriverRequired { get; set; }
+        public List<RequestLocationDTO>? Locations { get; set; }
     }
 }

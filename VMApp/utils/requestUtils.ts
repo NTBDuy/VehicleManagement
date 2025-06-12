@@ -36,3 +36,9 @@ export const getRequestLabelEnVi = (status: number): string => {
   const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
   return config.labelVi;
 };
+
+export const getLocationLabel = (order: number, locationsLength: number) => {
+  if (order === 0) return 'Điểm xuất phát';
+  if (order === locationsLength - 1) return 'Điểm kết thúc';
+  return `Điểm dừng ${order}`;
+};

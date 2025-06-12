@@ -145,6 +145,7 @@ const RequestHistoryScreen = () => {
           />
         </View>
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={filteredRequest}
           renderItem={renderRequestItem}
           ListEmptyComponent={<EmptyList title={t('common.noData.requestHistory')} />}

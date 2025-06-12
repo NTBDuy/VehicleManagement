@@ -6,11 +6,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VMServer.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class initialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "CheckPoints",
+                columns: table => new
+                {
+                    CheckPointId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestId = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Latitude = table.Column<decimal>(type: "decimal(10,6)", nullable: false),
+                    Longitude = table.Column<decimal>(type: "decimal(10,6)", nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CheckPoints", x => x.CheckPointId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Drivers",
                 columns: table => new
@@ -73,6 +92,27 @@ namespace VMServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vehicles", x => x.VehicleId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CheckPointPhotos",
+                columns: table => new
+                {
+                    PhotoId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CheckPointId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CheckPointPhotos", x => x.PhotoId);
+                    table.ForeignKey(
+                        name: "FK_CheckPointPhotos_CheckPoints_CheckPointId",
+                        column: x => x.CheckPointId,
+                        principalTable: "CheckPoints",
+                        principalColumn: "CheckPointId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -141,7 +181,8 @@ namespace VMServer.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastUpdateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ActionBy = table.Column<int>(type: "int", nullable: true),
-                    CancelOrRejectReason = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CancelOrRejectReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalDistance = table.Column<decimal>(type: "decimal(10,2)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -192,6 +233,31 @@ namespace VMServer.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RequestLocations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Latitude = table.Column<decimal>(type: "decimal(10,6)", nullable: false),
+                    Longitude = table.Column<decimal>(type: "decimal(10,6)", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestLocations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RequestLocations_Requests_RequestId",
+                        column: x => x.RequestId,
+                        principalTable: "Requests",
+                        principalColumn: "RequestId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Assignments_DriverId",
                 table: "Assignments",
@@ -201,6 +267,11 @@ namespace VMServer.Migrations
                 name: "IX_Assignments_RequestId",
                 table: "Assignments",
                 column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CheckPointPhotos_CheckPointId",
+                table: "CheckPointPhotos",
+                column: "CheckPointId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Drivers_LicenseNumber",
@@ -217,6 +288,11 @@ namespace VMServer.Migrations
                 name: "IX_Notifications_UserId",
                 table: "Notifications",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestLocations_RequestId",
+                table: "RequestLocations",
+                column: "RequestId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Requests_ActionBy",
@@ -259,13 +335,22 @@ namespace VMServer.Migrations
                 name: "Assignments");
 
             migrationBuilder.DropTable(
+                name: "CheckPointPhotos");
+
+            migrationBuilder.DropTable(
                 name: "MaintenanceSchedules");
 
             migrationBuilder.DropTable(
                 name: "Notifications");
 
             migrationBuilder.DropTable(
+                name: "RequestLocations");
+
+            migrationBuilder.DropTable(
                 name: "Drivers");
+
+            migrationBuilder.DropTable(
+                name: "CheckPoints");
 
             migrationBuilder.DropTable(
                 name: "Requests");

@@ -35,6 +35,7 @@ namespace VMServer.Controllers
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
                 .Include(r => r.ActionByUser)
+                .Include(r => r.Locations)
                 .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
             return Ok(requests);
@@ -50,6 +51,7 @@ namespace VMServer.Controllers
                .Include(r => r.User)
                .Include(r => r.Vehicle)
                .Include(r => r.ActionByUser)
+                .Include(r => r.Locations)
                .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)
@@ -85,6 +87,9 @@ namespace VMServer.Controllers
         [HttpPost]
         public async Task<IActionResult> NewRequest([FromBody] CreateNewRequestDTO dto)
         {
+            if (dto == null || dto.Locations == null)
+                return BadRequest(new { message = "No data provided. Please check again!" });
+
             var user = await _dbContext.Users.FindAsync(dto.UserId);
             if (user == null)
                 return NotFound(new { message = "User not found with id ", dto.UserId });
@@ -123,6 +128,22 @@ namespace VMServer.Controllers
             _dbContext.Requests.Add(newRequest);
             await _dbContext.SaveChangesAsync();
 
+            foreach (var location in dto.Locations)
+            {
+                var newRequestLocation = new RequestLocation
+                {
+                    RequestId = newRequest.RequestId,
+                    Name = location.Name,
+                    Address = location.Address,
+                    Note = location.Note,
+                    Latitude = location.Latitude,
+                    Longitude = location.Longitude,
+                    Order = location.Order
+                };
+
+                _dbContext.RequestLocations.Add(newRequestLocation);
+            }
+            await _dbContext.SaveChangesAsync();
             return Ok(newRequest);
         }
 
@@ -155,6 +176,7 @@ namespace VMServer.Controllers
                 .Include(r => r.User)
                 .Include(r => r.ActionByUser)
                 .Include(r => r.Vehicle)
+                .Include(r => r.Locations)
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)
@@ -213,6 +235,7 @@ namespace VMServer.Controllers
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
                 .Include(r => r.ActionByUser)
+                .Include(r => r.Locations)
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)
@@ -257,6 +280,7 @@ namespace VMServer.Controllers
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
                 .Include(r => r.ActionByUser)
+                .Include(r => r.Locations)
                 .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)
@@ -300,6 +324,7 @@ namespace VMServer.Controllers
                .Include(r => r.User)
                .Include(r => r.Vehicle)
                .Include(r => r.ActionByUser)
+                .Include(r => r.Locations)
                .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)
@@ -399,6 +424,7 @@ namespace VMServer.Controllers
                .Include(r => r.User)
                .Include(r => r.Vehicle)
                .Include(r => r.ActionByUser)
+                .Include(r => r.Locations)
                .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)

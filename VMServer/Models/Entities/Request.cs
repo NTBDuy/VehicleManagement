@@ -59,5 +59,7 @@ namespace VMServer.Models.Entities
         public User? ActionByUser { get; set; }
 
         public Vehicle? Vehicle { get; set; }
+
+        public List<RequestLocation> Locations { get; set; } = new();
     }
 }

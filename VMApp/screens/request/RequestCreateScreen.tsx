@@ -29,6 +29,15 @@ interface validateError {
   purpose: string;
 }
 
+interface locationType {
+  name: string;
+  address: string;
+  note: string;
+  latitude: number;
+  longitude: number;
+  order: number;
+}
+
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
@@ -46,6 +55,9 @@ const RequestCreateScreen = () => {
   const [startLocation, setStartLocation] = useState('');
   const [endLocation, setEndLocation] = useState('');
   const [errors, setErrors] = useState<Partial<validateError>>({});
+  const [locations, setLocations] = useState<locationType[]>([]);
+  const [estimatedTotalDistance, setEstimatedTotalDistance] = useState(0);
+
 
   const tabs = [
     { id: 0, title: t('request.create.tabs.time'), icon: faCalendarDays },
@@ -102,7 +114,11 @@ const RequestCreateScreen = () => {
       setStartLocation={setStartLocation}
       endLocation={endLocation}
       setEndLocation={setEndLocation}
+      setLocations={setLocations}
+      locations={locations}
       errors={errors}
+      estimatedTotalDistance={estimatedTotalDistance}
+      setEstimatedTotalDistance={setEstimatedTotalDistance}
     />
   );
 
@@ -118,6 +134,8 @@ const RequestCreateScreen = () => {
       isAssignDriver={isAssignDriver}
       setIsAssignDriver={setIsAssignDriver}
       errors={errors.purpose || ''}
+      locations={locations}
+      estimatedTotalDistance={estimatedTotalDistance}
     />
   );
 
@@ -188,7 +206,10 @@ const RequestCreateScreen = () => {
         endTime: isMultiDayTrip ? endDate : startDate,
         purpose: purpose,
         isDriverRequired: isAssignDriver,
+        locations: locations,
       };
+      console.log('Request Data:', JSON.stringify(requestDTO, null, 2));
+
       const response = await RequestService.createRequest(requestDTO);
       if (response) {
         showToast.success(
@@ -206,8 +227,8 @@ const RequestCreateScreen = () => {
     } catch (error) {
       console.error('Reservation error:', error);
       showToast.error(
-        `${t('request.create.toast.requestError.title')}`,
-        `${t('request.create.toast.requestError.message')}`
+        `${t('common.error.title')}`,
+        `${t('common.error.generic')}`
       );
     } finally {
       setIsLoading(false);
@@ -273,7 +294,7 @@ const RequestCreateScreen = () => {
         {activeTab === 0 && (
           <TouchableOpacity
             className={`mt-4 w-full py-4 ${isDisabled && !isLoading ? 'bg-gray-400' : 'bg-blue-400 '} rounded-2xl `}
-            // disabled={isDisabled && !isLoading}
+            disabled={isDisabled && !isLoading}
             onPress={fetchAvailableVehicle}>
             <Text className="text-center text-lg font-bold text-white">
               {isLoading ? `${t('common.button.loading')}` : `${t('common.button.next')}`}

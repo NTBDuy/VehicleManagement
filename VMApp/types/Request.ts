@@ -1,5 +1,6 @@
 import User from "types/User";
 import Vehicle from "types/Vehicle";
+import { LocationType } from "@/types/Location";
 
 export enum Status {
     Pending = 0,
@@ -28,5 +29,6 @@ export default interface Request {
     cancelOrRejectReason?: string;
     totalDistance?: number;
     user?: User;
-    vehicle?: Vehicle
+    vehicle?: Vehicle,
+    locations: LocationType[],
 }

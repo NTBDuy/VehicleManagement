@@ -14,11 +14,13 @@ import {
   Linking,
   Platform,
   RefreshControl,
+  Pressable,
 } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
 import {
+  getLocationLabel,
   getRequestBackgroundColor,
   getRequestLabelEn,
   getRequestLabelEnVi,
@@ -130,6 +132,10 @@ const RequestDetailScreen = () => {
     if (url) {
       Linking.openURL(url).catch((err) => console.error('Failed to open map:', err));
     }
+  };
+
+  const handleCall = (phone: number) => {
+    if (phone) Linking.openURL(`tel:${phone}`);
   };
 
   const handlePhotoPress = (photo: any) => {
@@ -471,6 +477,17 @@ const RequestDetailScreen = () => {
                 value={requestData.user?.fullName || t('common.fields.noInfo')}
               />
               <InfoRow
+                label="Số điện thoại"
+                value=""
+                valueComponent={
+                  <Pressable onPress={() => handleCall(Number(requestData.user?.phoneNumber))}>
+                    <Text className="text-right font-semibold text-gray-800">
+                      {requestData.user?.phoneNumber || t('common.fields.noInfo')}
+                    </Text>
+                  </Pressable>
+                }
+              />
+              <InfoRow
                 label={
                   !isASameDate
                     ? `${t('request.detail.info.dateRange')}`
@@ -485,14 +502,29 @@ const RequestDetailScreen = () => {
                   </Text>
                 }
               />
-              <InfoRow
-                label={t('request.detail.info.startLocation')}
-                value={requestData.startLocation || t('common.fields.noInfo')}
-              />
-              <InfoRow
-                label={t('request.detail.info.endLocation')}
-                value={requestData.endLocation || t('common.fields.noInfo')}
-              />
+              {requestData.locations.map((item) => (
+                <InfoRow
+                  key={item.id}
+                  label={getLocationLabel(item.order, requestData.locations.length)}
+                  value=""
+                  valueComponent={
+                    <Pressable
+                      className="max-w-[60%]"
+                      onPress={() => handleMapsView(item.latitude, item.longitude)}>
+                      <Text className="text-right font-semibold text-gray-800">
+                        {item.address}{' '}
+                        {item.note ? (
+                          <Text className="font-normal italic text-gray-500">
+                            {`\n`} {item.note}
+                          </Text>
+                        ) : (
+                          ''
+                        )}
+                      </Text>
+                    </Pressable>
+                  }
+                />
+              ))}
               <InfoRow
                 label={t('request.detail.info.vehicle')}
                 value=""

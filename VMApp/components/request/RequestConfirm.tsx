@@ -8,9 +8,15 @@ import Vehicle from 'types/Vehicle';
 import InfoRow from '@/components/ui/InfoRowComponent';
 import InputField from '@/components/ui/InputFieldComponent';
 import { useTranslation } from 'react-i18next';
+import { getLocationLabel } from '@/utils/requestUtils';
 
-interface validateError {
-  purpose: string;
+interface locationType {
+  name: string;
+  address: string;
+  note: string;
+  latitude: number;
+  longitude: number;
+  order: number;
 }
 
 interface ConfirmComponentProps {
@@ -23,7 +29,9 @@ interface ConfirmComponentProps {
   setPurpose: (value: string) => void;
   isAssignDriver: boolean;
   setIsAssignDriver: (value: boolean) => void;
-  errors: string
+  errors: string;
+  locations: locationType[];
+  estimatedTotalDistance: number;
 }
 
 const RequestConfirm = ({
@@ -36,7 +44,9 @@ const RequestConfirm = ({
   setPurpose,
   isAssignDriver,
   setIsAssignDriver,
-  errors
+  errors,
+  locations,
+  estimatedTotalDistance,
 }: ConfirmComponentProps) => {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language;
@@ -45,7 +55,7 @@ const RequestConfirm = ({
   const toggleSwitchDriver = () => setIsAssignDriver(!isAssignDriver);
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <View>
         <View className="rounded-2xl bg-white">
           <View className="bg-gray-50 px-4 pb-3">
@@ -74,27 +84,48 @@ const RequestConfirm = ({
                 </Text>
               }
             />
+            {locations.map((item) => (
+              <InfoRow
+                key={item.order}
+                label={getLocationLabel(item.order, locations.length)}
+                value=""
+                valueComponent={
+                  <Text className="max-w-[60%] text-right font-semibold text-gray-800">
+                    {item.address}{' '}
+                    {item.note ? (
+                      <Text className="font-normal italic text-gray-500">
+                        {`\n`} {item.note}
+                      </Text>
+                    ) : (
+                      ''
+                    )}
+                  </Text>
+                }
+              />
+            ))}
             <InfoRow
-              label={t('request.create.confirm.label.startLocation')}
+              label="Khoảng cách dự kiến"
               value=""
               valueComponent={
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                  {startLocation}
-                </Text>
-              }
-            />
-            <InfoRow
-              label={t('request.create.confirm.label.endLocation')}
-              value=""
-              valueComponent={
-                <Text className="max-w-[60%] text-right font-semibold text-gray-800">
-                  {endLocation}
+                  {estimatedTotalDistance} Km
                 </Text>
               }
               isLast
             />
           </View>
         </View>
+
+        <View className="mt-4 rounded-xl bg-blue-50 p-4">
+          <Text className="mb-1 text-sm font-medium text-blue-900">Lưu ý:</Text>
+          <Text className="text-sm text-blue-700">
+            • Khoảng cách dự kiến được tính bằng tổng khoảng cách đường thẳng giữa các điểm dừng
+            theo thứ tự hành trình (ví dụ: A → B → C). Con số này chỉ mang tính tham khảo và có thể
+            khác với khoảng cách thực tế di chuyển. Hệ thống sẽ tính lại khoảng cách thực tế sau khi
+            hoàn tất chuyến đi.
+          </Text>
+        </View>
+
         <View className="mt-4 rounded-2xl bg-white">
           <View className="bg-gray-50 px-4 pb-3">
             <Text className="text-lg font-semibold text-gray-800">

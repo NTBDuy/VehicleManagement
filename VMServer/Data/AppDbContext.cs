@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Request> Requests { get; set; }
+    public DbSet<RequestLocation> RequestLocations { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<MaintenanceSchedule> MaintenanceSchedules { get; set; }
     public DbSet<Driver> Drivers { get; set; }
