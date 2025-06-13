@@ -18,7 +18,6 @@ import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 import HistoryRequestScreen from 'screens/request/RequestHistoryScreen';
 import RequestInProgress from 'screens/request/RequestInProgress';
-import FindLocationScreen from '@/screens/request/FindLocationScreen';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -45,7 +44,6 @@ function NewRequestStackScreen() {
   return (
     <NewRequestStack.Navigator screenOptions={{ headerShown: false }}>
       <NewRequestStack.Screen name="NewRequest" component={NewRequest} />
-      <NewRequestStack.Screen name="FindLocation" component={FindLocationScreen} />
     </NewRequestStack.Navigator>
   );
 }

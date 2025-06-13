@@ -1,4 +1,3 @@
-import React from 'react';
 import { Switch, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { formatDayMonthEn, formatDayMonthVi } from 'utils/datetimeUtils';
@@ -7,38 +6,26 @@ import Vehicle from 'types/Vehicle';
 
 import InfoRow from '@/components/ui/InfoRowComponent';
 import InputField from '@/components/ui/InputFieldComponent';
-import { useTranslation } from 'react-i18next';
 import { getLocationLabel } from '@/utils/requestUtils';
-
-interface locationType {
-  name: string;
-  address: string;
-  note: string;
-  latitude: number;
-  longitude: number;
-  order: number;
-}
+import { useTranslation } from 'react-i18next';
+import { LocationType } from '@/types/Location';
 
 interface ConfirmComponentProps {
   startDate: string;
   endDate: string;
-  startLocation: string;
-  endLocation: string;
   selectedVehicle: Vehicle | undefined;
   purpose: string;
   setPurpose: (value: string) => void;
   isAssignDriver: boolean;
   setIsAssignDriver: (value: boolean) => void;
   errors: string;
-  locations: locationType[];
+  locations: LocationType[];
   estimatedTotalDistance: number;
 }
 
 const RequestConfirm = ({
   startDate,
   endDate,
-  startLocation,
-  endLocation,
   selectedVehicle,
   purpose,
   setPurpose,

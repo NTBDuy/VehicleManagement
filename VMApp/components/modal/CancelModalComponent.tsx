@@ -47,7 +47,7 @@ const CancelModal = ({ visible, onClose, onCancel }: CancelModalProps) => {
     setIsCancel(true);
     try {
       await onCancel(reason.trim());
-      showToast.success(`${t('common.success.title')}`, 'Request cancel successfully');
+      showToast.success(`${t('common.success.title')}`, `${t('common.success.cancel')}`);
       setReason('');
       onClose();
     } catch (error) {

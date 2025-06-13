@@ -15,7 +15,5 @@ namespace VMServer.Models.Entities
         public string Name { get; set; } = null!;
         
         public string FilePath { get; set; } = null!;
-
-        // public virtual CheckPoint? CheckPoint { get; set; }
     }
 }

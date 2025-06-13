@@ -27,14 +27,6 @@ namespace VMServer.Models.Entities
 
         [Required]
         [MaxLength(255)]
-        public string StartLocation { get; set; } = null!;
-
-        [Required]
-        [MaxLength(255)]
-        public string EndLocation { get; set; } = null!;
-
-        [Required]
-        [MaxLength(255)]
         public string Purpose { get; set; } = null!;
 
         [Required]

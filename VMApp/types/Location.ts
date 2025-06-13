@@ -1,6 +1,6 @@
 export interface LocationType {
-  id: number;
-  requestId: number;
+  id?: number;
+  requestId?: number;
   name?: string;
   address: string;
   note?: string;

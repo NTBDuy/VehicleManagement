@@ -22,20 +22,12 @@ import RequestConfirm from '@/components/request/RequestConfirm';
 import RequestDatePicker from '@/components/request/RequestDatePicker';
 import RequestDestination from '@/components/request/RequestDestination';
 import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
+import { LocationType } from '@/types/Location';
 
 interface validateError {
   startLocation: string;
   endLocation: string;
   purpose: string;
-}
-
-interface locationType {
-  name: string;
-  address: string;
-  note: string;
-  latitude: number;
-  longitude: number;
-  order: number;
 }
 
 const RequestCreateScreen = () => {
@@ -55,9 +47,8 @@ const RequestCreateScreen = () => {
   const [startLocation, setStartLocation] = useState('');
   const [endLocation, setEndLocation] = useState('');
   const [errors, setErrors] = useState<Partial<validateError>>({});
-  const [locations, setLocations] = useState<locationType[]>([]);
+  const [locations, setLocations] = useState<LocationType[]>([]);
   const [estimatedTotalDistance, setEstimatedTotalDistance] = useState(0);
-
 
   const tabs = [
     { id: 0, title: t('request.create.tabs.time'), icon: faCalendarDays },
@@ -126,8 +117,6 @@ const RequestCreateScreen = () => {
     <RequestConfirm
       startDate={startDate}
       endDate={endDate}
-      startLocation={startLocation}
-      endLocation={endLocation}
       selectedVehicle={selectedVehicle}
       purpose={purpose}
       setPurpose={setPurpose}
@@ -183,6 +172,10 @@ const RequestCreateScreen = () => {
 
     if (purpose.trim() === '') {
       newErrors.purpose = t('validate.required.purpose');
+      showToast.error(
+        `${t('request.create.toast.vehicleRequired.title')}`,
+        `${t('request.create.toast.vehicleRequired.message')}`
+      );
     }
 
     setErrors(newErrors);
@@ -226,10 +219,7 @@ const RequestCreateScreen = () => {
       }
     } catch (error) {
       console.error('Reservation error:', error);
-      showToast.error(
-        `${t('common.error.title')}`,
-        `${t('common.error.generic')}`
-      );
+      showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
     } finally {
       setIsLoading(false);
     }
@@ -237,13 +227,15 @@ const RequestCreateScreen = () => {
 
   const clearContent = () => {
     setActiveTab(0);
-    setSelectedVehicle(undefined);
-    setPurpose('');
+    setIsMultiDayTrip(false);
     setStartDate(new Date().toISOString().split('T')[0]);
     setEndDate(new Date().toISOString().split('T')[0]);
+    setSelectedVehicle(undefined);
+    setLocations([]);
     setStartLocation('');
     setEndLocation('');
-    setIsMultiDayTrip(false);
+    setEstimatedTotalDistance(0);
+    setPurpose('');
     setIsDisabled(true);
   };
 

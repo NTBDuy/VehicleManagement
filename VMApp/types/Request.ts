@@ -17,8 +17,6 @@ export default interface Request {
     vehicleId: number;
     startTime: string;
     endTime: string;
-    startLocation?: string;
-    endLocation?: string;
     purpose: string;
     status: Status;
     isDriverRequired: boolean;

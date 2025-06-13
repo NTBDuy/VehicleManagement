@@ -143,7 +143,9 @@
       "beginMaintenance": "Bảo trì đã được bắt đầu",
       "completeMaintenance": "Bảo trì đã được hoàn tất",
       "login": "Chào mừng {{user}}",
-      "logout": "Bạn đã đăng xuất. Hẹn gặp lại bạn sớm!"
+      "logout": "Bạn đã đăng xuất. Hẹn gặp lại bạn sớm!",
+      "cancel": "Hủy yêu cầu thành công",
+      "reject": "Từ chối yêu cầu thành công"
     },
     "error": {
       "title": "Lỗi",

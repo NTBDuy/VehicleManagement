@@ -1,11 +1,8 @@
 
-using VMServer.Models.Entities;
-
 namespace VMServer.Models.DTOs
 {
     public class CheckPointDTO
     {
-        public required CheckPointType Type { get; set; }
         public required decimal Latitude { get; set; }
         public required decimal Longitude { get; set; }
         public required List<IFormFile> Photos { get; set; }

@@ -118,6 +118,7 @@ namespace VMServer.Controllers
                 .Where(r => r.UserId == userId)
                 .Include(r => r.Vehicle)
                 .Include(r => r.ActionByUser)
+                .Include(r => r.Locations)
                 .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
 

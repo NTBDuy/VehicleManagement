@@ -63,10 +63,10 @@ const RequestHistoryScreen = () => {
     { id: 6, name: t('common.status.all') },
     { id: 0, name: t('common.status.pending') },
     { id: 1, name: t('common.status.approved') },
-    { id: 2, name: t('common.status.rejected') },
-    { id: 3, name: t('common.status.cancelled') },
     { id: 4, name: t('common.status.inProgress') },
     { id: 5, name: t('common.status.done') },
+    { id: 2, name: t('common.status.rejected') },
+    { id: 3, name: t('common.status.cancelled') },
   ];
 
   useEffect(() => {

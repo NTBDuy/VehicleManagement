@@ -2,6 +2,7 @@ import { BaseApiClient } from 'services/baseApiClient';
 import Request from 'types/Request';
 import Assignment from 'types/Assignment';
 import CheckPoint from '@/types/CheckPoint';
+import { LocationCheckpoint } from '@/types/LocationCheckpoint';
 
 export class RequestService extends BaseApiClient {
   // Lấy tất cả yêu cầu
@@ -66,6 +67,11 @@ export class RequestService extends BaseApiClient {
   static async checkPointList(id: number): Promise<CheckPoint[]> {
     return this.request<CheckPoint[]>(`/request/${id}/check-point`);
   }
+
+  static async checkPointStatus(id: number): Promise<LocationCheckpoint[]> {
+    return this.request<LocationCheckpoint[]>(`/request/${id}/check-point/status`);
+  }
+
   // End usage vehicle
   static async endUsageVehicle(id: number): Promise<Request> {
     return this.request<Request>(`/request/${id}/end-usage`, {

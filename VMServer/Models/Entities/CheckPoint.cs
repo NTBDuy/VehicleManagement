@@ -15,9 +15,6 @@ namespace VMServer.Models.Entities
         [ForeignKey("Request")]
         public int RequestId { get; set; }
 
-        [Required]
-        public CheckPointType Type { get; set; }
-
         [Column(TypeName = "decimal(10,6)")]
         public required decimal Latitude { get; set; }
 

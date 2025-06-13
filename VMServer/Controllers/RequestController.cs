@@ -107,8 +107,6 @@ namespace VMServer.Controllers
                 VehicleId = dto.VehicleId,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime,
-                StartLocation = dto.StartLocation,
-                EndLocation = dto.EndLocation,
                 Purpose = dto.Purpose,
                 IsDriverRequired = dto.IsDriverRequired,
                 Status = RequestStatus.Pending
@@ -164,6 +162,25 @@ namespace VMServer.Controllers
                 .ToListAsync();
 
             return Ok(checkPoints);
+        }
+
+        // GET: api/request/{requestId}/check-point
+        // Lấy danh sách check point
+        [Authorize]
+        [HttpGet("{requestId}/check-point/status")]
+        public async Task<IActionResult> CheckPointStatus(int requestId)
+        {
+            var request = await _dbContext.Requests.FindAsync(requestId);
+
+            if (request == null)
+                return NotFound(new { message = $"Request not found with ID #{requestId}" });
+
+            var checkPointStatus = await _dbContext.CheckPoints
+                .Where(c => c.RequestId == requestId)
+                .Include(c => c.Photos)
+                .ToListAsync();
+
+            return Ok(checkPointStatus);
         }
 
         // PUT: api/request/{requestId}/approve
@@ -372,14 +389,12 @@ namespace VMServer.Controllers
             if (request == null)
                 return NotFound(new { message = $"Request not found with ID #{requestId}" });
 
-            var isCheckIn = dto.Type == CheckPointType.CheckIn;
-            var folderPath = Path.Combine("uploads", isCheckIn ? "CheckIn" : "CheckOut", DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("MM"));
+            var folderPath = Path.Combine("uploads", "checkPoint", DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("MM"));
             Directory.CreateDirectory(folderPath);
 
             var newCheckPoint = new CheckPoint
             {
                 RequestId = requestId,
-                Type = dto.Type,
                 Latitude = dto.Latitude,
                 Longitude = dto.Longitude,
                 Note = dto.Note,
@@ -391,7 +406,7 @@ namespace VMServer.Controllers
 
             foreach (var photo in dto.Photos)
             {
-                var fileName = $"{(isCheckIn ? "CheckIn" : "CheckOut")}_{request.RequestId}_{DateTime.Now:yyyyMMdd_HHmmssfff}_{Guid.NewGuid().ToString().Substring(0, 6)}.jpg";
+                var fileName = $"{"checkPoint"}_{request.RequestId}_{DateTime.Now:yyyyMMdd_HHmmssfff}_{Guid.NewGuid().ToString().Substring(0, 6)}.jpg";
                 var filePath = Path.Combine(folderPath, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))

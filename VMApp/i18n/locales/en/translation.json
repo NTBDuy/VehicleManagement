@@ -143,7 +143,9 @@
       "beginMaintenance": "Maintenance has begun",
       "completeMaintenance": "Maintenance has been completed",
       "login": "Welcome {{user}}",
-      "logout": "You have been logged out. See you again soon!"
+      "logout": "You have been logged out. See you again soon!",
+      "cancel": "Request cancelled successfully",
+      "reject": "Request rejected successfully"
     },
     "error": {
       "title": "Error",

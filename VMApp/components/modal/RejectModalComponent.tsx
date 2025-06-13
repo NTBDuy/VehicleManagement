@@ -47,7 +47,7 @@ const RejectModal = ({ visible, onClose, onReject }: RejectModalProps) => {
     setIsReject(true);
     try {
       await onReject(reason.trim());
-      showToast.success(`${t('common.success.title')}`, 'Request reject successfully');
+      showToast.success(`${t('common.success.title')}`, `${t('common.success.reject')}`);
       setReason('');
       onClose();
     } catch (error) {

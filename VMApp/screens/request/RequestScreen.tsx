@@ -15,7 +15,7 @@ import {
   SafeAreaView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate } from 'utils/datetimeUtils';
@@ -283,20 +283,6 @@ const RequestScreen = () => {
                 onPress={handleStatusFilter}
               />
               <StatusCard
-                label={t('common.status.rejected')}
-                keyword="Rejected"
-                count={requestStat.rejected}
-                bgColor="bg-red-500"
-                onPress={handleStatusFilter}
-              />
-              <StatusCard
-                label={t('common.status.cancelled')}
-                keyword="Cancelled"
-                count={requestStat.cancelled}
-                bgColor="bg-slate-500"
-                onPress={handleStatusFilter}
-              />
-              <StatusCard
                 label={t('common.status.inProgress')}
                 keyword="In Progress"
                 count={requestStat.inProgress}
@@ -308,6 +294,20 @@ const RequestScreen = () => {
                 keyword="Done"
                 count={requestStat.done}
                 bgColor="bg-green-600"
+                onPress={handleStatusFilter}
+              />
+              <StatusCard
+                label={t('common.status.rejected')}
+                keyword="Rejected"
+                count={requestStat.rejected}
+                bgColor="bg-red-500"
+                onPress={handleStatusFilter}
+              />
+              <StatusCard
+                label={t('common.status.cancelled')}
+                keyword="Cancelled"
+                count={requestStat.cancelled}
+                bgColor="bg-slate-500"
                 onPress={handleStatusFilter}
               />
             </View>
