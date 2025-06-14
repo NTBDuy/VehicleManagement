@@ -11,9 +11,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Animated,
   FlatList,
   Modal,
   RefreshControl,
@@ -34,6 +35,8 @@ import LoadingData from '@/components/ui/LoadingData';
 import StatusCard from '@/components/ui/StatusCardComponent';
 
 const VehicleManagementScreen = () => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -155,6 +158,19 @@ const VehicleManagementScreen = () => {
     if (user?.role == 0) {
       setSelected(vehicles);
       setIsModalVisible(true);
+
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
     } else {
       navigation.navigate('VehicleDetail', { vehicleData: vehicles });
     }
@@ -177,7 +193,22 @@ const VehicleManagementScreen = () => {
   };
 
   const handleCloseModal = () => {
-    setIsModalVisible(false);
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 50,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setIsModalVisible(false);
+      fadeAnim.setValue(0);
+      slideAnim.setValue(50);
+    });
   };
 
   const onRefresh = () => {
@@ -292,72 +323,83 @@ const VehicleManagementScreen = () => {
       <Modal
         transparent
         visible={isModalVisible}
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}>
-        <TouchableOpacity onPress={handleCloseModal} className="flex-1 justify-end bg-black/30">
-          <TouchableOpacity onPress={(e) => e.stopPropagation()}>
-            <View className="rounded-t-2xl bg-white p-6 pb-12">
-              <Text className="mb-6 text-center text-lg font-bold">
-                {t('vehicle.modal.title')}
-                {selected?.licensePlate}
-              </Text>
-
-              <TouchableOpacity
-                className="mb-6 flex-row items-center gap-3"
-                onPress={() => {
-                  handleViewDetail();
-                  handleCloseModal();
-                }}>
-                <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">
-                  {t('common.button.detail')}
+        animationType="none"
+        onRequestClose={handleCloseModal}>
+        <TouchableOpacity
+          onPress={handleCloseModal}
+          className="flex-1 justify-end bg-black/30"
+          activeOpacity={1}>
+          <Animated.View
+            style={{
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            }}>
+            <TouchableOpacity onPress={(e) => e.stopPropagation()} activeOpacity={1}>
+              <View className="rounded-t-2xl bg-white p-6 pb-12">
+                <Text className="mb-6 text-center text-lg font-bold">
+                  {t('vehicle.modal.title')}
+                  {selected?.licensePlate}
                 </Text>
-              </TouchableOpacity>
 
-              <TouchableOpacity
-                className="mb-6 flex-row items-center gap-3"
-                onPress={() => {
-                  handleEditVehicle();
-                  handleCloseModal();
-                }}>
-                <FontAwesomeIcon icon={faEdit} size={20} color="#ca8a04" />
-                <Text className="text-lg font-semibold text-yellow-600">
-                  {t('common.button.update')}
-                </Text>
-              </TouchableOpacity>
-
-              {selected?.status !== 2 && selected?.nextMaintenanceId == null && (
                 <TouchableOpacity
                   className="mb-6 flex-row items-center gap-3"
                   onPress={() => {
-                    handleSchedule();
+                    handleViewDetail();
                     handleCloseModal();
                   }}>
-                  <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#059669" />
-                  <Text className="text-lg font-semibold text-emerald-600">
-                    {t('common.button.maintenance')}
+                  <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
+                  <Text className="text-lg font-semibold text-blue-600">
+                    {t('common.button.detail')}
                   </Text>
                 </TouchableOpacity>
-              )}
 
-              <TouchableOpacity
-                className="mb-6 flex-row items-center gap-3"
-                onPress={() => {
-                  onRemoveVehicle();
-                }}>
-                <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
-                <Text className="text-lg font-semibold text-red-600">
-                  {t('common.button.remove')}
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  className="mb-6 flex-row items-center gap-3"
+                  onPress={() => {
+                    handleEditVehicle();
+                    handleCloseModal();
+                  }}>
+                  <FontAwesomeIcon icon={faEdit} size={20} color="#ca8a04" />
+                  <Text className="text-lg font-semibold text-yellow-600">
+                    {t('common.button.update')}
+                  </Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
-                onPress={handleCloseModal}>
-                <Text className="text-lg font-semibold text-white">{t('common.button.close')}</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
+                {selected?.status !== 2 && selected?.nextMaintenanceId == null && (
+                  <TouchableOpacity
+                    className="mb-6 flex-row items-center gap-3"
+                    onPress={() => {
+                      handleSchedule();
+                      handleCloseModal();
+                    }}>
+                    <FontAwesomeIcon icon={faCalendarCheck} size={20} color="#059669" />
+                    <Text className="text-lg font-semibold text-emerald-600">
+                      {t('common.button.maintenance')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity
+                  className="mb-6 flex-row items-center gap-3"
+                  onPress={() => {
+                    onRemoveVehicle();
+                  }}>
+                  <FontAwesomeIcon icon={faTrash} size={20} color="#dc2626" />
+                  <Text className="text-lg font-semibold text-red-600">
+                    {t('common.button.remove')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
+                  onPress={handleCloseModal}>
+                  <Text className="text-lg font-semibold text-white">
+                    {t('common.button.close')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
         </TouchableOpacity>
       </Modal>
     </SafeAreaView>

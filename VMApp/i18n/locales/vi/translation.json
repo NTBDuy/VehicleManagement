@@ -58,7 +58,8 @@
       "currenLocation": "Vị trí hiện tại",
       "takePhoto": "Chụp ảnh",
       "completeTrip": "Hoàn thành hành trình",
-      "confirmCheckIn": "Xác nhận Check-in"
+      "confirmCheckIn": "Xác nhận Check-in",
+      "clearFilter": "Xóa bộ lọc"
     },
     "status": {
       "all": "Tất cả",
@@ -390,7 +391,6 @@
     },
     "management": {
       "totalRequest": "Tổng yêu cầu",
-      "clearFilter": "Xóa bộ lọc",
       "modal": {
         "title": "Tùy chọn cho yêu cầu ID #"
       }

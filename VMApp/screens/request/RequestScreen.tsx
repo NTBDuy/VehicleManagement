@@ -6,9 +6,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Animated,
+  Dimensions,
   FlatList,
   Modal,
   RefreshControl,
@@ -32,7 +34,11 @@ import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 
+const { width } = Dimensions.get('window');
+
 const RequestScreen = () => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [requests, setRequests] = useState<Request[]>([]);
@@ -40,7 +46,7 @@ const RequestScreen = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isFiltered, setIsFiltered] = useState(false);
   const [currentStatusFilter, setCurrentStatusFilter] = useState('');
-  const [selected, setSelected] = useState<Request>();
+  const [selected, setSelected] = useState<Request | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
@@ -61,41 +67,45 @@ const RequestScreen = () => {
 
   const filteredRequests = useMemo(() => {
     let filtered = [...requests];
-    const q = searchQuery.toLowerCase();
+    const q = searchQuery.toLowerCase().trim();
 
-    if (searchQuery) {
+    if (q) {
       filtered = filtered.filter(
         (item) =>
-          item.user?.fullName.toLowerCase().includes(q) ||
-          item.user?.email.toLowerCase().includes(q) ||
-          item.user?.phoneNumber.toLowerCase().includes(q) ||
-          item.user?.username.toLowerCase().includes(q) ||
-          item.vehicle?.licensePlate.toLowerCase().includes(q) ||
-          item.vehicle?.type.toLowerCase().includes(q) ||
-          item.vehicle?.brand.toLowerCase().includes(q) ||
-          item.vehicle?.model.toLowerCase().includes(q)
+          item.user?.fullName?.toLowerCase().includes(q) ||
+          item.user?.email?.toLowerCase().includes(q) ||
+          item.user?.phoneNumber?.toLowerCase().includes(q) ||
+          item.user?.username?.toLowerCase().includes(q) ||
+          item.vehicle?.licensePlate?.toLowerCase().includes(q) ||
+          item.vehicle?.type?.toLowerCase().includes(q) ||
+          item.vehicle?.brand?.toLowerCase().includes(q) ||
+          item.vehicle?.model?.toLowerCase().includes(q)
       );
     }
 
-    switch (currentStatusFilter) {
-      case 'Pending':
-        filtered = filtered.filter((item) => item.status === 0);
-        break;
-      case 'Approved':
-        filtered = filtered.filter((item) => item.status === 1);
-        break;
-      case 'Rejected':
-        filtered = filtered.filter((item) => item.status === 2);
-        break;
-      case 'Cancelled':
-        filtered = filtered.filter((item) => item.status === 3);
-        break;
-      case 'In Progress':
-        filtered = filtered.filter((item) => item.status === 4);
-        break;
-      case 'Done':
-        filtered = filtered.filter((item) => item.status === 5);
-        break;
+    if (currentStatusFilter) {
+      switch (currentStatusFilter) {
+        case 'Pending':
+          filtered = filtered.filter((item) => item.status === 0);
+          break;
+        case 'Approved':
+          filtered = filtered.filter((item) => item.status === 1);
+          break;
+        case 'Rejected':
+          filtered = filtered.filter((item) => item.status === 2);
+          break;
+        case 'Cancelled':
+          filtered = filtered.filter((item) => item.status === 3);
+          break;
+        case 'In Progress':
+          filtered = filtered.filter((item) => item.status === 4);
+          break;
+        case 'Done':
+          filtered = filtered.filter((item) => item.status === 5);
+          break;
+        default:
+          break;
+      }
     }
 
     return filtered;
@@ -111,9 +121,10 @@ const RequestScreen = () => {
     try {
       setIsLoading(true);
       const data = await RequestService.getAllRequests();
-      return setRequests(data);
+      setRequests(data || []);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching requests:', error);
+      setRequests([]);
     } finally {
       setRefreshing(false);
       setIsLoading(false);
@@ -127,17 +138,19 @@ const RequestScreen = () => {
       <View className="flex-row items-center">
         <View className="h-12 w-12 items-center justify-center rounded-full bg-blue-500">
           <Text className="text-lg font-bold text-white">
-            {getUserInitials(item.user?.fullName)}
+            {getUserInitials(item.user?.fullName || '')}
           </Text>
         </View>
 
         <View className="ml-4 flex-1">
-          <Text className="text-base font-semibold text-gray-800">{item.user?.fullName}</Text>
-          <Text className="text-sm text-gray-500">{item.vehicle?.licensePlate}</Text>
+          <Text className="text-base font-semibold text-gray-800">
+            {item.user?.fullName || 'N/A'}
+          </Text>
+          <Text className="text-sm text-gray-500">{item.vehicle?.licensePlate || 'N/A'}</Text>
         </View>
 
         <View className="mr-4">
-          {item.startTime !== item.endTime ? (
+          {item.startTime && item.endTime && item.startTime !== item.endTime ? (
             <View>
               <Text className="text-xs text-gray-500">
                 {t('request.list.label.start')}: {formatDate(item.startTime)}
@@ -165,51 +178,91 @@ const RequestScreen = () => {
   );
 
   const handleStatusFilter = (status: string) => {
-    setCurrentStatusFilter(status);
-    setIsFiltered(true);
+    const newFilter = currentStatusFilter === status ? '' : status;
+    setCurrentStatusFilter(newFilter);
+    setIsFiltered(!!newFilter || !!searchQuery);
   };
 
-  const handleSearch = (text: string): void => {
+  const handleSearch = (text: string) => {
     setSearchQuery(text);
+    setIsFiltered(!!text || !!currentStatusFilter);
   };
 
-  const handleRequestOption = (data: Request): void => {
+  const handleRequestOption = (data: Request) => {
     setSelected(data);
     setIsModalVisible(true);
+
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
-  const handleClearFilters = (): void => {
+  const handleClearFilters = () => {
     setSearchQuery('');
     setCurrentStatusFilter('');
     setIsFiltered(false);
   };
 
+  const closeModalWithAnimation = (callback?: () => void) => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 50,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setIsModalVisible(false);
+      if (callback) callback();
+    });
+  };
+
   const handleViewDetail = () => {
+    if (!selected) return;
+
     navigation.navigate('RequestDetail', { requestData: selected });
-    setIsModalVisible(false);
+    closeModalWithAnimation();
   };
 
-  const handleApprove = (): void => {
-    setIsModalVisible(false);
-    setIsApproveModalVisible(true);
+  const handleApprove = () => {
+    closeModalWithAnimation(() => {
+      setIsApproveModalVisible(true);
+    });
   };
 
-  const handleReject = (): void => {
-    setIsModalVisible(false);
-    setIsRejectModalVisible(true);
+  const handleReject = () => {
+    closeModalWithAnimation(() => {
+      setIsRejectModalVisible(true);
+    });
   };
 
-  const handleCancel = (): void => {
-    setIsModalVisible(false);
-    setIsCancelModalVisible(true);
+  const handleCancel = () => {
+    closeModalWithAnimation(() => {
+      setIsCancelModalVisible(true);
+    });
   };
 
   const handleCloseModal = () => {
-    setSelected(undefined);
     setIsModalVisible(false);
     setIsApproveModalVisible(false);
     setIsRejectModalVisible(false);
     setIsCancelModalVisible(false);
+    setSelected(null);
+    fadeAnim.setValue(0);
+    slideAnim.setValue(50);
   };
 
   const onRefresh = () => {
@@ -217,16 +270,9 @@ const RequestScreen = () => {
     fetchRequestsData();
   };
 
-  const handleApproveConfirm = async (driverId: string | null, note: string) => {
-    const assignmentData = { driverId, note };
-
-    if (selected!.isDriverRequired) {
-      await RequestService.approveRequest(selected!.requestId, assignmentData);
-    } else {
-      await RequestService.approveRequest(selected!.requestId);
-    }
-
-    await fetchRequestsData();
+  const onModalSuccess = () => {
+    handleCloseModal();
+    onRefresh();
   };
 
   return (
@@ -250,7 +296,7 @@ const RequestScreen = () => {
               <Text className="text-xl font-bold text-gray-900">{requestStat.total}</Text>
             </Text>
             <Text className="mt-1 text-sm text-blue-500">
-              {isExpanded ? `${t('common.expand.hide')}` : `${t('common.expand.show')}`}
+              {isExpanded ? t('common.expand.hide') : t('common.expand.show')}
             </Text>
           </TouchableOpacity>
 
@@ -304,7 +350,9 @@ const RequestScreen = () => {
 
         {isFiltered && (
           <TouchableOpacity onPress={handleClearFilters} className="items-end ps-4">
-            <Text className="mb-4 text-sm">Clear filter</Text>
+            <Text className="mb-4 text-sm text-blue-500 underline">
+              {t('common.button.clearFilter') || 'Clear filter'}
+            </Text>
           </TouchableOpacity>
         )}
 
@@ -314,13 +362,14 @@ const RequestScreen = () => {
           <FlatList
             data={filteredRequests}
             renderItem={renderRequestItem}
-            keyExtractor={(item) => item.requestId.toString()}
+            keyExtractor={(item) => item.requestId?.toString() || Math.random().toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyList />}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           />
         )}
       </View>
+
       {requests.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 bg-white p-4 pb-10">
           <Text className="text-center text-sm font-medium text-gray-500">
@@ -333,66 +382,77 @@ const RequestScreen = () => {
       <Modal
         transparent
         visible={isModalVisible}
-        animationType="slide"
+        animationType="none"
         onRequestClose={handleCloseModal}>
-        <TouchableOpacity onPress={handleCloseModal} className="flex-1 justify-end bg-black/30">
-          <TouchableOpacity onPress={(e) => e.stopPropagation()}>
-            <View className="rounded-t-2xl bg-white p-6 pb-12">
-              <Text className="mb-6 text-center text-lg font-bold">
-                {t('request.management.modal.title')} {selected?.requestId}
-              </Text>
-
-              <TouchableOpacity
-                className="mb-6 flex-row items-center gap-3 "
-                onPress={handleViewDetail}>
-                <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                <Text className="text-lg font-semibold text-blue-600">
-                  {t('common.button.detail')}
+        <TouchableOpacity
+          onPress={handleCloseModal}
+          className="flex-1 justify-end bg-black/30"
+          activeOpacity={1}>
+          <Animated.View
+            style={{
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            }}>
+            <TouchableOpacity onPress={(e) => e.stopPropagation()} activeOpacity={1}>
+              <View className="rounded-t-2xl bg-white p-6 pb-12">
+                <Text className="mb-6 text-center text-lg font-bold">
+                  {t('request.management.modal.title')} {selected?.requestId}
                 </Text>
-              </TouchableOpacity>
 
-              {selected?.status === 0 && (
-                <>
-                  <TouchableOpacity
-                    className="mb-6 flex-row items-center gap-3 "
-                    onPress={handleApprove}>
-                    <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
-                    <Text className="text-lg font-semibold text-green-600">
-                      {selected.isDriverRequired
-                        ? `${t('common.button.approveWithAssign')}`
-                        : `${t('common.button.approve')}`}
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    className="mb-6 flex-row items-center gap-3 "
-                    onPress={handleReject}>
-                    <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
-                    <Text className="text-lg font-semibold text-red-600">
-                      {t('common.button.reject')}
-                    </Text>
-                  </TouchableOpacity>
-                </>
-              )}
-
-              {selected?.status === 1 && (
                 <TouchableOpacity
-                  className="mb-6 flex-row items-center gap-3 "
-                  onPress={handleCancel}>
-                  <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
-                  <Text className="text-lg font-semibold text-gray-600">
-                    {t('common.button.cancel')}
+                  className="mb-6 flex-row items-center gap-3"
+                  onPress={handleViewDetail}>
+                  <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
+                  <Text className="text-lg font-semibold text-blue-600">
+                    {t('common.button.detail')}
                   </Text>
                 </TouchableOpacity>
-              )}
 
-              <TouchableOpacity
-                className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3 "
-                onPress={handleCloseModal}>
-                <Text className="text-lg font-semibold text-white">{t('common.button.close')}</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
+                {selected?.status === 0 && (
+                  <>
+                    <TouchableOpacity
+                      className="mb-6 flex-row items-center gap-3"
+                      onPress={handleApprove}>
+                      <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
+                      <Text className="text-lg font-semibold text-green-600">
+                        {selected.isDriverRequired
+                          ? t('common.button.approveWithAssign')
+                          : t('common.button.approve')}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      className="mb-6 flex-row items-center gap-3"
+                      onPress={handleReject}>
+                      <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
+                      <Text className="text-lg font-semibold text-red-600">
+                        {t('common.button.reject')}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+
+                {selected?.status === 1 && (
+                  <TouchableOpacity
+                    className="mb-6 flex-row items-center gap-3"
+                    onPress={handleCancel}>
+                    <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
+                    <Text className="text-lg font-semibold text-gray-600">
+                      {t('common.button.cancel')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity
+                  className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
+                  onPress={handleCloseModal}>
+                  <Text className="text-lg font-semibold text-white">
+                    {t('common.button.close')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
         </TouchableOpacity>
       </Modal>
 
@@ -401,7 +461,7 @@ const RequestScreen = () => {
           <ApproveModal
             visible={isApproveModalVisible}
             onClose={handleCloseModal}
-            onSuccess={onRefresh}
+            onSuccess={onModalSuccess}
             isDriverRequired={selected.isDriverRequired}
             requestId={selected.requestId}
             startTime={selected.startTime}
@@ -412,14 +472,14 @@ const RequestScreen = () => {
             visible={isRejectModalVisible}
             onClose={handleCloseModal}
             requestId={selected.requestId}
-            onSuccess={onRefresh}
+            onSuccess={onModalSuccess}
           />
 
           <CancelModal
             visible={isCancelModalVisible}
             onClose={handleCloseModal}
             requestId={selected.requestId}
-            onSuccess={onRefresh}
+            onSuccess={onModalSuccess}
           />
         </>
       )}

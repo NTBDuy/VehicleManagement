@@ -313,8 +313,9 @@ const MaintenanceDetailScreen = () => {
           onRequestClose={handleCloseModal}>
           <TouchableOpacity
             onPress={handleCloseModal}
-            className="flex-1 justify-center bg-black/30">
-            <TouchableOpacity onPress={(e) => e.stopPropagation()}>
+            className="flex-1 justify-center bg-black/30"
+            activeOpacity={1}>
+            <TouchableOpacity onPress={(e) => e.stopPropagation()} activeOpacity={1}>
               <View className="mx-6 rounded-2xl bg-white">
                 <View className="flex-row items-center justify-between border-b border-gray-100 p-4">
                   <Text className="text-lg font-bold text-gray-800">

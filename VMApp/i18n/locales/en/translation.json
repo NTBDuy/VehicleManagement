@@ -58,7 +58,8 @@
       "currenLocation": "Current location",
       "takePhoto": "Take photo",
       "completeTrip": "Complete trip",
-      "confirmCheckIn": "Confirm check-in"
+      "confirmCheckIn": "Confirm check-in",
+      "clearFilter": "Clear filter"
     },
     "status": {
       "all": "All",
@@ -389,7 +390,6 @@
     },
     "management": {
       "totalRequest": "Total Request",
-      "clearFilter": "Clear filter",
       "modal": {
         "title": "Options for request ID #"
       }
