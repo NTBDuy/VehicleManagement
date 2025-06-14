@@ -1,25 +1,14 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { RequestService } from '@/services/requestService';
 import { showToast } from '@/utils/toast';
-import { faCheckCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActionSheetIOS,
-  Alert,
-  Image,
-  Platform,
-  RefreshControl,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import { ImageType, LocationCheckpoint } from '@/types/LocationCheckpoint';
 import Request from '@/types/Request';
@@ -31,6 +20,7 @@ import RequestHeader from '@/components/request/RequestInProgressHeader';
 import WarningNotice from '@/components/request/WarningNoticeComponent';
 import ErrorComponent from '@/components/ui/ErrorComponent';
 import LoadingData from '@/components/ui/LoadingData';
+import { SettingService } from '@/services/settingService';
 import { calculateDistance } from '@/utils/requestUtils';
 
 const RequestInProgress = () => {
@@ -48,6 +38,7 @@ const RequestInProgress = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [checkInRadius, setCheckInRadius] = useState(5);
 
   const sortedLocations = requestData.locations.sort((a, b) => a.order - b.order);
   const currentLocation = sortedLocations[currentLocationIndex];
@@ -77,6 +68,22 @@ const RequestInProgress = () => {
   useEffect(() => {
     requestPermissions();
   }, []);
+
+  useEffect(() => {
+    const fetchRadius = async () => {
+      try {
+        const data = await SettingService.getSettingById('CHECK_IN_RADIUS');
+        const radius = parseInt(data.settingValue);
+        if (!isNaN(radius)) {
+          setCheckInRadius(radius);
+        }
+      } catch (error) {
+        showToast.error(t('setting.loadRadiusError'));
+      }
+    };
+
+    fetchRadius();
+  }, [requestData]);
 
   const onRefresh = async () => {
     try {
@@ -155,9 +162,9 @@ const RequestInProgress = () => {
 
       console.log('Khoảng cách hai điểm hiện tại là: ' + distance + ' Km');
 
-      if (distance > 5) {
+      if (distance > checkInRadius) {
         console.log('Bạn ở quá xa địa điểm Check-in');
-        showToast.error('Bạn ở quá xa địa điểm Check-in!');
+        showToast.error(t('common.error.tooFar', { radius: checkInRadius }));
         return;
       } else {
         const checkpointData: LocationCheckpoint = {

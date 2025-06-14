@@ -5,7 +5,7 @@ import { LocationType } from '@/types/Location';
 import { calculateDistance } from '@/utils/requestUtils';
 import { LocationInput } from './LocationInput';
 import { LocationDetails } from './LocationDetails';
-import { LocationModal } from './LocationModal';
+import { LocationModal } from '../modal/LocationModal';
 import { DistanceNotice } from './DistanceNotice';
 import { useTranslation } from 'react-i18next';
 

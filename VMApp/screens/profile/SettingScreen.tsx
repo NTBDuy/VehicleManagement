@@ -1,5 +1,6 @@
 import { showToast } from '@/utils/toast';
 import {
+  faBullseye,
   faChevronRight,
   faFileText,
   faGlobe,
@@ -7,29 +8,19 @@ import {
   faPen,
   faShieldHalved,
   faSignOut,
-  faTimes,
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Alert,
-  Animated,
-  Dimensions,
-  Image,
-  Modal,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, Dimensions, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
 import Header from '@/components/layout/HeaderComponent';
-import CountryFlag from 'react-native-country-flag';
+import CheckInRadiusModal from '@/components/modal/CheckInRadiusModal';
+import LanguageModal from '@/components/modal/LanguageModal';
 
 Dimensions.get('window');
 
@@ -43,13 +34,11 @@ interface MenuItem {
 }
 
 const SettingScreen = () => {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
   const navigation = useNavigation<any>();
   const { user, logout } = useAuth();
-  const { t, i18n } = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+  const { t } = useTranslation();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showRadiusModal, setShowRadiusModal] = useState(false);
 
   const handlePress = () => {
     showToast.info(t('common.soon'));
@@ -63,52 +52,28 @@ const SettingScreen = () => {
     navigation.navigate('ChangePassword');
   };
 
-  const handleLanguageChange = async (language: string) => {
-    try {
-      await i18n.changeLanguage(language);
-      setCurrentLanguage(language);
-      closeLanguageModal();
-      showToast.success(t('setting.languageChanged'));
-    } catch (error) {
-      showToast.error(t('setting.languageChangeError'));
-    }
-  };
-
   const openLanguageModal = () => {
     setShowLanguageModal(true);
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
   };
 
   const closeLanguageModal = () => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 50,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setShowLanguageModal(false);
-    });
+    setShowLanguageModal(false);
   };
 
   const handleLanguagePress = () => {
     openLanguageModal();
+  };
+
+  const openRadiusModal = () => {
+    setShowRadiusModal(true);
+  };
+
+  const closeRadiusModal = () => {
+    setShowRadiusModal(false);
+  };
+
+  const handleCheckInRadiusPress = () => {
+    openRadiusModal();
   };
 
   const handleSignOut = () => {
@@ -124,8 +89,8 @@ const SettingScreen = () => {
     ]);
   };
 
-  const menuItems: MenuItem[] = useMemo(
-    () => [
+  const menuItems: MenuItem[] = useMemo(() => {
+    const items: MenuItem[] = [
       {
         icon: faUser,
         title: t('setting.label.user'),
@@ -174,9 +139,30 @@ const SettingScreen = () => {
         color: '#ef4444',
         testID: 'sign-out-button',
       },
-    ],
-    [t, handleEditProfile, handleChangePassword, handleLanguagePress, handlePress, handleSignOut]
-  );
+    ];
+
+    if (user?.role === 0 || user?.role === 2) {
+      items.splice(3, 0, {
+        icon: faBullseye,
+        title: t('setting.label.checkInRadius'),
+        subtitle: t('setting.info.checkInRadius'),
+        onPress: handleCheckInRadiusPress,
+        color: '#f59e0b',
+        testID: 'check-in-button',
+      });
+    }
+
+    return items;
+  }, [
+    t,
+    handleEditProfile,
+    handleChangePassword,
+    handleLanguagePress,
+    handlePress,
+    handleSignOut,
+    handleCheckInRadiusPress,
+    user?.role,
+  ]);
 
   const renderUserAvatar = () => {
     const avatarSource = require('@/assets/images/user-default.jpg');
@@ -202,88 +188,6 @@ const SettingScreen = () => {
     );
   };
 
-  const renderLanguageModal = () => {
-    const languages = [
-      {
-        code: 'en-US',
-        name: 'English',
-        nativeName: 'English',
-        flag: 'us',
-      },
-      {
-        code: 'vi-VN',
-        name: 'Vietnamese',
-        nativeName: 'Tiếng Việt',
-        flag: 'vn',
-      },
-    ];
-
-    return (
-      <Modal
-        visible={showLanguageModal}
-        transparent={true}
-        animationType="none"
-        onRequestClose={closeLanguageModal}>
-        <Animated.View
-          style={{ opacity: fadeAnim }}
-          className="flex-1 items-center justify-center bg-black/50 px-4">
-          <Animated.View
-            style={{ transform: [{ translateY: slideAnim }] }}
-            className="w-full max-w-sm rounded-2xl bg-white shadow-2xl">
-            <View className="flex-row items-center justify-between border-b border-gray-100 p-6">
-              <Text className="text-xl font-bold text-gray-800">{t('setting.selectLanguage')}</Text>
-              <TouchableOpacity
-                onPress={closeLanguageModal}
-                className="rounded-full bg-gray-100 p-2"
-                activeOpacity={0.7}>
-                <FontAwesomeIcon icon={faTimes} size={16} color="#6b7280" />
-              </TouchableOpacity>
-            </View>
-
-            <View className="px-2 py-4">
-              {languages.map((language, index) => (
-                <TouchableOpacity
-                  key={language.code}
-                  onPress={() => handleLanguageChange(language.code)}
-                  className={`mx-2 flex-row items-center rounded-xl p-4 ${
-                    currentLanguage === language.code
-                      ? 'border-2 border-blue-500 bg-blue-50'
-                      : 'bg-transparent hover:bg-gray-50'
-                  } ${index !== languages.length - 1 ? 'mb-2' : ''}`}
-                  activeOpacity={0.7}>
-                  <View className="mr-4 rounded-lg bg-white p-2 shadow-sm">
-                    <CountryFlag isoCode={language.flag} size={24} />
-                  </View>
-
-                  <View className="flex-1">
-                    <Text
-                      className={`text-base font-semibold ${
-                        currentLanguage === language.code ? 'text-blue-700' : 'text-gray-800'
-                      }`}>
-                      {language.name}
-                    </Text>
-                    <Text
-                      className={`text-sm ${
-                        currentLanguage === language.code ? 'text-blue-600' : 'text-gray-500'
-                      }`}>
-                      {language.nativeName}
-                    </Text>
-                  </View>
-
-                  {currentLanguage === language.code && (
-                    <View className="h-6 w-6 items-center justify-center rounded-full bg-blue-500">
-                      <View className="h-2 w-2 rounded-full bg-white" />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </Animated.View>
-        </Animated.View>
-      </Modal>
-    );
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
@@ -297,7 +201,9 @@ const SettingScreen = () => {
         }
       />
 
-      {renderLanguageModal()}
+      <LanguageModal visible={showLanguageModal} onClose={closeLanguageModal} />
+
+      <CheckInRadiusModal visible={showRadiusModal} onClose={closeRadiusModal} />
 
       <View className="mt-6 px-4">
         <Text className="mb-4 px-2 text-sm font-semibold uppercase tracking-wide text-gray-500">

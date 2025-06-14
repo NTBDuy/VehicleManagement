@@ -188,7 +188,8 @@
       "newRequest": "We couldn't complete your reservation. Please try again.",
       "startUsing": "Vehicle can only be used on the scheduled date.",
       "maxImage": "Maximum of 2 images per location",
-      "takePhoto": "Unable to take photo. Please try again."
+      "takePhoto": "Unable to take photo. Please try again.",
+      "tooFar": "You are too far from the check-in location"
     },
     "info": {
       "nothingChanges": "No changes detected."
@@ -559,6 +560,7 @@
       "user": "Update your information",
       "password": "Change your password",
       "language": "Change your language",
+      "checkInRadius": "Check-in Radius",
       "term": "Terms and Conditions",
       "privacy": "Privacy Policy",
       "signOut": "Sign Out"
@@ -567,6 +569,7 @@
       "user": "Edit your personal details",
       "password": "Update your security credentials",
       "language": "Change application language",
+      "checkInRadius": "Adjust the radius allowed for check-in",
       "term": "Read our terms of service",
       "privacy": "Learn about data protection",
       "signOut": "Log out of your account"
@@ -574,6 +577,10 @@
     "selectLanguage": "Select Language",
     "languageChanged": "Language changed successfully",
     "languageChangeError": "Failed to change language",
+    "selectCheckInRadius": "Select Check-in Radius",
+    "radiusChanged": "Check-in radius changed to {{radius}} Km",
+    "loadRadiusError": "Unable to load check-in radius",
+    "updateRadiusError": "Failed to update check-in radius",
     "changePassword": {
       "header": "Change Password",
       "title": "Update Your Password",

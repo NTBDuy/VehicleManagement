@@ -189,7 +189,8 @@
       "newRequest": "Chúng tôi không thể hoàn thành yêu cầu đặt xe của bạn. Vui lòng thử lại.",
       "startUsing": "Phương tiện chỉ có thể được sử dụng vào ngày đã lên lịch.",
       "maxImage": "Tối đa 2 ảnh cho mỗi điểm",
-      "takePhoto": "Không thể chụp ảnh. Vui lòng thử lại."
+      "takePhoto": "Không thể chụp ảnh. Vui lòng thử lại.",
+      "tooFar": "Bạn ở quá xa địa điểm Check-in"
     },
     "info": {
       "nothingChanges": "Bạn chưa thay đổi thông tin nào."
@@ -560,6 +561,7 @@
       "user": "Cập nhật thông tin của bạn",
       "password": "Thay đổi mật khẩu",
       "language": "Thay đổi ngôn ngữ",
+      "checkInRadius": "Bán kính check-in",
       "term": "Điều khoản và Điều kiện",
       "privacy": "Chính sách Bảo mật",
       "signOut": "Đăng xuất"
@@ -568,6 +570,7 @@
       "user": "Chỉnh sửa thông tin cá nhân",
       "password": "Cập nhật thông tin bảo mật",
       "language": "Thay đổi ngôn ngữ hiển thị của ứng dụng",
+      "checkInRadius": "Điều chỉnh khoảng cách cho phép để check-in.",
       "term": "Đọc điều khoản dịch vụ của chúng tôi",
       "privacy": "Tìm hiểu về chính sách bảo mật dữ liệu",
       "signOut": "Đăng xuất khỏi tài khoản của bạn"
@@ -575,6 +578,10 @@
     "selectLanguage": "Chọn ngôn ngữ",
     "languageChanged": "Thay đổi ngôn ngữ thành công",
     "languageChangeError": "Thay đổi ngôn ngữ thất bại",
+    "selectCheckInRadius": "Chọn bán kính check-in",
+    "radiusChanged": "Bán kính check-in đã được thay đổi thành {{radius}} Km",
+    "loadRadiusError": "Không thể tải bán kính check-in",
+    "updateRadiusError": "Cập nhật bán kính check-in thất bại",
     "changePassword": {
       "header": "Thay đổi mật khẩu",
       "title": "Cập nhật mật khẩu của bạn",

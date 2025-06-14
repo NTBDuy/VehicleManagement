@@ -1,26 +1,26 @@
-import React, { useEffect } from 'react';
-import {
-  Modal,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  Text,
-  Keyboard,
-} from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {
-  faTimes,
-  faLocation,
-  faChevronRight,
-  faCirclePlus,
-  faLocationCrosshairs,
-} from '@fortawesome/free-solid-svg-icons';
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
+import {
+  faChevronRight,
+  faCirclePlus,
+  faLocation,
+  faLocationCrosshairs,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useEffect } from 'react';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
 interface MapLocation {
   longitude: number;
@@ -210,13 +210,17 @@ export const LocationModal = ({
                       onPress={onCurrentLocation}
                       className="flex-1 flex-row items-center justify-center rounded-lg border border-gray-200/50 bg-blue-100 px-2 py-3">
                       <FontAwesomeIcon icon={faLocationCrosshairs} color="#1d4ed8" size={18} />
-                      <Text className="ml-2 font-medium text-blue-700">{t('common.button.currenLocation')}</Text>
+                      <Text className="ml-2 font-medium text-blue-700">
+                        {t('common.button.currenLocation')}
+                      </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       onPress={onConfirmLocation}
                       className="flex-1 flex-row items-center justify-center rounded-lg border border-gray-200/50 bg-green-100 px-2 py-3">
-                      <Text className="font-medium text-green-700">{t('common.button.confirm')}</Text>
+                      <Text className="font-medium text-green-700">
+                        {t('common.button.confirm')}
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
