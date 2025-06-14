@@ -14,7 +14,6 @@ export default interface Vehicle {
   lastMaintenance?: string;
   nextMaintenance?: string;
   nextMaintenanceId?: number;
-  currentOdometer: number;
   createdAt?: string;
   lastUpdateAt?: string;
 }

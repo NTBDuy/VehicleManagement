@@ -20,7 +20,7 @@ import Vehicle from '@/types/Vehicle';
 import Header from '@/components/layout/HeaderComponent';
 import RequestConfirm from '@/components/request/RequestConfirm';
 import RequestDatePicker from '@/components/request/RequestDatePicker';
-import RequestDestination from '@/components/request/RequestDestination';
+import RequestLocation from '@/components/request/RequestLocation';
 import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
 import { LocationType } from '@/types/Location';
 
@@ -30,31 +30,39 @@ interface validateError {
   purpose: string;
 }
 
+enum TabState {
+  DATE = 0,
+  VEHICLE = 1,
+  LOCATION = 2,
+  CONFIRM = 3,
+}
+
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState(0);
+
+  const [activeTab, setActiveTab] = useState<TabState>(TabState.DATE);
+  const [completedTabs, setCompletedTabs] = useState<Set<TabState>>(new Set());
   const [isMultiDayTrip, setIsMultiDayTrip] = useState(false);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [availableVehicle, setAvailableVehicle] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>();
-  const [purpose, setPurpose] = useState('');
-  const [isAssignDriver, setIsAssignDriver] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [startLocation, setStartLocation] = useState('');
   const [endLocation, setEndLocation] = useState('');
-  const [errors, setErrors] = useState<Partial<validateError>>({});
   const [locations, setLocations] = useState<LocationType[]>([]);
   const [estimatedTotalDistance, setEstimatedTotalDistance] = useState(0);
+  const [purpose, setPurpose] = useState('');
+  const [isAssignDriver, setIsAssignDriver] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Partial<validateError>>({});
 
   const tabs = [
-    { id: 0, title: t('request.create.tabs.time'), icon: faCalendarDays },
-    { id: 1, title: t('request.create.tabs.vehicle'), icon: faCarSide },
-    { id: 2, title: t('request.create.tabs.location'), icon: faLocation },
-    { id: 3, title: t('request.create.tabs.confirm'), icon: faCalendarCheck },
+    { id: TabState.DATE, title: t('request.create.tabs.time'), icon: faCalendarDays },
+    { id: TabState.VEHICLE, title: t('request.create.tabs.vehicle'), icon: faCarSide },
+    { id: TabState.LOCATION, title: t('request.create.tabs.location'), icon: faLocation },
+    { id: TabState.CONFIRM, title: t('request.create.tabs.confirm'), icon: faCalendarCheck },
   ];
 
   useFocusEffect(
@@ -63,15 +71,63 @@ const RequestCreateScreen = () => {
     }, [])
   );
 
+  const validateCurrentTab = (): boolean => {
+    switch (activeTab) {
+      case TabState.DATE:
+        return true;
+
+      case TabState.VEHICLE:
+        if (!selectedVehicle?.vehicleId) {
+          return false;
+        }
+        return true;
+
+      case TabState.LOCATION:
+        if (startLocation.trim() === '') {
+          return false;
+        }
+        if (endLocation.trim() === '') {
+          return false;
+        }
+        return true;
+
+      case TabState.CONFIRM:
+        if (purpose.trim() === '') {
+          return false;
+        }
+        return true;
+
+      default:
+        return true;
+    }
+  };
+
+  const handleNext = async () => {
+    if (!validateCurrentTab()) return;
+    setCompletedTabs((prev) => new Set([...prev, activeTab]));
+    if (activeTab === TabState.DATE) {
+      await fetchAvailableVehicle();
+    } else if (activeTab < TabState.CONFIRM) {
+      setActiveTab(activeTab + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (activeTab > TabState.DATE) {
+      setActiveTab(activeTab - 1);
+      setErrors({});
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
-      case 0:
+      case TabState.DATE:
         return renderDateComponent();
-      case 1:
+      case TabState.VEHICLE:
         return renderVehicleComponent();
-      case 2:
+      case TabState.LOCATION:
         return renderDestinationComponent();
-      case 3:
+      case TabState.CONFIRM:
         return renderConfirmComponent();
       default:
         return renderDateComponent();
@@ -86,7 +142,17 @@ const RequestCreateScreen = () => {
       endDate={endDate}
       setStartDate={setStartDate}
       setEndDate={setEndDate}
-      setIsDisabled={setIsDisabled}
+      setIsDisabled={(disabled) => {
+        if (!disabled) {
+          setCompletedTabs((prev) => new Set([...prev, TabState.DATE]));
+        } else {
+          setCompletedTabs((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(TabState.DATE);
+            return newSet;
+          });
+        }
+      }}
       handleClearList={clearAvailableList}
     />
   );
@@ -94,13 +160,18 @@ const RequestCreateScreen = () => {
   const renderVehicleComponent = () => (
     <RequestVehiclePicker
       availableVehicle={availableVehicle}
-      setSelectedVehicle={setSelectedVehicle}
+      setSelectedVehicle={(vehicle) => {
+        setSelectedVehicle(vehicle);
+        if (vehicle) {
+          setCompletedTabs((prev) => new Set([...prev, TabState.VEHICLE]));
+        }
+      }}
       selectedVehicle={selectedVehicle}
     />
   );
 
   const renderDestinationComponent = () => (
-    <RequestDestination
+    <RequestLocation
       startLocation={startLocation}
       setStartLocation={setStartLocation}
       endLocation={endLocation}
@@ -129,65 +200,48 @@ const RequestCreateScreen = () => {
   );
 
   const fetchAvailableVehicle = async () => {
-    if (endDate == '') {
+    if (isMultiDayTrip && endDate === '') {
       showToast.error(t('common.error.endDate'));
       return;
     }
+
     try {
       setIsLoading(true);
       const data = await VehicleService.getAvailableVehicles(
         startDate,
         isMultiDayTrip ? endDate : startDate
       );
+
       setAvailableVehicle(data);
-      setActiveTab(activeTab + 1);
+
+      if (data.length > 0) {
+        setActiveTab(TabState.VEHICLE);
+      } else {
+        showToast.error(t('common.error.noVehicleAvailable'));
+      }
     } catch (error) {
-      console.log(error);
+      console.error('Fetch vehicle error:', error);
+      showToast.error(t('common.error.title'), t('common.error.generic'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const validateData = (): boolean => {
-    const newErrors: Partial<validateError> = {};
-
-    if (!selectedVehicle?.vehicleId) {
-      showToast.error(
-        `${t('request.create.toast.vehicleRequired.title')}`,
-        `${t('request.create.toast.vehicleRequired.message')}`
-      );
-      setActiveTab(1);
-      return false;
-    }
-
-    if (startLocation == '') {
-      newErrors.startLocation = `${t('validate.required.startLocation')}`;
-      setActiveTab(2);
-    }
-
-    if (endLocation == '') {
-      newErrors.endLocation = `${t('validate.required.endLocation')}`;
-      setActiveTab(2);
-    }
-
-    if (purpose.trim() === '') {
-      newErrors.purpose = t('validate.required.purpose');
-      showToast.error(
-        `${t('request.create.toast.vehicleRequired.title')}`,
-        `${t('request.create.toast.vehicleRequired.message')}`
-      );
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const clearAvailableList = () => {
     setAvailableVehicle([]);
+    setSelectedVehicle(undefined);
+    setCompletedTabs((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(TabState.VEHICLE);
+      newSet.delete(TabState.LOCATION);
+      newSet.delete(TabState.CONFIRM);
+      return newSet;
+    });
   };
 
   const handleConfirm = async () => {
-    if (!validateData()) return;
+    if (!validateCurrentTab()) return;
+
     try {
       setIsLoading(true);
       const requestDTO = {
@@ -201,21 +255,14 @@ const RequestCreateScreen = () => {
         isDriverRequired: isAssignDriver,
         locations: locations,
       };
-      console.log('Request Data:', JSON.stringify(requestDTO, null, 2));
 
       const response = await RequestService.createRequest(requestDTO);
       if (response) {
-        showToast.success(
-          `${t('request.create.toast.success.title')}`,
-          `${t('request.create.toast.success.message')}`
-        );
+        showToast.success(`${t('common.success.newRequest')}`);
         clearContent();
         navigation.getParent()?.navigate('HistoryStack');
       } else {
-        showToast.error(
-          `${t('request.create.toast.fail.title')}`,
-          `${t('request.create.toast.fail.message')}`
-        );
+        showToast.error(`${t('common.error.newRequest')}`);
       }
     } catch (error) {
       console.error('Reservation error:', error);
@@ -226,17 +273,59 @@ const RequestCreateScreen = () => {
   };
 
   const clearContent = () => {
-    setActiveTab(0);
+    setActiveTab(TabState.DATE);
+    setCompletedTabs(new Set());
     setIsMultiDayTrip(false);
     setStartDate(new Date().toISOString().split('T')[0]);
     setEndDate(new Date().toISOString().split('T')[0]);
     setSelectedVehicle(undefined);
+    setAvailableVehicle([]);
     setLocations([]);
     setStartLocation('');
     setEndLocation('');
     setEstimatedTotalDistance(0);
     setPurpose('');
-    setIsDisabled(true);
+    setIsAssignDriver(false);
+    setErrors({});
+  };
+
+  const isNextButtonEnabled = () => {
+    switch (activeTab) {
+      case TabState.DATE:
+        return completedTabs.has(TabState.DATE) && !isLoading;
+      case TabState.VEHICLE:
+        return selectedVehicle !== undefined;
+      case TabState.LOCATION:
+        return startLocation.trim() !== '' && endLocation.trim() !== '';
+      case TabState.CONFIRM:
+        return purpose.trim() !== '' && !isLoading;
+      default:
+        return false;
+    }
+  };
+
+  const showDisabledReason = () => {
+    const newErrors: Partial<validateError> = {};
+    switch (activeTab) {
+      case TabState.DATE:
+        showToast.error(t('common.error.dateIncomplete'));
+        break;
+      case TabState.VEHICLE:
+        showToast.error(t('common.error.vehicleUnselected'));
+        break;
+      case TabState.LOCATION:
+        if (!startLocation.trim()) {
+          newErrors.startLocation = `${t('validate.required.startLocation')}`;
+        } else if (!endLocation.trim()) {
+          newErrors.endLocation = `${t('validate.required.endLocation')}`;
+        }
+        break;
+      case TabState.CONFIRM:
+        showToast.error(t('validate.required.purpose'));
+        newErrors.purpose = t('validate.required.purpose');
+        break;
+    }
+    setErrors(newErrors);
   };
 
   return (
@@ -247,35 +336,47 @@ const RequestCreateScreen = () => {
         <View className="mb-4 overflow-hidden rounded-2xl">
           <View className="flex-row">
             {tabs.map((tab) => (
-              <TouchableOpacity
-                key={tab.id}
-                className={`flex-1 items-center py-4`}
-                disabled={availableVehicle.length === 0}
-                onPress={() => {
-                  setActiveTab(tab.id);
-                }}>
+              <View key={tab.id} className="flex-1 items-center py-4">
                 <View className="flex-row items-center">
                   <View
                     className={`mt-2 h-[1] ${
-                      activeTab === tab.id ? 'bg-blue-500' : 'bg-gray-600'
+                      activeTab === tab.id
+                        ? 'bg-blue-500'
+                        : completedTabs.has(tab.id)
+                          ? 'bg-green-500'
+                          : 'bg-gray-600'
                     } mr-1 w-8`}></View>
                   <FontAwesomeIcon
                     icon={tab.icon}
-                    color={activeTab === tab.id ? '#3b82f6' : '#6b7280'}
+                    color={
+                      activeTab === tab.id
+                        ? '#3b82f6'
+                        : completedTabs.has(tab.id)
+                          ? '#10b981'
+                          : '#6b7280'
+                    }
                     size={20}
                   />
                   <View
                     className={`mt-2 h-[1] ${
-                      activeTab === tab.id ? 'bg-blue-500' : 'bg-gray-600'
+                      activeTab === tab.id
+                        ? 'bg-blue-500'
+                        : completedTabs.has(tab.id)
+                          ? 'bg-green-500'
+                          : 'bg-gray-600'
                     } ml-1 w-8`}></View>
                 </View>
                 <Text
                   className={`mt-1 text-xs font-medium ${
-                    activeTab === tab.id ? 'text-blue-500' : 'text-gray-600'
+                    activeTab === tab.id
+                      ? 'text-blue-500'
+                      : completedTabs.has(tab.id)
+                        ? 'text-green-500'
+                        : 'text-gray-600'
                   }`}>
                   {tab.title}
                 </Text>
-              </TouchableOpacity>
+              </View>
             ))}
           </View>
         </View>
@@ -283,29 +384,45 @@ const RequestCreateScreen = () => {
       </View>
 
       <View className="bg-gray-50 px-6 pb-4">
-        {activeTab === 0 && (
+        {activeTab === TabState.DATE && (
           <TouchableOpacity
-            className={`mt-4 w-full py-4 ${isDisabled && !isLoading ? 'bg-gray-400' : 'bg-blue-400 '} rounded-2xl `}
-            disabled={isDisabled && !isLoading}
-            onPress={fetchAvailableVehicle}>
+            className={`mt-4 w-full py-4 ${
+              !isNextButtonEnabled() ? 'bg-gray-400' : 'bg-blue-400'
+            } rounded-2xl`}
+            onPress={() => {
+              if (!isNextButtonEnabled()) {
+                showDisabledReason();
+              } else {
+                handleNext();
+              }
+            }}>
             <Text className="text-center text-lg font-bold text-white">
               {isLoading ? `${t('common.button.loading')}` : `${t('common.button.next')}`}
             </Text>
           </TouchableOpacity>
         )}
-        {activeTab === 1 && (
+
+        {activeTab > TabState.DATE && activeTab < TabState.CONFIRM && (
           <View className="flex-row items-center justify-between">
             <TouchableOpacity
-              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
-              onPress={() => setActiveTab(activeTab - 1)}>
+              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4"
+              onPress={handleBack}>
               <Text className="text-center text-lg font-bold text-white">
                 {t('common.button.back')}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
-              onPress={() => setActiveTab(activeTab + 1)}>
+              className={`mt-4 w-[48%] rounded-2xl py-4 ${
+                !isNextButtonEnabled() ? 'bg-gray-400' : 'bg-blue-400'
+              }`}
+              onPress={() => {
+                if (!isNextButtonEnabled()) {
+                  showDisabledReason();
+                } else {
+                  handleNext();
+                }
+              }}>
               <Text className="text-center text-lg font-bold text-white">
                 {t('common.button.next')}
               </Text>
@@ -313,39 +430,27 @@ const RequestCreateScreen = () => {
           </View>
         )}
 
-        {activeTab === 2 && (
+        {activeTab === TabState.CONFIRM && (
           <View className="flex-row items-center justify-between">
             <TouchableOpacity
-              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
-              onPress={() => setActiveTab(activeTab - 1)}>
+              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4"
+              onPress={handleBack}>
               <Text className="text-center text-lg font-bold text-white">
                 {t('common.button.back')}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="mt-4 w-[48%] rounded-2xl bg-blue-400 py-4 "
-              onPress={() => setActiveTab(activeTab + 1)}>
-              <Text className="text-center text-lg font-bold text-white">
-                {t('common.button.next')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        {activeTab === 3 && (
-          <View className="flex-row items-center justify-between">
-            <TouchableOpacity
-              className="mt-4 w-[48%] rounded-2xl bg-gray-400 py-4 "
-              onPress={() => setActiveTab(activeTab - 1)}>
-              <Text className="text-center text-lg font-bold text-white">
-                {t('common.button.back')}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className={`mt-4 w-[48%] rounded-2xl py-4 ${isLoading ? 'bg-gray-400' : 'bg-blue-400 '}`}
-              onPress={handleConfirm}
-              disabled={isLoading}>
+              className={`mt-4 w-[48%] rounded-2xl py-4 ${
+                !isNextButtonEnabled() ? 'bg-gray-400' : 'bg-blue-400'
+              }`}
+              onPress={() => {
+                if (!isNextButtonEnabled()) {
+                  showDisabledReason();
+                } else {
+                  handleConfirm();
+                }
+              }}>
               <Text className="text-center text-lg font-bold text-white">
                 {isLoading ? `${t('common.button.processing')}` : `${t('common.button.confirm')}`}
               </Text>

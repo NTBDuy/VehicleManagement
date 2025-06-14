@@ -1,14 +1,17 @@
+import { showToast } from '@/utils/toast';
 import { faCar, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { yupResolver } from '@hookform/resolvers/yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from 'contexts/AuthContext';
 import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { showToast } from 'utils/toast';
+import CountryFlag from 'react-native-country-flag';
+import * as yup from 'yup';
 
 import InputField from '@/components/ui/InputFieldComponent';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import CountryFlag from 'react-native-country-flag';
 
 type QuickLoginRole = {
   title: string;
@@ -37,12 +40,31 @@ const LoginScreen = () => {
   const { login } = useAuth();
   const { t, i18n } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState('en-US');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeRole, setActiveRole] = useState<string>('');
-  const [errors, setErrors] = useState<Partial<LoginType>>({});
   const [showPasswords, setShowPasswords] = useState(false);
+
+  const loginSchema = yup.object().shape({
+    username: yup.string().required(t('validate.required.username')).trim(),
+    password: yup
+      .string()
+      .required(t('validate.required.password'))
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, t('validate.regex.password')),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginType>({
+    reValidateMode: 'onChange',
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+    resolver: yupResolver(loginSchema),
+  });
 
   useEffect(() => {
     const loadLanguage = async () => {
@@ -55,47 +77,21 @@ const LoginScreen = () => {
     loadLanguage();
   }, [i18n]);
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<LoginType> = {};
-
-    if (!username?.trim()) {
-      newErrors.username = t('validate.required.username') as string;
-    }
-
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-    if (!password?.trim()) {
-      newErrors.password = t('validate.required.password') as string;
-    } else if (!passwordRegex.test(password)) {
-      newErrors.password = t('validate.regex.password');
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLogin = async () => {
-    if (!validateForm()) {
-      showToast.error(
-        `${t('common.error.validation.title')}`,
-        `${t('common.error.validation.message')}`
-      );
-      return;
-    }
-
+  const onSubmit = async (data: LoginType) => {
     setIsLoading(true);
     try {
-      await login({ username: username.trim(), password });
+      await login({ username: data.username.trim(), password: data.password });
     } catch (error) {
-      console.log(error)
-      // showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
+      console.log(error);
+      showToast.error(t('common.error.title'), t('common.error.generic'));
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleQuickLogin = (role: QuickLoginRole) => {
-    setUsername(role.Username);
-    setPassword(role.password);
+    setValue('username', role.Username);
+    setValue('password', role.password);
     setActiveRole(role.title);
   };
 
@@ -133,35 +129,48 @@ const LoginScreen = () => {
             <Text className="text-center text-3xl font-bold">{t('common.vms')}</Text>
           </View>
           <View className="mb-6">
-            <InputField
-              label={t('common.fields.username')}
-              value={username}
-              onChangeText={setUsername}
-              error={errors.username as string}
+            <Controller
+              control={control}
+              name="username"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.username')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.username?.message}
+                />
+              )}
             />
-            <InputField
-              label={t('common.fields.password')}
-              value={password}
-              onChangeText={setPassword}
-              error={errors.password as string}
-              secureTextEntry={!showPasswords}
-              rightIcon={
-                <TouchableOpacity onPress={() => togglePasswordVisibility()}>
-                  <FontAwesomeIcon
-                    icon={showPasswords ? faEyeSlash : faEye}
-                    size={16}
-                    color="#6b7280"
-                  />
-                </TouchableOpacity>
-              }
+
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.password')}
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry={!showPasswords}
+                  error={errors.password?.message}
+                  rightIcon={
+                    <TouchableOpacity onPress={togglePasswordVisibility}>
+                      <FontAwesomeIcon
+                        icon={showPasswords ? faEyeSlash : faEye}
+                        size={16}
+                        color="#6b7280"
+                      />
+                    </TouchableOpacity>
+                  }
+                />
+              )}
             />
           </View>
           <TouchableOpacity
-            disabled={isLoading}
-            className={`rounded-lg py-3 ${isLoading ? 'bg-gray-500' : 'bg-blue-500'}`}
-            onPress={handleLogin}>
+            disabled={isSubmitting}
+            className={`rounded-lg py-3 ${isSubmitting ? 'bg-gray-500' : 'bg-blue-500'}`}
+            onPress={handleSubmit(onSubmit)}>
             <Text className="text-center font-bold text-white">
-              {isLoading ? `${t('auth.loggingIn')}...` : `${t('auth.title')}`}
+              {isSubmitting ? `${t('auth.loggingIn')}...` : `${t('auth.title')}`}
             </Text>
           </TouchableOpacity>
 

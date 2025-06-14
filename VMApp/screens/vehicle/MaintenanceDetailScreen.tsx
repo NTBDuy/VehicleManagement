@@ -1,10 +1,6 @@
 import { VehicleService } from '@/services/vehicleService';
 import { formatDate, formatDatetime } from '@/utils/datetimeUtils';
-import {
-  getMaintenanceBackgroundColor,
-  getMaintenanceLabelEn,
-  getMaintenanceLabelVi,
-} from '@/utils/maintenanceUtils';
+import { getMaintenanceBackgroundColor, getMaintenanceLabel } from '@/utils/maintenanceUtils';
 import { showToast } from '@/utils/toast';
 import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -21,10 +17,9 @@ import MyCalendar from '@/components/ui/MyCalendar';
 import MaintenanceSchedule from '@/types/MaintenanceSchedule';
 
 const MaintenanceDetailScreen = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const today = new Date().toISOString().split('T')[0];
   const route = useRoute();
-  const currentLocale = i18n.language;
   const { maintenanceData: initialMaintenanceData } = route.params as {
     maintenanceData: MaintenanceSchedule;
   };
@@ -75,11 +70,7 @@ const MaintenanceDetailScreen = () => {
     const bgColor = getMaintenanceBackgroundColor(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">
-          {currentLocale === 'vi-VN'
-            ? getMaintenanceLabelVi(status)
-            : getMaintenanceLabelEn(status)}
-        </Text>
+        <Text className="text-xs font-medium text-white">{getMaintenanceLabel(status, t)}</Text>
       </View>
     );
   };

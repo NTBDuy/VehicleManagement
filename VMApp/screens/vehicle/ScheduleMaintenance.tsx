@@ -15,19 +15,37 @@ import InfoRow from '@/components/ui/InfoRowComponent';
 import InputField from '@/components/ui/InputFieldComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import MyCalendar from '@/components/ui/MyCalendar';
+import { maintenanceSchema } from '@/validations/maintenanceSchema';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+interface ScheduleFormData {
+  estimatedEndDate: number;
+  description: string;
+}
 
 const ScheduleMaintenance = () => {
   const route = useRoute();
   const { t } = useTranslation();
-  const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
+  const { vehicleData } = route.params as { vehicleData: Vehicle };
   const navigation = useNavigation<any>();
-  const [vehicleData, setVehicleData] = useState<Vehicle>(initialVehicleData);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [estimatedTime, setEstimatedTime] = useState('');
-  const [description, setDescription] = useState('');
-  const [errors, setErrors] = useState<Partial<MaintenanceSchedule>>({});
   const today = new Date().toISOString().split('T')[0];
+
+  const makeScheduleSchema = maintenanceSchema(t);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ScheduleFormData>({
+    resolver: yupResolver(makeScheduleSchema),
+    defaultValues: {
+      estimatedEndDate: 0,
+      description: '',
+    },
+    mode: 'onChange',
+  });
 
   const markedDates = {
     [selectedDate]: {
@@ -41,30 +59,7 @@ const ScheduleMaintenance = () => {
     setSelectedDate(day.dateString);
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<MaintenanceSchedule> = {};
-
-    if (!estimatedTime.trim()) {
-      newErrors.estimatedEndDate = t('maintenance.validate.estimate');
-    }
-
-    if (!description.trim()) {
-      newErrors.description = t('maintenance.validate.description');
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSchedule = async () => {
-    if (!validateForm()) {
-      showToast.error(
-        `${t('common.error.validation.title')}`,
-        `${t('common.error.validation.message')}`
-      );
-      return;
-    }
-
+  const onSubmit = async (data: ScheduleFormData) => {
     Alert.alert(
       `${t('common.confirmation.title.schedule')}`,
       `${t('common.confirmation.message.schedule')}`,
@@ -73,20 +68,16 @@ const ScheduleMaintenance = () => {
         {
           text: `${t('common.button.confirm')}`,
           onPress: async () => {
-            setIsLoading(true);
             try {
               await VehicleService.scheduleMaintenance(vehicleData.vehicleId, {
                 scheduledDate: selectedDate,
-                estimatedDurationInDays: estimatedTime,
-                description: description.trim(),
+                ...data,
               });
 
               showToast.success(`${t('common.success.title')}`, `${t('common.success.schedule')}`);
               navigation.goBack();
             } catch (error) {
               console.error(error);
-            } finally {
-              setIsLoading(false);
             }
           },
         },
@@ -94,11 +85,21 @@ const ScheduleMaintenance = () => {
     );
   };
 
+  const handleSchedule = async () => {
+    handleSubmit(onSubmit, (errors) => {
+      console.log('Validation errors:', errors);
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
+    })();
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header title={t('maintenance.schedule.title')} backBtn />
 
-      {isLoading ? (
+      {isSubmitting ? (
         <LoadingData />
       ) : (
         <ScrollView>
@@ -168,21 +169,33 @@ const ScheduleMaintenance = () => {
 
             <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
               <View className="bg-gray-50 px-4 py-3">
-                <InputField
-                  label={t('maintenance.schedule.estimate')}
-                  value={estimatedTime}
-                  onChangeText={setEstimatedTime}
-                  keyboardType="numeric"
-                  error={errors.estimatedEndDate}
+                <Controller
+                  control={control}
+                  name="estimatedEndDate"
+                  render={({ field: { onChange, value } }) => (
+                    <InputField
+                      label={t('maintenance.schedule.estimate')}
+                      value={value}
+                      onChangeText={(val) => onChange(Number(val))}
+                      keyboardType="numeric"
+                      error={errors.estimatedEndDate?.message}
+                    />
+                  )}
                 />
 
-                <InputField
-                  label={t('common.fields.description')}
-                  value={description}
-                  onChangeText={setDescription}
-                  multiline
-                  numberOfLines={3}
-                  error={errors.description}
+                <Controller
+                  control={control}
+                  name="description"
+                  render={({ field: { onChange, value } }) => (
+                    <InputField
+                      label={t('common.fields.description')}
+                      value={value}
+                      onChangeText={onChange}
+                      multiline
+                      numberOfLines={3}
+                      error={errors.description?.message}
+                    />
+                  )}
                 />
               </View>
             </View>

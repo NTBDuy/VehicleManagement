@@ -14,8 +14,12 @@ import {
 } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
+import { userSchema } from '@/validations/userSchema';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
 
 import User from 'types/User';
+import UserFormData from '@/types/UserFormData';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
@@ -35,8 +39,23 @@ const UserAddScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [userData, setUserData] = useState<User>(initialUserData);
-  const [errors, setErrors] = useState<Partial<User>>({});
-  const [isLoading, setIsLoading] = useState(false);
+
+  const createUserSchema = userSchema(t);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<UserFormData>({
+    resolver: yupResolver(createUserSchema),
+    defaultValues: {
+      fullName: '',
+      email: '',
+      phoneNumber: '',
+    },
+    mode: 'onChange',
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -50,50 +69,36 @@ const UserAddScreen = () => {
     { label: t('common.role.admin'), value: 0 },
   ];
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<User> = {};
-
-    if (!userData.fullName.trim()) {
-      newErrors.fullName = t('validate.required.fullname');
-    }
-
-    if (!userData.email.trim()) {
-      newErrors.email = t('validate.required.email');
-    } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
-      newErrors.email = `${t('validate.regex.email')}`;
-    }
-
-    if (!userData.phoneNumber.trim()) {
-      newErrors.phoneNumber = `${t('validate.required.phone')}`;
-    } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = `${t('validate.regex.phone')}`;
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleCreateUser = async () => {
-    if (!validateForm()) {
-      showToast.error(
-        `${t('common.error.validation.title')}`,
-        `${t('common.error.validation.message')}`
-      );
-      return;
-    }
+  const onSubmit = async (data: UserFormData) => {
     try {
-      setIsLoading(true);
-      const data = await UserService.createUser(userData);
+      const createUserData = {
+        ...userData,
+        ...data,
+      };
+      const result = await UserService.createUser(createUserData);
       showToast.success(
         `${t('common.success.title')}`,
         `${t('common.success.created', { item: t('common.items.user') })}`
       );
-      navigation.navigate('UserDetail', { userData: data });
+      navigation.navigate('UserDetail', { userData: result });
+      reset({
+        fullName: '',
+        email: '',
+        phoneNumber: '',
+      });
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  const handleCreateUser = async () => {
+    handleSubmit(onSubmit, (errors) => {
+      console.log('Validation errors:', errors);
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
+    })();
   };
 
   return (
@@ -115,31 +120,45 @@ const UserAddScreen = () => {
         <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
             <Text className="text-lg font-semibold text-gray-800">
-              {' '}
               {t('user.detail.informationTitle')}
             </Text>
           </View>
           <View className="p-4">
-            <InputField
-              label={t('common.fields.fullname')}
-              value={userData.fullName}
-              onChangeText={(text) => setUserData({ ...userData, fullName: text })}
-              error={errors.fullName}
+            <Controller
+              control={control}
+              name="fullName"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.fullname')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.fullName?.message}
+                />
+              )}
             />
-            <InputField
-              label={t('common.fields.email')}
-              value={userData.email}
-              onChangeText={(text) => setUserData({ ...userData, email: text })}
-              keyboardType="email-address"
-              error={errors.email}
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.email')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.email?.message}
+                />
+              )}
             />
-            <InputField
-              label={t('common.fields.phone')}
-              value={userData.phoneNumber}
-              onChangeText={(text) => setUserData({ ...userData, phoneNumber: text })}
-              placeholder="e.g. 0912345678"
-              keyboardType="phone-pad"
-              error={errors.phoneNumber}
+            <Controller
+              control={control}
+              name="phoneNumber"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.phone')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.phoneNumber?.message}
+                />
+              )}
             />
           </View>
         </View>
@@ -208,11 +227,11 @@ const UserAddScreen = () => {
 
         <View className="mb-8 mt-4">
           <TouchableOpacity
-            className={`items-center rounded-xl py-4 shadow-sm ${isLoading ? 'bg-gray-500' : 'bg-blue-600 '}`}
-            disabled={isLoading}
+            className={`items-center rounded-xl py-4 shadow-sm ${isSubmitting ? 'bg-gray-500' : 'bg-blue-600 '}`}
+            disabled={isSubmitting}
             onPress={handleCreateUser}>
             <Text className="text-lg font-semibold text-white">
-              {isLoading ? `${t('common.button.creating')}` : `${t('common.button.create')}`}
+              {isSubmitting ? `${t('common.button.creating')}` : `${t('common.button.create')}`}
             </Text>
           </TouchableOpacity>
         </View>

@@ -5,12 +5,14 @@ interface LocationDetailsProps {
   locations: LocationType[];
   estimatedTotalDistance: number;
   stopPointsCount: number;
+  t: any;
 }
 
 export const LocationDetails = ({
   locations,
   estimatedTotalDistance,
   stopPointsCount,
+  t,
 }: LocationDetailsProps) => {
   const renderLocationItem = (item: LocationType) => (
     <View
@@ -25,10 +27,10 @@ export const LocationDetails = ({
       <View className="mb-1 flex-row items-center">
         <Text className="mr-2 rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
           {item.order === 0
-            ? 'Điểm xuất phát'
+            ? t('common.fields.startPoint')
             : item.order === Math.max(...locations.map((l) => l.order))
-              ? 'Điểm kết thúc'
-              : `Điểm dừng ${item.order}`}
+              ? t('common.fields.endPoint')
+              : `${t('common.fields.stopPoint')} ${item.order}`}
         </Text>
       </View>
       <Text className="mb-1 text-sm text-gray-600">{item.address}</Text>
@@ -44,12 +46,15 @@ export const LocationDetails = ({
   return (
     <View className="mt-6">
       <View className="bg-gray-50 px-4 pb-3">
-        <Text className="text-lg font-semibold text-gray-800">Chi tiết địa điểm đã chọn</Text>
+        <Text className="text-lg font-semibold text-gray-800">
+          {t('request.create.locationDetails')}
+        </Text>
         <Text className="text-sm font-normal text-gray-600">
-          Dự kiến hơn {estimatedTotalDistance}Km
+          {t('common.fields.estimateDistance')} {'>'} {estimatedTotalDistance} Km
         </Text>
         <Text className="mt-1 text-xs text-gray-500">
-          Tổng số điểm: {locations.length} | Điểm dừng: {stopPointsCount}
+          {t('common.fields.totalPoint')}: {locations.length} | {t('common.fields.stopPoint')}:{' '}
+          {stopPointsCount}
         </Text>
       </View>
       <View className="flex pl-4 pr-2">

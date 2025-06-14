@@ -2,20 +2,21 @@ import { StatusConfig } from '@/types/StatusConfig';
 
 type StatusNumber = 0 | 1 | 2 | 3 | 4 | 5;
 
-const STATUS_CONFIG: Record<StatusNumber, StatusConfig> = {
-  0: { labelEn: 'Pending', labelVi: 'Chờ duyệt', color: 'amber-600' },
-  1: { labelEn: 'Approved', labelVi: 'Đã duyệt', color: 'green-600' },
-  2: { labelEn: 'Rejected', labelVi: 'Đã từ chối', color: 'red-600' },
-  3: { labelEn: 'Cancelled', labelVi: 'Đã huỷ', color: 'slate-600' },
-  4: { labelEn: 'In Progress', labelVi: 'Đang sử dụng', color: 'blue-600' },
-  5: { labelEn: 'Done', labelVi: 'Hoàn thành', color: 'teal-600' },
+const STATUS_CONFIG: Record<StatusNumber, Omit<StatusConfig, 'label'> & { labelKey: string }> = {
+  0: { labelKey: 'common.status.pending', color: 'amber-600' },
+  1: { labelKey: 'common.status.approved', color: 'green-600' },
+  2: { labelKey: 'common.status.rejected', color: 'red-600' },
+  3: { labelKey: 'common.status.cancelled', color: 'slate-600' },
+  4: { labelKey: 'common.status.inProgress', color: 'blue-600' },
+  5: { labelKey: 'common.status.done', color: 'teal-600' },
 };
 
-const DEFAULT_CONFIG: StatusConfig = {
-  labelEn: 'Unknown',
-  labelVi: 'Không xác định',
+const DEFAULT_CONFIG = {
+  labelKey: 'common.status.unknown',
   color: 'gray-600',
 };
+
+const getStatusConfig = (status: number) => STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
 
 export const getRequestBorderColor = (status: number): string => {
   const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
@@ -27,20 +28,14 @@ export const getRequestBackgroundColor = (status: number): string => {
   return `bg-${config.color}`;
 };
 
-export const getRequestLabelEn = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return config.labelEn;
+export const getRequestLabel = (status: number, t: (key: string) => string): string => {
+  return t(getStatusConfig(status).labelKey);
 };
 
-export const getRequestLabelEnVi = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return config.labelVi;
-};
-
-export const getLocationLabel = (order: number, locationsLength: number) => {
-  if (order === 0) return 'Điểm xuất phát';
-  if (order === locationsLength - 1) return 'Điểm kết thúc';
-  return `Điểm dừng ${order}`;
+export const getLocationLabel = (order: number, locationsLength: number, t: any) => {
+  if (order === 0) return t('common.fields.startPoint');
+  if (order === locationsLength - 1) return t('common.fields.endPoint');
+  return `${t('common.fields.stopPoint')} ${order}`;
 };
 
 export const calculateDistance = (

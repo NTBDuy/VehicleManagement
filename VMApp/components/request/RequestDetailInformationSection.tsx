@@ -5,7 +5,8 @@ import { Linking, Platform, Pressable, Text, View } from 'react-native';
 import { formatDate } from 'utils/datetimeUtils';
 
 import Request from 'types/Request';
-import InfoRow from '../ui/InfoRowComponent';
+
+import InfoRow from '@/components/ui/InfoRowComponent';
 
 interface InformationSectionProps {
   requestData: Request;
@@ -51,7 +52,7 @@ const InformationSection = ({ requestData }: InformationSectionProps) => {
           value={requestData.user?.fullName || t('common.fields.noInfo')}
         />
         <InfoRow
-          label="Số điện thoại"
+          label={t('common.fields.phone')}
           value=""
           valueComponent={
             <Pressable onPress={() => handleCall(Number(requestData.user?.phoneNumber))}>
@@ -77,7 +78,7 @@ const InformationSection = ({ requestData }: InformationSectionProps) => {
         {requestData.locations.map((item) => (
           <InfoRow
             key={item.id}
-            label={getLocationLabel(item.order, requestData.locations.length)}
+            label={getLocationLabel(item.order, requestData.locations.length, t)}
             value=""
             valueComponent={
               <Pressable
@@ -126,7 +127,7 @@ const InformationSection = ({ requestData }: InformationSectionProps) => {
         />
         {Number.isFinite(requestData.totalDistance) && (
           <InfoRow
-            label="Quãng đường đã đi"
+            label={t('common.fields.totalDistance')}
             value=""
             valueComponent={
               <Text className="text-right font-semibold text-gray-800">

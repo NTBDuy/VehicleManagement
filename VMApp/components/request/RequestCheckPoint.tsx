@@ -16,8 +16,8 @@ import {
 import { ImageType } from '@/types/LocationCheckpoint';
 
 import InputField from '@/components/ui/InputFieldComponent';
-import { Dispatch, SetStateAction, useState } from 'react';
 import { LocationType } from '@/types/Location';
+import { Dispatch, SetStateAction } from 'react';
 
 interface RequestCheckPointProps {
   currentLocation: LocationType;
@@ -27,6 +27,7 @@ interface RequestCheckPointProps {
   isLastLocation: boolean;
   currentImages: ImageType[];
   setCurrentImages: Dispatch<SetStateAction<ImageType[]>>;
+  t: any;
 }
 
 const RequestCheckPoint = ({
@@ -37,17 +38,18 @@ const RequestCheckPoint = ({
   isLastLocation,
   currentImages,
   setCurrentImages,
+  t,
 }: RequestCheckPointProps) => {
   const showImagePickerOptions = () => {
     if (currentImages.length >= 2) {
-      showToast.error('Tối đa 2 ảnh cho mỗi điểm');
+      showToast.error(`${t('common.error.maxImage')}`);
       return;
     }
 
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ['Chụp ảnh', 'Hủy'],
+          options: [t('common.button.takePhoto'), t('common.button.cancel')],
           cancelButtonIndex: 1,
         },
         (buttonIndex) => {
@@ -57,9 +59,9 @@ const RequestCheckPoint = ({
         }
       );
     } else {
-      Alert.alert('Chụp ảnh', 'Bạn muốn chụp ảnh mới?', [
-        { text: 'Chụp ảnh', onPress: () => openCamera() },
-        { text: 'Hủy', style: 'cancel' },
+      Alert.alert(t('common.button.takePhoto'), t('common.confirmation.message.newImage'), [
+        { text: t('common.button.takePhoto'), onPress: () => openCamera() },
+        { text: t('common.button.cancel'), style: 'cancel' },
       ]);
     }
   };
@@ -82,11 +84,11 @@ const RequestCheckPoint = ({
         };
 
         setCurrentImages((prev) => [...prev, newImage]);
-        showToast.success('Đã thêm ảnh thành công!');
+        showToast.success(t('common.success.takePhoto'));
       }
     } catch (error) {
-      console.error('Camera error:', error);
-      showToast.error('Không thể chụp ảnh. Vui lòng thử lại.');
+      console.log('Camera error:', error);
+      showToast.error(t('common.error.takePhoto'));
     }
   };
 
@@ -96,7 +98,7 @@ const RequestCheckPoint = ({
     return (
       <View className="mt-2">
         <Text className={`mb-2 text-sm font-medium text-gray-600 ${isReadOnly && 'text-center'}`}>
-          Ảnh đã chọn ({images.length}/2):
+          {t('common.fields.selectedImage')} ({images.length}/2):
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
           {images.map((image, index) => (
@@ -122,39 +124,47 @@ const RequestCheckPoint = ({
   };
 
   const removeImage = (index: number) => {
-    Alert.alert('Xóa ảnh', 'Bạn có chắc chắn muốn xóa ảnh này?', [
-      { text: 'Hủy', style: 'cancel' },
-      {
-        text: 'Xóa',
-        style: 'destructive',
-        onPress: () => {
-          setCurrentImages((prev) => prev.filter((_, i) => i !== index));
-          showToast.success('Đã xóa ảnh');
+    Alert.alert(
+      t('common.confirmation.title.removeImage'),
+      t('common.confirmation.message.removeImage'),
+      [
+        { text: t('common.button.cancel'), style: 'cancel' },
+        {
+          text: t('common.button.remove'),
+          style: 'destructive',
+          onPress: () => {
+            setCurrentImages((prev) => prev.filter((_, i) => i !== index));
+            showToast.success(t('common.success.removeImage'));
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <View className="bg-green-50 px-4 py-3">
         <Text className="text-lg font-bold text-gray-800">
-          Điểm hiện tại: {currentLocation.name}
+          {t('common.fields.currentPoint')}: {currentLocation.name}
         </Text>
         <Text className="text-sm text-gray-600">{currentLocation.address}</Text>
       </View>
 
       <View className="p-4">
-        <Text className="mb-3 text-base font-semibold text-gray-800">Hình ảnh tại điểm này</Text>
+        <Text className="mb-3 text-base font-semibold text-gray-800">
+          {t('request.inProgress.currentImage')}
+        </Text>
 
         <TouchableOpacity
           onPress={showImagePickerOptions}
           className="mb-2 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 active:border-blue-400 active:bg-blue-50"
           activeOpacity={0.7}>
           <FontAwesomeIcon icon={faCamera} color="#9CA3AF" size={32} />
-          <Text className="mt-3 text-base font-medium text-gray-700">Chụp hoặc tải ảnh lên</Text>
+          <Text className="mt-3 text-base font-medium text-gray-700">
+            {t('common.button.takePhoto')}
+          </Text>
           <Text className="mt-1 text-sm text-gray-500">
-            Tối đa 2 ảnh ({currentImages.length}/2)
+            {t('request.inProgress.maxImage')} ({currentImages.length}/2)
           </Text>
         </TouchableOpacity>
 
@@ -162,11 +172,13 @@ const RequestCheckPoint = ({
       </View>
 
       <View className="border-t border-gray-100 p-4">
-        <Text className="mb-3 text-base font-semibold text-gray-800">Ghi chú</Text>
+        <Text className="mb-3 text-base font-semibold text-gray-800">
+          {t('common.fields.note')}
+        </Text>
         <InputField
           value={currentNote}
           onChangeText={setCurrentNote}
-          placeholder={`Ghi chú tại ${currentLocation.name}`}
+          placeholder={t('common.placeholder.note')}
           multiline={true}
           numberOfLines={3}
         />
@@ -180,7 +192,7 @@ const RequestCheckPoint = ({
           }`}
           activeOpacity={0.8}>
           <Text className="text-center text-base font-bold text-white">
-            {isLastLocation ? 'Hoàn thành hành trình' : `Xác nhận Check-in`}
+            {isLastLocation ? t('common.button.completeTrip') : t('common.button.confirmCheckIn')}
           </Text>
         </TouchableOpacity>
       </View>

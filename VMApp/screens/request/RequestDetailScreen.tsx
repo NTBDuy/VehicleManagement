@@ -21,6 +21,15 @@ import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 
+const REQUEST_STATUS = {
+  PENDING: 0,
+  APPROVED: 1,
+  REJECTED: 2,
+  CANCELLED: 3,
+  IN_PROGRESS: 4,
+  COMPLETED: 5,
+} as const;
+
 const RequestDetailScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
@@ -29,147 +38,137 @@ const RequestDetailScreen = () => {
   const { requestData: initialRequestData } = route.params as { requestData: Request };
   const [requestData, setRequestData] = useState<Request>(initialRequestData);
   const [assignmentData, setAssignmentData] = useState<Assignment | null>(null);
-  const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
-  const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
-  const [isUsingLoading, setIsUsingLoading] = useState(false);
-  const [isEndUsageLoading, setIsEndUsageLoading] = useState(false);
-  const [isReminderSent, setIsReminderSent] = useState(false);
   const [checkPoint, setCheckPoint] = useState<CheckPoint[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
+
+  const [visible, setVisible] = useState({
+    approve: false,
+    reject: false,
+    cancel: false,
+  });
+
+  const [loadingStates, setLoadingStates] = useState({
+    assignment: false,
+    checkPoint: false,
+    usingVehicle: false,
+    endUsage: false,
+    reminder: false,
+    refreshing: false,
+  });
 
   useFocusEffect(
     useCallback(() => {
-      setAssignmentData(null);
-      if (
-        requestData.isDriverRequired &&
-        requestData.status !== 2 &&
-        requestData.status !== 3 &&
-        requestData.status !== 0
-      ) {
-        fetchAssignmentData(requestData.requestId);
-      }
+      const loadData = async () => {
+        setAssignmentData(null);
+        if (shouldLoadAssignmentData()) {
+          await fetchAssignmentData(requestData.requestId);
+        }
+        if (shouldLoadCheckPointData()) {
+          await fetchCheckPoint(requestData.requestId);
+        }
+      };
+
+      loadData();
     }, [requestData])
   );
 
-  const onRefresh = async () => {
-    try {
-      setRefreshing(true);
-      const data = await RequestService.getRequestDetails(requestData.requestId);
-      setRequestData(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setRefreshing(false);
-    }
+  const shouldLoadAssignmentData = () => {
+    return (
+      requestData.isDriverRequired &&
+      ![REQUEST_STATUS.REJECTED, REQUEST_STATUS.CANCELLED, REQUEST_STATUS.PENDING].includes(
+        requestData.status as any
+      )
+    );
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      setAssignmentData(null);
-      if (requestData.status == 4 || requestData.status == 5) {
-        fetchCheckPoint(requestData.requestId);
-      }
-    }, [requestData])
-  );
+  const shouldLoadCheckPointData = () => {
+    return [REQUEST_STATUS.IN_PROGRESS, REQUEST_STATUS.COMPLETED].includes(
+      requestData.status as any
+    );
+  };
 
   const fetchAssignmentData = async (requestId: number) => {
     try {
+      setLoadingStates((prev) => ({ ...prev, assignment: true }));
       const data = await RequestService.getAssignmentDetails(requestId);
       setAssignmentData(data);
     } catch (error) {
-      console.log(error);
+      console.error('Failed to fetch assignment data:', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, assignment: false }));
     }
   };
 
   const fetchCheckPoint = async (requestId: number) => {
     try {
+      setLoadingStates((prev) => ({ ...prev, checkPoint: true }));
       const data = await RequestService.checkPointList(requestId);
       setCheckPoint(data);
     } catch (error) {
-      console.log(error);
+      console.error('Failed to fetch checkpoint data:', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, checkPoint: false }));
     }
   };
 
-  const handleApprove = () => {
-    setIsApproveModalVisible(true);
+  const onRefresh = async () => {
+    try {
+      setLoadingStates((prev) => ({ ...prev, refreshing: true }));
+      const data = await RequestService.getRequestDetails(requestData.requestId);
+      setRequestData(data);
+    } catch (error) {
+      console.error('Failed to refresh data:', error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, refreshing: false }));
+    }
   };
 
-  const handleReject = () => {
-    setIsRejectModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsCancelModalVisible(true);
+  const showModal = (modalType: 'approve' | 'reject' | 'cancel') => {
+    setVisible({
+      approve: modalType === 'approve',
+      reject: modalType === 'reject',
+      cancel: modalType === 'cancel',
+    });
   };
 
   const handleCloseModal = () => {
-    setIsApproveModalVisible(false);
-    setIsRejectModalVisible(false);
-    setIsCancelModalVisible(false);
-  };
-
-  const handleApproveConfirm = async (driverId: string | null, note: string) => {
-    const assignmentData = { driverId, note };
-
-    const updatedRequest = requestData.isDriverRequired
-      ? await RequestService.approveRequest(requestData.requestId, assignmentData)
-      : await RequestService.approveRequest(requestData.requestId);
-
-    setRequestData(updatedRequest);
-    handleCloseModal();
-  };
-
-  const handleRejectConfirm = async (reason: string) => {
-    const reasonData = { reason };
-    const updatedRequest = await RequestService.rejectRequest(requestData.requestId, reasonData);
-    setRequestData(updatedRequest);
-    handleCloseModal();
-  };
-
-  const handleCancelConfirm = async (reason: string) => {
-    const reasonData = { reason };
-    const updatedRequest = await RequestService.cancelRequest(requestData.requestId, reasonData);
-    setRequestData(updatedRequest);
-    handleCloseModal();
+    setVisible({
+      approve: false,
+      reject: false,
+      cancel: false,
+    });
   };
 
   const canUseVehicle = () => {
-    const today = new Date();
-    const startDate = new Date(requestData.startTime);
-    const endDate = new Date(requestData.endTime);
-    today.setHours(0, 0, 0, 0);
-    startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(0, 0, 0, 0);
-    return today >= startDate && today <= endDate;
+    const now = new Date();
+    const startTime = new Date(requestData.startTime);
+    const endTime = new Date(requestData.endTime);
+    return now >= startTime && now <= endTime;
   };
 
   const handleUsingVehicle = () => {
+    if (!canUseVehicle()) {
+      showToast.error(t('common.error.startUsing'));
+      return;
+    }
+
     Alert.alert(
-      `${t('request.detail.toast.startUsing.title')}`,
-      `${t('request.detail.toast.startUsing.message')}`,
+      t('common.confirmation.title.startUsing'),
+      t('common.confirmation.message.startUsing'),
       [
-        { text: `${t('common.button.cancel')}`, style: 'cancel' },
+        { text: t('common.button.cancel'), style: 'cancel' },
         {
-          text: `${t('common.button.confirm')}`,
+          text: t('common.button.confirm'),
           onPress: async () => {
-            if (!canUseVehicle()) {
-              showToast.error(
-                `${t('request.detail.toast.startUsingError.title')}`,
-                `${t('request.detail.toast.startUsingError.message')}`
-              );
-              return;
-            }
             try {
-              setIsUsingLoading(true);
+              setLoadingStates((prev) => ({ ...prev, usingVehicle: true }));
               const response = await RequestService.usingVehicle(requestData.requestId);
               setRequestData(response);
-              showToast.success(`${t('request.detail.toast.startUsingSuccess.message')}`);
-              navigation.navigate('InProgress', { requestData });
+              showToast.success(t('common.success.startUsing'));
+              navigation.navigate('InProgress', { requestData: response });
             } catch (error) {
-              console.log(error);
+              console.error('Failed to start vehicle usage:', error);
             } finally {
-              setIsUsingLoading(false);
+              setLoadingStates((prev) => ({ ...prev, usingVehicle: false }));
             }
           },
         },
@@ -179,25 +178,22 @@ const RequestDetailScreen = () => {
 
   const handleEndUsage = () => {
     Alert.alert(
-      `${t('request.detail.toast.endUsage.title')}`,
-      `${t('request.detail.toast.endUsage.message')}`,
+      t('common.confirmation.title.endUsage'),
+      t('common.confirmation.message.endUsage'),
       [
         { text: `${t('common.button.cancel')}`, style: 'cancel' },
         {
           text: `${t('common.button.confirm')}`,
           onPress: async () => {
             try {
-              setIsEndUsageLoading(true);
+              setLoadingStates((prev) => ({ ...prev, endUsage: true }));
               const response = await RequestService.endUsageVehicle(requestData.requestId);
               setRequestData(response);
-              showToast.success(
-                `${t('request.detail.toast.endUsageSuccess.title')}`,
-                `${t('request.detail.toast.endUsageSuccess.message')}`
-              );
+              showToast.success(t('common.success.endUsage'));
             } catch (error) {
               console.log(error);
             } finally {
-              setIsEndUsageLoading(false);
+              setLoadingStates((prev) => ({ ...prev, endUsage: false }));
             }
           },
         },
@@ -206,30 +202,23 @@ const RequestDetailScreen = () => {
   };
 
   const handleRemind = () => {
-    Alert.alert(
-      `${t('request.detail.toast.remind.title')}`,
-      `${t('request.detail.toast.remind.message')}`,
-      [
-        { text: `${t('common.button.cancel')}`, style: 'cancel' },
-        {
-          text: `${t('common.button.confirm')}`,
-          onPress: async () => {
-            try {
-              setIsUsingLoading(true);
-              await RequestService.remindVehicle(requestData.requestId);
-              showToast.success(
-                `${t('request.detail.toast.remindSuccess.title')}`,
-                `${t('request.detail.toast.remindSuccess.message')}`
-              );
-            } catch (error) {
-              console.log(error);
-            } finally {
-              setIsUsingLoading(false);
-            }
-          },
+    Alert.alert(t('common.confirmation.title.remind'), t('common.confirmation.message.remind'), [
+      { text: t('common.button.cancel'), style: 'cancel' },
+      {
+        text: t('common.button.confirm'),
+        onPress: async () => {
+          try {
+            setLoadingStates((prev) => ({ ...prev, reminder: true }));
+            await RequestService.remindVehicle(requestData.requestId);
+            showToast.success(t('common.success.remind'));
+          } catch (error) {
+            console.log('Failed to send reminder:', error);
+          } finally {
+            setLoadingStates((prev) => ({ ...prev, reminder: false }));
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
@@ -238,7 +227,9 @@ const RequestDetailScreen = () => {
 
       <ScrollView
         className="mb-8 flex-1"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        refreshControl={
+          <RefreshControl refreshing={loadingStates.refreshing} onRefresh={onRefresh} />
+        }>
         <RequestDetailHeader requestData={requestData} />
 
         <View className="px-6">
@@ -251,7 +242,9 @@ const RequestDetailScreen = () => {
           {checkPoint.length > 0 && (
             <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
               <View className="bg-gray-50 px-4 py-3">
-                <Text className="text-lg font-semibold text-gray-800">Trạng thái sử dụng</Text>
+                <Text className="text-lg font-semibold text-gray-800">
+                  {t('request.detail.usageStatus')}
+                </Text>
               </View>
 
               <View className="p-4">
@@ -271,12 +264,12 @@ const RequestDetailScreen = () => {
             <ActionButtons
               user={user}
               requestData={requestData}
-              isUsingLoading={isUsingLoading}
-              isEndUsageLoading={isEndUsageLoading}
-              isReminderSent={isReminderSent}
-              onApprove={handleApprove}
-              onReject={handleReject}
-              onCancel={handleCancel}
+              isUsingLoading={loadingStates.usingVehicle}
+              isEndUsageLoading={loadingStates.endUsage}
+              isReminderSent={loadingStates.reminder}
+              onApprove={() => showModal('approve')}
+              onReject={() => showModal('reject')}
+              onCancel={() => showModal('cancel')}
               onUsingVehicle={handleUsingVehicle}
               onEndUsage={handleEndUsage}
               onRemind={handleRemind}
@@ -292,24 +285,27 @@ const RequestDetailScreen = () => {
       </ScrollView>
 
       <ApproveModal
-        visible={isApproveModalVisible}
+        visible={visible.approve}
         onClose={handleCloseModal}
-        onApprove={handleApproveConfirm}
+        onSuccess={onRefresh}
+        requestId={requestData.requestId}
         isDriverRequired={requestData.isDriverRequired}
         startTime={requestData.startTime}
         endTime={requestData.endTime}
       />
 
       <RejectModal
-        visible={isRejectModalVisible}
+        visible={visible.reject}
         onClose={handleCloseModal}
-        onReject={handleRejectConfirm}
+        onSuccess={onRefresh}
+        requestId={requestData.requestId}
       />
 
       <CancelModal
-        visible={isCancelModalVisible}
+        visible={visible.cancel}
         onClose={handleCloseModal}
-        onCancel={handleCancelConfirm}
+        onSuccess={onRefresh}
+        requestId={requestData.requestId}
       />
     </SafeAreaView>
   );

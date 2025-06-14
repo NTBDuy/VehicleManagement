@@ -54,7 +54,11 @@
       },
       "approveWithAssign": "Phê duyệt và phân công tài xế",
       "maintenance": "Lên lịch bảo trì",
-      "scheduleNow": "Lên lịch ngay"
+      "scheduleNow": "Lên lịch ngay",
+      "currenLocation": "Vị trí hiện tại",
+      "takePhoto": "Chụp ảnh",
+      "completeTrip": "Hoàn thành hành trình",
+      "confirmCheckIn": "Xác nhận Check-in"
     },
     "status": {
       "all": "Tất cả",
@@ -64,12 +68,14 @@
       "rejected": "Đã từ chối",
       "cancelled": "Đã hủy",
       "inProgress": "Đang tiến hành",
+      "incoming": "Sắp tới",
       "done": "Hoàn thành",
       "available": "Khả dụng",
       "inUse": "Đang sử dụng",
       "maintenance": "Đang bảo trì",
       "active": "Hoạt động",
-      "inactive": "Không hoạt động"
+      "inactive": "Không hoạt động",
+      "unknown": "Không xác định"
     },
     "role": {
       "admin": "Quản trị viên",
@@ -95,7 +101,8 @@
       "vehicle": "Tìm biển số, loại xe hoặc thương hiệu...",
       "user": "Tìm tên người dùng, số điện thoại hoặc email...",
       "driver": "Tìm tên hoặc số điện thoại...",
-      "request": "Tìm theo người dùng hoặc thông tin phương tiện..."
+      "request": "Tìm theo người dùng hoặc thông tin phương tiện...",
+      "location": "Tìm theo địa chỉ..."
     },
     "confirmation": {
       "title": {
@@ -110,7 +117,11 @@
         "schedule": "Xác nhận lên lịch",
         "reschedule": "Dời lịch bảo trì",
         "beginMaintenance": "Bắt đầu bảo trì",
-        "completeMaintenance": "Hoàn tất bảo trì"
+        "completeMaintenance": "Hoàn tất bảo trì",
+        "startUsing": "Bắt đầu sử dụng phương tiện",
+        "endUsage": "Kết thúc sử dụng",
+        "remind": "Xác nhận gửi nhắc nhở",
+        "removeImage": "Xoá ảnh"
       },
       "message": {
         "update": "Bạn có chắc chắn muốn cập nhật {{item}} này không?",
@@ -124,7 +135,12 @@
         "schedule": "Bạn có chắc chắn muốn lên lịch bảo trì này không?",
         "reschedule": "Bạn có chắc chắn muốn dời lịch lại bảo trì không?",
         "beginMaintenance": "Bạn có chắc chắn muốn bắt đầu bảo trì này không?",
-        "completeMaintenance": "Bạn có chắc chắn muốn hoàn tất bảo trì này không?"
+        "completeMaintenance": "Bạn có chắc chắn muốn hoàn tất bảo trì này không?",
+        "startUsing": "Bạn có chắc chắn muốn bắt đầu sử dụng phương tiện không?",
+        "endUsage": "Bạn có chắc chắn muốn kết thúc sử dụng phương tiện không?",
+        "remind": "Bạn có chắc chắn muốn gửi nhắc nhở không?",
+        "newImage": "Bạn muốn chụp ảnh mới?",
+        "removeImage": "Bạn có chắc chắn muốn xoá ảnh này?"
       }
     },
     "success": {
@@ -145,7 +161,13 @@
       "login": "Chào mừng {{user}}",
       "logout": "Bạn đã đăng xuất. Hẹn gặp lại bạn sớm!",
       "cancel": "Hủy yêu cầu thành công",
-      "reject": "Từ chối yêu cầu thành công"
+      "reject": "Từ chối yêu cầu thành công",
+      "newRequest": "Chúng tôi đã nhận được yêu cầu đặt xe của bạn.",
+      "startUsing": "Bây giờ bạn có thể sử dụng phương tiện. Vui lòng nhớ kết thúc sử dụng khi hoàn thành.",
+      "endUsage": "Phương tiện đã được trả lại và yêu cầu hiện được đánh dấu là hoàn thành.",
+      "remind": "Gửi lời nhắc nhở thành công.",
+      "takePhoto": "Đã thêm ảnh thành công!",
+      "removeImage": "Đã xoá ảnh."
     },
     "error": {
       "title": "Lỗi",
@@ -160,7 +182,17 @@
       "screen": "Ôi không! Đã xảy ra lỗi. Vui lòng thử lại.",
       "accountLocked": "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ với quản trị viên.",
       "invalidCredentials": "Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại.",
-      "badRequest": "Yêu cầu không hợp lệ. Vui lòng kiểm tra dữ liệu và thử lại."
+      "badRequest": "Yêu cầu không hợp lệ. Vui lòng kiểm tra dữ liệu và thử lại.",
+      "dateIncomplete": "Hãy chọn ngày trước khi tiếp tục.",
+      "vehicleUnselected": "Hãy chọn phương tiện trước khi tiếp tục.",
+      "noVehicleAvailable": "Không có phương tiện nào khả dụng.",
+      "newRequest": "Chúng tôi không thể hoàn thành yêu cầu đặt xe của bạn. Vui lòng thử lại.",
+      "startUsing": "Phương tiện chỉ có thể được sử dụng vào ngày đã lên lịch.",
+      "maxImage": "Tối đa 2 ảnh cho mỗi điểm",
+      "takePhoto": "Không thể chụp ảnh. Vui lòng thử lại."
+    },
+    "info": {
+      "nothingChanges": "Bạn chưa thay đổi thông tin nào."
     },
     "fields": {
       "fullname": "Họ và tên",
@@ -180,7 +212,27 @@
       "security": "Bảo mật",
       "noInfo": "Không có thông tin",
       "notSchedule": "Chưa lên lịch",
-      "noItem": "Không tìm thấy mục nào"
+      "noItem": "Không tìm thấy mục nào",
+      "image": "Hình ảnh",
+      "selectedImage": "Ảnh đã chọn",
+      "note": "Ghi chú",
+      "location": "Vị trí",
+      "startPoint": "Điểm xuất phát",
+      "endPoint": "Điểm kết thúc",
+      "stopPoint": "Điểm dừng",
+      "estimateDistance": "Dự kiến",
+      "totalPoint": "Tổng số điểm",
+      "noteAddress": "Ghi chú địa chỉ",
+      "point": "Điểm",
+      "currentPoint": "Điểm hiện tại",
+      "totalDistance": "Quãng đường đã đi"
+    },
+    "placeholder": {
+      "startPoint": "Chọn điểm xuất phát",
+      "stopPoint": "Chọn điểm dừng",
+      "endPoint": "Chọn điểm kết thúc",
+      "noteAddress": "Ví dụ cụ thể hẻm bao nhiêu...",
+      "note": "Nhập ghi chú..."
     }
   },
 
@@ -192,7 +244,9 @@
       "licenseIssueDate": "Vui lòng nhập ngày hợp lệ (YYYY-MM-DD)",
       "notMatch": "Mật khẩu và mật khẩu xác nhận không khớp",
       "differentPassword": "Mật khẩu mới phải khác mật khẩu hiện tại.",
-      "yearOfExperience": "Số năm kinh nghiệm phải là số không âm"
+      "yearOfExperience": "Số năm kinh nghiệm phải ít nhất 1 ngày.",
+      "plate": "Biển số xe không hợp lệ. Vui lòng nhập đúng định dạng, ví dụ: 29A-12345.",
+      "estimate": "Thời gian ước tính phải ít nhất 1 ngày."
     },
     "required": {
       "fullname": "Họ và tên là bắt buộc",
@@ -217,8 +271,7 @@
       "purpose": "Vui lòng chỉ rõ mục đích chuyến đi để tiếp tục.",
       "currentOdometer": "Odo hiện tại là bắt buộc",
       "driver": "Vui lòng chọn tài xế trước khi chấp thuận",
-      "reasonCancel": "Vui lòng nhập lý do với ít nhất 6 ký tự trước khi hủy.",
-      "reasonReject": "Vui lòng nhập lý do với ít nhất 6 ký tự trước khi từ chối."
+      "reason": "Vui lòng nhập lý do với ít nhất 6 ký tự."
     },
     "maxDecimal": "Chỉ được nhập tối đa 1 chữ số thập phân."
   },
@@ -293,6 +346,7 @@
       "vehiclePicker": {
         "title": "Phương tiện có sẵn"
       },
+      "locationDetails": "Chi tiết địa điểm đã chọn",
       "confirm": {
         "sectionTitle": {
           "info": "Thông tin yêu cầu",
@@ -313,25 +367,16 @@
           "assign": "Phân công tài xế",
           "self": "Tự lái"
         }
-      },
-      "toast": {
-        "vehicleRequired": {
-          "title": "Cần thực hiện",
-          "message": "Vui lòng chọn phương tiện để tiếp tục."
-        },
-        "success": {
-          "title": "Hoàn tất!",
-          "message": "Chúng tôi đã nhận được yêu cầu đặt xe của bạn."
-        },
-        "fail": {
-          "title": "Thất bại",
-          "message": "Không thể gửi yêu cầu đặt xe."
-        },
-        "error": {
-          "title": "Yêu cầu thất bại",
-          "message": "Chúng tôi không thể hoàn thành yêu cầu đặt xe của bạn. Vui lòng thử lại."
-        }
       }
+    },
+    "location": {
+      "addDetail": "Thêm chi tiết địa điểm (Ví dụ: chi tiết hẻm bao nhiêu)",
+      "progress": "Lộ trình hành trình",
+      "completedAt": "Đã hoàn thành lúc"
+    },
+    "inProgress": {
+      "currentImage": "Hình ảnh tại điểm này",
+      "maxImage": "Tối đa 2 ảnh"
     },
     "list": {
       "label": {
@@ -357,6 +402,7 @@
       "by": "bởi",
       "rejectionTitle": "Chi tiết từ chối",
       "cancellationTitle": "Chi tiết hủy bỏ",
+      "usageStatus": "Trạng thái sử dụng",
       "noInfo": "Không có thông tin",
       "info": {
         "section": "Thông tin yêu cầu",
@@ -373,48 +419,13 @@
       "driver": {
         "section": "Thông tin tài xế",
         "name": "Tài xế"
-      },
-      "toast": {
-        "startUsing": {
-          "title": "Bắt đầu sử dụng phương tiện",
-          "message": "Bạn có chắc chắn muốn bắt đầu sử dụng phương tiện không?"
-        },
-        "startUsingSuccess": {
-          "title": "Bắt đầu sử dụng phương tiện thành công",
-          "message": "Bây giờ bạn có thể sử dụng phương tiện. Vui lòng nhớ kết thúc sử dụng khi hoàn thành."
-        },
-        "startUsingError": {
-          "title": "Không thể sử dụng phương tiện",
-          "message": "Phương tiện chỉ có thể được sử dụng vào ngày đã lên lịch."
-        },
-        "endUsage": {
-          "title": "Kết thúc sử dụng phương tiện",
-          "message": "Bạn có chắc chắn muốn kết thúc sử dụng phương tiện không?"
-        },
-        "endUsageSuccess": {
-          "title": "Kết thúc sử dụng phương tiện thành công",
-          "message": "Phương tiện đã được trả lại và yêu cầu hiện được đánh dấu là hoàn thành."
-        },
-        "remind": {
-          "title": "Gửi nhắc nhở",
-          "message": "Bạn có chắc chắn muốn gửi nhắc nhở sử dụng phương tiện không?"
-        },
-        "remindSuccess": {
-          "title": "Đã gửi nhắc nhở",
-          "message": "Người dùng đã được nhắc nhở bắt đầu sử dụng phương tiện."
-        }
       }
     },
+
     "modal": {
-      "title": "Tùy chọn cho yêu cầu ID #",
-      "actions": {
-        "approveWithAssign": "Phê duyệt và phân công tài xế"
-      },
       "approve": {
         "title": "Phê duyệt yêu cầu",
         "driverSection": {
-          "noDriverRequired": "Không cần tài xế",
-          "noDriverRequiredMention": "Yêu cầu này có thể xử lý mà không cần chỉ định tài xế.",
           "assign": "Phân công tài xế",
           "mention": "Vui lòng chọn tài xế cho yêu cầu này",
           "select": "Chọn tài xế",
@@ -424,14 +435,6 @@
         },
         "note": "Ghi chú (Tùy chọn)",
         "placeholder": "Thêm ghi chú bổ sung..."
-      },
-      "reject": {
-        "title": "Từ chối yêu cầu",
-        "confirm": "Bạn có chắc chắn muốn từ chối yêu cầu này không?"
-      },
-      "cancel": {
-        "title": "Hủy yêu cầu",
-        "confirm": "Bạn có chắc chắn muốn hủy yêu cầu này không?"
       }
     }
   },
@@ -550,6 +553,7 @@
       }
     }
   },
+
   "setting": {
     "title": "Cài đặt tài khoản",
     "label": {
@@ -589,6 +593,22 @@
         "require2": "Bao gồm ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt",
         "require3": "Khác với mật khẩu hiện tại của bạn"
       }
+    }
+  },
+
+  "notice": {
+    "title": "Lưu ý",
+    "important": "Lưu ý quan trọng",
+    "approveModal": {
+      "noDriverRequired": "Không cần tài xế",
+      "noDriverRequiredMention": "Yêu cầu này có thể xử lý mà không cần chỉ định tài xế."
+    },
+    "distance": "Khoảng cách dự kiến được tính bằng tổng khoảng cách đường thẳng giữa các điểm dừng theo thứ tự hành trình (ví dụ: A → B → C). Con số này chỉ mang tính tham khảo và có thể khác với khoảng cách thực tế di chuyển. Hệ thống sẽ tính lại khoảng cách thực tế sau khi hoàn tất chuyến đi.",
+    "datePicker": "Khi thay đổi ngày đã chọn trước đó ứng dụng sẽ lấy danh sách xe khả dụng mới!",
+    "stopPointChecklist": {
+      "photoInstruction": "Chụp ảnh tại mỗi điểm dừng theo đúng thứ tự",
+      "gpsRequirement": "Đảm bảo vị trí GPS chính xác tại mỗi điểm",
+      "noteGuideline": "Ghi chú rõ ràng về tình hình tại mỗi điểm"
     }
   }
 }

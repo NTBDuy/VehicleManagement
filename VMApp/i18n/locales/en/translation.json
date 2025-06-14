@@ -54,7 +54,11 @@
       },
       "approveWithAssign": "Approve and assign a driver",
       "maintenance": "Schedule maintenance",
-      "scheduleNow": "Schedule Now"
+      "scheduleNow": "Schedule Now",
+      "currenLocation": "Current location",
+      "takePhoto": "Take photo",
+      "completeTrip": "Complete trip",
+      "confirmCheckIn": "Confirm check-in"
     },
     "status": {
       "all": "All",
@@ -64,12 +68,14 @@
       "rejected": "Rejected",
       "cancelled": "Cancelled",
       "inProgress": "In Progress",
+      "incoming": "Incoming",
       "done": "Done",
       "available": "Available",
       "inUse": "In Use",
       "maintenance": "Under Maintenance",
       "active": "Active",
-      "inactive": "Inactive"
+      "inactive": "Inactive",
+      "unknown": "Unknown"
     },
     "role": {
       "admin": "Admin",
@@ -95,7 +101,8 @@
       "vehicle": "Search plate, type or brand...",
       "user": "Search username, phone or email...",
       "driver": "Search name or phone...",
-      "request": "Search user or vehicle information..."
+      "request": "Search user or vehicle information...",
+      "location": "Search by address..."
     },
     "confirmation": {
       "title": {
@@ -110,7 +117,11 @@
         "schedule": "Confirm Schedule",
         "reschedule": "Reschedule Maintenance",
         "beginMaintenance": "Begin Maintenance",
-        "completeMaintenance": "Complete Maintenance"
+        "completeMaintenance": "Complete Maintenance",
+        "startUsing": "Start using the vehicle",
+        "endUsage": "End vehicle usage",
+        "remind": "Confirm reminder",
+        "removeImage": "Remove image"
       },
       "message": {
         "update": "Are you sure you want to update this {{item}}?",
@@ -124,7 +135,11 @@
         "schedule": "Are you sure you want to schedule this maintenance?",
         "reschedule": "Are you sure you want to reschedule maintenance?",
         "beginMaintenance": "Are you sure you want to begin this maintenance?",
-        "completeMaintenance": "Are you sure you want to complete this maintenance?"
+        "completeMaintenance": "Are you sure you want to complete this maintenance?",
+        "startUsing": "Are you sure you want to start using the vehicle?",
+        "endUsage": "Are you sure you want to end the vehicle usage?",
+        "remind": "Are you sure you want to send a reminder?",
+        "removeImage": "Are you sure you want to remove this image?"
       }
     },
     "success": {
@@ -145,7 +160,13 @@
       "login": "Welcome {{user}}",
       "logout": "You have been logged out. See you again soon!",
       "cancel": "Request cancelled successfully",
-      "reject": "Request rejected successfully"
+      "reject": "Request rejected successfully",
+      "newRequest": "We've received your reservation.",
+      "startUsing": "You can now use the vehicle. Please remember to end usage when finished.",
+      "endUsage": "The vehicle has been returned and the request is now marked as complete.",
+      "remind": "The user has been reminded to start vehicle usage.",
+      "takePhoto": "Photo added successfully!",
+      "removeImage": "Photo removed successfully."
     },
     "error": {
       "title": "Error",
@@ -160,7 +181,17 @@
       "screen": "Oops! Something went wrong. Try again.",
       "accountLocked": "The account has been deactivated. Please contact the admin.",
       "invalidCredentials": "Invalid username or password. Please try again.",
-      "badRequest": "Invalid request. Please check your input and try again."
+      "badRequest": "Invalid request. Please check your input and try again.",
+      "dateIncomplete": "Please select a date before continuing.",
+      "vehicleUnselected": "Please select a vehicle before continuing.",
+      "noVehicleAvailable": "No vehicles are available.",
+      "newRequest": "We couldn't complete your reservation. Please try again.",
+      "startUsing": "Vehicle can only be used on the scheduled date.",
+      "maxImage": "Maximum of 2 images per location",
+      "takePhoto": "Unable to take photo. Please try again."
+    },
+    "info": {
+      "nothingChanges": "No changes detected."
     },
     "fields": {
       "fullname": "Full Name",
@@ -180,7 +211,27 @@
       "security": "Security",
       "noInfo": "No information",
       "notSchedule": "Not scheduled",
-      "noItem": "No items found"
+      "noItem": "No items found",
+      "image": "Images",
+      "selectedImage": "Selected images",
+      "note": "Note",
+      "location": "Location",
+      "startPoint": "Start point",
+      "endPoint": "End point",
+      "stopPoint": "Stop point",
+      "estimateDistance": "Estimate distance",
+      "totalPoint": "Total point",
+      "noteAddress": "Note address",
+      "point": "Point",
+      "currentPoint": "Current point",
+      "totalDistance": "Total distance traveled"
+    },
+    "placeholder": {
+      "startPoint": "Select your start point",
+      "stopPoint": "Select your stop point",
+      "endPoint": "Select your end point",
+      "noteAddress": "Please provide a specific address, for example: house number, alley number, and street name.",
+      "note": "Enter note"
     }
   },
 
@@ -192,7 +243,9 @@
       "licenseIssueDate": "Please enter a valid date (YYYY-MM-DD)",
       "notMatch": "Password and confirmation password do not match",
       "differentPassword": "New password must be different from current password",
-      "yearOfExperience": "Years of experience must be a non-negative number"
+      "yearOfExperience": "Years of experience must be at least 1 day",
+      "plate": "Invalid license plate number. Please enter the correct format, e.g., 29A-12345.",
+      "estimate": "Estimated time must be at least 1 day."
     },
     "required": {
       "fullname": "Full name is required",
@@ -217,8 +270,7 @@
       "purpose": "Please specify the purpose of your trip to continue.",
       "currentOdometer": "Current odometer is required",
       "driver": "Please select a driver before approving",
-      "reasonCancel": "Please provide a reason of at least 6 characters before cancelling.",
-      "reasonReject": "Please provide a reason of at least 6 characters before rejecting."
+      "reason": "Please provide a reason of at least 6 characters."
     },
     "maxDecimal": "Only up to 1 decimal places are allowed."
   },
@@ -293,6 +345,7 @@
       "vehiclePicker": {
         "title": "Available Vehicle"
       },
+      "locationDetails": "Selected location details",
       "confirm": {
         "sectionTitle": {
           "info": "Request Information",
@@ -313,25 +366,16 @@
           "assign": "Assign a driver",
           "self": "Drive by self"
         }
-      },
-      "toast": {
-        "vehicleRequired": {
-          "title": "Action Required",
-          "message": "Please select a vehicle to continue."
-        },
-        "success": {
-          "title": "All Set!",
-          "message": "We've received your reservation."
-        },
-        "fail": {
-          "title": "Failed",
-          "message": "Reservation could not be submitted."
-        },
-        "error": {
-          "title": "Request Failed",
-          "message": "We couldn't complete your reservation. Please try again."
-        }
       }
+    },
+    "location": {
+      "addDetail": "Add location details (e.g., alley number, house number)",
+      "progress": "Trip progress",
+      "completedAt": "Completed at"
+    },
+    "inProgress": {
+      "currentImage": "Image at this location",
+      "maxImage": "Maximum of 2 images"
     },
     "list": {
       "label": {
@@ -357,6 +401,7 @@
       "by": "by",
       "rejectionTitle": "Rejection Details",
       "cancellationTitle": "Cancellation Details",
+      "usageStatus": "Usage status",
       "noInfo": "No information",
       "info": {
         "section": "Request Information",
@@ -373,44 +418,13 @@
       "driver": {
         "section": "Driver Information",
         "name": "Driver"
-      },
-      "toast": {
-        "startUsing": {
-          "title": "Start Vehicle Usage",
-          "message": "Are you sure you want to start using the vehicle?"
-        },
-        "startUsingSuccess": {
-          "title": "Vehicle usage started successfully",
-          "message": "You can now use the vehicle. Please remember to end usage when finished."
-        },
-        "startUsingError": {
-          "title": "Cannot use vehicle",
-          "message": "Vehicle can only be used on the scheduled date."
-        },
-        "endUsage": {
-          "title": "End Vehicle Usage",
-          "message": "Are you sure you want to end the vehicle usage?"
-        },
-        "endUsageSuccess": {
-          "title": "Vehicle usage ended successfully",
-          "message": "The vehicle has been returned and the request is now marked as complete."
-        },
-        "remind": {
-          "title": "Send Reminder",
-          "message": "Are you sure you want to send a reminder to use the vehicle?"
-        },
-        "remindSuccess": {
-          "title": "Reminder sent",
-          "message": "The user has been reminded to start vehicle usage."
-        }
       }
     },
+
     "modal": {
       "approve": {
         "title": "Approve Request",
         "driverSection": {
-          "noDriverRequired": "No Driver Required",
-          "noDriverRequiredMention": "This request can be processed without assigning a driver.",
           "assign": "Driver Assignment",
           "mention": "Please select a driver for this request",
           "select": "Select Driver",
@@ -538,6 +552,7 @@
       }
     }
   },
+
   "setting": {
     "title": "Account Setting",
     "label": {
@@ -577,6 +592,22 @@
         "require2": "Include at least one uppercase letter, one lowercase letter, one number, and one special character",
         "require3": "Different from your current password"
       }
+    }
+  },
+
+  "notice": {
+    "title": "Notice",
+    "important": "Important notice",
+    "approveModal": {
+      "noDriverRequired": "No Driver Required",
+      "noDriverRequiredMention": "This request can be processed without assigning a driver."
+    },
+    "distance": "The estimated distance is calculated as the total straight-line distance between the stop points in the order of the route (e.g., A → B → C). This number is for reference only and may differ from the actual travel distance. The system will recalculate the actual distance after the trip is completed.",
+    "datePicker": "Changing the previously selected date will refresh the list of available vehicles!",
+    "stopPointChecklist": {
+      "photoInstruction": "Take a photo at each stop point in the correct order",
+      "gpsRequirement": "Ensure accurate GPS location at each stop",
+      "noteGuideline": "Provide clear notes about the situation at each point"
     }
   }
 }

@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { RequestService } from '@/services/requestService';
+import { reasonSchema } from '@/validations/reasonSchema';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import {
   Keyboard,
@@ -12,53 +15,59 @@ import {
 } from 'react-native';
 import { showToast } from 'utils/toast';
 
+import ReasonFormData from '@/types/ReasonFormData';
+
 import InputField from '@/components/ui/InputFieldComponent';
+
 interface CancelModalProps {
   visible: boolean;
   onClose: () => void;
-  onCancel: (reason: string) => void;
+  requestId: number;
+  onSuccess: () => void;
 }
 
-interface ReasonProps {
-  reason: string;
-}
-
-const CancelModal = ({ visible, onClose, onCancel }: CancelModalProps) => {
+const CancelModal = ({ visible, onClose, requestId, onSuccess }: CancelModalProps) => {
   const { t } = useTranslation();
-  const [reason, setReason] = useState('');
-  const [isCancel, setIsCancel] = useState(false);
-  const [errors, setErrors] = useState<Partial<ReasonProps>>({});
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<ReasonProps> = {};
+  const getReasonSchema = reasonSchema(t);
 
-    if (!reason || reason.trim().length <= 5) {
-      newErrors.reason = t('validate.required.reasonCancel');
-      setErrors(newErrors);
-      return false;
-    }
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<ReasonFormData>({
+    resolver: yupResolver(getReasonSchema),
+    defaultValues: {
+      reason: '',
+    },
+    mode: 'onChange',
+  });
 
-    setErrors({});
-    return true;
-  };
-
-  const handleCancel = async () => {
-    if (!validateForm()) return;
-    setIsCancel(true);
+  const onSubmit = async (data: ReasonFormData) => {
     try {
-      await onCancel(reason.trim());
+      await RequestService.cancelRequest(requestId, data);
       showToast.success(`${t('common.success.title')}`, `${t('common.success.cancel')}`);
-      setReason('');
+      onSuccess();
+      reset({
+        reason: '',
+      });
       onClose();
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsCancel(false);
     }
   };
 
+  const handleCancel = () => {
+    handleSubmit(onSubmit, (errors) => {
+      console.log('Validation errors:', errors);
+    })();
+  };
+
   const handleClose = () => {
-    setReason('');
+    reset({
+      reason: '',
+    });
     onClose();
   };
 
@@ -83,11 +92,17 @@ const CancelModal = ({ visible, onClose, onCancel }: CancelModalProps) => {
                 </View>
 
                 <View className="mb-6">
-                  <InputField
-                    label={t('common.fields.reason')}
-                    value={reason}
-                    onChangeText={setReason}
-                    error={errors.reason as string}
+                  <Controller
+                    control={control}
+                    name="reason"
+                    render={({ field: { onChange, value } }) => (
+                      <InputField
+                        label={t('common.fields.reason')}
+                        value={value}
+                        onChangeText={onChange}
+                        error={errors.reason?.message}
+                      />
+                    )}
                   />
                 </View>
                 <View className="flex-row justify-between">
@@ -103,7 +118,7 @@ const CancelModal = ({ visible, onClose, onCancel }: CancelModalProps) => {
                     className="w-[48%] items-center justify-center rounded-lg bg-red-600 py-3 "
                     onPress={handleCancel}>
                     <Text className="text-lg font-semibold text-white">
-                      {isCancel
+                      {isSubmitting
                         ? `${t('common.button.processing')}`
                         : `${t('common.button.cancel')}`}
                     </Text>

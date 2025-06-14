@@ -2,6 +2,7 @@ import CheckPoint from '@/types/CheckPoint';
 import { formatDatetime } from '@/utils/datetimeUtils';
 import { API_CONFIG } from 'config/apiConfig';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Linking, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import ImageViewing from 'react-native-image-viewing';
 
@@ -15,6 +16,7 @@ const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
   const [checkPoint, setCheckPoint] = useState<CheckPoint[]>([]);
   const [visible, setIsVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState<string>('');
+  const { t } = useTranslation();
 
   const handleMapsView = (lat: number, long: number) => {
     const scheme = Platform.select({
@@ -41,7 +43,7 @@ const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
     return (
       <View className="mb-3" key={item.checkPointId}>
         <Text className="mb-2 text-sm font-semibold text-gray-800">
-          Hình ảnh ({item.photos.length})
+          {t('common.fields.image')} ({item.photos.length})
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
           {item.photos.map((photo) => (
@@ -89,7 +91,7 @@ const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
       <TouchableOpacity
         className="mb-3 flex-row items-center rounded-lg bg-gray-50 p-3"
         onPress={() => handleMapsView(item.latitude, item.longitude)}>
-        <Text className="mr-2 text-sm text-gray-600">Vị trí:</Text>
+        <Text className="mr-2 text-sm text-gray-600">{t('common.fields.location')}:</Text>
         <Text className="flex-1 font-mono text-sm text-gray-800">
           {item.latitude.toFixed(6)}, {item.longitude.toFixed(6)}
         </Text>
@@ -99,7 +101,9 @@ const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
 
       {item.note && (
         <View className="mb-3 rounded-lg bg-gray-50 p-3">
-          <Text className="mb-2 text-sm font-semibold text-gray-800">Ghi chú</Text>
+          <Text className="mb-2 text-sm font-semibold text-gray-800">
+            {t('common.fields.note')}
+          </Text>
           <Text className="text-sm leading-5 text-gray-800">{item.note}</Text>
         </View>
       )}

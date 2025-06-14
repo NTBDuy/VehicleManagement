@@ -20,13 +20,15 @@ export const getVehicleBackground = (status: number): string => {
   return styles[status] ?? 'bg-gray-500';
 };
 
-export const getVehicleLabelEn = (status: number): string => {
-  const label = ['Available', 'InUse', 'UnderMaintenance'];
-  return label[status] ?? 'Unknown';
+export const getVehicleLabel = (status: number, t: (key: string) => string): string => {
+  const keys = ['common.status.available', 'common.status.inUse', 'common.status.maintenance'];
+  const key = keys[status] ?? 'common.status.unknown';
+  return t(key);
 };
 
-export const getVehicleLabelVi = (status: number): string => {
-  const label = ['Khả dụng', 'Đang sử dụng', 'Bảo trì'];
-  return label[status] ?? 'Không xác định';
-};
-
+export const types = [
+  { label: 'Sedan', value: 'Sedan' },
+  { label: 'SUV', value: 'SUV' },
+  { label: 'Truck', value: 'Truck' },
+  { label: 'Van', value: 'Van' },
+];

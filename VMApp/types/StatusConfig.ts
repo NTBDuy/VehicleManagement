@@ -1,5 +1,4 @@
 export type StatusConfig = {
-  labelEn: string;
-  labelVi: string;
+  label: string;
   color: string;
 };

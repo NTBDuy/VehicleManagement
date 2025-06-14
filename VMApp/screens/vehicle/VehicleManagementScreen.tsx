@@ -24,12 +24,7 @@ import {
 } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
-import {
-  getVehicleBackground,
-  getVehicleLabelEn,
-  getVehicleLabelVi,
-  getVehicleTypeIcon,
-} from 'utils/vehicleUtils';
+import { getVehicleBackground, getVehicleLabel, getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 import Vehicle from 'types/Vehicle';
 
@@ -41,8 +36,7 @@ import StatusCard from '@/components/ui/StatusCardComponent';
 const VehicleManagementScreen = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
-  const { t, i18n } = useTranslation();
-  const isViCurrent = i18n.language === 'vi-VN';
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<Vehicle>();
@@ -113,9 +107,7 @@ const VehicleManagementScreen = () => {
     const bgColor = getVehicleBackground(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">
-          {isViCurrent ? getVehicleLabelVi(status) : getVehicleLabelEn(status)}
-        </Text>
+        <Text className="text-xs font-medium text-white">{getVehicleLabel(status, t)}</Text>
       </View>
     );
   };

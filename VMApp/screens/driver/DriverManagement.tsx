@@ -1,10 +1,5 @@
 import { DriverService } from '@/services/driverService';
-import {
-  getUserBackgroundColor,
-  getUserInitials,
-  getUserLabelEn,
-  getUserLabelVi,
-} from '@/utils/userUtils';
+import { getUserBackgroundColor, getUserInitials, getUserLabel } from '@/utils/userUtils';
 import { faChevronRight, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -20,8 +15,7 @@ import LoadingData from '@/components/ui/LoadingData';
 
 const DriverManagement = () => {
   const navigation = useNavigation<any>();
-  const { t, i18n } = useTranslation();
-  const isViCurrent = i18n.language === 'vi-VN';
+  const { t } = useTranslation();
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -82,9 +76,7 @@ const DriverManagement = () => {
     const bgColor = getUserBackgroundColor(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">
-          {isViCurrent ? getUserLabelVi(status) : getUserLabelEn(status)}
-        </Text>
+        <Text className="text-xs font-medium text-white">{getUserLabel(status, t)}</Text>
       </View>
     );
   };

@@ -16,6 +16,7 @@ import {
 import DropDownPicker from 'react-native-dropdown-picker';
 import { DriverService } from 'services/driverService';
 import { showToast } from 'utils/toast';
+import { RequestService } from '@/services/requestService';
 
 import Driver from 'types/Driver';
 
@@ -25,29 +26,31 @@ interface ApproveModalProps {
   visible: boolean;
   onClose: () => void;
   isDriverRequired: boolean;
-  onApprove: (driverId: string | null, note: string) => void;
+  onSuccess: () => void;
   title?: string;
   approveButtonText?: string;
   startTime: string;
   endTime: string;
+  requestId: number;
 }
 
 type ItemDropDownPicker = {
   label: string;
-  value: string;
+  value: number;
 };
 
 const ApproveModal = ({
   visible,
   onClose,
-  onApprove,
+  onSuccess,
+  requestId,
   isDriverRequired,
   startTime,
   endTime,
 }: ApproveModalProps) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
+  const [selectedDriver, setSelectedDriver] = useState<number | null>(null);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [items, setItems] = useState<ItemDropDownPicker[]>([]);
   const [note, setNote] = useState('');
@@ -61,35 +64,46 @@ const ApproveModal = ({
   }, []);
 
   useEffect(() => {
+    let isCancelled = false;
+
     if (visible) {
-      fetchAvailableDrivers();
+      const fetchData = async () => {
+        setLoading(true);
+        try {
+          const dataDrivers = await DriverService.getAvailableDrivers(startTime, endTime);
+          if (!isCancelled) {
+            setDrivers(dataDrivers);
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            showToast.error(
+              `${t('common.error.title')}`,
+              `${t('common.error.failed', { action: 'loading', item: 'driver' })}`
+            );
+          }
+        } finally {
+          if (!isCancelled) {
+            setLoading(false);
+          }
+        }
+      };
+      fetchData();
     }
-  }, [visible]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [visible, startTime, endTime]);
 
   useEffect(() => {
     if (drivers.length > 0) {
       const dropdownItems = drivers.map((driver) => ({
         label: driver.fullName,
-        value: String(driver.driverId),
+        value: driver.driverId,
       }));
       setItems(dropdownItems);
     }
   }, [drivers]);
-
-  const fetchAvailableDrivers = async () => {
-    setLoading(true);
-    try {
-      const dataDrivers = await DriverService.getAvailableDrivers(startTime, endTime);
-      setDrivers(dataDrivers);
-    } catch (error) {
-      showToast.error(
-        `${t('common.error.title')}`,
-        `${t('common.error.failed', { action: 'loading', item: 'driver' })}`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const validateForm = (): boolean => {
     if (isDriverRequired && !selectedDriver) {
@@ -103,8 +117,15 @@ const ApproveModal = ({
     if (!validateForm()) return;
     setIsApproving(true);
     try {
-      await onApprove(selectedDriver, note.trim());
+      const assignmentData = { driverId: selectedDriver, note };
+
+      if (isDriverRequired) {
+        await RequestService.approveRequest(requestId, assignmentData);
+      } else {
+        await RequestService.approveRequest(requestId);
+      }
       showToast.success(`${t('common.success.title')}`, `${t('common.success.approved')}`);
+      onSuccess();
       resetForm();
       onClose();
     } catch (error) {
@@ -155,10 +176,10 @@ const ApproveModal = ({
                       <FontAwesomeIcon icon={faCircleInfo} size={24} color="#1e40af" />
                       <View className="ml-4 flex-1">
                         <Text className="mb-1 font-semibold text-blue-800">
-                          {t('request.modal.approve.driverSection.noDriverRequired')}
+                          {t('notice.approveModal.noDriverRequired')}
                         </Text>
                         <Text className="text-sm text-blue-600">
-                          {t('request.modal.approve.driverSection.noDriverRequiredMention')}
+                          {t('notice.approveModal.noDriverRequiredMention')}
                         </Text>
                       </View>
                     </View>

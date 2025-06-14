@@ -8,19 +8,21 @@ interface LocationProgressProps {
   currentLocationIndex: number;
   sortedLocations: LocationType[];
   checkpoints: { [key: number]: LocationCheckpoint };
+  t: any
 }
 
 const LocationProgress = ({
   currentLocationIndex,
   sortedLocations,
   checkpoints,
+  t
 }: LocationProgressProps) => {
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <View className="bg-blue-50 px-4 py-3">
-        <Text className="text-lg font-bold text-gray-800">Lộ trình hành trình</Text>
+        <Text className="text-lg font-bold text-gray-800">{t('request.location.progress')}</Text>
         <Text className="text-sm text-gray-600">
-          Điểm {currentLocationIndex + 1}/{sortedLocations.length}
+          {t('common.fields.point')} {currentLocationIndex + 1}/{sortedLocations.length}
         </Text>
       </View>
 
@@ -73,11 +75,11 @@ const LocationProgress = ({
                 </Text>
                 <Text className="mt-1 text-sm text-gray-500">{location.address}</Text>
                 {location.note && (
-                  <Text className="mt-1 text-xs text-gray-400">Ghi chú: {location.note}</Text>
+                  <Text className="mt-1 text-xs text-gray-400">{t('common.fields.note')}: {location.note}</Text>
                 )}
                 {isCompletedLocation && (
                   <Text className="mt-1 text-xs text-green-600">
-                    ✓ Đã hoàn thành lúc{' '}
+                    ✓ {t('request.location.completedAt')}{' '}
                     {new Date(checkpoints[index].createdAt).toLocaleTimeString()}
                   </Text>
                 )}

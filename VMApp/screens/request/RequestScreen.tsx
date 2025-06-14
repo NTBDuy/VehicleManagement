@@ -229,18 +229,6 @@ const RequestScreen = () => {
     await fetchRequestsData();
   };
 
-  const handleRejectConfirm = async (reason: string) => {
-    const reasonData = { reason };
-    await RequestService.rejectRequest(selected!.requestId, reasonData);
-    await fetchRequestsData();
-  };
-
-  const handleCancelConfirm = async (reason: string) => {
-    const reasonData = { reason };
-    await RequestService.cancelRequest(selected!.requestId, reasonData);
-    await fetchRequestsData();
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-white">
       <Header
@@ -413,8 +401,9 @@ const RequestScreen = () => {
           <ApproveModal
             visible={isApproveModalVisible}
             onClose={handleCloseModal}
-            onApprove={handleApproveConfirm}
+            onSuccess={onRefresh}
             isDriverRequired={selected.isDriverRequired}
+            requestId={selected.requestId}
             startTime={selected.startTime}
             endTime={selected.endTime}
           />
@@ -422,13 +411,15 @@ const RequestScreen = () => {
           <RejectModal
             visible={isRejectModalVisible}
             onClose={handleCloseModal}
-            onReject={handleRejectConfirm}
+            requestId={selected.requestId}
+            onSuccess={onRefresh}
           />
 
           <CancelModal
             visible={isCancelModalVisible}
             onClose={handleCloseModal}
-            onCancel={handleCancelConfirm}
+            requestId={selected.requestId}
+            onSuccess={onRefresh}
           />
         </>
       )}

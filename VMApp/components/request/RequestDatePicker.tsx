@@ -160,7 +160,7 @@ const RequestDatePicker = ({
         />
         <View className="mt-3 rounded-xl bg-blue-50 p-4">
           <Text className="text-sm font-medium text-blue-900">
-            Khi thay đổi ngày đã chọn trước đó ứng dụng sẽ lấy danh sách xe khả dụng mới!
+            {t('notice.datePicker')}
           </Text>
         </View>
       </View>

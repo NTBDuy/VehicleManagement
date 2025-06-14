@@ -1,7 +1,9 @@
 import { faEye, faEyeSlash, faLock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { UserService } from 'services/userService';
@@ -9,6 +11,7 @@ import { showToast } from 'utils/toast';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
+import { passwordSchema } from '@/validations/passwordSchema';
 
 interface ChangePasswordData {
   currentPassword: string;
@@ -25,8 +28,6 @@ interface PasswordErrors {
 const ChangePasswordScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<PasswordErrors>({});
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
@@ -38,6 +39,23 @@ const ChangePasswordScreen = () => {
     confirmPassword: '',
   });
 
+  const updateUserSchema = passwordSchema(t);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty },
+    reset,
+  } = useForm<ChangePasswordData>({
+    resolver: yupResolver(updateUserSchema),
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
+    mode: 'onChange',
+  });
+
   const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
     setShowPasswords((prev) => ({
       ...prev,
@@ -45,56 +63,11 @@ const ChangePasswordScreen = () => {
     }));
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: PasswordErrors = {};
-
-    if (!passwordData.currentPassword.trim()) {
-      newErrors.currentPassword = t('common.required.currentPassword');
-    }
-
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-    if (!passwordData.newPassword.trim()) {
-      newErrors.newPassword = t('common.required.newPassword');
-    } else if (!passwordRegex.test(passwordData.newPassword)) {
-      newErrors.newPassword = t('validate.regex.password');
-    }
-
-    if (!passwordData.confirmPassword.trim()) {
-      newErrors.confirmPassword = t('common.required.confirmPassword');
-    } else if (passwordData.newPassword !== passwordData.confirmPassword) {
-      newErrors.confirmPassword = t('common.regex.notMatch');
-    }
-
-    if (
-      passwordData.currentPassword === passwordData.newPassword &&
-      passwordData.newPassword.trim()
-    ) {
-      newErrors.newPassword = t('common.regex.differentPassword');
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChangePassword = async () => {
-    if (!validateForm()) {
-      showToast.error(
-        `${t('common.error.validation.title')}`,
-        `${t('common.error.validation.message')}`
-      );
-      return;
-    }
-
+  const onSubmit = async (data: ChangePasswordData) => {
     try {
-      setIsLoading(true);
-      const changePasswordDTO = {
-        CurrentPassword: passwordData.currentPassword,
-        NewPassword: passwordData.newPassword,
-        ConfirmPassword: passwordData.confirmPassword,
-      };
-      await UserService.changePassword(changePasswordDTO);
+      await UserService.changePassword(data);
       showToast.success(`${t('common.success.title')}`, `${t('common.success.passwordChange')}`);
-      setPasswordData({
+      reset({
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -102,17 +75,24 @@ const ChangePasswordScreen = () => {
       navigation.goBack();
     } catch (error: any) {
       console.log('Change password error:', error);
-      showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  const handleChangePassword = () => {
+    handleSubmit(onSubmit, (errors) => {
+      console.log('Validation errors:', errors);
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
+    })();
+  };
+
   const handleCancel = () => {
-    const hasChanges =
+    const isDirty =
       passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword;
 
-    if (hasChanges) {
+    if (isDirty) {
       Alert.alert(
         `${t('common.confirmation.title.discardChanges')}`,
         `${t('common.confirmation.message.discardChanges')}`,
@@ -130,9 +110,6 @@ const ChangePasswordScreen = () => {
     }
   };
 
-  const hasChanges =
-    passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword;
-
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header
@@ -141,7 +118,7 @@ const ChangePasswordScreen = () => {
             <Text className="text-xl font-bold text-gray-800">
               {t('setting.changePassword.header')}
             </Text>
-            {hasChanges && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
+            {isDirty && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
           </View>
         }
         backBtn
@@ -169,59 +146,77 @@ const ChangePasswordScreen = () => {
 
           <View className="p-4">
             <View className="mb-4">
-              <InputField
-                label={t('setting.changePassword.section.label.current')}
-                value={passwordData.currentPassword}
-                onChangeText={(text) => setPasswordData({ ...passwordData, currentPassword: text })}
-                error={errors.currentPassword}
-                secureTextEntry={!showPasswords.current}
-                rightIcon={
-                  <TouchableOpacity onPress={() => togglePasswordVisibility('current')}>
-                    <FontAwesomeIcon
-                      icon={showPasswords.current ? faEyeSlash : faEye}
-                      size={16}
-                      color="#6b7280"
-                    />
-                  </TouchableOpacity>
-                }
+              <Controller
+                control={control}
+                name="currentPassword"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    label={t('setting.changePassword.section.label.current')}
+                    value={value}
+                    onChangeText={onChange}
+                    error={errors.currentPassword?.message}
+                    secureTextEntry={!showPasswords.current}
+                    rightIcon={
+                      <TouchableOpacity onPress={() => togglePasswordVisibility('current')}>
+                        <FontAwesomeIcon
+                          icon={showPasswords.current ? faEyeSlash : faEye}
+                          size={16}
+                          color="#6b7280"
+                        />
+                      </TouchableOpacity>
+                    }
+                  />
+                )}
               />
             </View>
 
             <View className="mb-4">
-              <InputField
-                label={t('setting.changePassword.section.label.new')}
-                value={passwordData.newPassword}
-                onChangeText={(text) => setPasswordData({ ...passwordData, newPassword: text })}
-                error={errors.newPassword}
-                secureTextEntry={!showPasswords.new}
-                rightIcon={
-                  <TouchableOpacity onPress={() => togglePasswordVisibility('new')}>
-                    <FontAwesomeIcon
-                      icon={showPasswords.new ? faEyeSlash : faEye}
-                      size={16}
-                      color="#6b7280"
-                    />
-                  </TouchableOpacity>
-                }
+              <Controller
+                control={control}
+                name="newPassword"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    label={t('setting.changePassword.section.label.new')}
+                    value={value}
+                    onChangeText={onChange}
+                    error={errors.newPassword?.message}
+                    secureTextEntry={!showPasswords.new}
+                    rightIcon={
+                      <TouchableOpacity onPress={() => togglePasswordVisibility('new')}>
+                        <FontAwesomeIcon
+                          icon={showPasswords.new ? faEyeSlash : faEye}
+                          size={16}
+                          color="#6b7280"
+                        />
+                      </TouchableOpacity>
+                    }
+                  />
+                )}
               />
             </View>
 
             <View>
-              <InputField
-                label={t('setting.changePassword.section.label.confirm')}
-                value={passwordData.confirmPassword}
-                onChangeText={(text) => setPasswordData({ ...passwordData, confirmPassword: text })}
-                error={errors.confirmPassword}
-                secureTextEntry={!showPasswords.confirm}
-                rightIcon={
-                  <TouchableOpacity onPress={() => togglePasswordVisibility('confirm')}>
-                    <FontAwesomeIcon
-                      icon={showPasswords.confirm ? faEyeSlash : faEye}
-                      size={16}
-                      color="#6b7280"
-                    />
-                  </TouchableOpacity>
-                }
+              <Controller
+                control={control}
+                name="confirmPassword"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    label={t('setting.changePassword.section.label.confirm')}
+                    value={value}
+                    onChangeText={onChange}
+                    error={errors.confirmPassword?.message}
+                    secureTextEntry={!showPasswords.confirm}
+                    rightIcon={
+                      <TouchableOpacity onPress={() => togglePasswordVisibility('confirm')}>
+                        <FontAwesomeIcon
+                          icon={showPasswords.confirm ? faEyeSlash : faEye}
+                          size={16}
+                          color="#6b7280"
+                        />
+                      </TouchableOpacity>
+                    }
+                  />
+                )}
               />
             </View>
           </View>
@@ -246,18 +241,18 @@ const ChangePasswordScreen = () => {
           <TouchableOpacity
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
-            disabled={isLoading}>
+            disabled={isSubmitting}>
             <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             className={`w-[48%] items-center rounded-xl border-2 border-blue-300 py-4 ${
-              isLoading || !hasChanges ? 'border-gray-300 bg-gray-400' : 'bg-blue-600'
+              isSubmitting || !isDirty ? 'border-gray-300 bg-gray-400' : 'bg-blue-600'
             }`}
             onPress={handleChangePassword}
-            disabled={isLoading || !hasChanges}>
+            disabled={isSubmitting || !isDirty}>
             <Text className="font-semibold text-white">
-              {isLoading
+              {isSubmitting
                 ? `${t('common.button.updating')}`
                 : `${t('setting.changePassword.header')}`}
             </Text>

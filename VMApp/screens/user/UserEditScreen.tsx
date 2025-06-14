@@ -3,19 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Alert,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
+import { userSchema } from '@/validations/userSchema';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
 
 import User from 'types/User';
+import UserFormData from '@/types/UserFormData';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
@@ -26,16 +22,26 @@ const UserEditScreen = () => {
   const { t } = useTranslation();
   const { userData: initialUserData } = route.params as { userData: User };
   const [userData, setUserData] = useState<User>(initialUserData);
-  const [errors, setErrors] = useState<Partial<User>>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
+
+  const updateUserSchema = userSchema(t);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty },
+    reset,
+  } = useForm<UserFormData>({
+    resolver: yupResolver(updateUserSchema),
+    defaultValues: {
+      fullName: userData.fullName,
+      email: userData.email,
+      phoneNumber: userData.phoneNumber,
+    },
+    mode: 'onChange',
+  });
 
   const updateUserData = (field: keyof User, value: any) => {
     setUserData((prev) => ({ ...prev, [field]: value }));
-    setHasChanges(true);
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
   };
 
   const roles = [
@@ -44,38 +50,7 @@ const UserEditScreen = () => {
     { label: t('common.role.admin'), value: 0 },
   ];
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<User> = {};
-
-    if (!userData.fullName?.trim()) {
-      newErrors.fullName = t('validate.required.fullname') as any;
-    }
-
-    if (!userData.email?.trim()) {
-      newErrors.email = t('validate.required.email') as any;
-    } else if (!/\S+@\S+\.\S+/.test(userData.email)) {
-      newErrors.email = `${t('validate.regex.email')}` as any;
-    }
-
-    if (!userData.phoneNumber?.trim()) {
-      newErrors.phoneNumber = t('validate.required.phone') as any;
-    } else if (!/^\d{9,10}$/.test(userData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = `${t('validate.regex.phone')}` as any;
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleUpdate = () => {
-    if (!validateForm()) {
-      showToast.error(
-        `${t('common.error.validation.title')}`,
-        `${t('common.error.validation.message')}`
-      );
-      return;
-    }
-
+  const onSubmit = async (data: UserFormData) => {
     Alert.alert(
       `${t('common.confirmation.title.update', { item: t('common.items.user') })}`,
       `${t('common.confirmation.message.update', { item: t('common.items.user') })}`,
@@ -84,24 +59,37 @@ const UserEditScreen = () => {
         {
           text: `${t('common.button.update')}`,
           onPress: async () => {
-            setIsLoading(true);
             try {
-              const data = await UserService.updateUser(userData.userId, userData);
-              setUserData(data);
-              setHasChanges(false);
+              const updatedData = { ...userData, ...data };
+
+              const result = await UserService.updateUser(userData.userId, updatedData);
+              setUserData(result);
               showToast.success(
                 `${t('common.success.title')}`,
                 `${t('common.success.updated', { item: t('common.items.user') })}`
               );
+              reset({
+                fullName: result.fullName,
+                email: result.email,
+                phoneNumber: result.phoneNumber,
+              });
             } catch (error) {
               console.log(error);
-            } finally {
-              setIsLoading(false);
             }
           },
         },
       ]
     );
+  };
+
+  const handleUpdate = () => {
+    handleSubmit(onSubmit, (errors) => {
+      console.log('Validation errors:', errors);
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
+    })();
   };
 
   const handleResetPassword = () => {
@@ -117,19 +105,11 @@ const UserEditScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              setIsLoading(true);
               await UserService.reset(userData!.userId);
-              showToast.success(
-                `${t('common.success.passwordReset')}`
-              );
+              showToast.success(`${t('common.success.passwordReset')}`);
             } catch (error) {
               console.log('Error resetting password:', error);
-              showToast.error(
-                `${t('common.error.title')}`,
-                `${t('common.error.generic')}`
-              );
-            } finally {
-              setIsLoading(false);
+              showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
             }
           },
         },
@@ -138,7 +118,7 @@ const UserEditScreen = () => {
   };
 
   const handleCancel = () => {
-    if (hasChanges) {
+    if (isDirty) {
       Alert.alert(
         `${t('common.confirmation.title.discardChanges')}`,
         `${t('common.confirmation.message.discardChanges')}`,
@@ -164,7 +144,7 @@ const UserEditScreen = () => {
           <View className="items-center">
             <Text className="text-xl font-bold text-gray-800">{t('user.edit.title')}</Text>
             <Text className="text-xl font-bold text-gray-800">#{userData.userId}</Text>
-            {hasChanges && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
+            {isDirty && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
           </View>
         }
       />
@@ -185,31 +165,45 @@ const UserEditScreen = () => {
         <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
           <View className="bg-gray-50 px-4 py-3">
             <Text className="text-lg font-semibold text-gray-800">
-              {' '}
               {t('user.detail.informationTitle')}
             </Text>
           </View>
           <View className="p-4">
-            <InputField
-              label={t('common.fields.fullname')}
-              value={userData.fullName || ''}
-              onChangeText={(text) => updateUserData('fullName', text)}
-              error={errors.fullName as string}
+            <Controller
+              control={control}
+              name="fullName"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.fullname')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.fullName?.message}
+                />
+              )}
             />
-            <InputField
-              label={t('common.fields.email')}
-              value={userData.email || ''}
-              onChangeText={(text) => updateUserData('email', text)}
-              keyboardType="email-address"
-              error={errors.email as string}
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.email')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.email?.message}
+                />
+              )}
             />
-            <InputField
-              label={t('common.fields.phone')}
-              value={userData.phoneNumber || ''}
-              onChangeText={(text) => updateUserData('phoneNumber', text)}
-              placeholder="e.g. 0912345678"
-              keyboardType="phone-pad"
-              error={errors.phoneNumber as string}
+            <Controller
+              control={control}
+              name="phoneNumber"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.phone')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.phoneNumber?.message}
+                />
+              )}
             />
           </View>
         </View>
@@ -281,18 +275,18 @@ const UserEditScreen = () => {
           <TouchableOpacity
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
-            disabled={isLoading}>
+            disabled={isSubmitting}>
             <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             className={`w-[48%] items-center rounded-xl py-4 shadow-sm ${
-              isLoading ? 'bg-gray-400' : 'bg-blue-600 '
+              isSubmitting ? 'bg-gray-400' : 'bg-blue-600 '
             }`}
             onPress={handleUpdate}
-            disabled={isLoading || !hasChanges}>
+            disabled={isSubmitting || !isDirty}>
             <Text className="font-semibold text-white">
-              {isLoading ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
+              {isSubmitting ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
             </Text>
           </TouchableOpacity>
         </View>

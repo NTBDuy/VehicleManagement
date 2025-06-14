@@ -11,54 +11,64 @@ import {
   View,
 } from 'react-native';
 import { showToast } from 'utils/toast';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { RequestService } from '@/services/requestService';
+import { Controller, useForm } from 'react-hook-form';
+import { reasonSchema } from '@/validations/reasonSchema';
+
+import ReasonFormData from '@/types/ReasonFormData';
 
 import InputField from '@/components/ui/InputFieldComponent';
 
 interface RejectModalProps {
   visible: boolean;
   onClose: () => void;
-  onReject: (reason: string) => void;
-}
-interface ReasonProps {
-  reason: string;
+  requestId: number;
+  onSuccess: () => void;
 }
 
-const RejectModal = ({ visible, onClose, onReject }: RejectModalProps) => {
+const RejectModal = ({ visible, onClose, requestId, onSuccess }: RejectModalProps) => {
   const { t } = useTranslation();
-  const [reason, setReason] = useState('');
-  const [isReject, setIsReject] = useState(false);
-  const [errors, setErrors] = useState<Partial<ReasonProps>>({});
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<ReasonProps> = {};
+  const getReasonSchema = reasonSchema(t);
 
-    if (!reason || reason.trim().length <= 5) {
-      newErrors.reason = t('validate.required.reasonReject');
-      setErrors(newErrors);
-      return false;
-    }
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<ReasonFormData>({
+    resolver: yupResolver(getReasonSchema),
+    defaultValues: {
+      reason: '',
+    },
+    mode: 'onChange',
+  });
 
-    setErrors({});
-    return true;
-  };
-
-  const handleReject = async () => {
-    if (!validateForm()) return;
-    setIsReject(true);
+  const onSubmit = async (data: ReasonFormData) => {
     try {
-      await onReject(reason.trim());
+      await RequestService.rejectRequest(requestId, data);
       showToast.success(`${t('common.success.title')}`, `${t('common.success.reject')}`);
-      setReason('');
+      onSuccess();
+      reset({
+        reason: '',
+      });
       onClose();
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsReject(false);
     }
   };
 
+  const handleReject = () => {
+    handleSubmit(onSubmit, (errors) => {
+      console.log('Validation errors:', errors);
+    })();
+  };
+
   const handleClose = () => {
-    setReason('');
+    reset({
+      reason: '',
+    });
     onClose();
   };
 
@@ -83,11 +93,17 @@ const RejectModal = ({ visible, onClose, onReject }: RejectModalProps) => {
                 </View>
 
                 <View className="mb-6">
-                  <InputField
-                    label={t('common.fields.reason')}
-                    value={reason}
-                    onChangeText={setReason}
-                    error={errors.reason as string}
+                  <Controller
+                    control={control}
+                    name="reason"
+                    render={({ field: { onChange, value } }) => (
+                      <InputField
+                        label={t('common.fields.reason')}
+                        value={value}
+                        onChangeText={onChange}
+                        error={errors.reason?.message}
+                      />
+                    )}
                   />
                 </View>
 
@@ -103,7 +119,7 @@ const RejectModal = ({ visible, onClose, onReject }: RejectModalProps) => {
                     className="w-[48%] items-center justify-center rounded-lg bg-red-600 py-3 "
                     onPress={handleReject}>
                     <Text className="text-lg font-semibold text-white">
-                      {isReject
+                      {isSubmitting
                         ? `${t('common.button.processing')}`
                         : `${t('common.button.reject')}`}
                     </Text>

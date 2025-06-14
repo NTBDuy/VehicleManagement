@@ -9,6 +9,7 @@ import InputField from '@/components/ui/InputFieldComponent';
 import { getLocationLabel } from '@/utils/requestUtils';
 import { useTranslation } from 'react-i18next';
 import { LocationType } from '@/types/Location';
+import { DistanceNotice } from './DistanceNotice';
 
 interface ConfirmComponentProps {
   startDate: string;
@@ -44,7 +45,7 @@ const RequestConfirm = ({
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <View>
-        <View className="rounded-2xl bg-white">
+        <View className="rounded-2xl bg-white mb-3">
           <View className="bg-gray-50 px-4 pb-3">
             <Text className="text-lg font-semibold text-gray-800">
               {t('request.create.confirm.sectionTitle.info')}
@@ -74,7 +75,7 @@ const RequestConfirm = ({
             {locations.map((item) => (
               <InfoRow
                 key={item.order}
-                label={getLocationLabel(item.order, locations.length)}
+                label={getLocationLabel(item.order, locations.length, t)}
                 value=""
                 valueComponent={
                   <Text className="max-w-[60%] text-right font-semibold text-gray-800">
@@ -91,7 +92,7 @@ const RequestConfirm = ({
               />
             ))}
             <InfoRow
-              label="Khoảng cách dự kiến"
+              label={t('common.fields.estimateDistance')}
               value=""
               valueComponent={
                 <Text className="max-w-[60%] text-right font-semibold text-gray-800">
@@ -103,15 +104,7 @@ const RequestConfirm = ({
           </View>
         </View>
 
-        <View className="mt-4 rounded-xl bg-blue-50 p-4">
-          <Text className="mb-1 text-sm font-medium text-blue-900">Lưu ý:</Text>
-          <Text className="text-sm text-blue-700">
-            • Khoảng cách dự kiến được tính bằng tổng khoảng cách đường thẳng giữa các điểm dừng
-            theo thứ tự hành trình (ví dụ: A → B → C). Con số này chỉ mang tính tham khảo và có thể
-            khác với khoảng cách thực tế di chuyển. Hệ thống sẽ tính lại khoảng cách thực tế sau khi
-            hoàn tất chuyến đi.
-          </Text>
-        </View>
+        <DistanceNotice show={locations.length > 0} />
 
         <View className="mt-4 rounded-2xl bg-white">
           <View className="bg-gray-50 px-4 pb-3">

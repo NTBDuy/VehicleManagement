@@ -1,8 +1,4 @@
-import {
-  getRequestBackgroundColor,
-  getRequestLabelEn,
-  getRequestLabelEnVi,
-} from '@/utils/requestUtils';
+import { getRequestBackgroundColor, getRequestLabel } from '@/utils/requestUtils';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { getUserInitials } from 'utils/userUtils';
@@ -14,16 +10,13 @@ interface RequestDetailHeaderProps {
 }
 
 const RequestDetailHeader = ({ requestData }: RequestDetailHeaderProps) => {
-  const { t, i18n } = useTranslation();
-  const isViCurrent = i18n.language === 'vi-VN';
+  const { t } = useTranslation();
 
   const renderBadgeRequestStatus = ({ status }: { status: number }) => {
     const bgColor = getRequestBackgroundColor(status);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">
-          {isViCurrent ? getRequestLabelEnVi(status) : getRequestLabelEn(status)}
-        </Text>
+        <Text className="text-xs font-medium text-white">{getRequestLabel(status, t)}</Text>
       </View>
     );
   };

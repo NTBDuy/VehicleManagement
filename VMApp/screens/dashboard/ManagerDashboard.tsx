@@ -238,7 +238,6 @@ const ManagerDashboard = () => {
             <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
               <View className="bg-gray-50 px-4 py-3">
                 <Text className="text-lg font-semibold text-gray-800">
-                  {' '}
                   {t('dashboard.stats.vehicles')}
                 </Text>
               </View>

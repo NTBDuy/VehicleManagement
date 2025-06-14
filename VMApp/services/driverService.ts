@@ -1,3 +1,4 @@
+import DriverFormData from '@/types/DriverFormData';
 import { BaseApiClient } from 'services/baseApiClient';
 import Driver from 'types/Driver';
 
@@ -18,7 +19,7 @@ export class DriverService extends BaseApiClient {
   }
 
   // Tạo mới tài xế
-  static async createDriver(driverData: Partial<Driver>): Promise<Driver> {
+  static async createDriver(driverData: DriverFormData): Promise<Driver> {
     return this.request<Driver>('/driver', {
       method: 'POST',
       body: JSON.stringify(driverData),

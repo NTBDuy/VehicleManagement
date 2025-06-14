@@ -55,6 +55,7 @@ interface LocationModalProps {
   onConfirmLocation: () => void;
   onNoteChange: (note: string) => void;
   onToggleNote: () => void;
+  t: any;
 }
 
 export const LocationModal = ({
@@ -75,18 +76,18 @@ export const LocationModal = ({
   onConfirmLocation,
   onNoteChange,
   onToggleNote,
+  t,
 }: LocationModalProps) => {
-
   useEffect(() => {
     onClearFilters();
   }, [visible]);
 
   const getModalTitle = () => {
-    if (activeInput === 'from') return 'xuất phát';
-    if (activeInput === 'to') return 'kết thúc';
+    if (activeInput === 'from') return t('common.placeholder.startPoint');
+    if (activeInput === 'to') return t('common.placeholder.endPoint');
     if (typeof activeInput === 'string' && activeInput.startsWith('stop_')) {
       const stop = stopPoints.find((s) => s.id === activeInput);
-      return `dừng ${stop?.order || ''}`;
+      return `${t('common.placeholder.stopPoint')} ${stop?.order || ''}`;
     }
     return '';
   };
@@ -108,11 +109,11 @@ export const LocationModal = ({
               <Header
                 isHiddenLeftComponent
                 isOverlay={true}
-                title={`Chọn điểm ${getModalTitle()}`}
+                title={getModalTitle()}
                 searchSection
                 searchQuery={searchQuery}
                 handleSearch={onSearch}
-                placeholder="Tìm theo địa chỉ"
+                placeholder={t('common.searchPlaceholder.location')}
                 handleClearFilters={onClearFilters}
                 rightElement={
                   <TouchableOpacity className="rounded-full bg-white p-2" onPress={onClose}>
@@ -180,11 +181,11 @@ export const LocationModal = ({
               {isShowNote ? (
                 <View className="my-1">
                   <InputField
-                    label="Ghi chú địa điểm"
+                    label={t('common.fields.noteAddress')}
                     require={false}
                     value={notePointLocation}
                     onChangeText={onNoteChange}
-                    placeholder="Ví dụ cụ thể hẻm bao nhiêu..."
+                    placeholder={t('common.placeholder.noteAddress')}
                     multiline
                     numberOfLines={4}
                   />
@@ -200,7 +201,7 @@ export const LocationModal = ({
                     onPress={onToggleNote}
                     className="mb-4 flex-row items-center justify-between">
                     <Text className="text-sm font-semibold text-blue-800">
-                      Thêm chi tiết địa điểm (Ví dụ: chi tiết hẻm bao nhiêu)
+                      {t('request.location.addDetail')}
                     </Text>
                     <FontAwesomeIcon icon={faCirclePlus} color="#1d4ed8" size={18} />
                   </TouchableOpacity>
@@ -209,13 +210,13 @@ export const LocationModal = ({
                       onPress={onCurrentLocation}
                       className="flex-1 flex-row items-center justify-center rounded-lg border border-gray-200/50 bg-blue-100 px-2 py-3">
                       <FontAwesomeIcon icon={faLocationCrosshairs} color="#1d4ed8" size={18} />
-                      <Text className="ml-2 font-medium text-blue-700">Vị trí hiện tại</Text>
+                      <Text className="ml-2 font-medium text-blue-700">{t('common.button.currenLocation')}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       onPress={onConfirmLocation}
                       className="flex-1 flex-row items-center justify-center rounded-lg border border-gray-200/50 bg-green-100 px-2 py-3">
-                      <Text className="font-medium text-green-700">Xác nhận</Text>
+                      <Text className="font-medium text-green-700">{t('common.button.confirm')}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

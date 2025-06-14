@@ -28,7 +28,7 @@ import Header from '@/components/layout/HeaderComponent';
 import LocationProgress from '@/components/request/LocationProgress';
 import RequestCheckPoint from '@/components/request/RequestCheckPoint';
 import RequestHeader from '@/components/request/RequestInProgressHeader';
-import WarningNote from '@/components/request/WarningNoteComponent';
+import WarningNotice from '@/components/request/WarningNoticeComponent';
 import ErrorComponent from '@/components/ui/ErrorComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import { calculateDistance } from '@/utils/requestUtils';
@@ -253,6 +253,7 @@ const RequestInProgress = () => {
             currentLocationIndex={currentLocationIndex}
             sortedLocations={sortedLocations}
             checkpoints={checkpoints}
+            t={t}
           />
 
           {isLoading ? (
@@ -268,10 +269,11 @@ const RequestInProgress = () => {
               isLastLocation={isLastLocation}
               currentImages={currentImages}
               setCurrentImages={setCurrentImages}
+              t={t}
             />
           )}
 
-          <WarningNote />
+          <WarningNotice />
         </View>
       </ScrollView>
     </SafeAreaView>

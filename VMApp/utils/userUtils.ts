@@ -1,29 +1,22 @@
-import { StatusConfig } from '@/types/StatusConfig';
-
-const STATUS_CONFIG = new Map<boolean, StatusConfig>([
-  [true, { labelEn: 'Active', labelVi: 'Hoạt động', color: 'green-500' }],
-  [false, { labelEn: 'Inactive', labelVi: 'Không hoạt động', color: 'red-500' }],
+const STATUS_CONFIG = new Map<boolean, { labelKey: string; color: string }>([
+  [true, { labelKey: 'common.status.active', color: 'green-500' }],
+  [false, { labelKey: 'common.status.inactive', color: 'red-500' }],
 ]);
 
-const DEFAULT_CONFIG: StatusConfig = {
-  labelEn: 'Unknown',
-  labelVi: 'Không xác định',
+const DEFAULT_CONFIG = {
+  labelKey: 'common.status.unknown',
   color: 'gray-500',
 };
 
+const getStatusConfig = (status: boolean) =>
+  STATUS_CONFIG.get(status) ?? DEFAULT_CONFIG;
+
 export const getUserBackgroundColor = (status: boolean): string => {
-  const config = STATUS_CONFIG.get(status) ?? DEFAULT_CONFIG;
-  return `bg-${config.color}`;
+  return `bg-${getStatusConfig(status).color}`;
 };
 
-export const getUserLabelEn = (status: boolean): string => {
-  const config = STATUS_CONFIG.get(status) ?? DEFAULT_CONFIG;
-  return config.labelEn;
-};
-
-export const getUserLabelVi = (status: boolean): string => {
-  const config = STATUS_CONFIG.get(status) ?? DEFAULT_CONFIG;
-  return config.labelVi;
+export const getUserLabel = (status: boolean, t: (key: string) => string): string => {
+  return t(getStatusConfig(status).labelKey);
 };
 
 export const getUserInitials = (fullname?: string, email?: string): string => {

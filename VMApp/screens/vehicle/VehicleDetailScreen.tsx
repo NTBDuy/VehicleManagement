@@ -9,8 +9,7 @@ import { VehicleService } from 'services/vehicleService';
 import { formatDate, formatDatetime } from 'utils/datetimeUtils';
 import {
   getVehicleBackground,
-  getVehicleLabelEn,
-  getVehicleLabelVi,
+  getVehicleLabel,
   getVehicleTypeIcon,
 } from 'utils/vehicleUtils';
 
@@ -22,8 +21,7 @@ import LoadingData from '@/components/ui/LoadingData';
 
 const VehicleDetailScreen = () => {
   const { user } = useAuth();
-  const { t, i18n } = useTranslation();
-  const isViCurrent = i18n.language === 'vi-VN';
+  const { t } = useTranslation();
   const route = useRoute();
   const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
   const navigation = useNavigation<any>();
@@ -57,7 +55,7 @@ const VehicleDetailScreen = () => {
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
         <Text className="text-xs font-medium text-white">
-          {isViCurrent ? getVehicleLabelVi(status) : getVehicleLabelEn(status)}
+          {getVehicleLabel(status, t)}
         </Text>
       </View>
     );
@@ -135,10 +133,6 @@ const VehicleDetailScreen = () => {
                     <Text className="font-semibold text-gray-700">{t('common.fields.noInfo')}</Text>
                   )
                 }
-              />
-              <InfoRow
-                label={t('vehicle.detail.sectionInfo.label.currentOdometer')}
-                value={vehicleData.currentOdometer?.toString() || t('common.fields.noInfo')}
               />
               <InfoRow
                 label={t('vehicle.detail.sectionInfo.label.createAt')}

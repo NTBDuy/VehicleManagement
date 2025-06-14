@@ -1,30 +1,22 @@
-import { StatusConfig } from '@/types/StatusConfig';
-
 type StatusNumber = 0 | 1 | 2;
 
-const STATUS_CONFIG: Record<StatusNumber, StatusConfig> = {
-  0: { labelEn: 'Admin', labelVi: 'Quản trị viên', color: 'orange-600' },
-  1: { labelEn: 'Employee', labelVi: 'Nhân viên', color: 'blue-600' },
-  2: { labelEn: 'Manager', labelVi: 'Trưởng phòng', color: 'green-600' },
+const STATUS_CONFIG: Record<StatusNumber, { labelKey: string; color: string }> = {
+  0: { labelKey: 'common.role.admin', color: 'orange-600' },
+  1: { labelKey: 'common.role.employee', color: 'blue-600' },
+  2: { labelKey: 'common.role.manager', color: 'green-600' },
 };
 
-const DEFAULT_CONFIG: StatusConfig = {
-  labelEn: 'Unknown',
-  labelVi: 'Không xác định',
+const DEFAULT_CONFIG = {
+  labelKey: 'common.status.unknown',
   color: 'gray-500',
 };
 
+const getStatusConfig = (status: number) => STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
+
 export const getRoleBackgroundColor = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return `bg-${config.color}`;
+  return `bg-${getStatusConfig(status).color}`;
 };
 
-export const getRoleLabelEn = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return config.labelEn;
-};
-
-export const getRoleLabelVi = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return config.labelVi;
+export const getRoleLabel = (status: number, t: (key: string) => string): string => {
+  return t(getStatusConfig(status).labelKey);
 };

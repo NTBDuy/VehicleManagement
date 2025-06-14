@@ -1,11 +1,14 @@
 import { showToast } from '@/utils/toast';
+import { driverSchema } from '@/validations/driverSchema';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { isValid, parseISO } from 'date-fns';
 
 import Driver from '@/types/Driver';
+import DriverFormData from '@/types/DriverFormData';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
@@ -17,64 +20,27 @@ const DriverEditScreen = () => {
   const { t } = useTranslation();
   const { driverData: initialDriverData } = route.params as { driverData: Driver };
   const [driverData, setDriverData] = useState<Driver>(initialDriverData);
-  const [errors, setErrors] = useState<Partial<Driver>>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
 
-  const updateDriverData = (field: keyof Driver, value: any) => {
-    setDriverData((prev) => ({ ...prev, [field]: value }));
-    setHasChanges(true);
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
+  const updateDriverSchema = driverSchema(t);
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Driver> = {};
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty },
+    reset,
+  } = useForm<DriverFormData>({
+    resolver: yupResolver(updateDriverSchema),
+    defaultValues: {
+      fullName: driverData.fullName,
+      phoneNumber: driverData.phoneNumber,
+      licenseNumber: driverData.licenseNumber,
+      licenseIssuedDate: driverData.licenseIssuedDate.split('T')[0],
+      yearsOfExperience: driverData.yearsOfExperience,
+    },
+    mode: 'onChange',
+  });
 
-    if (!driverData.fullName?.trim()) {
-      newErrors.fullName = t('validate.required.fullname') as any;
-    }
-
-    if (!driverData.licenseNumber?.trim()) {
-      newErrors.licenseNumber = t('validate.required.license') as any;
-    }
-
-    if (!driverData.phoneNumber?.trim()) {
-      newErrors.phoneNumber = t('validate.required.phone') as any;
-    } else if (!/^\d{9,10}$/.test(driverData.phoneNumber.replace(/\s/g, ''))) {
-      newErrors.phoneNumber = t('validate.regex.phone') as any;
-    }
-
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-    if (!driverData.licenseIssuedDate?.trim()) {
-      newErrors.licenseIssuedDate = t('validate.required.licenseIssueDate') as any;
-    } else if (!dateRegex.test(driverData.licenseIssuedDate)) {
-      newErrors.licenseIssuedDate = t('validate.regex.licenseIssueDate');
-    } else if (!isValid(parseISO(driverData.licenseIssuedDate))) {
-      newErrors.licenseIssuedDate = t('validate.regex.licenseIssueDate');
-    }
-
-    if (driverData.yearsOfExperience == null || isNaN(driverData.yearsOfExperience)) {
-      newErrors.yearsOfExperience = t('validate.required.yearOfExperience') as any;
-    } else if (driverData.yearsOfExperience < 0) {
-      newErrors.yearsOfExperience = t('validate.regex.yearOfExperience') as any;
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleUpdate = () => {
-    if (!validateForm()) {
-      showToast.error(
-        `${t('common.error.validation.title')}`,
-        `${t('common.error.validation.message')}`
-      );
-      return;
-    }
-
+  const onSubmit = (data: DriverFormData) => {
     Alert.alert(
       `${t('common.confirmation.title.update', { item: t('common.items.driver') })}`,
       `${t('common.confirmation.message.update', { item: t('common.items.driver') })}`,
@@ -83,19 +49,26 @@ const DriverEditScreen = () => {
         {
           text: `${t('common.button.update')}`,
           onPress: async () => {
-            setIsLoading(true);
             try {
-              const data = await DriverService.updateDriver(driverData.driverId, driverData);
-              setDriverData(data);
-              setHasChanges(false);
+              const updateData = {
+                ...driverData,
+                ...data,
+              };
+              const result = await DriverService.updateDriver(driverData.driverId, updateData);
+              setDriverData(result);
+              reset({
+                fullName: result.fullName,
+                phoneNumber: result.phoneNumber,
+                licenseNumber: result.licenseNumber,
+                licenseIssuedDate: result.licenseIssuedDate.split('T')[0],
+                yearsOfExperience: result.yearsOfExperience,
+              });
               showToast.success(
                 `${t('common.success.title')}`,
                 `${t('common.success.updated', { item: t('common.items.driver') })}`
               );
             } catch (error) {
               console.log(error);
-            } finally {
-              setIsLoading(false);
             }
           },
         },
@@ -103,8 +76,18 @@ const DriverEditScreen = () => {
     );
   };
 
+  const handleUpdate = () => {
+    handleSubmit(onSubmit, (errors) => {
+      console.log('Validation errors:', errors);
+      showToast.error(
+        `${t('common.error.validation.title')}`,
+        `${t('common.error.validation.message')}`
+      );
+    })();
+  };
+
   const handleCancel = () => {
-    if (hasChanges) {
+    if (isDirty) {
       Alert.alert(
         `${t('common.confirmation.title.discardChanges')}`,
         `${t('common.confirmation.message.discardChanges')}`,
@@ -130,7 +113,7 @@ const DriverEditScreen = () => {
           <View className="items-center">
             <Text className="text-xl font-bold text-gray-800">{t('driver.edit.title')}</Text>
             <Text className="text-xl font-bold text-gray-800">#{driverData.driverId}</Text>
-            {hasChanges && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
+            {isDirty && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
           </View>
         }
       />
@@ -143,43 +126,69 @@ const DriverEditScreen = () => {
             </Text>
           </View>
           <View className="p-4">
-            <InputField
-              label={t('common.fields.fullname')}
-              value={driverData.fullName || ''}
-              onChangeText={(text) => updateDriverData('fullName', text)}
-              error={errors.fullName as string}
-            />
-            <InputField
-              label={t('common.fields.phone')}
-              value={driverData.phoneNumber || ''}
-              onChangeText={(text) => updateDriverData('phoneNumber', text)}
-              placeholder="e.g. 0912345678"
-              keyboardType="phone-pad"
-              error={errors.phoneNumber as string}
-            />
-            <InputField
-              label={t('driver.detail.section.license')}
-              value={driverData.licenseNumber || ''}
-              onChangeText={(text) => updateDriverData('licenseNumber', text)}
-              error={errors.licenseNumber as string}
-            />
-            <InputField
-              label={t('driver.detail.section.licenseDate')}
-              value={driverData.licenseIssuedDate?.split('T')[0] || ''}
-              onChangeText={(text) => updateDriverData('licenseIssuedDate', text)}
-              placeholder="YYYY-MM-DD"
-              error={errors.licenseIssuedDate as string}
+            <Controller
+              control={control}
+              name="fullName"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.fullname')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.fullName?.message}
+                />
+              )}
             />
 
-            <InputField
-              label={t('driver.detail.section.experience')}
-              value={driverData.yearsOfExperience.toString()}
-              onChangeText={(text) => {
-                const num = text === '' ? 0 : Number(text);
-                updateDriverData('yearsOfExperience', num);
-              }}
-              keyboardType="numeric"
-              error={errors.yearsOfExperience?.toString()}
+            <Controller
+              control={control}
+              name="phoneNumber"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('common.fields.phone')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.phoneNumber?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="licenseNumber"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('driver.detail.section.license')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.licenseNumber?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="licenseIssuedDate"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('driver.detail.section.licenseDate')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.licenseIssuedDate?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="yearsOfExperience"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label={t('driver.detail.section.experience')}
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.yearsOfExperience?.message}
+                />
+              )}
             />
           </View>
         </View>
@@ -188,18 +197,18 @@ const DriverEditScreen = () => {
           <TouchableOpacity
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
-            disabled={isLoading}>
+            disabled={isSubmitting}>
             <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             className={`w-[48%] items-center rounded-xl py-4 shadow-sm ${
-              isLoading ? 'bg-gray-400' : 'bg-blue-600 '
+              isSubmitting ? 'bg-gray-400' : 'bg-blue-600 '
             }`}
             onPress={handleUpdate}
-            disabled={isLoading || !hasChanges}>
+            disabled={isSubmitting || !isDirty}>
             <Text className="font-semibold text-white">
-              {isLoading ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
+              {isSubmitting ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
             </Text>
           </TouchableOpacity>
         </View>

@@ -1,35 +1,27 @@
-import { StatusConfig } from "@/types/StatusConfig";
-
 type StatusNumber = 0 | 1 | 2;
 
-const STATUS_CONFIG: Record<StatusNumber, StatusConfig> = {
-  0: { labelEn: 'Incoming', labelVi: 'Sắp tới', color: 'orange-600' },
-  1: { labelEn: 'In Progress', labelVi: 'Đang tiến hành', color: 'blue-600' },
-  2: { labelEn: 'Done', labelVi: 'Hoàn thành', color: 'green-600' },
+const STATUS_CONFIG: Record<StatusNumber, { labelKey: string; color: string }> = {
+  0: { labelKey: 'common.status.incoming', color: 'orange-600' },
+  1: { labelKey: 'common.status.inProgress', color: 'blue-600' },
+  2: { labelKey: 'common.status.done', color: 'green-600' },
 };
 
-const DEFAULT_CONFIG: StatusConfig = {
-  labelEn: 'Unknown',
-  labelVi: 'Không xác định',
+const DEFAULT_CONFIG = {
+  labelKey: 'common.status.unknown',
   color: 'gray-600',
 };
 
+const getStatusConfig = (status: number) =>
+  STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
+
 export const getMaintenanceBorderColor = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return `border-${config.color}`;
+  return `border-${getStatusConfig(status).color}`;
 };
 
 export const getMaintenanceBackgroundColor = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return `bg-${config.color}`;
+  return `bg-${getStatusConfig(status).color}`;
 };
 
-export const getMaintenanceLabelEn = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return config.labelEn;
-};
-
-export const getMaintenanceLabelVi = (status: number): string => {
-  const config = STATUS_CONFIG[status as StatusNumber] || DEFAULT_CONFIG;
-  return config.labelVi;
+export const getMaintenanceLabel = (status: number, t: (key: string) => string): string => {
+  return t(getStatusConfig(status).labelKey);
 };

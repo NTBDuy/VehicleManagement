@@ -7,6 +7,7 @@ import { LocationInput } from './LocationInput';
 import { LocationDetails } from './LocationDetails';
 import { LocationModal } from './LocationModal';
 import { DistanceNotice } from './DistanceNotice';
+import { useTranslation } from 'react-i18next';
 
 interface validateError {
   startLocation: string;
@@ -47,7 +48,7 @@ interface SearchResult {
   type: string;
 }
 
-const RequestDestination: React.FC<LocationComponentProps> = ({
+const RequestLocation: React.FC<LocationComponentProps> = ({
   startLocation,
   endLocation,
   setStartLocation,
@@ -63,6 +64,7 @@ const RequestDestination: React.FC<LocationComponentProps> = ({
     longitude: 106.7009,
   };
 
+  const { t } = useTranslation();
   const [activeInput, setActiveInput] = useState<'from' | 'to' | string | null>('from');
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -316,12 +318,14 @@ const RequestDestination: React.FC<LocationComponentProps> = ({
         onSwapLocations={handleSwapLocations}
         onAddStopPoint={addStopPoint}
         onRemoveStopPoint={removeStopPoint}
+        t={t}
       />
 
       <LocationDetails
         locations={locations}
         estimatedTotalDistance={estimatedTotalDistance}
         stopPointsCount={stopPoint.length}
+        t={t}
       />
 
       <DistanceNotice show={locations.length > 0} />
@@ -344,9 +348,10 @@ const RequestDestination: React.FC<LocationComponentProps> = ({
         onConfirmLocation={handleConfirmLocation}
         onNoteChange={setNotePointLocation}
         onToggleNote={() => setIsShowNote(!isShowNote)}
+        t={t}
       />
     </ScrollView>
   );
 };
 
-export default RequestDestination;
+export default RequestLocation;

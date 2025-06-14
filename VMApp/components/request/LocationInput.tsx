@@ -1,8 +1,7 @@
-import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faLocationDot, faArrowsUpDown, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import InputField from '@/components/ui/InputFieldComponent';
+import { faArrowsUpDown, faLocationDot, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { TouchableOpacity, View } from 'react-native';
 
 interface StopPoint {
   id: string;
@@ -22,6 +21,7 @@ interface LocationInputProps {
   onSwapLocations: () => void;
   onAddStopPoint: () => void;
   onRemoveStopPoint: (stopId: string) => void;
+  t: any;
 }
 
 export const LocationInput = ({
@@ -36,6 +36,7 @@ export const LocationInput = ({
   onSwapLocations,
   onAddStopPoint,
   onRemoveStopPoint,
+  t,
 }: LocationInputProps) => {
   return (
     <View className="flex-row px-2">
@@ -45,7 +46,7 @@ export const LocationInput = ({
           <View className="mx-2 -mb-4 flex-1">
             <InputField
               onChangeText={onStartLocationChange}
-              placeholder="Nhập điểm xuất phát"
+              placeholder={t('common.placeholder.startPoint')}
               value={startLocation}
               onFocus={() => onInputPress('from')}
               error={errors.startLocation}
@@ -71,7 +72,7 @@ export const LocationInput = ({
               <View className="mx-2 -mb-4 flex-1">
                 <InputField
                   onChangeText={(value) => onStopPointChange(stop.id, value)}
-                  placeholder={`Nhập điểm dừng ${stop.order}`}
+                  placeholder={`${t('common.placeholder.stopPoint')} ${stop.order}`}
                   value={stop.value}
                   onFocus={() => onInputPress(stop.id)}
                   onPress={() => onInputPress(stop.id)}
@@ -90,7 +91,7 @@ export const LocationInput = ({
           <View className="mx-2 -mb-4 flex-1">
             <InputField
               onChangeText={onEndLocationChange}
-              placeholder="Nhập điểm kết thúc"
+              placeholder={t('common.placeholder.endPoint')}
               value={endLocation}
               onFocus={() => onInputPress('to')}
               error={errors.endLocation}

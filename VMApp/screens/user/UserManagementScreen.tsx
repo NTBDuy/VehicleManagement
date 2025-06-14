@@ -23,7 +23,7 @@ import {
   View,
 } from 'react-native';
 import { UserService } from 'services/userService';
-import { getRoleBackgroundColor, getRoleLabelEn, getRoleLabelVi } from 'utils/roleUtils';
+import { getRoleBackgroundColor, getRoleLabel } from 'utils/roleUtils';
 import { showToast } from 'utils/toast';
 import { getUserInitials } from 'utils/userUtils';
 
@@ -35,8 +35,7 @@ import LoadingData from '@/components/ui/LoadingData';
 
 const UserManagementScreen = () => {
   const navigation = useNavigation<any>();
-  const { t, i18n } = useTranslation();
-  const isViCurrent = i18n.language === 'vi-VN';
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
@@ -105,9 +104,7 @@ const UserManagementScreen = () => {
     const bgColor = getRoleBackgroundColor(role);
     return (
       <View className={`rounded-full px-3 py-1 ${bgColor}`}>
-        <Text className="text-xs font-medium text-white">
-          {isViCurrent ? getRoleLabelVi(role) : getRoleLabelEn(role)}
-        </Text>
+        <Text className="text-xs font-medium text-white">{getRoleLabel(role, t)}</Text>
       </View>
     );
   };
