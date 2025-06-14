@@ -1,18 +1,11 @@
-import {
-  faCircleCheck,
-  faCircleXmark,
-  faEllipsisV,
-  faInfoCircle,
-} from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Animated,
   Dimensions,
   FlatList,
-  Modal,
   RefreshControl,
   SafeAreaView,
   Text,
@@ -33,26 +26,27 @@ import StatusCard from '@/components/ui/StatusCardComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
+import RequestOptionModal from '@/components/modal/OptionRequestModal';
 
 const { width } = Dimensions.get('window');
 
 const RequestScreen = () => {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
+
   const [requests, setRequests] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isFiltered, setIsFiltered] = useState(false);
   const [currentStatusFilter, setCurrentStatusFilter] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [selected, setSelected] = useState<Request | null>(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const requestStat = useMemo(() => {
     const total = requests.length;
@@ -183,86 +177,54 @@ const RequestScreen = () => {
     setIsFiltered(!!newFilter || !!searchQuery);
   };
 
-  const handleSearch = (text: string) => {
+  const handleSearch = (text: string): void => {
     setSearchQuery(text);
     setIsFiltered(!!text || !!currentStatusFilter);
   };
 
-  const handleRequestOption = (data: Request) => {
+  const handleRequestOption = (data: Request): void => {
     setSelected(data);
-    setIsModalVisible(true);
-
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    setIsActionModalVisible(true);
   };
 
-  const handleClearFilters = () => {
+  const handleClearFilters = (): void => {
     setSearchQuery('');
     setCurrentStatusFilter('');
     setIsFiltered(false);
   };
 
-  const closeModalWithAnimation = (callback?: () => void) => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 50,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setIsModalVisible(false);
-      if (callback) callback();
-    });
-  };
-
   const handleViewDetail = () => {
     if (!selected) return;
-
+    setIsActionModalVisible(false);
     navigation.navigate('RequestDetail', { requestData: selected });
-    closeModalWithAnimation();
   };
 
-  const handleApprove = () => {
-    closeModalWithAnimation(() => {
-      setIsApproveModalVisible(true);
-    });
+  const handleApprove = (): void => {
+    setIsActionModalVisible(false);
+    setIsApproveModalVisible(true);
   };
 
-  const handleReject = () => {
-    closeModalWithAnimation(() => {
-      setIsRejectModalVisible(true);
-    });
+  const handleReject = (): void => {
+    setIsActionModalVisible(false);
+    setIsRejectModalVisible(true);
   };
 
-  const handleCancel = () => {
-    closeModalWithAnimation(() => {
-      setIsCancelModalVisible(true);
-    });
+  const handleCancel = (): void => {
+    setIsActionModalVisible(false);
+    setIsCancelModalVisible(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
+  const handleCloseActionModal = () => {
+    setIsActionModalVisible(false);
+    setSelected(null);
+  };
+
+  const handleCloseAllModals = () => {
+    setIsActionModalVisible(false);
     setIsApproveModalVisible(false);
     setIsRejectModalVisible(false);
     setIsCancelModalVisible(false);
     setSelected(null);
-    fadeAnim.setValue(0);
-    slideAnim.setValue(50);
   };
 
   const onRefresh = () => {
@@ -271,7 +233,7 @@ const RequestScreen = () => {
   };
 
   const onModalSuccess = () => {
-    handleCloseModal();
+    handleCloseAllModals();
     onRefresh();
   };
 
@@ -379,88 +341,21 @@ const RequestScreen = () => {
         </View>
       )}
 
-      <Modal
-        transparent
-        visible={isModalVisible}
-        animationType="none"
-        onRequestClose={handleCloseModal}>
-        <TouchableOpacity
-          onPress={handleCloseModal}
-          className="flex-1 justify-end bg-black/30"
-          activeOpacity={1}>
-          <Animated.View
-            style={{
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            }}>
-            <TouchableOpacity onPress={(e) => e.stopPropagation()} activeOpacity={1}>
-              <View className="rounded-t-2xl bg-white p-6 pb-12">
-                <Text className="mb-6 text-center text-lg font-bold">
-                  {t('request.management.modal.title')} {selected?.requestId}
-                </Text>
-
-                <TouchableOpacity
-                  className="mb-6 flex-row items-center gap-3"
-                  onPress={handleViewDetail}>
-                  <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                  <Text className="text-lg font-semibold text-blue-600">
-                    {t('common.button.detail')}
-                  </Text>
-                </TouchableOpacity>
-
-                {selected?.status === 0 && (
-                  <>
-                    <TouchableOpacity
-                      className="mb-6 flex-row items-center gap-3"
-                      onPress={handleApprove}>
-                      <FontAwesomeIcon icon={faCircleCheck} size={20} color="#16a34a" />
-                      <Text className="text-lg font-semibold text-green-600">
-                        {selected.isDriverRequired
-                          ? t('common.button.approveWithAssign')
-                          : t('common.button.approve')}
-                      </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      className="mb-6 flex-row items-center gap-3"
-                      onPress={handleReject}>
-                      <FontAwesomeIcon icon={faCircleXmark} size={20} color="#dc2626" />
-                      <Text className="text-lg font-semibold text-red-600">
-                        {t('common.button.reject')}
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-
-                {selected?.status === 1 && (
-                  <TouchableOpacity
-                    className="mb-6 flex-row items-center gap-3"
-                    onPress={handleCancel}>
-                    <FontAwesomeIcon icon={faCircleXmark} size={20} color="#4b5563" />
-                    <Text className="text-lg font-semibold text-gray-600">
-                      {t('common.button.cancel')}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-
-                <TouchableOpacity
-                  className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
-                  onPress={handleCloseModal}>
-                  <Text className="text-lg font-semibold text-white">
-                    {t('common.button.close')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          </Animated.View>
-        </TouchableOpacity>
-      </Modal>
+      <RequestOptionModal
+        visible={isActionModalVisible}
+        selected={selected}
+        onClose={handleCloseActionModal}
+        onViewDetail={handleViewDetail}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        onCancel={handleCancel}
+      />
 
       {selected && (
         <>
           <ApproveModal
             visible={isApproveModalVisible}
-            onClose={handleCloseModal}
+            onClose={handleCloseAllModals}
             onSuccess={onModalSuccess}
             isDriverRequired={selected.isDriverRequired}
             requestId={selected.requestId}
@@ -470,14 +365,14 @@ const RequestScreen = () => {
 
           <RejectModal
             visible={isRejectModalVisible}
-            onClose={handleCloseModal}
+            onClose={handleCloseAllModals}
             requestId={selected.requestId}
             onSuccess={onModalSuccess}
           />
 
           <CancelModal
             visible={isCancelModalVisible}
-            onClose={handleCloseModal}
+            onClose={handleCloseAllModals}
             requestId={selected.requestId}
             onSuccess={onModalSuccess}
           />

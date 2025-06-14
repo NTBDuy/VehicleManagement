@@ -1,22 +1,11 @@
-import {
-  faBan,
-  faCircleCheck,
-  faEdit,
-  faEllipsisV,
-  faInfoCircle,
-  faKey,
-  faPersonCircleQuestion,
-  faUserPlus,
-} from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV, faPersonCircleQuestion, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
-  Animated,
   FlatList,
-  Modal,
   RefreshControl,
   SafeAreaView,
   Text,
@@ -33,10 +22,9 @@ import User from 'types/User';
 import Header from '@/components/layout/HeaderComponent';
 import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
+import OptionUserModal from '@/components/modal/OptionUserModal';
 
 const UserManagementScreen = () => {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
@@ -136,19 +124,6 @@ const UserManagementScreen = () => {
   const handleOption = (user: User) => {
     setSelected(user);
     setIsModalVisible(true);
-
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
   };
 
   const handleSearch = (text: string): void => {
@@ -177,22 +152,7 @@ const UserManagementScreen = () => {
   };
 
   const handleCloseModal = () => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 50,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setIsModalVisible(false);
-      fadeAnim.setValue(0);
-      slideAnim.setValue(50);
-    });
+    setIsModalVisible(false);
   };
 
   const onRefresh = () => {
@@ -324,92 +284,15 @@ const UserManagementScreen = () => {
         </View>
       )}
 
-      <Modal
-        transparent
+      <OptionUserModal
         visible={isModalVisible}
-        animationType="none"
-        onRequestClose={() => setIsModalVisible(false)}>
-        <TouchableOpacity
-          onPress={handleCloseModal}
-          className="flex-1 justify-end bg-black/30"
-          activeOpacity={1}>
-          <Animated.View
-            style={{
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            }}>
-            <TouchableOpacity onPress={(e) => e.stopPropagation()} activeOpacity={1}>
-              <View className="rounded-t-2xl bg-white p-6 pb-12">
-                <Text className="mb-6 text-center text-lg font-bold">
-                  {t('user.management.modal.title')} #{selected?.username}
-                </Text>
-
-                <TouchableOpacity
-                  className="mb-6 flex-row items-center gap-3"
-                  onPress={() => {
-                    handleViewDetail();
-                    handleCloseModal();
-                  }}>
-                  <FontAwesomeIcon icon={faInfoCircle} size={20} color="#2563eb" />
-                  <Text className="text-lg font-semibold text-blue-600">
-                    {t('common.button.detail')}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="mb-6 flex-row items-center gap-3"
-                  onPress={() => {
-                    handleEditUser();
-                    handleCloseModal();
-                  }}>
-                  <FontAwesomeIcon icon={faEdit} size={20} color="#2563eb" />
-                  <Text className="text-lg font-semibold text-blue-600">
-                    {t('common.button.update')}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="mb-6 flex-row items-center gap-3"
-                  onPress={() => {
-                    onResetPassword();
-                    handleCloseModal();
-                  }}>
-                  <FontAwesomeIcon icon={faKey} size={20} color="#2563eb" />
-                  <Text className="text-lg font-semibold text-blue-600">
-                    {t('common.button.reset')}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="mb-6 flex-row items-center gap-3"
-                  onPress={() => {
-                    onToggleStatus();
-                  }}>
-                  <FontAwesomeIcon
-                    icon={selected?.status ? faBan : faCircleCheck}
-                    size={20}
-                    color={selected?.status ? '#dc2626' : '#16a34a'}
-                  />
-                  <Text
-                    className={`text-lg font-semibold ${selected?.status ? 'text-red-600' : 'text-green-600'}`}>
-                    {selected?.status
-                      ? `${t('common.button.deactivate')}`
-                      : `${t('common.button.activate')}`}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="flex-row items-center justify-center rounded-lg bg-gray-600 py-3"
-                  onPress={handleCloseModal}>
-                  <Text className="text-lg font-semibold text-white">
-                    {t('common.button.close')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          </Animated.View>
-        </TouchableOpacity>
-      </Modal>
+        user={selected}
+        onClose={handleCloseModal}
+        onViewDetail={handleViewDetail}
+        onEdit={handleEditUser}
+        onResetPassword={onResetPassword}
+        onToggleStatus={onToggleStatus}
+      />
     </SafeAreaView>
   );
 };
