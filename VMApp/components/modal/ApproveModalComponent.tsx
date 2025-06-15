@@ -185,9 +185,11 @@ const ApproveModal = ({
         useNativeDriver: true,
       }),
     ]).start(() => {
-      setShowModal(false);
-      resetForm();
-      onClose();
+      setTimeout(() => {
+        setShowModal(false);
+        resetForm();
+        onClose();
+      }, 0);
     });
   };
 
