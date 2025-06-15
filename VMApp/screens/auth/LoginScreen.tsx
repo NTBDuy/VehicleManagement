@@ -1,5 +1,5 @@
 import { showToast } from '@/utils/toast';
-import { faCar, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faCar, faCross, faEye, faEyeSlash, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,7 +7,7 @@ import { useAuth } from 'contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import CountryFlag from 'react-native-country-flag';
 import * as yup from 'yup';
 
@@ -24,12 +24,6 @@ interface LoginType {
   password: string;
 }
 
-const quickLoginRolesEn: QuickLoginRole[] = [
-  { title: 'Admin', Username: 'john.doe', password: 'P@ssword123' },
-  { title: 'Employee', Username: 'michael.brown', password: 'P@ssword123' },
-  { title: 'Manager', Username: 'jane.smith', password: 'P@ssword123' },
-];
-
 const quickLoginRolesVi: QuickLoginRole[] = [
   { title: 'Admin', Username: 'duc.nguyenvan', password: 'P@ssword123' },
   { title: 'Employee', Username: 'son.leminh', password: 'P@ssword123' },
@@ -39,10 +33,11 @@ const quickLoginRolesVi: QuickLoginRole[] = [
 const LoginScreen = () => {
   const { login } = useAuth();
   const { t, i18n } = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState('en-US');
-  const [isLoading, setIsLoading] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState('vi-VN');
   const [activeRole, setActiveRole] = useState<string>('');
   const [showPasswords, setShowPasswords] = useState(false);
+  const [countPress, setCountPress] = useState(0);
+  const [isOpenTool, setIsOpenTool] = useState(false);
 
   const loginSchema = yup.object().shape({
     username: yup.string().required(t('validate.required.username')).trim(),
@@ -69,8 +64,7 @@ const LoginScreen = () => {
   useEffect(() => {
     const loadLanguage = async () => {
       const savedLanguage = await AsyncStorage.getItem('language');
-      if (savedLanguage) {
-        setCurrentLanguage(savedLanguage);
+      if (savedLanguage && savedLanguage !== i18n.language) {
         i18n.changeLanguage(savedLanguage);
       }
     };
@@ -78,14 +72,11 @@ const LoginScreen = () => {
   }, [i18n]);
 
   const onSubmit = async (data: LoginType) => {
-    setIsLoading(true);
     try {
       await login({ username: data.username.trim(), password: data.password });
     } catch (error) {
       console.log(error);
       showToast.error(t('common.error.title'), t('common.error.generic'));
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -105,6 +96,14 @@ const LoginScreen = () => {
     setShowPasswords(!showPasswords);
   };
 
+  const handleOpenDevTool = () => {
+    const newCount = countPress + 1;
+    setCountPress(newCount);
+    if (newCount === 5) {
+      setIsOpenTool(true);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="absolute right-6 top-24 z-10 flex-row space-x-2">
@@ -122,13 +121,15 @@ const LoginScreen = () => {
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View className="flex-1 justify-center px-6 py-8">
-          <View className="mb-4 items-center">
-            <FontAwesomeIcon icon={faCar} size={48} />
-          </View>
-          <View className="mb-8">
-            <Text className="text-center text-3xl font-bold">{t('common.vms')}</Text>
-          </View>
-          <View className="mb-6">
+          <Pressable onPress={() => handleOpenDevTool()}>
+            <View className="mb-4 items-center">
+              <FontAwesomeIcon icon={faCar} size={48} />
+            </View>
+            <View className="mb-8">
+              <Text className="text-center text-3xl font-bold">{t('common.vms')}</Text>
+            </View>
+          </Pressable>
+          <View className="mb-4">
             <Controller
               control={control}
               name="username"
@@ -174,24 +175,34 @@ const LoginScreen = () => {
             </Text>
           </TouchableOpacity>
 
-          <View className="mt-6 rounded-2xl border px-4 py-2">
-            <Text className="mb-4">Developer Tool - Quick Login</Text>
-            <View className="mb-2 flex-row justify-between">
-              {(currentLanguage === 'en-US' ? quickLoginRolesEn : quickLoginRolesVi).map(
-                (role, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    disabled={isLoading}
-                    className={`mx-1 flex-1 rounded-lg px-4 py-3 ${
-                      activeRole === role.title ? 'bg-blue-300' : 'bg-blue-100'
-                    }`}
-                    onPress={() => handleQuickLogin(role)}>
-                    <Text className="text-center font-medium text-blue-800">{role.title}</Text>
-                  </TouchableOpacity>
-                )
-              )}
+          {isOpenTool && (
+            <View>
+              <View className="mt-6 rounded-2xl border px-4 py-2">
+                <Text className="mb-4">Developer Tool - Quick Login</Text>
+                <View className="mb-2 flex-row justify-between">
+                  {quickLoginRolesVi.map((role, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      disabled={isSubmitting}
+                      className={`mx-1 flex-1 rounded-lg px-4 py-3 ${
+                        activeRole === role.title ? 'bg-blue-300' : 'bg-blue-100'
+                      }`}
+                      onPress={() => handleQuickLogin(role)}>
+                      <Text className="text-center font-medium text-blue-800">{role.title}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+              <TouchableOpacity
+                className="absolute -right-3 top-3 rounded-full bg-black p-2"
+                onPress={() => {
+                  setIsOpenTool(false);
+                  setCountPress(0);
+                }}>
+                <FontAwesomeIcon icon={faX} color="#fff" size={12} />
+              </TouchableOpacity>
             </View>
-          </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
