@@ -6,7 +6,8 @@
       "driver": "tài xế",
       "vehicle": "phương tiện",
       "request": "yêu cầu",
-      "maintenance": "bảo trì"
+      "maintenance": "bảo trì",
+      "statistic": "Thống kê"
     },
     "button": {
       "search": "Tìm kiếm",
@@ -301,7 +302,8 @@
       "vehicle": "Quản lý phương tiện",
       "maintenance": "Quản lý bảo trì",
       "driver": "Quản lý tài xế",
-      "request": "Quản lý yêu cầu"
+      "request": "Quản lý yêu cầu",
+      "statistic": "Thống kê"
     }
   },
 

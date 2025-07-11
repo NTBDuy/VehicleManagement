@@ -1,6 +1,7 @@
 import {
   faCalendarPlus,
   faCarSide,
+  faChartSimple,
   faClockRotateLeft,
   faGear,
   faHome,
@@ -37,6 +38,7 @@ import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 import RequestInProgress from 'screens/request/RequestInProgress';
+import AdminStatistic from '@/screens/statistics/AdminStatistic';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -49,6 +51,7 @@ const NewRequestStack = createNativeStackNavigator();
 const HistoryStack = createNativeStackNavigator();
 const MaintenanceStack = createNativeStackNavigator();
 const DriverStack = createNativeStackNavigator();
+const StatisticStack = createNativeStackNavigator();
 
 function DashboardStackScreen() {
   return (
@@ -127,6 +130,14 @@ function DriverStackScreen() {
       <DriverStack.Screen name="DriverEdit" component={DriverEditScreen} />
       <DriverStack.Screen name="DriverAdd" component={DriverAddScreen} />
     </DriverStack.Navigator>
+  );
+}
+
+function StatisticStackScreen() {
+  return (
+    <StatisticStack.Navigator screenOptions={{ headerShown: false }}>
+      <StatisticStack.Screen name="Statistic" component={AdminStatistic} />
+    </StatisticStack.Navigator>
   );
 }
 
@@ -215,6 +226,18 @@ export default function AdminNavigator() {
             <FontAwesomeIcon icon={faPeopleGroup} color={color} size={size} />
           ),
           title: t('sidebar.management.driver'),
+          headerShown: false,
+        }}
+      />
+
+      <Drawer.Screen
+        name="StatisticStack"
+        component={StatisticStackScreen}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faChartSimple} color={color} size={size} />
+          ),
+          title: t('sidebar.management.statistic'),
           headerShown: false,
         }}
       />

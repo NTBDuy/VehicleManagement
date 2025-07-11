@@ -2,6 +2,7 @@ import {
   faCalendarCheck,
   faCalendarPlus,
   faCarSide,
+  faChartSimple,
   faClockRotateLeft,
   faGear,
   faHome,
@@ -28,6 +29,7 @@ import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 import RequestInProgress from 'screens/request/RequestInProgress';
+import RequestApproval from '@/screens/statistics/RequestStatistic';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -39,6 +41,7 @@ const NewRequestStack = createNativeStackNavigator();
 const HistoryStack = createNativeStackNavigator();
 const SettingStack = createNativeStackNavigator();
 const MaintenanceStack = createNativeStackNavigator();
+const StatisticStack = createNativeStackNavigator();
 
 function DashboardStackScreen() {
   return (
@@ -98,12 +101,12 @@ function SettingStackScreen() {
   );
 }
 
-function MaintenanceStackScreen() {
+function StatisticStackScreen() {
   return (
-    <MaintenanceStack.Navigator screenOptions={{ headerShown: false }}>
-      <MaintenanceStack.Screen name="Maintenance" component={MaintenanceManagement} />
-      <MaintenanceStack.Screen name="MaintenanceDetails" component={MaintenanceDetailScreen} />
-    </MaintenanceStack.Navigator>
+    <StatisticStack.Navigator screenOptions={{ headerShown: false }}>
+      <StatisticStack.Screen name="RequestStatistic" component={RequestApproval} />
+      <StatisticStack.Screen name="RequestDetail" component={RequestDetailScreen} />
+    </StatisticStack.Navigator>
   );
 }
 
@@ -170,6 +173,18 @@ export default function ManagerNavigator() {
             <FontAwesomeIcon icon={faCarSide} color={color} size={size} />
           ),
           title: t('sidebar.management.vehicle'),
+          headerShown: false,
+        }}
+      />
+
+      <Drawer.Screen
+        name="StatisticStack"
+        component={StatisticStackScreen}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <FontAwesomeIcon icon={faChartSimple} color={color} size={size} />
+          ),
+          title: 'Phân tích yêu cầu',
           headerShown: false,
         }}
       />

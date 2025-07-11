@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Calendar, CalendarProps, DateData } from 'react-native-calendars';
 import { useTranslation } from 'react-i18next';
 import { ViewStyle } from 'react-native';
@@ -24,6 +24,7 @@ interface MyCalendarProps extends Omit<CalendarProps, 'onDayPress'> {
   minDate?: string;
   maxDate?: string;
   style?: ViewStyle;
+  current?: string; 
 }
 
 const MyCalendar = ({
@@ -33,6 +34,7 @@ const MyCalendar = ({
   theme,
   minDate,
   maxDate,
+  current,
   style,
   ...otherProps
 }: MyCalendarProps) => {
@@ -69,6 +71,7 @@ const MyCalendar = ({
         ...defaultTheme,
         ...theme,
       }}
+      current={current}
       minDate={minDate}
       maxDate={maxDate}
       firstDay={1}

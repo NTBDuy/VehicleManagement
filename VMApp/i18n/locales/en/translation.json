@@ -6,7 +6,8 @@
       "driver": "Driver",
       "vehicle": "Vehicle",
       "request": "Request",
-      "maintenance": "Maintenance"
+      "maintenance": "Maintenance",
+      "statistic": "Statistic"
     },
     "button": {
       "search": "Search",
@@ -300,7 +301,8 @@
       "vehicle": "Vehicle Management",
       "maintenance": "Maintenance Management",
       "driver": "Driver Management",
-      "request": "Request Management"
+      "request": "Request Management",
+      "statistic": "Statistic"
     }
   },
 
