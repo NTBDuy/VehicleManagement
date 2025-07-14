@@ -1,31 +1,32 @@
-import { chartConfig } from '@/config/charConfig';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
-import { PieChart } from 'react-native-chart-kit';
+import { RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { UserService } from 'services/userService';
 import { VehicleService } from 'services/vehicleService';
+import { StatisticService } from '@/services/statisticService';
 
+import { VehicleUsageData } from '@/types/Statistic';
 import Request from 'types/Request';
 import Vehicle from 'types/Vehicle';
 
+import RequestStatisticChart from '@/components/charts/RequestStatusStatistic';
+import RequestVehicleMostUsageChart from '@/components/charts/RequestVehicleMostUsage';
+import VehicleStatusChart from '@/components/charts/VehicleStatus';
 import Header from '@/components/layout/HeaderComponent';
-import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import NotificationButton from '@/components/ui/NotificationButton';
-import StatItem from '@/components/ui/StatItemComponent';
 import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
-import RequestStatisticChart from '@/components/charts/RequestStatusStatistic';
-import VehicleStatus from '@/components/charts/VehicleStatus';
+import StatSection from '@/components/ui/StatSectionComponent';
 
 const ManagerDashboard = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [requests, setRequests] = useState<Request[]>([]);
+  const [vehicleMostUsage, setVehicleMostUsage] = useState<VehicleUsageData[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState<number>(0);
@@ -52,12 +53,15 @@ const ManagerDashboard = () => {
       setIsLoading(true);
       const requestData = await RequestService.getAllRequests();
       const vehicleData = await VehicleService.getAllVehicles();
+      const mostUsage = await StatisticService.getStatVehicleMostUsageAllTime();
       setRequests(requestData);
       setVehicles(vehicleData);
+      setVehicleMostUsage(mostUsage);
     } catch (error) {
       console.error(error);
       setRequests([]);
       setVehicles([]);
+      setVehicleMostUsage([]);
     } finally {
       setRefreshing(false);
       setIsLoading(false);
@@ -85,25 +89,18 @@ const ManagerDashboard = () => {
           <LoadingData />
         ) : (
           <View>
-            <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-              <View className="bg-gray-50 px-4 py-3">
-                <Text className="text-lg font-semibold text-gray-800">
-                  {t('dashboard.stats.requests')}
-                </Text>
-              </View>
-
-              <RequestStatisticChart request={requests} showDetails />
-            </View>
-
-            <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-              <View className="bg-gray-50 px-4 py-3">
-                <Text className="text-lg font-semibold text-gray-800">
-                  {t('dashboard.stats.vehicles')}
-                </Text>
-              </View>
-
-              <VehicleStatus vehicles={vehicles} />
-            </View>
+            <StatSection
+              title={t('dashboard.stats.requests')}
+              chart={<RequestStatisticChart request={requests} showDetails />}
+            />
+            <StatSection
+              title={t('dashboard.stats.vehicles')}
+              chart={<VehicleStatusChart vehicles={vehicles} />}
+            />
+            <StatSection
+              title="Phương tiện sử dụng nhiều nhất"
+              chart={<RequestVehicleMostUsageChart vehicleData={vehicleMostUsage} />}
+            />
           </View>
         )}
       </ScrollView>

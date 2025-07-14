@@ -230,7 +230,7 @@ export default function AdminNavigator() {
         }}
       />
 
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="StatisticStack"
         component={StatisticStackScreen}
         options={{
@@ -240,7 +240,7 @@ export default function AdminNavigator() {
           title: t('sidebar.management.statistic'),
           headerShown: false,
         }}
-      />
+      /> */}
 
       <Drawer.Screen
         name="SettingStack"

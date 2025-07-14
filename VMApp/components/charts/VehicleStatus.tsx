@@ -13,7 +13,7 @@ interface Props {
 
 const screenWidth = Dimensions.get('window').width;
 
-const VehicleStatus = ({ vehicles }: Props) => {
+const VehicleStatusChart = ({ vehicles }: Props) => {
   const { t } = useTranslation();
 
   const vehicleStat = useMemo(() => {
@@ -90,4 +90,4 @@ const VehicleStatus = ({ vehicles }: Props) => {
   );
 };
 
-export default VehicleStatus;
+export default VehicleStatusChart;

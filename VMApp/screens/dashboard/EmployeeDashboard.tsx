@@ -21,6 +21,7 @@ import RequestItem from '@/components/request/HistoryRequestItem';
 import LoadingData from '@/components/ui/LoadingData';
 import NotificationButton from '@/components/ui/NotificationButton';
 import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
+import StatSection from '@/components/ui/StatSectionComponent';
 
 const EmployeeDashboard = () => {
   const navigation = useNavigation<any>();
@@ -119,57 +120,30 @@ const EmployeeDashboard = () => {
         ) : (
           <View>
             {stat.inProgress.length > 0 && (
-              <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-                <View className="bg-gray-50 px-4 py-3">
-                  <Text className="text-lg font-semibold text-gray-800">
-                    {t('common.status.inProgress')}
-                  </Text>
-                </View>
-
-                <View className="-mb-4 p-4">
-                  <View>
-                    {stat.inProgress.slice(0, 1).map((item) => (
-                      <RequestItem item={item} key={item.requestId} />
-                    ))}
-                  </View>
-                </View>
-              </View>
+              <StatSection
+                title={t('common.status.inProgress')}
+                showRequest
+                stat={stat.inProgress}
+                maxValue={1}
+              />
             )}
 
             {stat.pending.length > 0 && (
-              <View className="overflow-hidden rounded-2xl bg-white shadow-sm">
-                <View className="bg-gray-50 px-4 py-3">
-                  <Text className="text-lg font-semibold text-gray-800">
-                    {t('common.status.pending')}{' '}
-                  </Text>
-                </View>
-
-                <View className="-mb-4 p-4">
-                  <View>
-                    {stat.pending.slice(0, 3).map((item) => (
-                      <RequestItem item={item} key={item.requestId} />
-                    ))}
-                  </View>
-                </View>
-              </View>
+              <StatSection
+                title={t('common.status.pending')}
+                showRequest
+                stat={stat.pending}
+                maxValue={3}
+              />
             )}
 
             {stat.incoming.length > 0 && (
-              <View className="mb-2 overflow-hidden rounded-2xl bg-white shadow-sm">
-                <View className="bg-gray-50 px-4 py-3">
-                  <Text className="text-lg font-semibold text-gray-800">
-                    {t('dashboard.incoming')}
-                  </Text>
-                </View>
-
-                <View className="-mb-4 p-4">
-                  <View>
-                    {stat.incoming.slice(0, 3).map((item) => (
-                      <RequestItem item={item} key={item.requestId} />
-                    ))}
-                  </View>
-                </View>
-              </View>
+              <StatSection
+                title={t('dashboard.incoming')}
+                showRequest
+                stat={stat.incoming}
+                maxValue={3}
+              />
             )}
           </View>
         )}

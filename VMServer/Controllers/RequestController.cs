@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text;
+using System.Globalization;
 
 namespace VMServer.Controllers
 {
@@ -392,11 +393,14 @@ namespace VMServer.Controllers
             var folderPath = Path.Combine("uploads", "checkPoint", DateTime.Now.ToString("yyyy"), DateTime.Now.ToString("MM"));
             Directory.CreateDirectory(folderPath);
 
+            decimal latitude = Convert.ToDecimal(Request.Form["Latitude"], CultureInfo.InvariantCulture);
+            decimal longitude = Convert.ToDecimal(Request.Form["Longitude"], CultureInfo.InvariantCulture);
+
             var newCheckPoint = new CheckPoint
             {
                 RequestId = requestId,
-                Latitude = dto.Latitude,
-                Longitude = dto.Longitude,
+                Latitude = latitude,
+                Longitude = longitude,
                 Note = dto.Note,
                 CreatedBy = dto.CreatedBy,
             };
@@ -428,6 +432,7 @@ namespace VMServer.Controllers
 
             return Ok(new { message = "Upload thành công" });
         }
+
 
         // PUT: api/request/{requestId}/end-usage
         // kết thúc sử dụng phương tiện

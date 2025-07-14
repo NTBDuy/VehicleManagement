@@ -194,6 +194,17 @@ const RequestInProgress = () => {
             name: `checkpoint_${currentLocation.id}_${Date.now()}_${index}.jpg`,
           } as any);
         });
+        console.log('Dữ liệu gửi đi:', {
+          latitude: checkpointData.latitude,
+          longitude: checkpointData.longitude,
+          note: currentNote,
+          createdBy: user?.userId,
+          createdAt: checkpointData.createdAt,
+          images: currentImages.map((img, index) => ({
+            uri: img.uri,
+            name: `checkpoint_${currentLocation.id}_${Date.now()}_${index}.jpg`,
+          })),
+        });
 
         const success = await RequestService.checkPoint(requestData.requestId, formData);
         if (success) {

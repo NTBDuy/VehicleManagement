@@ -15,10 +15,10 @@ namespace VMServer.Models.Entities
         [ForeignKey("Request")]
         public int RequestId { get; set; }
 
-        [Column(TypeName = "decimal(10,6)")]
+        [Column(TypeName = "decimal(18,15)")]
         public required decimal Latitude { get; set; }
 
-        [Column(TypeName = "decimal(10,6)")]
+        [Column(TypeName = "decimal(18,15)")]
         public required decimal Longitude { get; set; }
 
         public List<CheckPointPhoto> Photos { get; set; } = new();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace VMServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250714080454_updateCheckPointTable2")]
+    partial class updateCheckPointTable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -371,10 +374,10 @@ namespace VMServer.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(18,15)");
+                        .HasColumnType("decimal(10,6)");
 
                     b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(18,15)");
+                        .HasColumnType("decimal(10,6)");
 
                     b.Property<string>("Name")
                         .IsRequired()

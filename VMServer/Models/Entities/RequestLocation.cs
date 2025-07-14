@@ -22,11 +22,11 @@ namespace VMServer.Models.Entities
         [MaxLength(255)]
         public string? Note { get; set; }
 
-        [Column(TypeName = "decimal(10,6)")]
+        [Column(TypeName = "decimal(18,15)")]
         [Required]
         public decimal Latitude { get; set; }
 
-        [Column(TypeName = "decimal(10,6)")]
+        [Column(TypeName = "decimal(18,15)")]
         [Required]
         public decimal Longitude { get; set; }
 

@@ -142,7 +142,14 @@ const RequestDetailScreen = () => {
     const now = new Date();
     const startTime = new Date(requestData.startTime);
     const endTime = new Date(requestData.endTime);
-    return now >= startTime && now <= endTime;
+
+    const isInRange = now >= startTime && now <= endTime;
+    const isExactMatch =
+      now.getDate() === startTime.getDate() && now.getDate() === endTime.getDate();
+
+    const result = isInRange || isExactMatch;
+
+    return result;
   };
 
   const handleUsingVehicle = () => {
