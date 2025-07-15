@@ -1,6 +1,7 @@
 import DriverFormData from '@/types/DriverFormData';
 import { BaseApiClient } from 'services/baseApiClient';
 import Driver from 'types/Driver';
+import Request from '@/types/Request';
 
 export class DriverService extends BaseApiClient {
   // Lấy tất cả tài xế
@@ -16,6 +17,10 @@ export class DriverService extends BaseApiClient {
   // Lấy thông tin chi tiết tài xế
   static async getDriverById(id: number): Promise<Driver> {
     return this.request<Driver>(`/driver/${id}`);
+  }
+
+  static async getDriverRequestById(id: number): Promise<Request[]> {
+    return this.request<Request[]>(`/driver/${id}/requests`);
   }
 
   // Tạo mới tài xế

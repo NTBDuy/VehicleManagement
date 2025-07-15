@@ -67,6 +67,41 @@ namespace VMServer.Controllers
             return Ok(driver);
         }
 
+        // [Authorize(Roles = "Administrator, Manager")]
+        [HttpGet("{driverId}/requests")]
+        public async Task<IActionResult> GetDriverRequest(int driverId)
+        {
+            var driver = await _dbContext.Drivers.FindAsync(driverId);
+            if (driver == null)
+                return NotFound(new { message = $"Driver not found with ID #{driverId}" });
+
+            var assign = await _dbContext.Assignments
+                .Where(a => a.DriverId == driverId)
+                .Select(a => a.RequestId)
+                .ToListAsync();
+
+            var query = _dbContext.Requests
+                .Where(r => assign.Contains(r.RequestId));
+
+            var validStatuses = new[]
+                           {
+                    RequestStatus.Approved,
+                    RequestStatus.Done,
+                    RequestStatus.InProgress
+                };
+            query = query.Where(r => validStatuses.Contains(r.Status));
+
+
+            var requests = await query
+                .Include(r => r.User)
+                .Include(r => r.Vehicle)
+                .Include(r => r.ActionByUser)
+                .Include(r => r.Locations)
+                .ToListAsync();
+
+            return Ok(requests);
+        }
+
         // POST: api/driver
         // Tạo mới tài xế
         [Authorize(Roles = "Administrator")]

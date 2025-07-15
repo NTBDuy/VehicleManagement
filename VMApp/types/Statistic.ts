@@ -4,6 +4,7 @@ import Vehicle from './Vehicle';
 export interface VehicleUsageData {
   vehicle: Vehicle;
   count: number;
+  totalDistance: number;
 }
 
 export interface DailyData {

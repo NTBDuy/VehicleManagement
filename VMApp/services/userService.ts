@@ -23,8 +23,16 @@ export class UserService extends BaseApiClient {
   }
 
   // Lấy danh sách requests của người dùng
-  static async getUserRequests(): Promise<Request[]> {
-    return this.request<Request[]>(`/user/requests`);
+  static async getUserRequests(
+    startDate?: string,
+    endDate?: string,
+  ): Promise<Request[]> {
+    const params = new URLSearchParams();
+
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+
+    return this.request<Request[]>(`/user/requests?${params.toString()}`);
   }
 
   // Lấy danh sách thông báo của người dùng

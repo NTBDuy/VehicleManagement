@@ -32,7 +32,7 @@ const RequestDailyStatisticChart = ({ dailyData }: Props) => {
         strokeWidth: 2,
       },
     ],
-    legend: ['Requests'],
+    legend: ['Yêu cầu'],
   };
 
   const labels = dailyData.map((item) => format(new Date(item.date), 'MM/dd'));

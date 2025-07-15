@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Hangfire;
+using VMServer.Jobs;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<RequestExpiryJob>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrWhiteSpace(jwtKey))
@@ -74,7 +78,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 });
 
+builder.Services.AddHangfire(x =>
+    x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
+
+app.UseHangfireDashboard();
 
 app.UseCors("AllowAll");
 
@@ -83,6 +93,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+RecurringJob.AddOrUpdate<RequestExpiryJob>(
+    "expire-requests-daily",
+    job => job.RunAsync(),
+    Cron.Daily
+);
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

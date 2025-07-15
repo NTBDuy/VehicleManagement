@@ -20,8 +20,10 @@ const UserEditScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const { userData: initialUserData } = route.params as { userData: User };
-  const [userData, setUserData] = useState<User>(initialUserData);
+  const { userData: initialUserFromRoute } = route.params as { userData: User };
+  const [initialUserData, setInitialUserData] = useState<User>(initialUserFromRoute);
+  const [userData, setUserData] = useState<User>(initialUserFromRoute);
+  const isRoleChanged = userData.role !== initialUserData.role;
 
   const updateUserSchema = userSchema(t);
 
@@ -64,6 +66,7 @@ const UserEditScreen = () => {
 
               const result = await UserService.updateUser(userData.userId, updatedData);
               setUserData(result);
+              setInitialUserData(result);
               showToast.success(
                 `${t('common.success.title')}`,
                 `${t('common.success.updated', { item: t('common.items.user') })}`
@@ -144,7 +147,9 @@ const UserEditScreen = () => {
           <View className="items-center">
             <Text className="text-xl font-bold text-gray-800">{t('user.edit.title')}</Text>
             <Text className="text-xl font-bold text-gray-800">#{userData.userId}</Text>
-            {isDirty && <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>}
+            {(isDirty || isRoleChanged) && (
+              <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>
+            )}
           </View>
         }
       />
@@ -284,7 +289,7 @@ const UserEditScreen = () => {
               isSubmitting ? 'bg-gray-400' : 'bg-blue-600 '
             }`}
             onPress={handleUpdate}
-            disabled={isSubmitting || !isDirty}>
+            disabled={isSubmitting || (!isDirty && !isRoleChanged)}>
             <Text className="font-semibold text-white">
               {isSubmitting ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
             </Text>

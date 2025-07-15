@@ -27,7 +27,7 @@ const RequestUserUsageChart = ({ userData }: Props) => {
         strokeWidth: 2,
       },
     ],
-    legend: ['Times'],
+    legend: ['Số lần'],
   };
 
   const labels = userData.map((item) => item.user.username);

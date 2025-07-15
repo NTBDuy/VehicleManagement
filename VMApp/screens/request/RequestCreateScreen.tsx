@@ -23,6 +23,7 @@ import RequestDatePicker from '@/components/request/RequestDatePicker';
 import RequestLocation from '@/components/request/RequestLocation';
 import RequestVehiclePicker from '@/components/request/RequestVehiclePicker';
 import { LocationType } from '@/types/Location';
+import { UserService } from '@/services/userService';
 
 interface validateError {
   startLocation: string;
@@ -199,6 +200,23 @@ const RequestCreateScreen = () => {
     />
   );
 
+  const isAvailableDay = async (startDate: string, endDate: string) => {
+    try {
+      const results = await UserService.getUserRequests(startDate, endDate);
+      if (results.length > 0) {
+        showToast.error(
+          'Bạn đã có lịch đặt xe trong khoảng ngày này xin vui lòng kiểm tra và chọn ngày khác!'
+        );
+        return false;
+      } else {
+        return true;
+      }
+    } catch (error) {
+      showToast.error(t('common.error.title'), t('common.error.generic'));
+      return false;
+    }
+  };
+
   const fetchAvailableVehicle = async () => {
     if (isMultiDayTrip && endDate === '') {
       showToast.error(t('common.error.endDate'));
@@ -207,6 +225,11 @@ const RequestCreateScreen = () => {
 
     try {
       setIsLoading(true);
+
+      if ((await isAvailableDay(startDate, endDate)) == false) {
+        return;
+      }
+
       const data = await VehicleService.getAvailableVehicles(
         startDate,
         isMultiDayTrip ? endDate : startDate

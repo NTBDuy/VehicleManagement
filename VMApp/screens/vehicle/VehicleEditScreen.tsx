@@ -84,7 +84,7 @@ const VehicleEditScreen = () => {
         );
       })();
     } else {
-      showToast.info(t('common.info.nothingChanges'))
+      showToast.info(t('common.info.nothingChanges'));
     }
   };
 
@@ -112,9 +112,14 @@ const VehicleEditScreen = () => {
       <Header
         backBtn
         customTitle={
-          <Text className="text-xl font-bold">
-            {t('vehicle.edit.title')} #{initialVehicleData.vehicleId}
-          </Text>
+          <View className="items-center">
+            <Text className="text-xl font-bold">
+              {t('vehicle.edit.title')} #{initialVehicleData.vehicleId}
+            </Text>
+            {(isDirty) && (
+              <Text className="text-xs text-orange-600">{t('common.unsaved')}</Text>
+            )}
+          </View>
         }
       />
 

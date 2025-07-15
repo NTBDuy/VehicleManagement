@@ -17,6 +17,7 @@ const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
     y: number;
     value: number;
     label: string;
+    distance: number;
   } | null>(null);
 
   const chartData = {
@@ -28,7 +29,7 @@ const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
         strokeWidth: 2,
       },
     ],
-    legend: ['Times'],
+    legend: ['Số lần'],
   };
 
   const labels = vehicleData.map((item) => item.vehicle.licensePlate);
@@ -42,10 +43,17 @@ const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
         chartConfig={chartConfig}
         verticalLabelRotation={30}
         onDataPointClick={({ value, index, x, y }) => {
-          setTooltip({ x, y, value, label: labels[index] });
+          const selected = vehicleData[index];
+          setTooltip({
+            x,
+            y,
+            value,
+            label: selected.vehicle.licensePlate,
+            distance: selected.totalDistance,
+          });
         }}
         bezier
-        style={{marginLeft: -32}}
+        style={{ marginLeft: -32 }}
       />
 
       {tooltip && (
@@ -70,7 +78,12 @@ const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
               elevation: 8,
             }}>
             <Text className="mb-1 text-center text-xs text-gray-500">{tooltip.label}</Text>
-            <Text className="text-center text-lg font-bold text-orange-600">{tooltip.value}</Text>
+            <Text className="text-center text-lg font-bold text-orange-600">
+              {tooltip.value} lần
+            </Text>
+            <Text className="mt-1 text-center text-sm text-gray-700">
+              {tooltip.distance} km
+            </Text>
           </View>
         </View>
       )}

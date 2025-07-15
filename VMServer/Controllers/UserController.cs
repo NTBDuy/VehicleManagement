@@ -104,7 +104,7 @@ namespace VMServer.Controllers
         // Lấy danh sách yêu cầu của người dùng
         [Authorize]
         [HttpGet("requests")]
-        public async Task<IActionResult> GetUserRequests()
+        public async Task<IActionResult> GetUserRequests([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
             var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(claimUserId, out var userId))
@@ -114,15 +114,46 @@ namespace VMServer.Controllers
             if (user == null)
                 return NotFound(new { message = "User not found!" });
 
-            var requests = await _dbContext.Requests
-                .Where(r => r.UserId == userId)
+            var query = _dbContext.Requests
+                .Where(r => r.UserId == userId);
+
+            if (startDate.HasValue)
+            {
+                DateTime start = startDate.Value.Date;
+                DateTime end;
+
+                if (!endDate.HasValue || endDate.Value.Date <= start)
+                {
+                    // Nếu endDate không có hoặc <= startDate, thì lọc trong cùng ngày
+                    end = start.AddDays(1).AddTicks(-1);
+                }
+                else
+                {
+                    // Lọc từ start đến endDate cuối ngày
+                    end = endDate.Value.Date.AddDays(1).AddTicks(-1);
+                }
+
+                // Lọc các request có thời gian giao với khoảng đã chọn
+                query = query.Where(r => r.StartTime <= end && r.EndTime >= start);
+
+                // Lọc theo trạng thái
+                var validStatuses = new[]
+                {
+            RequestStatus.Approved,
+            RequestStatus.Pending,
+            RequestStatus.InProgress
+        };
+                query = query.Where(r => validStatuses.Contains(r.Status));
+            }
+
+            var list = await query
                 .Include(r => r.Vehicle)
                 .Include(r => r.ActionByUser)
                 .Include(r => r.Locations)
                 .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
 
-            return Ok(requests);
+            return Ok(list);
         }
 
         // POST: api/user

@@ -129,6 +129,7 @@ function DriverStackScreen() {
       <DriverStack.Screen name="DriverDetail" component={DriverDetailsScreen} />
       <DriverStack.Screen name="DriverEdit" component={DriverEditScreen} />
       <DriverStack.Screen name="DriverAdd" component={DriverAddScreen} />
+      <DriverStack.Screen name="RequestDetail" component={RequestDetailScreen} />
     </DriverStack.Navigator>
   );
 }

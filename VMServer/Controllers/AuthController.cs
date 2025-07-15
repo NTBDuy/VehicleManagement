@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VMServer.Controllers
 {
@@ -28,6 +29,7 @@ namespace VMServer.Controllers
         // POST: api/auth/login
         // Đăng nhập bằng tên đăng nhập và mật khẩu
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);

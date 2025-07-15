@@ -37,7 +37,10 @@ namespace VMServer.Controllers
         }
 
         [HttpGet("vehicle-most-usage")]
-        public async Task<IActionResult> VehicleMostUsage([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] RequestStatus? status)
+        public async Task<IActionResult> VehicleMostUsage(
+    [FromQuery] DateTime startDate,
+    [FromQuery] DateTime endDate,
+    [FromQuery] RequestStatus? status)
         {
             var query = _dbContext.Requests
                 .Where(r => r.StartTime >= startDate && r.StartTime <= endDate);
@@ -52,7 +55,8 @@ namespace VMServer.Controllers
                 .Select(g => new
                 {
                     VehicleId = g.Key,
-                    Count = g.Count()
+                    Count = g.Count(),
+                    TotalDistance = g.Sum(r => r.TotalDistance ?? 0)
                 })
                 .OrderByDescending(g => g.Count)
                 .ToListAsync();
@@ -66,7 +70,8 @@ namespace VMServer.Controllers
             var result = usageList.Select(u => new
             {
                 Vehicle = vehicles.ContainsKey(u.VehicleId) ? vehicles[u.VehicleId] : null,
-                Count = u.Count
+                Count = u.Count,
+                TotalDistance = u.TotalDistance
             });
 
             return Ok(result);
@@ -146,16 +151,22 @@ namespace VMServer.Controllers
                 .Select(g => new
                 {
                     VehicleId = g.Key,
-                    RequestCount = g.Count()
+                    RequestCount = g.Count(),
+                    TotalDistance = g.Sum(r => r.TotalDistance ?? 0)
                 })
                 .ToListAsync();
 
             var vehicles = await _dbContext.Vehicles.ToListAsync();
 
-            var result = vehicles.Select(v => new
+            var result = vehicles.Select(v =>
             {
-                Vehicle = v,
-                Count = usageData.FirstOrDefault(u => u.VehicleId == v.VehicleId)?.RequestCount ?? 0
+                var usage = usageData.FirstOrDefault(u => u.VehicleId == v.VehicleId);
+                return new
+                {
+                    Vehicle = v,
+                    Count = usage?.RequestCount ?? 0,
+                    TotalDistance = usage?.TotalDistance ?? 0
+                };
             })
             .Where(x => x.Count > 0)
             .OrderByDescending(x => x.Count)

@@ -1,4 +1,4 @@
 export const API_CONFIG = {
-  BASE_URL: 'http://192.168.2.140:5169/api',
+  BASE_URL: 'https://e8975350863d.ngrok-free.app/api',
   TIMEOUT: 10000,
 } as const;
