@@ -66,6 +66,7 @@ const LoginScreen = () => {
       const savedLanguage = await AsyncStorage.getItem('language');
       if (savedLanguage && savedLanguage !== i18n.language) {
         i18n.changeLanguage(savedLanguage);
+        setCurrentLanguage(savedLanguage);
       }
     };
     loadLanguage();

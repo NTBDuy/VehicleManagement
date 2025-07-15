@@ -49,24 +49,39 @@ const ManagerDashboard = () => {
   };
 
   const fetchStatData = async () => {
-    try {
-      setIsLoading(true);
-      const requestData = await RequestService.getAllRequests();
-      const vehicleData = await VehicleService.getAllVehicles();
-      const mostUsage = await StatisticService.getStatVehicleMostUsageAllTime();
-      setRequests(requestData);
-      setVehicles(vehicleData);
-      setVehicleMostUsage(mostUsage);
-    } catch (error) {
-      console.error(error);
-      setRequests([]);
-      setVehicles([]);
-      setVehicleMostUsage([]);
-    } finally {
-      setRefreshing(false);
-      setIsLoading(false);
+  setIsLoading(true);
+  try {
+    const [requestsRes, vehiclesRes, usageRes] = await Promise.allSettled([
+      RequestService.getAllRequests(),
+      VehicleService.getAllVehicles(),
+      StatisticService.getStatVehicleMostUsageAllTime(),
+    ]);
+
+    if (requestsRes.status === 'fulfilled') {
+      setRequests(requestsRes.value);
+    } else {
+      console.error('Failed to fetch requests:', requestsRes.reason);
     }
-  };
+
+    if (vehiclesRes.status === 'fulfilled') {
+      setVehicles(vehiclesRes.value);
+    } else {
+      console.error('Failed to fetch vehicles:', vehiclesRes.reason);
+    }
+
+    if (usageRes.status === 'fulfilled') {
+      setVehicleMostUsage(usageRes.value);
+    } else {
+      console.error('Failed to fetch vehicle usage stats:', usageRes.reason);
+    }
+  } catch (err) {
+    console.error('Unexpected error:', err);
+  } finally {
+    setRefreshing(false);
+    setIsLoading(false);
+  }
+};
+
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -97,10 +112,12 @@ const ManagerDashboard = () => {
               title={t('dashboard.stats.vehicles')}
               chart={<VehicleStatusChart vehicles={vehicles} />}
             />
-            <StatSection
-              title="Phương tiện sử dụng nhiều nhất"
-              chart={<RequestVehicleMostUsageChart vehicleData={vehicleMostUsage} />}
-            />
+            {vehicleMostUsage.length > 0 && (
+              <StatSection
+                title="Phương tiện sử dụng nhiều nhất"
+                chart={<RequestVehicleMostUsageChart vehicleData={vehicleMostUsage} />}
+              />
+            )}
           </View>
         )}
       </ScrollView>

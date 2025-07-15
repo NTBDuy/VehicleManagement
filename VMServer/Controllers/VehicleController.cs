@@ -119,13 +119,20 @@ namespace VMServer.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNewVehicle([FromBody] VehicleDTO dto)
         {
+            var isExist = await _dbContext.Vehicles
+                .AnyAsync(v => v.LicensePlate.ToLower() == dto.LicensePlate.ToLower());
+
+            if (isExist)
+            {
+                return BadRequest(new { message = "Biển số xe đã tồn tại." });
+            }
+
             var newVehicle = new Vehicle
             {
                 LicensePlate = dto.LicensePlate,
                 Type = dto.Type,
                 Brand = dto.Brand,
                 Model = dto.Model,
-                CurrentOdometer = dto.CurrentOdometer,
                 Status = Status.Available,
                 CreatedAt = DateTime.Now,
                 LastUpdateAt = DateTime.Now
@@ -135,6 +142,7 @@ namespace VMServer.Controllers
             await _dbContext.SaveChangesAsync();
             return Ok(newVehicle);
         }
+
 
         // POST: api/vehicle/{vehicleId}/maintenance/schedule
         // Thêm lịch bảo dưỡng cho phương tiện
