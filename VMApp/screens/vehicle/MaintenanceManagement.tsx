@@ -8,6 +8,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
+import { FlashList } from '@shopify/flash-list';
 
 import MaintenanceSchedule from 'types/MaintenanceSchedule';
 
@@ -158,13 +159,14 @@ const MaintenanceManagement = () => {
         {isLoading ? (
           <LoadingData />
         ) : (
-          <View>
-            <FlatList
+          <View className="flex-1">
+            <FlashList
               data={filteredMaintenance}
               keyExtractor={(item) => item.vehicleId.toString()}
               renderItem={renderMaintenanceItem}
               ListEmptyComponent={<EmptyList />}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+              estimatedItemSize={80}
             />
           </View>
         )}

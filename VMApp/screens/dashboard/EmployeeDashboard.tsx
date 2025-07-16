@@ -83,7 +83,8 @@ const EmployeeDashboard = () => {
 
       <ScrollView
         className="flex-1 px-6"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        showsVerticalScrollIndicator={false}>
         {user && <WelcomeSection user={user} />}
 
         <View className="overflow-hidden rounded-2xl bg-white shadow-sm">

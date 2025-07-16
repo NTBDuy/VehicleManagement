@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { UserService } from 'services/userService';
+import { FlashList } from '@shopify/flash-list';
 
 import Request from 'types/Request';
 
@@ -144,12 +145,13 @@ const RequestHistoryScreen = () => {
             )}
           />
         </View>
-        <FlatList
+        <FlashList
           showsVerticalScrollIndicator={false}
           data={filteredRequest}
           renderItem={renderRequestItem}
           ListEmptyComponent={<EmptyList title={t('common.noData.requestHistory')} />}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          estimatedItemSize={80}
         />
       </View>
     </SafeAreaView>

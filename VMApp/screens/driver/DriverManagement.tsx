@@ -3,6 +3,7 @@ import { getUserBackgroundColor, getUserInitials, getUserLabel } from '@/utils/u
 import { faChevronRight, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
@@ -164,12 +165,14 @@ const DriverManagement = () => {
             />
           </View>
 
-          <FlatList
+          <FlashList
             data={filteredDrivers}
             keyExtractor={(item) => item.driverId.toString()}
             renderItem={renderDriverItem}
             ListEmptyComponent={<EmptyList />}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            estimatedItemSize={80}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       )}

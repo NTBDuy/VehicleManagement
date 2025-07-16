@@ -104,7 +104,7 @@ const UserAddScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <Header backBtn title={t('user.add.title')} />
-      <ScrollView className="flex-1 px-6">
+      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         <View className="mb-6 items-center">
           <View className="relative">
             <Image

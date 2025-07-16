@@ -16,6 +16,7 @@ import { UserService } from 'services/userService';
 import { getRoleBackgroundColor, getRoleLabel } from 'utils/roleUtils';
 import { showToast } from 'utils/toast';
 import { getUserInitials } from 'utils/userUtils';
+import { FlashList } from '@shopify/flash-list';
 
 import User from 'types/User';
 
@@ -264,13 +265,14 @@ const UserManagementScreen = () => {
         {isLoading ? (
           <LoadingData />
         ) : (
-          <FlatList
+          <FlashList
             data={filteredUsers}
             renderItem={renderUserItem}
             keyExtractor={(item) => item.userId.toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyList icon={faPersonCircleQuestion} />}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            estimatedItemSize={80}
           />
         )}
       </View>

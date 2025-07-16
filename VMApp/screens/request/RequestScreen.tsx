@@ -1,16 +1,16 @@
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dimensions,
-  FlatList,
   RefreshControl,
   SafeAreaView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate } from 'utils/datetimeUtils';
@@ -20,13 +20,13 @@ import { getUserInitials } from 'utils/userUtils';
 import Request from 'types/Request';
 
 import Header from '@/components/layout/HeaderComponent';
+import RequestOptionModal from '@/components/modal/OptionRequestModal';
 import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import StatusCard from '@/components/ui/StatusCardComponent';
 import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
-import RequestOptionModal from '@/components/modal/OptionRequestModal';
 
 const { width } = Dimensions.get('window');
 
@@ -321,13 +321,14 @@ const RequestScreen = () => {
         {isLoading ? (
           <LoadingData />
         ) : (
-          <FlatList
+          <FlashList
             data={filteredRequests}
             renderItem={renderRequestItem}
             keyExtractor={(item) => item.requestId?.toString() || Math.random().toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyList />}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            estimatedItemSize={80}
           />
         )}
       </View>

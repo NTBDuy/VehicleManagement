@@ -2,9 +2,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { faCarBurst, faChevronRight, faEllipsisV, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
 import { getVehicleBackground, getVehicleLabel, getVehicleTypeIcon } from 'utils/vehicleUtils';
@@ -253,13 +254,14 @@ const VehicleManagementScreen = () => {
         {isLoading ? (
           <LoadingData />
         ) : (
-          <FlatList
+          <FlashList
             data={filteredVehicles}
             renderItem={renderVehicleItem}
             keyExtractor={(item) => item.vehicleId.toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyList icon={faCarBurst} />}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            estimatedItemSize={80}
           />
         )}
       </View>

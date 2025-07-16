@@ -1,8 +1,9 @@
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { FlashList } from '@shopify/flash-list';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { getVehicleTypeIcon } from 'utils/vehicleUtils';
 
 import Vehicle from 'types/Vehicle';
@@ -20,7 +21,7 @@ const RequestVehiclePicker = ({
 }: VehiclePickerComponentProps) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const filteredVehicle = useMemo(() => {
     let filtered = [...availableVehicle];
     const q = searchQuery.toLowerCase();
@@ -45,7 +46,9 @@ const RequestVehiclePicker = ({
   const renderVehicleItem = ({ item }: { item: Vehicle }) => (
     <TouchableOpacity
       onPress={() => setSelectedVehicle(item)}
-      className={`mb-4 flex-row items-center rounded-2xl ${selectedVehicle == item ? 'bg-blue-100' : 'bg-gray-100'}  px-2 py-4`}>
+      className={`mb-4 flex-row items-center rounded-2xl ${
+        selectedVehicle?.vehicleId === item.vehicleId ? 'bg-blue-100' : 'bg-gray-100'
+      }  px-2 py-4`}>
       <View className="ml-2 mr-4 h-12 w-12 items-center justify-center rounded-full bg-blue-300">
         <Text className="text-xl font-semibold text-white">
           <FontAwesomeIcon icon={getVehicleTypeIcon(item.type)} size={24} color="#0d4d87" />
@@ -81,11 +84,13 @@ const RequestVehiclePicker = ({
           />
         </View>
       </View>
-      <View className="mb-20 px-2">
-        <FlatList
+      <View className="mb-20 flex-1 px-2">
+        <FlashList
           data={filteredVehicle}
           renderItem={renderVehicleItem}
           showsVerticalScrollIndicator={false}
+          extraData={selectedVehicle?.vehicleId}
+          estimatedItemSize={80}
         />
       </View>
     </View>

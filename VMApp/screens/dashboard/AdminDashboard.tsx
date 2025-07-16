@@ -82,7 +82,8 @@ const AdminDashboard = () => {
 
       <ScrollView
         className="flex-1 px-6"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        showsVerticalScrollIndicator={false}>
         {user && <WelcomeSection user={user} />}
 
         {isLoading ? (

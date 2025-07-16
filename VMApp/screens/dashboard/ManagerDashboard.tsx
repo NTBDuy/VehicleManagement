@@ -49,39 +49,38 @@ const ManagerDashboard = () => {
   };
 
   const fetchStatData = async () => {
-  setIsLoading(true);
-  try {
-    const [requestsRes, vehiclesRes, usageRes] = await Promise.allSettled([
-      RequestService.getAllRequests(),
-      VehicleService.getAllVehicles(),
-      StatisticService.getStatVehicleMostUsageAllTime(),
-    ]);
+    setIsLoading(true);
+    try {
+      const [requestsRes, vehiclesRes, usageRes] = await Promise.allSettled([
+        RequestService.getAllRequests(),
+        VehicleService.getAllVehicles(),
+        StatisticService.getStatVehicleMostUsageAllTime(),
+      ]);
 
-    if (requestsRes.status === 'fulfilled') {
-      setRequests(requestsRes.value);
-    } else {
-      console.error('Failed to fetch requests:', requestsRes.reason);
+      if (requestsRes.status === 'fulfilled') {
+        setRequests(requestsRes.value);
+      } else {
+        console.error('Failed to fetch requests:', requestsRes.reason);
+      }
+
+      if (vehiclesRes.status === 'fulfilled') {
+        setVehicles(vehiclesRes.value);
+      } else {
+        console.error('Failed to fetch vehicles:', vehiclesRes.reason);
+      }
+
+      if (usageRes.status === 'fulfilled') {
+        setVehicleMostUsage(usageRes.value);
+      } else {
+        console.error('Failed to fetch vehicle usage stats:', usageRes.reason);
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+    } finally {
+      setRefreshing(false);
+      setIsLoading(false);
     }
-
-    if (vehiclesRes.status === 'fulfilled') {
-      setVehicles(vehiclesRes.value);
-    } else {
-      console.error('Failed to fetch vehicles:', vehiclesRes.reason);
-    }
-
-    if (usageRes.status === 'fulfilled') {
-      setVehicleMostUsage(usageRes.value);
-    } else {
-      console.error('Failed to fetch vehicle usage stats:', usageRes.reason);
-    }
-  } catch (err) {
-    console.error('Unexpected error:', err);
-  } finally {
-    setRefreshing(false);
-    setIsLoading(false);
-  }
-};
-
+  };
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -97,7 +96,8 @@ const ManagerDashboard = () => {
 
       <ScrollView
         className="px-6"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        showsVerticalScrollIndicator={false}>
         {user && <WelcomeSection user={user} />}
 
         {isLoading ? (

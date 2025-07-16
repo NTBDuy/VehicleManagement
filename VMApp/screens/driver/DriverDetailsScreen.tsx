@@ -19,13 +19,14 @@ import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
 import Driver from 'types/Driver';
 
 import Header from '@/components/layout/HeaderComponent';
+import ErrorComponent from '@/components/ui/ErrorComponent';
 import InfoRow from '@/components/ui/InfoRowComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import ErrorComponent from '@/components/ui/ErrorComponent';
 import Request from '@/types/Request';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { getRequestBorderColor } from '@/utils/requestUtils';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { FlashList } from '@shopify/flash-list';
 
 const DriverDetailsScreen = () => {
   const navigation = useNavigation<any>();
@@ -298,7 +299,12 @@ const DriverDetailsScreen = () => {
                       )}
                     />
                   </View>
-                  {filtered.map((item) => renderRequestItem(item))}
+                  <FlashList
+                    data={filtered}
+                    renderItem={({ item }) => renderRequestItem(item)}
+                    keyExtractor={(item) => item.requestId.toString()}
+                    estimatedItemSize={80}
+                  />
                 </View>
               </View>
             )}

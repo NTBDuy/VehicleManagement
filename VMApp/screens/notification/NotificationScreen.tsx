@@ -1,26 +1,21 @@
 import {
-  faBell,
-  faCarSide,
-  faCheck,
-  faListCheck,
-  faTools,
-  faWarning,
-  faXmark,
+  faListCheck
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { FlashList } from '@shopify/flash-list';
 import { useAuth } from 'contexts/AuthContext';
 import { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { NotificationService } from 'services/notificationService';
 import { UserService } from 'services/userService';
 import { formatTime } from 'utils/datetimeUtils';
 import { showToast } from 'utils/toast';
-import { useTranslation } from 'react-i18next';
 
 import Notification from 'types/Notification';
 
-import EmptyList from '@/components/ui/EmptyListComponent';
 import Header from '@/components/layout/HeaderComponent';
+import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import {
   getNotificationBackgroundColor,
@@ -148,7 +143,7 @@ const NotificationScreen = () => {
         <LoadingData />
       ) : (
         <View className="mx-6 flex-1">
-          <FlatList
+          <FlashList
             data={userNotifications}
             keyExtractor={(item) => item.notificationId.toString()}
             renderItem={renderNotificationItem}
@@ -156,6 +151,7 @@ const NotificationScreen = () => {
             showsVerticalScrollIndicator={false}
             contentContainerClassName="py-4"
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            estimatedItemSize={90}
           />
         </View>
       )}

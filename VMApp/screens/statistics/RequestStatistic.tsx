@@ -27,6 +27,7 @@ import RequestStatisticItem from '@/components/request/RequestStatisticItem';
 import LoadingData from '@/components/ui/LoadingData';
 import { StatisticService } from '@/services/statisticService';
 import { DailyData, UserUsageData, VehicleUsageData } from '@/types/Statistic';
+import { FlashList } from '@shopify/flash-list';
 
 type ItemDropDownPicker = { label: string; value: number };
 
@@ -272,7 +273,12 @@ const RequestStatistic = () => {
           </View>
 
           {request.length > 0 ? (
-            request.map((item) => renderRequestItem(item))
+            <FlashList
+              data={request}
+              renderItem={({ item }) => renderRequestItem(item)}
+              keyExtractor={(item) => item.requestId.toString()}
+              estimatedItemSize={80}
+            />
           ) : (
             <View className="mx-4 mt-8 items-center justify-center">
               <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-gray-100">
