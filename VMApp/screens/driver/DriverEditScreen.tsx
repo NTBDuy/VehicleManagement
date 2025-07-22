@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 
 import Driver from '@/types/Driver';
 import DriverFormData from '@/types/DriverFormData';
@@ -20,6 +21,7 @@ const DriverEditScreen = () => {
   const { t } = useTranslation();
   const { driverData: initialDriverData } = route.params as { driverData: Driver };
   const [driverData, setDriverData] = useState<Driver>(initialDriverData);
+  const queryClient = useQueryClient();
 
   const updateDriverSchema = driverSchema(t);
 
@@ -55,6 +57,12 @@ const DriverEditScreen = () => {
                 ...data,
               };
               const result = await DriverService.updateDriver(driverData.driverId, updateData);
+              
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['driver', result.driverId] }),
+                queryClient.invalidateQueries({ queryKey: ['drivers'] }),
+              ]);
+
               setDriverData(result);
               reset({
                 fullName: result.fullName,

@@ -38,12 +38,11 @@ namespace VMServer.Models.Entities
         [ForeignKey("MaintenanceSchedule")]
         public int? NextMaintenanceId { get; set; }
 
-        [Column(TypeName = "decimal(10,1)")]
-        [Range(0, 9999999999.9)]
-        public decimal CurrentOdometer { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime LastUpdateAt { get; set; } = DateTime.Now;
+
+        public bool IsDeleted { get; set; } = false;
+
     }
 }

@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 
 import Vehicle from '@/types/Vehicle';
 
@@ -40,6 +41,8 @@ enum TabState {
 
 const RequestCreateScreen = () => {
   const navigation = useNavigation<any>();
+  const queryClient = useQueryClient();
+
   const { t } = useTranslation();
   const { user } = useAuth();
 
@@ -277,12 +280,14 @@ const RequestCreateScreen = () => {
         purpose: purpose,
         isDriverRequired: isAssignDriver,
         locations: locations,
+        estimatedTotalDistance
       };
 
       const response = await RequestService.createRequest(requestDTO);
       if (response) {
         showToast.success(`${t('common.success.newRequest')}`);
         clearContent();
+        await Promise.all([queryClient.invalidateQueries({ queryKey: ['history'] })]);
         navigation.getParent()?.navigate('HistoryStack');
       } else {
         showToast.error(`${t('common.error.newRequest')}`);

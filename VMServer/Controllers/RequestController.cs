@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text;
 using System.Globalization;
+using AutoMapper;
 
 namespace VMServer.Controllers
 {
@@ -17,13 +18,15 @@ namespace VMServer.Controllers
         private readonly AppDbContext _dbContext;
         public readonly IWebHostEnvironment _environment;
         private readonly string _apiKey;
+        private readonly IMapper _mapper;
 
-        public RequestController(AppDbContext dbContext, IWebHostEnvironment environment, IConfiguration configuration)
+        public RequestController(AppDbContext dbContext, IWebHostEnvironment environment, IConfiguration configuration, IMapper mapper)
         {
             _dbContext = dbContext;
             _environment = environment;
             _apiKey = configuration["OpenRouteService:ApiKey"]
                 ?? throw new InvalidOperationException("Missing OpenRouteService API key in configuration.");
+            _mapper = mapper;
         }
 
         // GET: api/request
@@ -39,7 +42,10 @@ namespace VMServer.Controllers
                 .Include(r => r.Locations)
                 .OrderByDescending(r => r.LastUpdateAt)
                 .ToListAsync();
-            return Ok(requests);
+
+            var requestDtos = _mapper.Map<List<RequestListDto>>(requests);
+
+            return Ok(requestDtos);
         }
 
         // GET: api/request/{requestId}
@@ -49,16 +55,18 @@ namespace VMServer.Controllers
         public async Task<IActionResult> GetRequestDetails(int requestId)
         {
             var request = await _dbContext.Requests
-               .Include(r => r.User)
-               .Include(r => r.Vehicle)
-               .Include(r => r.ActionByUser)
+                .Include(r => r.User)
+                .Include(r => r.Vehicle)
+                .Include(r => r.ActionByUser)
                 .Include(r => r.Locations)
-               .FirstOrDefaultAsync(r => r.RequestId == requestId);
+                .FirstOrDefaultAsync(r => r.RequestId == requestId);
 
             if (request == null)
                 return NotFound(new { message = $"Request not found with ID #{requestId}" });
 
-            return Ok(request);
+            var requestDto = _mapper.Map<RequestDetailDto>(request);
+
+            return Ok(requestDto);
         }
 
         // GET: api/request/{requestId}/assignment
@@ -79,7 +87,9 @@ namespace VMServer.Controllers
             if (assignment == null)
                 return NotFound(new { message = "Assignment not found!" });
 
-            return Ok(assignment);
+            var assignmentDto = _mapper.Map<AssignmentDto>(assignment);
+
+            return Ok(assignmentDto);
         }
 
         // POST: api/request
@@ -110,7 +120,8 @@ namespace VMServer.Controllers
                 EndTime = dto.EndTime,
                 Purpose = dto.Purpose,
                 IsDriverRequired = dto.IsDriverRequired,
-                Status = RequestStatus.Pending
+                Status = RequestStatus.Pending,
+                TotalDistance = dto.EstimatedTotalDistance
             };
 
             await SendNotificationToRole(UserRole.Manager, "A new vehicle request has been submitted and needs approval.", "NewRequestSubmitted");
@@ -143,7 +154,7 @@ namespace VMServer.Controllers
                 _dbContext.RequestLocations.Add(newRequestLocation);
             }
             await _dbContext.SaveChangesAsync();
-            return Ok(newRequest);
+            return Ok(newRequest.RequestId);
         }
 
         // GET: api/request/{requestId}/check-point
@@ -240,7 +251,9 @@ namespace VMServer.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return Ok(request);
+            var responseDto = _mapper.Map<RequestDetailDto>(request);
+
+            return Ok(responseDto);
         }
 
         // PUT: api/request/{requestId}/cancel
@@ -285,7 +298,9 @@ namespace VMServer.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return Ok(request);
+            var responseDto = _mapper.Map<RequestDetailDto>(request);
+
+            return Ok(responseDto);
         }
 
         // PUT: api/request/{requestId}/reject
@@ -329,7 +344,9 @@ namespace VMServer.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return Ok(request);
+            var responseDto = _mapper.Map<RequestDetailDto>(request);
+
+            return Ok(responseDto);
         }
 
         // PUT: api/request/{requestId}/start-using
@@ -433,7 +450,6 @@ namespace VMServer.Controllers
             return Ok(new { message = "Upload thành công" });
         }
 
-
         // PUT: api/request/{requestId}/end-usage
         // kết thúc sử dụng phương tiện
         [Authorize]
@@ -528,6 +544,9 @@ namespace VMServer.Controllers
             return Ok(request);
         }
 
+        // GET: api/request/{requestId}/test-calculate-distance
+        // Kiểm tra thử tính toán khoảng cách của yêu cầu (Này chỉ là TEST - có thể xoá)
+        [Authorize(Roles = "Administrator")]
         [HttpGet("{requestId}/test-calculate-distance")]
         public async Task<IActionResult> CalculateDistance(int requestId)
         {
@@ -553,6 +572,7 @@ namespace VMServer.Controllers
             return Ok(new { TotalDistanceInKm = totalDistance, Points = locations });
         }
 
+        // Tính toán khoảng cách thực tế giữa 2 toạ độ 
         private async Task<double> GetDistanceFromApiAsync(double lat1, double lon1, double lat2, double lon2)
         {
             using var client = new HttpClient();
@@ -699,7 +719,7 @@ namespace VMServer.Controllers
             });
         }
 
-        // Gửi thông báo tới Role
+        // Gửi thông báo tới những tài khoản có phân quyền nào đó (như gửi cho toàn bộ Trưởng phòng)
         private async Task SendNotificationToRole(UserRole role, string message, string type)
         {
             var users = await _dbContext.Users
@@ -715,6 +735,5 @@ namespace VMServer.Controllers
 
             _dbContext.Notifications.AddRange(notifications);
         }
-
     }
 }

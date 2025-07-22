@@ -1,13 +1,11 @@
 {
   "common": {
-    "vms": "Vehicle Management System",
     "items": {
       "user": "User",
       "driver": "Driver",
       "vehicle": "Vehicle",
       "request": "Request",
-      "maintenance": "Maintenance",
-      "statistic": "Statistic"
+      "maintenance": "Maintenance"
     },
     "button": {
       "search": "Search",
@@ -56,11 +54,16 @@
       "approveWithAssign": "Approve and assign a driver",
       "maintenance": "Schedule maintenance",
       "scheduleNow": "Schedule Now",
-      "currenLocation": "Current location",
+      "currentLocation": "Current location",
       "takePhoto": "Take photo",
       "completeTrip": "Complete trip",
       "confirmCheckIn": "Confirm check-in",
-      "clearFilter": "Clear filter"
+      "clearFilter": "Clear filter",
+      "connectionAgain": "Retry Connection",
+      "connectionAgainLoading": "Retrying...",
+      "deleteSavedAddress": "Delete Saved Address",
+      "deleteAccount": "Delete Account",
+      "deleteDriver": "Delete Driver"
     },
     "status": {
       "all": "All",
@@ -123,7 +126,9 @@
         "startUsing": "Start using the vehicle",
         "endUsage": "End vehicle usage",
         "remind": "Confirm reminder",
-        "removeImage": "Remove image"
+        "removeImage": "Remove image",
+        "deleteAccount": "Confirm Account Delete",
+        "deleteDriver": "Confirm Driver Delete"
       },
       "message": {
         "update": "Are you sure you want to update this {{item}}?",
@@ -141,7 +146,9 @@
         "startUsing": "Are you sure you want to start using the vehicle?",
         "endUsage": "Are you sure you want to end the vehicle usage?",
         "remind": "Are you sure you want to send a reminder?",
-        "removeImage": "Are you sure you want to remove this image?"
+        "removeImage": "Are you sure you want to remove this image?",
+        "deleteAccount": "Are you sure you want to delete this account? This action cannot be undone.",
+        "deleteDriver": "Are you sure you want to delete this driver? This action cannot be undone."
       }
     },
     "success": {
@@ -168,7 +175,12 @@
       "endUsage": "The vehicle has been returned and the request is now marked as complete.",
       "remind": "The user has been reminded to start vehicle usage.",
       "takePhoto": "Photo added successfully!",
-      "removeImage": "Photo removed successfully."
+      "removeImage": "Photo removed successfully.",
+      "removeVehicle": "Vehicle removed successfully",
+      "checkedInAt": "Checked in at {{location}}",
+      "tripDone": "Trip completed!",
+      "deleteAccount": "Delete account successfully!",
+      "deleteDriver": "Delete driver successfully!"
     },
     "error": {
       "title": "Error",
@@ -191,7 +203,12 @@
       "startUsing": "Vehicle can only be used on the scheduled date.",
       "maxImage": "Maximum of 2 images per location",
       "takePhoto": "Unable to take photo. Please try again.",
-      "tooFar": "You are too far from the check-in location"
+      "tooFar": "You are too far from the check-in location",
+      "checkIn": "Check-in failed",
+      "serverAddressRequired": "Please enter the server address",
+      "cannotSaveServerAddress": "Unable to save the server address",
+      "imageLost": "The image does not exist or has been deleted",
+      "410Request": "The account has been permanently deleted."
     },
     "info": {
       "nothingChanges": "No changes detected."
@@ -227,7 +244,7 @@
       "noteAddress": "Note address",
       "point": "Point",
       "currentPoint": "Current point",
-      "totalDistance": "Total distance traveled"
+      "totalDistance": "Total distance"
     },
     "placeholder": {
       "startPoint": "Select your start point",
@@ -242,7 +259,7 @@
     "regex": {
       "phone": "Please enter a valid phone number (9-10 digits)",
       "password": "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
-      "email": "'Please enter a valid email'",
+      "email": "Please enter a valid email",
       "licenseIssueDate": "Please enter a valid date (YYYY-MM-DD)",
       "notMatch": "Password and confirmation password do not match",
       "differentPassword": "New password must be different from current password",
@@ -379,7 +396,15 @@
     },
     "inProgress": {
       "currentImage": "Image at this location",
-      "maxImage": "Maximum of 2 images"
+      "maxImage": "Maximum of 2 images",
+      "imageNeeded": {
+        "title": "Image Required",
+        "message": "Please take at least one photo at this location"
+      },
+      "tripDone": {
+        "title": "Trip Completed!",
+        "description": "You have completed all {{count}} locations in the route"
+      }
     },
     "list": {
       "label": {
@@ -523,7 +548,8 @@
     },
     "edit": {
       "title": "Update Driver Information"
-    }
+    },
+    "scheduleList": "List of Schedules"
   },
 
   "user": {
@@ -552,6 +578,18 @@
       "title": "Edit Profile",
       "section": {
         "title": "User Information"
+      }
+    },
+    "deleteAccount": {
+      "section": {
+        "title": "Delete Account",
+        "description": "This action will permanently delete account and all associated data. This cannot be undone."
+      }
+    },
+    "deleteDriver": {
+      "section": {
+        "title": "Delete Driver",
+        "description": "This action will permanently delete driver and all associated data. This cannot be undone."
       }
     }
   },
@@ -618,5 +656,38 @@
       "gpsRequirement": "Ensure accurate GPS location at each stop",
       "noteGuideline": "Provide clear notes about the situation at each point"
     }
+  },
+
+  "devTool": {
+    "title": "Developer Tool",
+    "apiBaseUrl": "API Base URL",
+    "quickLogin": "Quick Login"
+  },
+
+  "statistic": {
+    "title": "Statistics",
+    "chart": {
+      "title": "Statistics Chart",
+      "requestByStatus": "Requests by Status",
+      "requestMostByDate": "Requests by Date",
+      "vehicleMostUsage": "Most Used Vehicles",
+      "userMostUsage": "Top Requesting Users"
+    },
+    "list": "Request List",
+    "item": "item",
+    "changeFilterToSeeResult": "Change the filter or time range to view results",
+    "request": "Request",
+    "times": "Times",
+    "timeWithCount": "{{count}} time",
+    "timeWithCount_plural": "{{count}} times"
+  },
+
+  "connection": {
+    "iconSubTitle": "No network connection",
+    "title": "Connection lost",
+    "description": "Unable to connect to the server. Please check your network connection or update the server address.",
+    "serverAddress": "Server Address",
+    "hint": "Connection Tip",
+    "hintText": "Make sure your device and the server are on the same Wi-Fi network, or connect via VPN (e.g., DrayTek's SmartVPN)."
   }
 }

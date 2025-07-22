@@ -1,18 +1,9 @@
 import { formatDate } from '@/utils/datetimeUtils';
 import { faCalendarAlt, faChevronRight, faFilter, faList } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Dimensions,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 import Request from '@/types/Request';
@@ -31,36 +22,43 @@ import { FlashList } from '@shopify/flash-list';
 
 type ItemDropDownPicker = { label: string; value: number };
 
-const StatusItems: ItemDropDownPicker[] = [
-  { label: 'Tất cả', value: 6 },
-  { label: 'Chờ duyệt', value: 0 },
-  { label: 'Đã duyệt', value: 1 },
-  { label: 'Đã từ chối', value: 2 },
-  { label: 'Đã huỷ', value: 3 },
-  { label: 'Đang tiến hành', value: 4 },
-  { label: 'Hoàn thành', value: 5 },
-];
-
-const FilterItems: ItemDropDownPicker[] = [
-  { label: 'Số yêu cầu theo trạng thái', value: 0 },
-  { label: 'Số lượt yêu cầu theo ngày', value: 1 },
-  { label: 'Phương tiện sử dụng nhiều nhất', value: 2 },
-  { label: 'Người dùng đặt yêu cầu nhiều nhất', value: 3 },
-];
-
 const RequestStatistic = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const firstDay = new Date(year, month, 1).toISOString().split('T')[0];
+  const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
+
+  const [startDate, setStartDate] = useState(firstDay);
+  const [endDate, setEndDate] = useState(lastDay);
+
   const { t } = useTranslation();
 
   const [request, setRequest] = useState<Request[]>([]);
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
-  const [startDate, setStartDate] = useState('2025-05-01');
-  const [endDate, setEndDate] = useState('2025-07-01');
-
   const [openStatusDropDown, setOpenStatusDropDown] = useState(false);
   const [openFilterDropDown, setOpenFilterDropDown] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(6);
   const [selectedFilter, setSelectedFilter] = useState(0);
+
+  const StatusItems: ItemDropDownPicker[] = [
+    { label: t('common.status.all'), value: 6 },
+    { label: t('common.status.pending'), value: 0 },
+    { label: t('common.status.approved'), value: 1 },
+    { label: t('common.status.rejected'), value: 2 },
+    { label: t('common.status.cancelled'), value: 3 },
+    { label: t('common.status.inProgress'), value: 4 },
+    { label: t('common.status.done'), value: 5 },
+  ];
+
+  const FilterItems: ItemDropDownPicker[] = [
+    { label: t('statistic.chart.requestByStatus'), value: 0 },
+    { label: t('statistic.chart.requestMostByDate'), value: 1 },
+    { label: t('statistic.chart.vehicleMostUsage'), value: 2 },
+    { label: t('statistic.chart.userMostUsage'), value: 3 },
+  ];
+
   const [statusItem, setStatusItem] = useState(StatusItems);
   const [filterItem, setFilterItem] = useState(FilterItems);
 
@@ -141,15 +139,15 @@ const RequestStatistic = () => {
         return <RequestStatisticChart request={request} />;
       case 1:
         if (dailyData.length > 0) {
-          return <RequestDailyStatisticChart dailyData={dailyData} />;
+          return <RequestDailyStatisticChart dailyData={dailyData} t={t} />;
         }
       case 2:
         if (vehicleData.length > 0) {
-          return <RequestVehicleMostUsageChart vehicleData={vehicleData} />;
+          return <RequestVehicleMostUsageChart vehicleData={vehicleData} t={t}/>;
         }
       case 3:
         if (userData.length > 0) {
-          return <RequestUserUsageChart userData={userData} />;
+          return <RequestUserUsageChart userData={userData} t={t}/>;
         }
       default:
         return null;
@@ -159,7 +157,7 @@ const RequestStatistic = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/** Header - tiêu đề */}
-      <Header title="Phân tích yêu cầu" />
+      <Header title={t('statistic.title')} />
 
       {/** Body - nội dung */}
       <ScrollView
@@ -250,12 +248,11 @@ const RequestStatistic = () => {
           <Pressable
             onPress={() => setOpenFilterDropDown(true)}
             className="mb-1 flex-row items-center justify-between">
-            <Text className="ml-3 text-lg font-semibold text-gray-900">Biểu đồ thống kê</Text>
-
-            {/* <TouchableOpacity onPress={() => setOpenFilterDropDown(true)} className="ml-auto mr-3"> */}
+            <Text className="ml-3 text-lg font-semibold text-gray-900">
+              {t('statistic.chart.title')}
+            </Text>
             <View className="ml-auto mr-3"></View>
             <FontAwesomeIcon icon={faFilter} size={18} color="#444444" />
-            {/* </TouchableOpacity> */}
           </Pressable>
 
           <View className="mb-4 flex-row items-center">
@@ -268,8 +265,10 @@ const RequestStatistic = () => {
         {/** Request List - Danh sách yêu cầu */}
         <View className="mt-4 flex-1">
           <View className="mx-4 mb-3 flex-row items-center justify-between">
-            <Text className="text-lg font-semibold text-gray-900">Danh sách yêu cầu</Text>
-            <Text className="text-sm text-gray-500">{request.length} mục</Text>
+            <Text className="text-lg font-semibold text-gray-900">{t('statistic.list')}</Text>
+            <Text className="text-sm text-gray-500">
+              {request.length} {t('statistic.item')}
+            </Text>
           </View>
 
           {request.length > 0 ? (
@@ -284,9 +283,11 @@ const RequestStatistic = () => {
               <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                 <FontAwesomeIcon icon={faFilter} size={24} color="#9CA3AF" />
               </View>
-              <Text className="mb-2 text-base font-medium text-gray-500">Không có dữ liệu</Text>
+              <Text className="mb-2 text-base font-medium text-gray-500">
+                {t('common.noData.generic')}
+              </Text>
               <Text className="text-center text-sm text-gray-400">
-                Thay đổi bộ lọc hoặc khoảng thời gian để xem kết quả
+                {t('statistic.changeFilterToSeeResult')}
               </Text>
             </View>
           )}

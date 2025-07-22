@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
 import { useAuth } from 'contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Text, View, Image } from 'react-native';
 
 interface SidebarProps {
   [key: string]: any;
@@ -20,8 +20,11 @@ const SidebarComponent = (props: SidebarProps) => {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       <View className="mb-4 items-center justify-center border-b border-gray-200 py-6">
-        <FontAwesomeIcon icon={faCar} size={30} color="#1f2937" />
-        <Text className="mt-2 text-xl font-bold text-gray-800">{t('sidebar.title')}</Text>
+        <Image
+          source={require('@/assets/images/VMS.png')}
+          className="h-16"
+          resizeMode="contain"
+        />
       </View>
 
       <View className="flex-1 px-4">

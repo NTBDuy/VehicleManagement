@@ -10,7 +10,7 @@ export class StatisticService extends BaseApiClient {
     status?: number
   ): Promise<Request[]> {
     return this.request<Request[]>(
-      `/statistic/request?startDate=${startDate}&endDate=${endDate}${status !== undefined ? `&status=${status}` : ''}`
+      `/statistic/requests?startDate=${startDate}&endDate=${endDate}${status !== undefined ? `&status=${status}` : ''}`
     );
   }
 

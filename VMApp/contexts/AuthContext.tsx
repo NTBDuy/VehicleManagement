@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { AuthService } from 'services/authService';
 import { LoginRequest } from 'types/LoginRequest';
 import { showToast } from 'utils/toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import User from 'types/User';
 import { LoginResponse } from '@/types/LoginResponse';
@@ -42,6 +43,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     checkAuthStatus();
@@ -87,6 +89,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           case 401:
             showToast.error(t('common.error.invalidCredentials'));
             break;
+          case 410:
+            showToast.error(t('common.error.410Request'));
+            break;
           case 400:
             showToast.error(t('common.error.badRequest'));
             break;
@@ -111,6 +116,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await AuthService.logout();
       showToast.success(t('common.success.logout'));
+      await Promise.all([
+        queryClient.removeQueries({ queryKey: ['history'] }),
+        queryClient.removeQueries({ queryKey: ['notifications'] }),
+      ]);
       setUser(null);
     } catch (error) {
       console.error('Error during logout:', error);

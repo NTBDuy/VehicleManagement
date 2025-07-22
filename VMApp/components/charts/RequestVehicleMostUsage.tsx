@@ -9,9 +9,10 @@ const screenWidth = Dimensions.get('window').width;
 
 interface Props {
   vehicleData: VehicleUsageData[];
+  t: any;
 }
 
-const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
+const RequestVehicleMostUsageChart = ({ vehicleData, t }: Props) => {
   const [tooltip, setTooltip] = useState<{
     x: number;
     y: number;
@@ -21,7 +22,7 @@ const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
   } | null>(null);
 
   const chartData = {
-    labels: vehicleData.map((item) => item.vehicle.licensePlate),
+    labels: vehicleData.map((item) => item.licensePlate.replace(/^deleted_/, '')),
     datasets: [
       {
         data: vehicleData.map((item) => item.count),
@@ -29,10 +30,10 @@ const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
         strokeWidth: 2,
       },
     ],
-    legend: ['Số lần'],
+    legend: [t('statistic.times')],
   };
 
-  const labels = vehicleData.map((item) => item.vehicle.licensePlate);
+  const labels = vehicleData.map((item) => item.licensePlate.replace(/^deleted_/, ''));
 
   return (
     <ScrollView horizontal>
@@ -48,7 +49,7 @@ const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
             x,
             y,
             value,
-            label: selected.vehicle.licensePlate,
+            label: selected.licensePlate.replace(/^deleted_/, ''),
             distance: selected.totalDistance,
           });
         }}
@@ -79,11 +80,9 @@ const RequestVehicleMostUsageChart = ({ vehicleData }: Props) => {
             }}>
             <Text className="mb-1 text-center text-xs text-gray-500">{tooltip.label}</Text>
             <Text className="text-center text-lg font-bold text-orange-600">
-              {tooltip.value} lần
+              {t('statistic.timeWithCount', { count: tooltip.value })}
             </Text>
-            <Text className="mt-1 text-center text-sm text-gray-700">
-              {tooltip.distance} km
-            </Text>
+            <Text className="mt-1 text-center text-sm text-gray-700">{tooltip.distance} km</Text>
           </View>
         </View>
       )}

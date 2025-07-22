@@ -1,15 +1,16 @@
+import { types } from '@/utils/vehicleUtils';
+import { vehicleSchema } from '@/validations/vehicleSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
 import { showToast } from 'utils/toast';
-import { vehicleSchema } from '@/validations/vehicleSchema';
-import { types } from '@/utils/vehicleUtils';
 
-import Vehicle from 'types/Vehicle';
 import VehicleFormData from '@/types/VehicleFormData';
+import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
@@ -19,6 +20,7 @@ const VehicleEditScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { vehicleData: initialVehicleData } = route.params as { vehicleData: Vehicle };
+  const queryClient = useQueryClient();
 
   const editVehicleSchema = vehicleSchema(t);
 
@@ -58,6 +60,11 @@ const VehicleEditScreen = () => {
                 updatedVehicleData
               );
 
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['vehicle', result.vehicleId] }),
+                queryClient.invalidateQueries({ queryKey: ['vehicles'] }),
+              ]);
+
               reset(result);
 
               showToast.success(
@@ -66,7 +73,6 @@ const VehicleEditScreen = () => {
               );
             } catch (error) {
               console.log(error);
-              showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
             }
           },
         },

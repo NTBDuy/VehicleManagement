@@ -9,5 +9,6 @@ namespace VMServer.Models.DTOs
         public required string Purpose { get; set; }
         public bool IsDriverRequired { get; set; }
         public List<RequestLocationDTO>? Locations { get; set; }
+        public double EstimatedTotalDistance { get; set; }
     }
 }

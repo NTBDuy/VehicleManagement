@@ -1,6 +1,7 @@
 import { formatDate } from '@/utils/datetimeUtils';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import { useCallback, useMemo, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -15,8 +16,7 @@ import {
 import { DriverService } from 'services/driverService';
 import { showToast } from 'utils/toast';
 import { formatVietnamPhoneNumber, getUserInitials } from 'utils/userUtils';
-
-import Driver from 'types/Driver';
+import { useQueryClient } from '@tanstack/react-query';
 
 import Header from '@/components/layout/HeaderComponent';
 import ErrorComponent from '@/components/ui/ErrorComponent';
@@ -24,7 +24,7 @@ import InfoRow from '@/components/ui/InfoRowComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import Request from '@/types/Request';
 import { getRequestBorderColor } from '@/utils/requestUtils';
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { FlashList } from '@shopify/flash-list';
 
@@ -32,22 +32,39 @@ const DriverDetailsScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute();
   const { t } = useTranslation();
-  const { driverData: initialDriverData } = (route.params as { driverData?: Driver }) || {};
-  const [driverData, setDriverData] = useState<Driver | undefined>(initialDriverData);
-  const [isLoading, setIsLoading] = useState(false);
+  const { driverId } = route.params as { driverId: number };
   const [isButtonActionLoading, setIsButtonActionLoading] = useState(false);
-  const [requests, setRequests] = useState<Request[]>([]);
   const [currentStatusFilter, setCurrentStatusFilter] = useState(0);
+  const queryClient = useQueryClient();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const {
+    data: driverData,
+    isLoading,
+    refetch,
+    error,
+  } = useQuery({
+    queryKey: ['driver', driverId],
+    queryFn: async () => {
+      const data = DriverService.getDriverById(driverId);
+      return data;
+    },
+  });
+
+  const { data: driverRequests = [] } = useQuery({
+    queryKey: ['driverRequests', driverId],
+    queryFn: () => DriverService.getDriverRequestById(driverId),
+  });
 
   const filterOptions = [
-    { id: 0, name: 'Tất cả' },
-    { id: 1, name: 'Sắp tới' },
-    { id: 4, name: 'Đang thực hiện' },
-    { id: 5, name: 'Đã hoàn thành' },
+    { id: 0, name: t('common.status.all') },
+    { id: 1, name: t('common.status.incoming') },
+    { id: 4, name: t('common.status.inProgress') },
+    { id: 5, name: t('common.status.done') },
   ];
 
   const filtered = useMemo(() => {
-    let filtered = [...requests];
+    let filtered = [...driverRequests];
 
     switch (currentStatusFilter) {
       case 1:
@@ -61,43 +78,13 @@ const DriverDetailsScreen = () => {
         break;
     }
     return filtered;
-  }, [requests, currentStatusFilter]);
+  }, [driverRequests, currentStatusFilter]);
 
   const handleFilterChange = (status: number) => {
     setCurrentStatusFilter(status);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      if (initialDriverData?.driverId) {
-        fetchDriverData(initialDriverData.driverId);
-      }
-    }, [initialDriverData?.driverId])
-  );
-
-  const fetchDriverData = async (driverId: number) => {
-    try {
-      setIsLoading(true);
-      const data = await DriverService.getDriverById(driverId);
-      setDriverData(data);
-      fetchDriverRequest(driverId);
-    } catch (error) {
-      console.log('Error fetching driver data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchDriverRequest = async (driverId: number) => {
-    try {
-      const res = await DriverService.getDriverRequestById(driverId);
-      setRequests(res);
-    } catch (error) {
-      console.log('Error fetching driver data:', error);
-    }
-  };
-
-  if (!driverData) {
+  if (error || !driverData) {
     return <ErrorComponent />;
   }
 
@@ -123,13 +110,18 @@ const DriverDetailsScreen = () => {
           onPress: async () => {
             setIsButtonActionLoading(true);
             try {
-              await DriverService.toggleStatus(driverData?.driverId);
+              await DriverService.toggleStatus(driverId);
               showToast.success(
                 isActivate
                   ? `${t('common.success.deactivated', { item: driverData.fullName })}`
                   : `${t('common.success.activated', { item: driverData.fullName })}`
               );
-              await fetchDriverData(driverData.driverId);
+              await refetch();
+
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['driver', driverId] }),
+                queryClient.invalidateQueries({ queryKey: ['drivers'] }),
+              ]);
             } catch (error) {
               console.log('Error toggling isActive:', error);
               Alert.alert(`${t('common.error.title')}`, `${t('common.error.generic')}?`);
@@ -146,7 +138,7 @@ const DriverDetailsScreen = () => {
     <TouchableOpacity
       key={item.requestId}
       onPress={() => {
-        navigation.navigate('RequestDetail', { requestData: item });
+        navigation.navigate('RequestDetail', { requestId: item.requestId });
       }}
       className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getRequestBorderColor(item.status)}`}>
       <View className="flex-row items-center">
@@ -190,6 +182,41 @@ const DriverDetailsScreen = () => {
       </View>
     </TouchableOpacity>
   );
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      `${t('common.confirmation.title.deleteDriver')}`,
+      `${t('common.confirmation.message.deleteDriver')}`,
+      [
+        {
+          text: `${t('common.button.cancel')}`,
+          style: 'cancel',
+        },
+        {
+          text: `${t('common.button.deleteDriver')}`,
+          style: 'destructive',
+          onPress: confirmDeleteAccount,
+        },
+      ]
+    );
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      await Promise.all([
+        DriverService.removeDriver(driverId),
+        queryClient.invalidateQueries({ queryKey: ['drivers'] }),
+      ]);
+      navigation.goBack();
+
+      showToast.success(`${t('common.success.deleteDriver')}`);
+    } catch (error) {
+      console.log('Delete account error:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -273,11 +300,11 @@ const DriverDetailsScreen = () => {
               </View>
             </View>
 
-            {requests.length > 0 && (
+            {driverRequests.length > 0 && (
               <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
                 <View className="bg-gray-50 px-4 py-3">
                   <Text className="text-lg font-semibold text-gray-800">
-                    Danh sách yêu cầu lịch trình
+                    {t('driver.scheduleList')}
                   </Text>
                 </View>
                 <View className="p-4">
@@ -331,6 +358,41 @@ const DriverDetailsScreen = () => {
                 disabled={isLoading}>
                 <Text className="font-semibold text-white">{t('common.button.update')}</Text>
               </TouchableOpacity>
+            </View>
+
+            {/* Delete Driver Section */}
+            <View className="mb-8 mt-6 overflow-hidden rounded-2xl border border-red-200 bg-white shadow-sm">
+              <View className="bg-red-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-red-800">
+                  {t('user.deleteDriver.section.title')}
+                </Text>
+              </View>
+
+              <View className="p-4">
+                <Text className="mb-4 text-sm text-gray-600">
+                  {t('user.deleteDriver.section.description')}
+                </Text>
+
+                <TouchableOpacity
+                  className={`flex-row items-center justify-center rounded-xl border-2 border-red-300 py-4 ${
+                    isDeleting ? 'bg-gray-400' : 'bg-red-600'
+                  }`}
+                  onPress={handleDeleteAccount}
+                  disabled={isDeleting}>
+                  {!isDeleting && (
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      size={16}
+                      color="#fff"
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
+
+                  <Text className="font-semibold text-white">
+                    {isDeleting ? `${t('common.button.loading')}` : `${t('common.button.delete')}`}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </ScrollView>

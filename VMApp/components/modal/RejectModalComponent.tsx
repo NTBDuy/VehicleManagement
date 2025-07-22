@@ -107,10 +107,10 @@ const RejectModal = ({ visible, onClose, requestId, onSuccess }: RejectModalProp
         useNativeDriver: true,
       }),
     ]).start(() => {
-      reset({
-        reason: '',
+      requestAnimationFrame(() => {
+        reset({ reason: '' });
+        onClose();
       });
-      onClose();
     });
   };
 

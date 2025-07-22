@@ -1,4 +1,4 @@
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from 'contexts/AuthContext';
@@ -10,6 +10,7 @@ import { showToast } from 'utils/toast';
 import { userSchema } from '@/validations/userSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
+import { useQueryClient } from '@tanstack/react-query';
 
 import User from 'types/User';
 import UserFormData from '@/types/UserFormData';
@@ -21,8 +22,10 @@ import InputField from '@/components/ui/InputFieldComponent';
 const EditProfileScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const { user, setUser } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const [userData, setUserData] = useState<User>();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
 
   const updateUserSchema = userSchema(t);
 
@@ -70,6 +73,37 @@ const EditProfileScreen = () => {
         `${t('common.error.validation.message')}`
       );
     })();
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      `${t('common.confirmation.title.deleteAccount')}`,
+      `${t('common.confirmation.message.deleteAccount')}`,
+      [
+        {
+          text: `${t('common.button.cancel')}`,
+          style: 'cancel',
+        },
+        {
+          text: `${t('common.button.deleteAccount')}`,
+          style: 'destructive',
+          onPress: confirmDeleteAccount,
+        },
+      ]
+    );
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      await UserService.selfDelete();
+      showToast.success(`${t('common.success.deleteAccount')}`);
+      await logout();
+    } catch (error) {
+      console.log('Delete account error:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleCancel = () => {
@@ -163,24 +197,54 @@ const EditProfileScreen = () => {
           </View>
         </View>
 
-        <View className="mb-8 mt-4 flex-row items-center justify-between">
+        <View className="mb-4 mt-4 flex-row items-center justify-between">
           <TouchableOpacity
             className="w-[48%] items-center rounded-xl border-2 border-gray-300 bg-white py-4"
             onPress={handleCancel}
-            disabled={isSubmitting}>
+            disabled={isSubmitting || isDeleting}>
             <Text className="font-semibold text-gray-700">{t('common.button.cancel')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             className={`w-[48%] items-center rounded-xl border-2 border-blue-300 py-4 ${
-              isSubmitting ? 'bg-gray-400' : 'bg-blue-600 '
+              isSubmitting || isDeleting ? 'bg-gray-400' : 'bg-blue-600 '
             }`}
             onPress={() => handleUpdateProfile()}
-            disabled={isSubmitting || !isDirty}>
+            disabled={isSubmitting || !isDirty || isDeleting}>
             <Text className="font-semibold text-white">
               {isSubmitting ? `${t('common.button.updating')}` : `${t('common.button.update')}`}
             </Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Delete Account Section */}
+        <View className="mb-8 mt-6 overflow-hidden rounded-2xl border border-red-200 bg-white shadow-sm">
+          <View className="bg-red-50 px-4 py-3">
+            <Text className="text-lg font-semibold text-red-800">
+              {t('user.deleteAccount.section.title')}
+            </Text>
+          </View>
+
+          <View className="p-4">
+            <Text className="mb-4 text-sm text-gray-600">
+              {t('user.deleteAccount.section.description')}
+            </Text>
+
+            <TouchableOpacity
+              className={`flex-row items-center justify-center rounded-xl border-2 border-red-300 py-4 ${
+                isDeleting || isSubmitting ? 'bg-gray-400' : 'bg-red-600'
+              }`}
+              onPress={handleDeleteAccount}
+              disabled={isDeleting || isSubmitting}>
+              {!isDeleting && (
+                <FontAwesomeIcon icon={faTrash} size={16} color="#fff" style={{ marginRight: 8 }} />
+              )}
+
+              <Text className="font-semibold text-white">
+                {isDeleting ? `${t('common.button.loading')}` : `${t('common.button.delete')}`}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

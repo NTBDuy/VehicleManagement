@@ -1,3 +1,4 @@
+import { RequestService } from '@/services/requestService';
 import { formatDate } from '@/utils/datetimeUtils';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -18,7 +19,6 @@ import {
 import DropDownPicker from 'react-native-dropdown-picker';
 import { DriverService } from 'services/driverService';
 import { showToast } from 'utils/toast';
-import { RequestService } from '@/services/requestService';
 
 import Driver from 'types/Driver';
 
@@ -160,6 +160,7 @@ const ApproveModal = ({
 
       showToast.success(t('common.success.title'), t('common.success.approved'));
       onSuccess();
+      
       handleClose();
     } catch (error) {
       console.error('Error approving request:', error);

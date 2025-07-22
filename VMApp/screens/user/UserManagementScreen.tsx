@@ -1,7 +1,9 @@
 import { faEllipsisV, faPersonCircleQuestion, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useMemo, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -16,25 +18,31 @@ import { UserService } from 'services/userService';
 import { getRoleBackgroundColor, getRoleLabel } from 'utils/roleUtils';
 import { showToast } from 'utils/toast';
 import { getUserInitials } from 'utils/userUtils';
-import { FlashList } from '@shopify/flash-list';
 
 import User from 'types/User';
 
 import Header from '@/components/layout/HeaderComponent';
+import OptionUserModal from '@/components/modal/OptionUserModal';
 import EmptyList from '@/components/ui/EmptyListComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import OptionUserModal from '@/components/modal/OptionUserModal';
 
 const UserManagementScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const [users, setUsers] = useState<User[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<User | null>(null);
   const [activeFilter, setActiveFilter] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    data: users = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => UserService.getAllUsers(),
+  });
 
   const filterOptions = [
     { id: 3, name: t('common.status.all') },
@@ -44,53 +52,22 @@ const UserManagementScreen = () => {
   ];
 
   const filteredUsers = useMemo(() => {
-    let filtered = [...users];
     const q = searchQuery.toLowerCase();
 
-    if (q) {
-      filtered = filtered.filter(
-        (user) =>
-          user.fullName.toLocaleLowerCase().includes(q) ||
-          user.email.toLocaleLowerCase().includes(q) ||
-          user.phoneNumber.toLocaleLowerCase().includes(q) ||
-          user.username.toLocaleLowerCase().includes(q)
-      );
-    }
+    let filtered = users.filter(
+      (user) =>
+        user.fullName.toLowerCase().includes(q) ||
+        user.email.toLowerCase().includes(q) ||
+        user.phoneNumber.toLowerCase().includes(q) ||
+        user.username.toLowerCase().includes(q)
+    );
 
-    switch (activeFilter) {
-      case 0:
-        filtered = filtered.filter((user) => user.role === 0);
-        break;
-      case 1:
-        filtered = filtered.filter((user) => user.role === 1);
-        break;
-      case 2:
-        filtered = filtered.filter((user) => user.role === 2);
-        break;
+    if (activeFilter !== 3) {
+      filtered = filtered.filter((user) => user.role === activeFilter);
     }
 
     return filtered;
   }, [users, searchQuery, activeFilter]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchUsersData();
-    }, [])
-  );
-
-  const fetchUsersData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await UserService.getAllUsers();
-      return setUsers(data);
-    } catch (error) {
-      console.error(error);
-      return setUsers([]);
-    } finally {
-      setRefreshing(false);
-      setIsLoading(false);
-    }
-  };
 
   const renderBadgeUserRole = ({ role }: { role: number }) => {
     const bgColor = getRoleBackgroundColor(role);
@@ -141,7 +118,7 @@ const UserManagementScreen = () => {
   };
 
   const handleViewDetail = () => {
-    navigation.navigate('UserDetail', { userData: selected });
+    navigation.navigate('UserDetail', { userId: selected?.userId });
   };
 
   const handleAddUser = () => {
@@ -154,11 +131,6 @@ const UserManagementScreen = () => {
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchUsersData();
   };
 
   const onResetPassword = async () => {
@@ -174,14 +146,11 @@ const UserManagementScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              setIsLoading(true);
               await UserService.reset(selected!.userId);
               showToast.success(`${t('common.success.passwordReset')}`);
             } catch (error) {
               console.log('Error resetting password:', error);
               showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
-            } finally {
-              setIsLoading(false);
             }
           },
         },
@@ -190,41 +159,40 @@ const UserManagementScreen = () => {
   };
 
   const onToggleStatus = () => {
-    if (selected) {
-      const isActivate = selected.status;
+    if (!selected) return;
 
-      Alert.alert(
-        isActivate
-          ? `${t('common.confirmation.title.deactivate', { item: selected.fullName })}`
-          : `${t('common.confirmation.title.activate', { item: selected.fullName })}`,
-        isActivate
-          ? `${t('common.confirmation.message.deactivate', { item: selected.fullName })}`
-          : `${t('common.confirmation.message.activate', { item: selected.fullName })}`,
-        [
-          { text: `${t('common.button.cancel')}`, style: 'cancel' },
-          {
-            text: t('common.button.yesIAmSure'),
-            style: selected.status ? 'destructive' : 'default',
-            onPress: async () => {
-              setIsLoading(true);
-              try {
-                await UserService.toggleStatus(selected?.userId);
-                isActivate
-                  ? `${t('common.success.deactivated', { item: selected.fullName })}`
-                  : `${t('common.success.activated', { item: selected.fullName })}`;
-                fetchUsersData();
-                handleCloseModal();
-              } catch (error) {
-                console.log('Error toggling status:', error);
-                Alert.alert(`${t('common.error.title')}`, `${t('common.error.generic')}?`);
-              } finally {
-                setIsLoading(false);
-              }
-            },
+    const isActive = selected.status;
+
+    Alert.alert(
+      isActive
+        ? t('common.confirmation.title.deactivate', { item: selected.fullName })
+        : t('common.confirmation.title.activate', { item: selected.fullName }),
+      isActive
+        ? t('common.confirmation.message.deactivate', { item: selected.fullName })
+        : t('common.confirmation.message.activate', { item: selected.fullName }),
+      [
+        { text: t('common.button.cancel'), style: 'cancel' },
+        {
+          text: t('common.button.yesIAmSure'),
+          style: isActive ? 'destructive' : 'default',
+          onPress: async () => {
+            try {
+              await UserService.toggleStatus(selected.userId);
+              showToast.success(
+                isActive
+                  ? t('common.success.deactivated', { item: selected.fullName })
+                  : t('common.success.activated', { item: selected.fullName })
+              );
+              refetch();
+              handleCloseModal();
+            } catch (error) {
+              console.log('Error toggling status:', error);
+              Alert.alert(t('common.error.title'), t('common.error.generic'));
+            }
           },
-        ]
-      );
-    }
+        },
+      ]
+    );
   };
 
   return (
@@ -262,7 +230,8 @@ const UserManagementScreen = () => {
             )}
           />
         </View>
-        {isLoading ? (
+
+        {isLoading || isFetching ? (
           <LoadingData />
         ) : (
           <FlashList
@@ -271,7 +240,7 @@ const UserManagementScreen = () => {
             keyExtractor={(item) => item.userId.toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyList icon={faPersonCircleQuestion} />}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
             estimatedItemSize={80}
           />
         )}

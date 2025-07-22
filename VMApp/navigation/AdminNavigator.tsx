@@ -38,7 +38,6 @@ import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
 import RequestInProgress from 'screens/request/RequestInProgress';
-import AdminStatistic from '@/screens/statistics/AdminStatistic';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -134,14 +133,6 @@ function DriverStackScreen() {
   );
 }
 
-function StatisticStackScreen() {
-  return (
-    <StatisticStack.Navigator screenOptions={{ headerShown: false }}>
-      <StatisticStack.Screen name="Statistic" component={AdminStatistic} />
-    </StatisticStack.Navigator>
-  );
-}
-
 export default function AdminNavigator() {
   const { t } = useTranslation();
 
@@ -230,18 +221,6 @@ export default function AdminNavigator() {
           headerShown: false,
         }}
       />
-
-      {/* <Drawer.Screen
-        name="StatisticStack"
-        component={StatisticStackScreen}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <FontAwesomeIcon icon={faChartSimple} color={color} size={size} />
-          ),
-          title: t('sidebar.management.statistic'),
-          headerShown: false,
-        }}
-      /> */}
 
       <Drawer.Screen
         name="SettingStack"

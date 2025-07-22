@@ -1,16 +1,14 @@
-import {
-  faListCheck
-} from '@fortawesome/free-solid-svg-icons';
+import { faListCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { FlashList } from '@shopify/flash-list';
-import { useAuth } from 'contexts/AuthContext';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { NotificationService } from 'services/notificationService';
 import { UserService } from 'services/userService';
 import { formatTime } from 'utils/datetimeUtils';
 import { showToast } from 'utils/toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import Notification from 'types/Notification';
 
@@ -25,29 +23,17 @@ import {
 
 const NotificationScreen = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const [userNotifications, setUserNotifications] = useState<Notification[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (user) {
-      fetchNotificationData();
-    }
-  }, [user]);
-
-  const fetchNotificationData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await UserService.getUserNotifications();
-      setUserNotifications(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setRefreshing(false);
-      setIsLoading(false);
-    }
-  };
+  const {
+    data: userNotifications = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: () => UserService.getUserNotifications(),
+  });
 
   const NotificationIcon = ({ type }: { type: string }) => {
     const bgColor = getNotificationBackgroundColor(type);
@@ -65,11 +51,8 @@ const NotificationScreen = () => {
 
     try {
       await NotificationService.makeRead(notification.notificationId);
-      setUserNotifications((prevNotifications) =>
-        prevNotifications.map((n) =>
-          n.notificationId === notification.notificationId ? { ...n, isRead: true } : n
-        )
-      );
+      await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      await refetch();
       showToast.success(t('notification.markReadSuccess'));
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
@@ -83,18 +66,12 @@ const NotificationScreen = () => {
 
     try {
       await NotificationService.makeAllRead();
-      setUserNotifications((prevNotifications) =>
-        prevNotifications.map((n) => ({ ...n, isRead: true }))
-      );
+      await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      await refetch();
       showToast.success(t('notification.markAllReadSuccess'));
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
     }
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchNotificationData();
   };
 
   const renderNotificationItem = ({ item }: { item: Notification }) => (
@@ -139,7 +116,7 @@ const NotificationScreen = () => {
         }
       />
 
-      {isLoading ? (
+      {isLoading || isFetching ? (
         <LoadingData />
       ) : (
         <View className="mx-6 flex-1">
@@ -150,7 +127,7 @@ const NotificationScreen = () => {
             ListEmptyComponent={<EmptyList title={t('notification.empty')} />}
             showsVerticalScrollIndicator={false}
             contentContainerClassName="py-4"
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
             estimatedItemSize={90}
           />
         </View>

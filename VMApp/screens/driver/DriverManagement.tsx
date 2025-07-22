@@ -2,9 +2,10 @@ import { DriverService } from '@/services/driverService';
 import { getUserBackgroundColor, getUserInitials, getUserLabel } from '@/utils/userUtils';
 import { faChevronRight, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { useCallback, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
@@ -17,11 +18,19 @@ import LoadingData from '@/components/ui/LoadingData';
 const DriverManagement = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const [drivers, setDrivers] = useState<Driver[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState(2);
+
+  const {
+    data: drivers = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['drivers'],
+    queryFn: () => DriverService.getAllDrivers(),
+  });
+
   const filterOptions = [
     { id: 2, name: t('common.status.all') },
     { id: 0, name: t('common.status.active') },
@@ -54,25 +63,6 @@ const DriverManagement = () => {
     return filtered;
   }, [drivers, searchQuery, activeFilter]);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchDriverData();
-    }, [])
-  );
-
-  const fetchDriverData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await DriverService.getAllDrivers();
-      setDrivers(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      setRefreshing(false);
-    }
-  };
-
   const renderBadgeStatus = (status: boolean) => {
     const bgColor = getUserBackgroundColor(status);
     return (
@@ -83,7 +73,7 @@ const DriverManagement = () => {
   };
 
   const handleViewDetail = (driverData: Driver) => {
-    navigation.navigate('DriverDetail', { driverData });
+    navigation.navigate('DriverDetail', { driverId: driverData.driverId });
   };
 
   const renderDriverItem = ({ item }: { item: Driver }) => (
@@ -117,11 +107,6 @@ const DriverManagement = () => {
     setActiveFilter(status);
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchDriverData();
-  };
-
   const handleAddDriver = () => {
     navigation.navigate('DriverAdd');
   };
@@ -142,7 +127,7 @@ const DriverManagement = () => {
         handleClearFilters={handleClearFilters}
       />
 
-      {isLoading ? (
+      {isLoading || isFetching ? (
         <LoadingData />
       ) : (
         <View className="mx-6 flex-1">
@@ -170,7 +155,7 @@ const DriverManagement = () => {
             keyExtractor={(item) => item.driverId.toString()}
             renderItem={renderDriverItem}
             ListEmptyComponent={<EmptyList />}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
             estimatedItemSize={80}
             showsVerticalScrollIndicator={false}
           />

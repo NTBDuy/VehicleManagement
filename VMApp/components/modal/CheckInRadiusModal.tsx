@@ -1,7 +1,8 @@
 import { showToast } from '@/utils/toast';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Dimensions, Modal, Text, TouchableOpacity, View } from 'react-native';
 
 import LoadingData from '@/components/ui/LoadingData';
@@ -22,8 +23,23 @@ const CheckInRadiusModal = ({ visible, onClose }: CheckInRadiusModalProps) => {
   const { t } = useTranslation();
   const [checkInRadius, setCheckInRadius] = useState<number>(5);
   const [lastUpdated, setLastUpdated] = useState('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const radiusOptions = [1, 3, 5, 10, 20];
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['check-in-radius'],
+    queryFn: () => SettingService.getSettingById('CHECK_IN_RADIUS'),
+    enabled: visible,
+  });
+
+  useEffect(() => {
+    if (data) {
+      const radius = parseInt(data.settingValue);
+      setLastUpdated(data.updatedAt);
+      if (!isNaN(radius)) {
+        setCheckInRadius(radius);
+      }
+    }
+  }, [data]);
 
   useEffect(() => {
     if (visible) {
@@ -39,27 +55,8 @@ const CheckInRadiusModal = ({ visible, onClose }: CheckInRadiusModalProps) => {
           useNativeDriver: true,
         }),
       ]).start();
-
-      fetchRadius();
     }
   }, [visible]);
-
-  const fetchRadius = async () => {
-    setIsLoading(true);
-    try {
-      const data = await SettingService.getSettingById('CHECK_IN_RADIUS');
-      const radius = parseInt(data.settingValue);
-      const lastUpdated = data.updatedAt;
-      if (!isNaN(radius)) {
-        setCheckInRadius(radius);
-      }
-      setLastUpdated(lastUpdated);
-    } catch (error) {
-      showToast.error(t('setting.loadRadiusError'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const closeModal = () => {
     Animated.parallel([
@@ -84,12 +81,41 @@ const CheckInRadiusModal = ({ visible, onClose }: CheckInRadiusModalProps) => {
         settingValue: radius.toString(),
       });
       setCheckInRadius(radius);
+      refetch();
       closeModal();
       showToast.success(t('setting.radiusChanged', { radius }));
     } catch (error) {
       showToast.error(t('setting.updateRadiusError'));
     }
   };
+
+  const renderedRadiusOptions = useMemo(() => {
+    return radiusOptions.map((radius, index) => (
+      <TouchableOpacity
+        key={radius}
+        onPress={() => handleChangeRadius(radius)}
+        className={`mx-2 flex-row items-center rounded-xl p-4 ${
+          checkInRadius === radius
+            ? 'border-2 border-blue-500 bg-blue-50'
+            : 'bg-transparent hover:bg-gray-50'
+        } ${index !== radiusOptions.length - 1 ? 'mb-2' : ''}`}
+        activeOpacity={0.7}>
+        <View className="flex-1">
+          <Text
+            className={`text-base font-semibold ${
+              checkInRadius === radius ? 'text-blue-700' : 'text-gray-800'
+            }`}>
+            {radius} Km
+          </Text>
+        </View>
+        {checkInRadius === radius && (
+          <View className="h-6 w-6 items-center justify-center rounded-full bg-blue-500">
+            <View className="h-2 w-2 rounded-full bg-white" />
+          </View>
+        )}
+      </TouchableOpacity>
+    ));
+  }, [checkInRadius]);
 
   return (
     <Modal visible={visible} transparent={true} animationType="none" onRequestClose={closeModal}>
@@ -111,37 +137,7 @@ const CheckInRadiusModal = ({ visible, onClose }: CheckInRadiusModalProps) => {
             </TouchableOpacity>
           </View>
 
-          <View className="px-2 py-4">
-            {isLoading ? (
-              <LoadingData />
-            ) : (
-              radiusOptions.map((radius, index) => (
-                <TouchableOpacity
-                  key={radius}
-                  onPress={() => handleChangeRadius(radius)}
-                  className={`mx-2 flex-row items-center rounded-xl p-4 ${
-                    checkInRadius === radius
-                      ? 'border-2 border-blue-500 bg-blue-50'
-                      : 'bg-transparent hover:bg-gray-50'
-                  } ${index !== radiusOptions.length - 1 ? 'mb-2' : ''}`}
-                  activeOpacity={0.7}>
-                  <View className="flex-1">
-                    <Text
-                      className={`text-base font-semibold ${
-                        checkInRadius === radius ? 'text-blue-700' : 'text-gray-800'
-                      }`}>
-                      {radius} Km
-                    </Text>
-                  </View>
-                  {checkInRadius === radius && (
-                    <View className="h-6 w-6 items-center justify-center rounded-full bg-blue-500">
-                      <View className="h-2 w-2 rounded-full bg-white" />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))
-            )}
-          </View>
+          <View className="px-2 py-4">{isLoading ? <LoadingData /> : renderedRadiusOptions}</View>
 
           <View className="items-end border-t border-gray-100 p-3">
             <Text>

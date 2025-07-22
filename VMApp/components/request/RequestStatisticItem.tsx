@@ -29,7 +29,7 @@ const RequestStatisticItem = ({ item }: RequestStatisticItemProps) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('RequestDetail', { requestData: item });
+        navigation.navigate('RequestDetail', { requestId: item.requestId });
       }}
       key={item.requestId}
       className="mx-4 mb-3 rounded-2xl bg-white p-4 shadow-sm"

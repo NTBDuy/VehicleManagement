@@ -211,7 +211,7 @@ export const LocationModal = ({
                       className="flex-1 flex-row items-center justify-center rounded-lg border border-gray-200/50 bg-blue-100 px-2 py-3">
                       <FontAwesomeIcon icon={faLocationCrosshairs} color="#1d4ed8" size={18} />
                       <Text className="ml-2 font-medium text-blue-700">
-                        {t('common.button.currenLocation')}
+                        {t('common.button.currentLocation')}
                       </Text>
                     </TouchableOpacity>
 

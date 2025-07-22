@@ -13,7 +13,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 
 import ChangePasswordScreen from '@/screens/profile/ChangePasswordScreen';
-import MaintenanceDetailScreen from '@/screens/vehicle/MaintenanceDetailScreen';
+import RequestApproval from '@/screens/statistics/RequestStatistic';
 import VehicleManagementScreen from '@/screens/vehicle/VehicleManagementScreen';
 import HomeScreen from 'screens/dashboard/ManagerDashboard';
 import NotificationScreen from 'screens/notification/NotificationScreen';
@@ -22,14 +22,12 @@ import SettingScreen from 'screens/profile/SettingScreen';
 import NewRequest from 'screens/request/RequestCreateScreen';
 import RequestDetailScreen from 'screens/request/RequestDetailScreen';
 import HistoryRequestScreen from 'screens/request/RequestHistoryScreen';
+import RequestInProgress from 'screens/request/RequestInProgress';
 import RequestScreen from 'screens/request/RequestScreen';
-import MaintenanceManagement from 'screens/vehicle/MaintenanceManagement';
 import ScheduleMaintenance from 'screens/vehicle/ScheduleMaintenance';
 import VehicleAddScreen from 'screens/vehicle/VehicleAddScreen';
 import VehicleDetailScreen from 'screens/vehicle/VehicleDetailScreen';
 import VehicleEditScreen from 'screens/vehicle/VehicleEditScreen';
-import RequestInProgress from 'screens/request/RequestInProgress';
-import RequestApproval from '@/screens/statistics/RequestStatistic';
 
 import SidebarComponent from '@/components/layout/SidebarComponent';
 
@@ -184,7 +182,7 @@ export default function ManagerNavigator() {
           drawerIcon: ({ color, size }) => (
             <FontAwesomeIcon icon={faChartSimple} color={color} size={size} />
           ),
-          title: 'Phân tích yêu cầu',
+          title: t('sidebar.management.statistic'),
           headerShown: false,
         }}
       />

@@ -6,36 +6,60 @@ import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useRoute } from '@react-navigation/core';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Modal, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { DateData } from 'react-native-calendars';
+import { useQueryClient } from '@tanstack/react-query';
 
 import Header from '@/components/layout/HeaderComponent';
+import ErrorComponent from '@/components/ui/ErrorComponent';
 import InfoRow from '@/components/ui/InfoRowComponent';
 import MyCalendar from '@/components/ui/MyCalendar';
-import MaintenanceSchedule from '@/types/MaintenanceSchedule';
+import LoadingData from '@/components/ui/LoadingData';
 
 const MaintenanceDetailScreen = () => {
   const { t } = useTranslation();
   const today = new Date().toISOString().split('T')[0];
   const route = useRoute();
-  const { maintenanceData: initialMaintenanceData } = route.params as {
-    maintenanceData: MaintenanceSchedule;
-  };
-  const [maintenance, setMaintenance] = useState<MaintenanceSchedule>(initialMaintenanceData);
+  const { maintenanceId } = route.params as { maintenanceId: number };
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState<string>(today);
   const [selectedEndDate, setSelectedEndDate] = useState<string>(today);
   const [hasChanges, setHasChanges] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  const {
+    data: maintenance,
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ['maintenance', maintenanceId],
+    queryFn: () => VehicleService.getMaintenanceDetails(maintenanceId),
+  });
 
   useEffect(() => {
+    if (!maintenance) return;
+
     const originalStart = maintenance.scheduledDate;
     const originalEnd = maintenance.estimatedEndDate;
     const isDifferent = selectedStartDate !== originalStart || selectedEndDate !== originalEnd;
     setHasChanges(isDifferent);
-  }, [selectedStartDate, selectedEndDate, maintenance.scheduledDate, maintenance.estimatedEndDate]);
+  }, [
+    selectedStartDate,
+    selectedEndDate,
+    maintenance?.scheduledDate,
+    maintenance?.estimatedEndDate,
+  ]);
+
+  if (isLoading) {
+    return <LoadingData />;
+  }
+
+  if (!maintenance) {
+    return <ErrorComponent />;
+  }
 
   const getMarkedDates = () => {
     let marked: { [date: string]: any } = {};
@@ -89,17 +113,14 @@ const MaintenanceDetailScreen = () => {
     const date = day.dateString;
 
     if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
-      // Bắt đầu chọn range mới
       setSelectedStartDate(date);
       setSelectedEndDate('');
     } else if (selectedStartDate && !selectedEndDate) {
-      // Đã có start date, đang chọn end date
       if (date >= selectedStartDate) {
         setSelectedEndDate(date);
       } else {
-        // Nếu chọn ngày trước start date, thay đổi start date
         setSelectedStartDate(date);
-        setSelectedEndDate('');
+        setSelectedEndDate(selectedStartDate);
       }
     }
   };
@@ -116,14 +137,18 @@ const MaintenanceDetailScreen = () => {
             style: 'default',
             onPress: async () => {
               try {
-                const response = await VehicleService.rescheduleMaintenance(
+                await VehicleService.rescheduleMaintenance(
                   maintenance.maintenanceId,
                   {
                     startDate: selectedStartDate,
                     endDate: selectedEndDate,
                   }
                 );
-                setMaintenance(response);
+                await Promise.all([
+                  queryClient.invalidateQueries({ queryKey: ['maintenance', maintenanceId] }),
+                  queryClient.invalidateQueries({ queryKey: ['maintenances'] }),
+                ]);
+                refetch();
                 showToast.success(
                   `${t('common.success.title')}`,
                   `${t('common.success.reschedule')}`
@@ -159,24 +184,22 @@ const MaintenanceDetailScreen = () => {
             text: `${t('common.button.yesIAmSure')}`,
             style: 'default',
             onPress: async () => {
-              setIsLoading(true);
               try {
-                const res = await VehicleService.changeStatusMaintenance(
-                  maintenance?.maintenanceId,
-                  status
-                );
+                await VehicleService.changeStatusMaintenance(maintenanceId, status);
                 showToast.success(
                   `${t('common.success.title')}`,
                   isBegin
                     ? `${t('common.success.beginMaintenance')}`
                     : `${t('common.success.completeMaintenance')}`
                 );
-                setMaintenance(res);
+                await Promise.all([
+                  queryClient.invalidateQueries({ queryKey: ['maintenance', maintenanceId] }),
+                  queryClient.invalidateQueries({ queryKey: ['maintenances'] }),
+                ]);
+                refetch();
               } catch (error) {
                 console.log('Error toggling status:', error);
                 Alert.alert(`${t('common.error.title')}`, `${t('common.error.generic')}`);
-              } finally {
-                setIsLoading(false);
               }
             },
           },

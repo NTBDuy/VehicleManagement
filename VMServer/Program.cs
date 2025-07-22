@@ -4,7 +4,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Hangfire;
 using VMServer.Jobs;
-
+using AutoMapper;
+using VMServer.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(RequestMappingProfile));
+
 
 builder.Services.AddCors(options =>
 {
@@ -26,6 +29,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<RequestExpiryJob>();
+builder.Services.AddScoped<ImageExpiryJob>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrWhiteSpace(jwtKey))
@@ -88,11 +92,8 @@ app.UseHangfireDashboard();
 
 app.UseCors("AllowAll");
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 RecurringJob.AddOrUpdate<RequestExpiryJob>(
     "expire-requests-daily",
@@ -100,7 +101,13 @@ RecurringJob.AddOrUpdate<RequestExpiryJob>(
     Cron.Daily
 );
 
-app.UseHttpsRedirection();
+RecurringJob.AddOrUpdate<ImageExpiryJob>(
+    "expire-images-daily",
+    job => job.RunAsync(),
+    Cron.Daily
+);
+
+// app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

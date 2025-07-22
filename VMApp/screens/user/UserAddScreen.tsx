@@ -80,7 +80,7 @@ const UserAddScreen = () => {
         `${t('common.success.title')}`,
         `${t('common.success.created', { item: t('common.items.user') })}`
       );
-      navigation.navigate('UserDetail', { userData: result });
+      navigation.navigate('UserDetail', { userId: result });
       reset({
         fullName: '',
         email: '',

@@ -1,13 +1,10 @@
-import { useFocusEffect } from '@react-navigation/native';
+import { useQueries } from '@tanstack/react-query';
 import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { VehicleService } from 'services/vehicleService';
-
-import User from 'types/User';
-import Vehicle from 'types/Vehicle';
 
 import VehicleStatusChart from '@/components/charts/VehicleStatus';
 import Header from '@/components/layout/HeaderComponent';
@@ -20,11 +17,24 @@ import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
 const AdminDashboard = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [notificationCount, setNotificationCount] = useState<number>(0);
+
+  const results = useQueries({
+    queries: [
+      { queryKey: ['vehicles'], queryFn: () => VehicleService.getAllVehicles() },
+      { queryKey: ['users'], queryFn: () => UserService.getAllUsers() },
+      {
+        queryKey: ['notifications', 'countUnread'],
+        queryFn: () => UserService.getUserUnreadNotifications(),
+      },
+    ],
+  });
+
+  const vehicles = results[0].data || [];
+  const users = results[1].data || [];
+  const notificationCount = results[2].data || 0;
+  const isLoading = results.some((r) => r.isLoading);
+
+  const refetchAll = () => Promise.all(results.map((r) => r.refetch()));
 
   const userStat = useMemo(() => {
     const total = users.length;
@@ -33,45 +43,6 @@ const AdminDashboard = () => {
     const manager = users.filter((user) => user.role === 2).length;
     return { total, employee, manager, admin };
   }, [users]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchStatData();
-      countUnread();
-    }, [])
-  );
-
-  const countUnread = async () => {
-    try {
-      const totalNotifications = await UserService.getUserUnreadNotifications();
-      setNotificationCount(totalNotifications);
-    } catch (error) {
-      console.error('Failed to get notifications:', error);
-      setNotificationCount(0);
-    }
-  };
-
-  const fetchStatData = async () => {
-    try {
-      setIsLoading(true);
-      const vehiclesData = await VehicleService.getAllVehicles();
-      const usersData = await UserService.getAllUsers();
-      setVehicles(vehiclesData);
-      setUsers(usersData);
-    } catch (error) {
-      console.error(error);
-      setVehicles([]);
-      setUsers([]);
-    } finally {
-      setRefreshing(false);
-      setIsLoading(false);
-    }
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchStatData();
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -82,7 +53,7 @@ const AdminDashboard = () => {
 
       <ScrollView
         className="flex-1 px-6"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetchAll} />}
         showsVerticalScrollIndicator={false}>
         {user && <WelcomeSection user={user} />}
 

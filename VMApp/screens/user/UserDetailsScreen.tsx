@@ -1,19 +1,28 @@
-import { faCrown, faEdit, faShieldAlt, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCrown, faEdit, faShieldAlt, faTrash, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
 import { formatVietnamPhoneNumber } from 'utils/userUtils';
 
-import User from 'types/User';
-
 import Header from '@/components/layout/HeaderComponent';
+import ErrorComponent from '@/components/ui/ErrorComponent';
 import InfoRow from '@/components/ui/InfoRowComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import ErrorComponent from '@/components/ui/ErrorComponent';
+import { formatDatetime } from '@/utils/datetimeUtils';
 
 type RoleInfo = {
   label: string;
@@ -25,40 +34,24 @@ const UserDetailsScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const { userData: initialUserData } = (route.params as { userData?: User }) || {};
-  const [userData, setUserData] = useState<User | undefined>(initialUserData);
-  const [isLoading, setIsLoading] = useState(false);
   const [isButtonActionLoading, setIsButtonActionLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
 
-  useFocusEffect(
-    useCallback(() => {
-      if (initialUserData?.userId) {
-        fetchUserData(initialUserData.userId);
-      }
-    }, [initialUserData?.userId])
-  );
+  const { userId } = route.params as { userId: number };
 
-  const fetchUserData = async (userId: number) => {
-    try {
-      setIsLoading(true);
-      const data = await UserService.getUserById(userId);
-      setUserData(data);
-    } catch (error) {
-      console.log('Error fetching user data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    data: userData,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => UserService.getUserById(userId),
+    enabled: !!userId,
+  });
 
-  const handleRetry = () => {
-    if (userData?.userId) {
-      fetchUserData(userData?.userId);
-    } else {
-      navigation.goBack();
-    }
-  };
-
-  if (!userData) {
+  if (isError || !userData) {
     return <ErrorComponent />;
   }
 
@@ -108,14 +101,11 @@ const UserDetailsScreen = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              setIsLoading(true);
               await UserService.reset(userData!.userId);
               showToast.success(`${t('common.success.passwordReset')}`);
             } catch (error) {
               console.log('Error resetting password:', error);
               showToast.error(`${t('common.error.title')}`, `${t('common.error.generic')}`);
-            } finally {
-              setIsLoading(false);
             }
           },
         },
@@ -145,7 +135,7 @@ const UserDetailsScreen = () => {
               isActivate
                 ? `${t('common.success.deactivated', { item: userData.fullName })}`
                 : `${t('common.success.activated', { item: userData.fullName })}`;
-              await fetchUserData(userData.userId);
+              await refetch();
             } catch (error) {
               console.log('Error toggling status:', error);
               Alert.alert(`${t('common.error.title')}`, `${t('common.error.generic')}?`);
@@ -159,6 +149,41 @@ const UserDetailsScreen = () => {
   };
 
   const roleInfo = getRoleInfo(userData.role);
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      `${t('common.confirmation.title.deleteAccount')}`,
+      `${t('common.confirmation.message.deleteAccount')}`,
+      [
+        {
+          text: `${t('common.button.cancel')}`,
+          style: 'cancel',
+        },
+        {
+          text: `${t('common.button.deleteAccount')}`,
+          style: 'destructive',
+          onPress: confirmDeleteAccount,
+        },
+      ]
+    );
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      await Promise.all([
+        UserService.removeAccount(userId),
+        queryClient.invalidateQueries({ queryKey: ['users'] }),
+      ]);
+      navigation.goBack();
+
+      showToast.success(`${t('common.success.deleteAccount')}`);
+    } catch (error) {
+      console.log('Delete account error:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -179,116 +204,166 @@ const UserDetailsScreen = () => {
       {isLoading ? (
         <LoadingData />
       ) : (
-        <View className="flex-1 px-6">
-          <View className="mb-4 items-center">
-            <View className="relative">
-              <Image
-                className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
-                source={require('@/assets/images/user-default.jpg')}
-              />
-              <View
-                className={`absolute bottom-2 right-2 rounded-full p-2 ${userData.status ? 'bg-green-500' : 'bg-gray-400'}`}>
-                <View className="h-3 w-3 rounded-full bg-white" />
+        <ScrollView refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}>
+          <View className="flex-1 px-6">
+            <View className="mb-4 items-center">
+              <View className="relative">
+                <Image
+                  className="mt-4 h-28 w-28 rounded-full border-4 border-white shadow-md"
+                  source={require('@/assets/images/user-default.jpg')}
+                />
+                <View
+                  className={`absolute bottom-2 right-2 rounded-full p-2 ${userData.status ? 'bg-green-500' : 'bg-gray-400'}`}>
+                  <View className="h-3 w-3 rounded-full bg-white" />
+                </View>
+              </View>
+              <Text className="mt-3 text-xl font-bold text-gray-800">
+                {userData.fullName || userData.username || 'No Name'}
+              </Text>
+              <View className="mt-1 flex-row items-center">
+                <FontAwesomeIcon icon={roleInfo.icon} size={14} color={roleInfo.color} />
+                <Text className={`ml-1 text-sm font-medium`} style={{ color: roleInfo.color }}>
+                  {roleInfo.label}
+                </Text>
               </View>
             </View>
-            <Text className="mt-3 text-xl font-bold text-gray-800">
-              {userData.fullName || userData.username || 'No Name'}
-            </Text>
-            <View className="mt-1 flex-row items-center">
-              <FontAwesomeIcon icon={roleInfo.icon} size={14} color={roleInfo.color} />
-              <Text className={`ml-1 text-sm font-medium`} style={{ color: roleInfo.color }}>
-                {roleInfo.label}
+
+            <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800">
+                  {t('user.detail.informationTitle')}
+                </Text>
+              </View>
+              <View className="p-4">
+                <InfoRow
+                  label={t('common.fields.fullname')}
+                  value={userData.fullName || 'Not provided'}
+                />
+                <InfoRow
+                  label={t('common.fields.email')}
+                  value={userData.email || 'Not provided'}
+                />
+                <InfoRow
+                  label={t('common.fields.phone')}
+                  value={
+                    userData.phoneNumber
+                      ? formatVietnamPhoneNumber(userData.phoneNumber)
+                      : 'Not provided'
+                  }
+                  isLast
+                />
+              </View>
+            </View>
+
+            <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+              <View className="bg-gray-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-gray-800">
+                  {t('user.detail.detailTitle')}
+                </Text>
+              </View>
+              <View className="p-4">
+                <InfoRow
+                  label={t('common.fields.username')}
+                  value={userData.username || 'Not set'}
+                />
+                <InfoRow
+                  label={t('common.fields.role')}
+                  value={roleInfo.label}
+                  valueComponent={
+                    <View className="flex-row items-center">
+                      <FontAwesomeIcon icon={roleInfo.icon} size={14} color={roleInfo.color} />
+                      <Text className={`ml-1 font-semibold`} style={{ color: roleInfo.color }}>
+                        {roleInfo.label}
+                      </Text>
+                    </View>
+                  }
+                />
+                <InfoRow label="Ngày tạo" value={formatDatetime(userData.createdAt)} />
+                <InfoRow
+                  label={t('common.fields.status')}
+                  value=""
+                  valueComponent={
+                    <View
+                      className={`rounded-full px-3 py-1 ${userData.status ? 'bg-green-100' : 'bg-gray-100'}`}>
+                      <Text
+                        className={`text-sm font-medium ${userData.status ? 'text-green-800' : 'text-gray-600'}`}>
+                        {userData.status
+                          ? `${t('common.status.active')}`
+                          : `${t('common.status.inactive')}`}
+                      </Text>
+                    </View>
+                  }
+                  isLast
+                />
+              </View>
+            </View>
+
+            <View className="mt-4 flex-row justify-between">
+              <TouchableOpacity
+                className="w-[48%] items-center rounded-xl bg-blue-600 py-4 shadow-sm "
+                onPress={handleResetPassword}
+                disabled={isLoading}>
+                <Text className="font-semibold text-white">{t('common.button.reset')}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className={`w-[48%] items-center rounded-xl py-4 shadow-sm ${
+                  userData.status ? 'bg-red-600 ' : 'bg-green-600 '
+                }`}
+                onPress={handleToggleStatus}
+                disabled={isButtonActionLoading}>
+                <Text className="font-semibold text-white">
+                  {isButtonActionLoading
+                    ? `${t('common.button.processing')}`
+                    : userData.status
+                      ? `${t('common.button.deactivate')}`
+                      : `${t('common.button.activate')}`}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View className="mt-6">
+              <Text className="text-right text-sm font-medium text-gray-500">
+                {t('common.lastUpdated')}: {formatDatetime(userData.lastUpdateAt)}
               </Text>
             </View>
-          </View>
 
-          <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-            <View className="bg-gray-50 px-4 py-3">
-              <Text className="text-lg font-semibold text-gray-800">
-                {t('user.detail.informationTitle')}
-              </Text>
-            </View>
-            <View className="p-4">
-              <InfoRow
-                label={t('common.fields.fullname')}
-                value={userData.fullName || 'Not provided'}
-              />
-              <InfoRow label={t('common.fields.email')} value={userData.email || 'Not provided'} />
-              <InfoRow
-                label={t('common.fields.phone')}
-                value={
-                  userData.phoneNumber
-                    ? formatVietnamPhoneNumber(userData.phoneNumber)
-                    : 'Not provided'
-                }
-                isLast
-              />
-            </View>
-          </View>
+            {/* Delete Account Section */}
+            <View className="mb-8 mt-6 overflow-hidden rounded-2xl border border-red-200 bg-white shadow-sm">
+              <View className="bg-red-50 px-4 py-3">
+                <Text className="text-lg font-semibold text-red-800">
+                  {t('user.deleteAccount.section.title')}
+                </Text>
+              </View>
 
-          <View className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-            <View className="bg-gray-50 px-4 py-3">
-              <Text className="text-lg font-semibold text-gray-800">
-                {t('user.detail.detailTitle')}
-              </Text>
-            </View>
-            <View className="p-4">
-              <InfoRow label={t('common.fields.username')} value={userData.username || 'Not set'} />
-              <InfoRow
-                label={t('common.fields.role')}
-                value={roleInfo.label}
-                valueComponent={
-                  <View className="flex-row items-center">
-                    <FontAwesomeIcon icon={roleInfo.icon} size={14} color={roleInfo.color} />
-                    <Text className={`ml-1 font-semibold`} style={{ color: roleInfo.color }}>
-                      {roleInfo.label}
-                    </Text>
-                  </View>
-                }
-              />
-              <InfoRow
-                label={t('common.fields.status')}
-                value=""
-                valueComponent={
-                  <View
-                    className={`rounded-full px-3 py-1 ${userData.status ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    <Text
-                      className={`text-sm font-medium ${userData.status ? 'text-green-800' : 'text-gray-600'}`}>
-                      {userData.status
-                        ? `${t('common.status.active')}`
-                        : `${t('common.status.inactive')}`}
-                    </Text>
-                  </View>
-                }
-                isLast
-              />
+              <View className="p-4">
+                <Text className="mb-4 text-sm text-gray-600">
+                  {t('user.deleteAccount.section.description')}
+                </Text>
+
+                <TouchableOpacity
+                  className={`flex-row items-center justify-center rounded-xl border-2 border-red-300 py-4 ${
+                    isDeleting ? 'bg-gray-400' : 'bg-red-600'
+                  }`}
+                  onPress={handleDeleteAccount}
+                  disabled={isDeleting}>
+                  {!isDeleting && (
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      size={16}
+                      color="#fff"
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
+
+                  <Text className="font-semibold text-white">
+                    {isDeleting ? `${t('common.button.loading')}` : `${t('common.button.delete')}`}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-
-          <View className="mt-4 flex-row justify-between">
-            <TouchableOpacity
-              className="w-[48%] items-center rounded-xl bg-blue-600 py-4 shadow-sm "
-              onPress={handleResetPassword}
-              disabled={isLoading}>
-              <Text className="font-semibold text-white">{t('common.button.reset')}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className={`w-[48%] items-center rounded-xl py-4 shadow-sm ${
-                userData.status ? 'bg-red-600 ' : 'bg-green-600 '
-              }`}
-              onPress={handleToggleStatus}
-              disabled={isButtonActionLoading}>
-              <Text className="font-semibold text-white">
-                {isButtonActionLoading
-                  ? `${t('common.button.processing')}`
-                  : userData.status
-                    ? `${t('common.button.deactivate')}`
-                    : `${t('common.button.activate')}`}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </ScrollView>
       )}
     </SafeAreaView>
   );

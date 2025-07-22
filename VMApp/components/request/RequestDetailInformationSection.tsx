@@ -7,6 +7,7 @@ import { formatDate } from 'utils/datetimeUtils';
 import Request from 'types/Request';
 
 import InfoRow from '@/components/ui/InfoRowComponent';
+import { formatVietnamPhoneNumber } from '@/utils/userUtils';
 
 interface InformationSectionProps {
   requestData: Request;
@@ -55,9 +56,16 @@ const InformationSection = ({ requestData }: InformationSectionProps) => {
           label={t('common.fields.phone')}
           value=""
           valueComponent={
-            <Pressable onPress={() => handleCall(Number(requestData.user?.phoneNumber))}>
+            <Pressable
+              onPress={() => {
+                const rawPhone = requestData.user?.phoneNumber ?? '';
+                const cleanPhone = rawPhone.replace(/^deleted_(\d+__)?/, '');
+                handleCall(Number(cleanPhone));
+              }}>
               <Text className="text-right font-semibold text-gray-800">
-                {requestData.user?.phoneNumber || t('common.fields.noInfo')}
+                {requestData.user?.phoneNumber
+                  ? formatVietnamPhoneNumber(requestData.user.phoneNumber)
+                  : t('common.fields.noInfo')}
               </Text>
             </Pressable>
           }
@@ -75,9 +83,9 @@ const InformationSection = ({ requestData }: InformationSectionProps) => {
             </Text>
           }
         />
-        {requestData.locations.map((item) => (
+        {requestData.locations.map((item, index) => (
           <InfoRow
-            key={item.id}
+            key={`${item.id || 'loc'}_${index}`}
             label={getLocationLabel(item.order, requestData.locations.length, t)}
             value=""
             valueComponent={
@@ -85,26 +93,25 @@ const InformationSection = ({ requestData }: InformationSectionProps) => {
                 className="max-w-[60%]"
                 onPress={() => handleMapsView(item.latitude, item.longitude)}>
                 <Text className="text-right font-semibold text-gray-800">
-                  {item.address}{' '}
+                  {item.address}
                   {item.note ? (
                     <Text className="font-normal italic text-gray-500">
                       {`\n`} {item.note}
                     </Text>
-                  ) : (
-                    <Text></Text>
-                  )}
+                  ) : null}
                 </Text>
               </Pressable>
             }
           />
         ))}
+
         <InfoRow
           label={t('request.detail.info.vehicle')}
           value=""
           valueComponent={
             <Text className="max-w-[60%] text-right font-semibold text-gray-800">
               {requestData.vehicle?.brand} {requestData.vehicle?.model} #
-              {requestData.vehicle?.licensePlate}
+              {requestData.vehicle?.licensePlate.replace(/^deleted_/, '')}
             </Text>
           }
         />

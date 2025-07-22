@@ -1,8 +1,9 @@
 import { faCalendarDays, faCalendarPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { useQueries } from '@tanstack/react-query';
 import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   RefreshControl,
@@ -14,23 +15,31 @@ import {
 } from 'react-native';
 import { UserService } from 'services/userService';
 
-import Request from 'types/Request';
-
 import Header from '@/components/layout/HeaderComponent';
-import RequestItem from '@/components/request/HistoryRequestItem';
 import LoadingData from '@/components/ui/LoadingData';
 import NotificationButton from '@/components/ui/NotificationButton';
-import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
 import StatSection from '@/components/ui/StatSectionComponent';
+import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
 
 const EmployeeDashboard = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [notificationCount, setNotificationCount] = useState<number>(0);
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [userRequest, setUserRequest] = useState<Request[]>([]);
+
+  const results = useQueries({
+    queries: [
+      { queryKey: ['history'], queryFn: () => UserService.getUserRequests() },
+      {
+        queryKey: ['notifications', 'countUnread'],
+        queryFn: () => UserService.getUserUnreadNotifications(),
+      },
+    ],
+  });
+
+  const userRequest = results[0].data || [];
+  const notificationCount = results[1].data || 0;
+  const isLoading = results.some((r) => r.isLoading);
+  const refetchAll = () => Promise.all(results.map((r) => r.refetch()));
 
   const stat = useMemo(() => {
     const pending = userRequest.filter((request) => request.status === 0);
@@ -38,41 +47,6 @@ const EmployeeDashboard = () => {
     const inProgress = userRequest.filter((request) => request.status === 4);
     return { pending, incoming, inProgress };
   }, [userRequest]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchRequestData();
-      countUnread();
-    }, [])
-  );
-
-  const countUnread = async () => {
-    try {
-      const totalNotifications = await UserService.getUserUnreadNotifications();
-      setNotificationCount(totalNotifications);
-    } catch (error) {
-      console.error('Failed to get notifications:', error);
-      setNotificationCount(0);
-    }
-  };
-
-  const fetchRequestData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await UserService.getUserRequests();
-      setUserRequest(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchRequestData();
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -83,7 +57,7 @@ const EmployeeDashboard = () => {
 
       <ScrollView
         className="flex-1 px-6"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetchAll} />}
         showsVerticalScrollIndicator={false}>
         {user && <WelcomeSection user={user} />}
 

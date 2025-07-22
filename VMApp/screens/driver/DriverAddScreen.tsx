@@ -8,7 +8,6 @@ import { driverSchema } from '@/validations/driverSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 
-
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
 import DriverFormData from '@/types/DriverFormData';
@@ -58,7 +57,7 @@ const DriverAddScreen = () => {
         `${t('common.success.title')}`,
         `${t('common.success.created', { item: t('common.items.driver') })}`
       );
-      navigation.navigate('DriverDetail', { driverData: result });
+      navigation.navigate('DriverDetail', { driverId: result });
     } catch (error) {
       console.log(error);
     }

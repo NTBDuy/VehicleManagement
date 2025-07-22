@@ -1,7 +1,4 @@
-import { showToast } from '@/utils/toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_CONFIG } from 'config/apiConfig';
-import { useTranslation } from 'react-i18next';
 import { LoginRequest } from 'types/LoginRequest';
 import { LoginResponse } from 'types/LoginResponse';
 import User from 'types/User';
@@ -12,14 +9,19 @@ interface ApiError {
 }
 
 export class AuthService {
-  protected static readonly BASE_URL = API_CONFIG.BASE_URL;
-
   private static readonly TOKEN_KEY = 'auth_token';
   private static readonly USER_KEY = 'user_data';
 
+  private static async getBaseUrl(): Promise<string> {
+    const gateway = await AsyncStorage.getItem('gateway');
+    return `http://${gateway}/api`;
+  }
+
   static async login(credentials: LoginRequest): Promise<LoginResponse | ApiError> {
+    const baseURL = await this.getBaseUrl();
+
     try {
-      const response = await fetch(`${this.BASE_URL}/auth/login`, {
+      const response = await fetch(`${baseURL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,7 +29,7 @@ export class AuthService {
         body: JSON.stringify(credentials),
       });
 
-      if ([400, 401, 423].includes(response.status)) {
+      if ([400, 401, 423, 410].includes(response.status)) {
         return {
           success: false,
           statusCode: response.status,

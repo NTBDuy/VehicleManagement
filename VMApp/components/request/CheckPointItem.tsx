@@ -1,10 +1,11 @@
 import CheckPoint from '@/types/CheckPoint';
 import { formatDatetime } from '@/utils/datetimeUtils';
-import { API_CONFIG } from 'config/apiConfig';
-import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Linking, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import ImageViewing from 'react-native-image-viewing';
+import { showToast } from '@/utils/toast';
 
 interface CheckPointItemProps {
   item: CheckPoint;
@@ -12,11 +13,39 @@ interface CheckPointItemProps {
   size: number;
 }
 
+interface PhotoImageProps {
+  uri: string;
+}
+
+const PhotoImage = ({ uri }: PhotoImageProps) => {
+  const [source, setSource] = useState<{ uri: string } | number>({ uri });
+
+  return (
+    <Image
+      source={source}
+      onError={() => setSource(require('@/assets/images/image-deleted.png'))}
+      className="h-20 w-20 rounded-lg"
+      resizeMode="cover"
+    />
+  );
+};
+
 const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
-  const [checkPoint, setCheckPoint] = useState<CheckPoint[]>([]);
+  const { t } = useTranslation();
+
   const [visible, setIsVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState<string>('');
-  const { t } = useTranslation();
+  const [baseUrl, setBaseUrl] = useState<string>('');
+
+  useEffect(() => {
+    const fetchBaseUrl = async () => {
+      const gateway = await AsyncStorage.getItem('gateway');
+      if (gateway) {
+        setBaseUrl(`http://${gateway}/api`);
+      }
+    };
+    fetchBaseUrl();
+  }, []);
 
   const handleMapsView = (lat: number, long: number) => {
     const scheme = Platform.select({
@@ -36,26 +65,37 @@ const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
     }
   };
 
+  const handlePhotoPress = (photo: any) => {
+    const imageUri = `${baseUrl}/request/files/${photo.name}`;
+
+    Image.getSize(
+      imageUri,
+      () => {
+        setCurrentImage(imageUri);
+        setIsVisible(true);
+      },
+      () => {
+        console.warn(t('common.error.imageLost'));
+        showToast.error(t('common.error.imageLost'));
+      }
+    );
+  };
+
   const renderPhotos = (item: CheckPoint) => {
-    if (!item.photos) return null;
-    console.log(`${API_CONFIG.BASE_URL}/request/files/${item.photos[0].name}`);
+    if (!item.photos || !baseUrl) return null;
 
     return (
-      <View className="mb-3" key={item.checkPointId}>
+      <View className="mb-3">
         <Text className="mb-2 text-sm font-semibold text-gray-800">
           {t('common.fields.image')} ({item.photos.length})
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-          {item.photos.map((photo) => (
+          {item.photos.map((photo, idx) => (
             <TouchableOpacity
-              key={photo.photoId}
+              key={`${photo.name}_${idx}`}
               className="mr-2"
               onPress={() => handlePhotoPress(photo)}>
-              <Image
-                source={{ uri: `${API_CONFIG.BASE_URL}/request/files/${photo.name}` }}
-                className="h-20 w-20 rounded-lg"
-                resizeMode="cover"
-              />
+              <PhotoImage uri={`${baseUrl}/request/files/${photo.name}`} />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -63,22 +103,15 @@ const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
     );
   };
 
-  const handlePhotoPress = (photo: any) => {
-    console.log('Photo pressed:', `${API_CONFIG.BASE_URL}/request/files/${photo.name}`);
-    setCurrentImage(`${API_CONFIG.BASE_URL}/request/files/${photo.name}`);
-    setIsVisible(true);
-  };
-
   return (
-    <View
-      className={`border-gray-100 ${index == checkPoint.length - 1 ? 'pt-2' : 'border-b py-2 '}`}>
+    <View className={`border-gray-100 ${index === size - 1 ? 'pt-2' : 'border-b py-2'}`}>
       <View className="mb-3 flex-row items-center justify-between">
         <View
           className={`rounded-full px-3 py-1.5 ${
-            index == size - 1 ? 'bg-orange-500' : 'bg-green-500'
+            index === size - 1 ? 'bg-orange-500' : 'bg-green-500'
           }`}>
           <Text className="text-sm font-semibold text-white">
-            {index == size - 1 ? 'Check-out' : 'Check-in'}
+            {index === size - 1 ? 'Check-out' : 'Check-in'}
           </Text>
         </View>
         <View className="items-end">
@@ -97,7 +130,7 @@ const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
         </Text>
       </TouchableOpacity>
 
-      {item.photos.length > 0 && renderPhotos(item)}
+      {item.photos && item.photos.length > 0 && renderPhotos(item)}
 
       {item.note && (
         <View className="mb-3 rounded-lg bg-gray-50 p-3">
@@ -107,6 +140,7 @@ const CheckPointItem = ({ item, index, size }: CheckPointItemProps) => {
           <Text className="text-sm leading-5 text-gray-800">{item.note}</Text>
         </View>
       )}
+
       <ImageViewing
         images={[{ uri: currentImage }]}
         imageIndex={0}

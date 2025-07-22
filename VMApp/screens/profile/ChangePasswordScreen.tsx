@@ -19,12 +19,6 @@ interface ChangePasswordData {
   confirmPassword: string;
 }
 
-interface PasswordErrors {
-  currentPassword?: string;
-  newPassword?: string;
-  confirmPassword?: string;
-}
-
 const ChangePasswordScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
@@ -32,11 +26,6 @@ const ChangePasswordScreen = () => {
     current: false,
     new: false,
     confirm: false,
-  });
-  const [passwordData, setPasswordData] = useState<ChangePasswordData>({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
   });
 
   const updateUserSchema = passwordSchema(t);
@@ -89,9 +78,6 @@ const ChangePasswordScreen = () => {
   };
 
   const handleCancel = () => {
-    const isDirty =
-      passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword;
-
     if (isDirty) {
       Alert.alert(
         `${t('common.confirmation.title.discardChanges')}`,

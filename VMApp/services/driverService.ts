@@ -24,8 +24,8 @@ export class DriverService extends BaseApiClient {
   }
 
   // Tạo mới tài xế
-  static async createDriver(driverData: DriverFormData): Promise<Driver> {
-    return this.request<Driver>('/driver', {
+  static async createDriver(driverData: DriverFormData): Promise<number> {
+    return this.request<number>('/driver', {
       method: 'POST',
       body: JSON.stringify(driverData),
     });
@@ -44,5 +44,10 @@ export class DriverService extends BaseApiClient {
     return this.request<void>(`/driver/${id}/toggle-status`, {
       method: 'PUT',
     });
+  }
+
+  // Xóa tài xế
+  static async removeDriver(id: number): Promise<void> {
+    return this.request<void>(`/driver/${id}`, { method: 'DELETE' });
   }
 }

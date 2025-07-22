@@ -1,8 +1,5 @@
-import User from './User';
-import Vehicle from './Vehicle';
-
 export interface VehicleUsageData {
-  vehicle: Vehicle;
+  licensePlate: string;
   count: number;
   totalDistance: number;
 }
@@ -13,6 +10,6 @@ export interface DailyData {
 }
 
 export interface UserUsageData {
-  user: User;
+  username: string;
   count: number;
 }

@@ -8,9 +8,10 @@ const screenWidth = Dimensions.get('window').width;
 
 interface Props {
   userData: UserUsageData[];
+  t: any;
 }
 
-const RequestUserUsageChart = ({ userData }: Props) => {
+const RequestUserUsageChart = ({ userData, t }: Props) => {
   const [tooltip, setTooltip] = useState<{
     x: number;
     y: number;
@@ -19,7 +20,7 @@ const RequestUserUsageChart = ({ userData }: Props) => {
   } | null>(null);
 
   const chartData = {
-    labels: userData.map((item) => item.user.username),
+    labels: userData.map((item) => item.username.replace(/^deleted_/, '')),
     datasets: [
       {
         data: userData.map((item) => item.count),
@@ -27,10 +28,10 @@ const RequestUserUsageChart = ({ userData }: Props) => {
         strokeWidth: 2,
       },
     ],
-    legend: ['Số lần'],
+    legend: [t('statistic.times')],
   };
 
-  const labels = userData.map((item) => item.user.username);
+  const labels = userData.map((item) => item.username.replace(/^deleted_/, ''));
 
   return (
     <ScrollView horizontal>
@@ -44,7 +45,7 @@ const RequestUserUsageChart = ({ userData }: Props) => {
           setTooltip({ x, y, value, label: labels[index] });
         }}
         bezier
-        style={{marginLeft: -32}}
+        style={{ marginLeft: -32 }}
       />
 
       {tooltip && (

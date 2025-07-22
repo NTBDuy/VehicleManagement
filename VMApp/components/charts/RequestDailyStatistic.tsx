@@ -13,9 +13,10 @@ interface DailyData {
 
 interface Props {
   dailyData: DailyData[];
+  t: any
 }
 
-const RequestDailyStatisticChart = ({ dailyData }: Props) => {
+const RequestDailyStatisticChart = ({ dailyData, t }: Props) => {
   const [tooltip, setTooltip] = useState<{
     x: number;
     y: number;
@@ -32,7 +33,7 @@ const RequestDailyStatisticChart = ({ dailyData }: Props) => {
         strokeWidth: 2,
       },
     ],
-    legend: ['Yêu cầu'],
+    legend: [t('statistic.request')],
   };
 
   const labels = dailyData.map((item) => format(new Date(item.date), 'MM/dd'));
@@ -49,7 +50,7 @@ const RequestDailyStatisticChart = ({ dailyData }: Props) => {
           setTooltip({ x, y, value, label: labels[index] });
         }}
         bezier
-        style={{marginLeft: -32}}
+        style={{ marginLeft: -32 }}
       />
 
       {tooltip && (

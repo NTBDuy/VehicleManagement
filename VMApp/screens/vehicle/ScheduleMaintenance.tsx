@@ -6,8 +6,8 @@ import { DateData } from 'react-native-calendars';
 import { VehicleService } from 'services/vehicleService';
 import { formatDate } from 'utils/datetimeUtils';
 import { showToast } from 'utils/toast';
+import { useQueryClient } from '@tanstack/react-query';
 
-import MaintenanceSchedule from '@/types/MaintenanceSchedule';
 import Vehicle from 'types/Vehicle';
 
 import Header from '@/components/layout/HeaderComponent';
@@ -16,8 +16,8 @@ import InputField from '@/components/ui/InputFieldComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import MyCalendar from '@/components/ui/MyCalendar';
 import { maintenanceSchema } from '@/validations/maintenanceSchema';
-import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
 
 interface ScheduleFormData {
   estimatedEndDate: number;
@@ -31,6 +31,7 @@ const ScheduleMaintenance = () => {
   const navigation = useNavigation<any>();
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const today = new Date().toISOString().split('T')[0];
+  const queryClient = useQueryClient();
 
   const makeScheduleSchema = maintenanceSchema(t);
 
@@ -73,7 +74,10 @@ const ScheduleMaintenance = () => {
                 scheduledDate: selectedDate,
                 ...data,
               });
-
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['vehicle', vehicleData.vehicleId] }),
+                queryClient.invalidateQueries({ queryKey: ['vehicles'] }),
+              ]);
               showToast.success(`${t('common.success.title')}`, `${t('common.success.schedule')}`);
               navigation.goBack();
             } catch (error) {

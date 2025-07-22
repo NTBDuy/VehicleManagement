@@ -1,13 +1,11 @@
 {
   "common": {
-    "vms": "Hệ Thống \nQuản Lý Phương Tiện",
     "items": {
       "user": "người dùng",
       "driver": "tài xế",
       "vehicle": "phương tiện",
       "request": "yêu cầu",
-      "maintenance": "bảo trì",
-      "statistic": "Thống kê"
+      "maintenance": "bảo trì"
     },
     "button": {
       "search": "Tìm kiếm",
@@ -56,11 +54,16 @@
       "approveWithAssign": "Phê duyệt và phân công tài xế",
       "maintenance": "Lên lịch bảo trì",
       "scheduleNow": "Lên lịch ngay",
-      "currenLocation": "Vị trí hiện tại",
+      "currentLocation": "Vị trí hiện tại",
       "takePhoto": "Chụp ảnh",
       "completeTrip": "Hoàn thành hành trình",
       "confirmCheckIn": "Xác nhận Check-in",
-      "clearFilter": "Xóa bộ lọc"
+      "clearFilter": "Xóa bộ lọc",
+      "connectionAgain": "Thử lại kết nối",
+      "connectionAgainLoading": "Đang thử lại...",
+      "deleteSavedAddress": "Xóa địa chỉ đã lưu",
+      "deleteAccount": "Xóa tài khoản",
+      "deleteDriver": "Xóa tài xế"
     },
     "status": {
       "all": "Tất cả",
@@ -81,7 +84,7 @@
     },
     "role": {
       "admin": "Quản trị viên",
-      "manager": "Quản lý",
+      "manager": "Trưởng phòng",
       "employee": "Nhân viên"
     },
     "noData": {
@@ -123,7 +126,9 @@
         "startUsing": "Bắt đầu sử dụng phương tiện",
         "endUsage": "Kết thúc sử dụng",
         "remind": "Xác nhận gửi nhắc nhở",
-        "removeImage": "Xoá ảnh"
+        "removeImage": "Xoá ảnh",
+        "deleteAccount": "Xác nhận xóa tài khoản",
+        "deleteDriver": "Xác nhận xóa tài xế"
       },
       "message": {
         "update": "Bạn có chắc chắn muốn cập nhật {{item}} này không?",
@@ -142,7 +147,9 @@
         "endUsage": "Bạn có chắc chắn muốn kết thúc sử dụng phương tiện không?",
         "remind": "Bạn có chắc chắn muốn gửi nhắc nhở không?",
         "newImage": "Bạn muốn chụp ảnh mới?",
-        "removeImage": "Bạn có chắc chắn muốn xoá ảnh này?"
+        "removeImage": "Bạn có chắc chắn muốn xoá ảnh này?",
+        "deleteAccount": "Bạn có chắc chắn muốn xóa tài khoản không? Hành động này không thể hoàn tác.",
+        "deleteDriver": "Bạn có chắc chắn muốn xóa tài xế không? Hành động này không thể hoàn tác."
       }
     },
     "success": {
@@ -169,7 +176,12 @@
       "endUsage": "Phương tiện đã được trả lại và yêu cầu hiện được đánh dấu là hoàn thành.",
       "remind": "Gửi lời nhắc nhở thành công.",
       "takePhoto": "Đã thêm ảnh thành công!",
-      "removeImage": "Đã xoá ảnh."
+      "removeImage": "Đã xoá ảnh.",
+      "removeVehicle": "Phương tiện đã được xoá!",
+      "checkedInAt": "Đã check-in tại {{location}}",
+      "tripDone": "Hoàn thành hành trình!",
+      "deleteAccount": "Xóa tài khoản thành công",
+      "deleteDriver": "Xóa tài xế thành công"
     },
     "error": {
       "title": "Lỗi",
@@ -192,7 +204,12 @@
       "startUsing": "Phương tiện chỉ có thể được sử dụng vào ngày đã lên lịch.",
       "maxImage": "Tối đa 2 ảnh cho mỗi điểm",
       "takePhoto": "Không thể chụp ảnh. Vui lòng thử lại.",
-      "tooFar": "Bạn ở quá xa địa điểm Check-in"
+      "tooFar": "Bạn ở quá xa địa điểm Check-in",
+      "checkIn": "Check-in thất bại",
+      "serverAddressRequired": "Vui lòng nhập địa chỉ server",
+      "cannotSaveServerAddress": "Không thể lưu địa chỉ server",
+      "imageLost": "Ảnh không tồn tại hoặc đã bị xóa",
+      "410Request": "Tài khoản đã bị xóa vĩnh viễn."
     },
     "info": {
       "nothingChanges": "Bạn chưa thay đổi thông tin nào."
@@ -228,7 +245,7 @@
       "noteAddress": "Ghi chú địa chỉ",
       "point": "Điểm",
       "currentPoint": "Điểm hiện tại",
-      "totalDistance": "Quãng đường đã đi"
+      "totalDistance": "Quãng đường"
     },
     "placeholder": {
       "startPoint": "Chọn điểm xuất phát",
@@ -380,7 +397,15 @@
     },
     "inProgress": {
       "currentImage": "Hình ảnh tại điểm này",
-      "maxImage": "Tối đa 2 ảnh"
+      "maxImage": "Tối đa 2 ảnh",
+      "imageNeeded": {
+        "title": "Thiếu ảnh",
+        "message": "Vui lòng chụp ít nhất 1 ảnh tại điểm này"
+      },
+      "tripDone": {
+        "title": "Hoàn thành hành trình!",
+        "description": "Bạn đã hoàn thành tất cả {{count}} điểm trong lộ trình"
+      }
     },
     "list": {
       "label": {
@@ -524,7 +549,8 @@
     },
     "edit": {
       "title": "Cập nhật thông tin tài xế"
-    }
+    },
+    "scheduleList": "Danh sách lịch trình"
   },
 
   "user": {
@@ -553,6 +579,18 @@
       "title": "Cập nhật thông tin cá nhân",
       "section": {
         "title": "Thông tin người dùng"
+      }
+    },
+    "deleteAccount": {
+      "section": {
+        "title": "Xóa tài khoản",
+        "description": "Hành động này sẽ xóa vĩnh viễn tài khoản và tất cả dữ liệu liên quan. Bạn sẽ không thể hoàn tác."
+      }
+    },
+    "deleteDriver": {
+      "section": {
+        "title": "Xóa tài xế",
+        "description": "Hành động này sẽ xóa vĩnh viễn tài xế và tất cả dữ liệu liên quan. Bạn sẽ không thể hoàn tác."
       }
     }
   },
@@ -619,5 +657,37 @@
       "gpsRequirement": "Đảm bảo vị trí GPS chính xác tại mỗi điểm",
       "noteGuideline": "Ghi chú rõ ràng về tình hình tại mỗi điểm"
     }
+  },
+
+  "devTool": {
+    "title": "Công cụ",
+    "apiBaseUrl": "Đường dẫn API",
+    "quickLogin": "Đăng nhập nhanh"
+  },
+
+  "statistic": {
+    "title": "Thống kê",
+    "chart": {
+      "title": "Biểu đồ thống kê",
+      "requestByStatus": "Số yêu cầu theo trạng thái",
+      "requestMostByDate": "Số lượt yêu cầu theo ngày",
+      "vehicleMostUsage": "Phương tiện sử dụng nhiều nhất",
+      "userMostUsage": "Người dùng đặt yêu cầu nhiều nhất"
+    },
+    "list": "Danh sách yêu cầu",
+    "item": "mục",
+    "changeFilterToSeeResult": "Thay đổi bộ lọc hoặc khoảng thời gian để xem kết quả",
+    "request": "Yêu cầu",
+    "times": "Số lần",
+    "timeWithCount": "{{count}} lần"
+  },
+
+  "connection": {
+    "iconSubTitle": "Không có kết nối mạng",
+    "title": "Kết nối bị gián đoạn",
+    "description": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại kết nối mạng hoặc cập nhật địa chỉ máy chủ.",
+    "serverAddress": "Địa chỉ máy chủ",
+    "hint": "Mẹo kết nối",
+    "hintText": "Đảm bảo thiết bị của bạn và máy chủ đang sử dụng cùng một mạng Wi-Fi, hoặc kết nối qua VPN (ví dụ: SmartVPN của DrayTek)."
   }
 }

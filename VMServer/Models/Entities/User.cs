@@ -35,5 +35,7 @@ namespace VMServer.Models.Entities
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime LastUpdateAt { get; set; } = DateTime.Now;
+
+        public bool IsDeleted { get; set; } = false;
     }
 }

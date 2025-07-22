@@ -70,7 +70,7 @@ const VehicleAddScreen = () => {
         `${t('common.success.title')}`,
         `${t('common.success.created', { item: t('common.items.vehicle') })}`
       );
-      navigation.navigate('VehicleDetail', { vehicleData: result });
+      navigation.navigate('VehicleDetail', { vehicleId: result });
       reset({
         licensePlate: '',
         brand: '',

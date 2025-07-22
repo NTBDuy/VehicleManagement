@@ -1,18 +1,17 @@
 {
   "expo": {
-    "name": "VMApp",
+    "name": "Vehicle Management System",
     "slug": "vms",
     "version": "1.0.0",
+    "icon": "./assets/images/favicon.png",
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/images/favicon.png"
     },
     "experiments": {
       "tsconfigPaths": true
     },
     "plugins": [
-      [
-        "expo-localization"
-      ],
+      ["expo-localization"],
       [
         "expo-location",
         {
@@ -36,16 +35,13 @@
       ]
     ],
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.duyntb.vms"
@@ -61,7 +57,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "NOTIFICATIONS"
-      ]
+      ],
+      "package": "com.duyntb.vms"
     },
     "extra": {
       "eas": {

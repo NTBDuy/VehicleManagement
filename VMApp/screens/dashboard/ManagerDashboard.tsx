@@ -1,16 +1,11 @@
-import { useFocusEffect } from '@react-navigation/native';
+import { StatisticService } from '@/services/statisticService';
+import { useQueries } from '@tanstack/react-query';
 import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { UserService } from 'services/userService';
 import { VehicleService } from 'services/vehicleService';
-import { StatisticService } from '@/services/statisticService';
-
-import { VehicleUsageData } from '@/types/Statistic';
-import Request from 'types/Request';
-import Vehicle from 'types/Vehicle';
 
 import RequestStatisticChart from '@/components/charts/RequestStatusStatistic';
 import RequestVehicleMostUsageChart from '@/components/charts/RequestVehicleMostUsage';
@@ -18,74 +13,34 @@ import VehicleStatusChart from '@/components/charts/VehicleStatus';
 import Header from '@/components/layout/HeaderComponent';
 import LoadingData from '@/components/ui/LoadingData';
 import NotificationButton from '@/components/ui/NotificationButton';
-import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
 import StatSection from '@/components/ui/StatSectionComponent';
+import WelcomeSection from '@/components/ui/WelcomeSectionComponent';
 
 const ManagerDashboard = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [requests, setRequests] = useState<Request[]>([]);
-  const [vehicleMostUsage, setVehicleMostUsage] = useState<VehicleUsageData[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [notificationCount, setNotificationCount] = useState<number>(0);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchStatData();
-      countUnread();
-    }, [])
-  );
+  const results = useQueries({
+    queries: [
+      { queryKey: ['vehicles'], queryFn: () => VehicleService.getAllVehicles() },
+      { queryKey: ['requests'], queryFn: () => RequestService.getAllRequests() },
+      {
+        queryKey: ['vehicleMostUsage'],
+        queryFn: () => StatisticService.getStatVehicleMostUsageAllTime(),
+      },
+      {
+        queryKey: ['notifications', 'countUnread'],
+        queryFn: () => UserService.getUserUnreadNotifications(),
+      },
+    ],
+  });
 
-  const countUnread = async () => {
-    try {
-      const totalNotifications = await UserService.getUserUnreadNotifications();
-      setNotificationCount(totalNotifications);
-    } catch (error) {
-      console.error('Failed to get notifications:', error);
-      setNotificationCount(0);
-    }
-  };
-
-  const fetchStatData = async () => {
-    setIsLoading(true);
-    try {
-      const [requestsRes, vehiclesRes, usageRes] = await Promise.allSettled([
-        RequestService.getAllRequests(),
-        VehicleService.getAllVehicles(),
-        StatisticService.getStatVehicleMostUsageAllTime(),
-      ]);
-
-      if (requestsRes.status === 'fulfilled') {
-        setRequests(requestsRes.value);
-      } else {
-        console.error('Failed to fetch requests:', requestsRes.reason);
-      }
-
-      if (vehiclesRes.status === 'fulfilled') {
-        setVehicles(vehiclesRes.value);
-      } else {
-        console.error('Failed to fetch vehicles:', vehiclesRes.reason);
-      }
-
-      if (usageRes.status === 'fulfilled') {
-        setVehicleMostUsage(usageRes.value);
-      } else {
-        console.error('Failed to fetch vehicle usage stats:', usageRes.reason);
-      }
-    } catch (err) {
-      console.error('Unexpected error:', err);
-    } finally {
-      setRefreshing(false);
-      setIsLoading(false);
-    }
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchStatData();
-  };
+  const vehicles = results[0].data || [];
+  const requests = results[1].data || [];
+  const vehicleMostUsage = results[2].data || [];
+  const notificationCount = results[3].data || 0;
+  const isLoading = results.some((r) => r.isLoading);
+  const refetchAll = () => Promise.all(results.map((r) => r.refetch()));
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -96,7 +51,7 @@ const ManagerDashboard = () => {
 
       <ScrollView
         className="px-6"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetchAll} />}
         showsVerticalScrollIndicator={false}>
         {user && <WelcomeSection user={user} />}
 
@@ -115,7 +70,7 @@ const ManagerDashboard = () => {
             {vehicleMostUsage.length > 0 && (
               <StatSection
                 title="Phương tiện sử dụng nhiều nhất"
-                chart={<RequestVehicleMostUsageChart vehicleData={vehicleMostUsage} />}
+                chart={<RequestVehicleMostUsageChart vehicleData={vehicleMostUsage} t={t} />}
               />
             )}
           </View>

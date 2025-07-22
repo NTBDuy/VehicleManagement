@@ -23,10 +23,7 @@ export class UserService extends BaseApiClient {
   }
 
   // Lấy danh sách requests của người dùng
-  static async getUserRequests(
-    startDate?: string,
-    endDate?: string,
-  ): Promise<Request[]> {
+  static async getUserRequests(startDate?: string, endDate?: string): Promise<Request[]> {
     const params = new URLSearchParams();
 
     if (startDate) params.append('startDate', startDate);
@@ -46,8 +43,8 @@ export class UserService extends BaseApiClient {
   }
 
   // Tạo mới người dùng
-  static async createUser(userData: Partial<User>): Promise<User> {
-    return this.request<User>('/user', {
+  static async createUser(userData: Partial<User>): Promise<number> {
+    return this.request<number>('/user', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
@@ -81,5 +78,15 @@ export class UserService extends BaseApiClient {
       method: 'PUT',
       body: JSON.stringify(data),
     });
+  }
+
+  // Xóa người dùng
+  static async removeAccount(id: number): Promise<void> {
+    return this.request<void>(`/user/${id}`, { method: 'DELETE' });
+  }
+
+  // Xóa người dùng (tự xóa bản thân)
+  static async selfDelete(): Promise<void> {
+    return this.request<void>('/user/self-delete', { method: 'DELETE' });
   }
 }

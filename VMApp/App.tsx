@@ -1,108 +1,152 @@
-import React, { useEffect, useRef } from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
-
-import AppContent from 'navigation/AppNavigator';
-import './global.css';
+/** @jsxImportSource nativewind */
 import '@/i18n';
-import { AuthProvider } from 'contexts/AuthContext';
-import Toast from 'react-native-toast-message';
+import './global.css';
+
+import { QueryClient, QueryClientConfig, QueryClientProvider } from '@tanstack/react-query';
 import { toastConfig } from 'config/toastConfig';
+import { AuthProvider } from 'contexts/AuthContext';
+import { KeyboardAvoidingView, Platform, SafeAreaView, Text, Button } from 'react-native';
+import { usePreloadAssets } from '@/hooks/usePreloadAssets';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AppContent from 'navigation/AppNavigator';
+import { useEffect, useState } from 'react';
+import Toast from 'react-native-toast-message';
+import { showToast } from './utils/toast';
+import LoadingData from './components/ui/LoadingData';
+import ConnectionErrorScreen from './components/ui/ConnectionErrorScreen';
 
-// Hàm gửi thông báo
-async function sendPushNotification(expoPushToken: string) {
-  const message = {
-    to: expoPushToken,
-    sound: 'default',
-    title: 'VMS',
-    body: 'Chào mừng bạn!',
-    data: { someData: 'Dữ liệu tùy chỉnh' },
-  };
+/**
+ * Khởi tạo QueryClient với các cấu hình mặc định để tối ưu hiệu năng và trải nghiệm người dùng.
+ */
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      /**
+       * Thời gian dữ liệu được xem là "mới" (không cần refetch).
+       * Trong vòng 2 phút kể từ lần fetch gần nhất, dữ liệu sẽ không được refetch.
+       */
+      staleTime: 1000 * 60 * 2,
 
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
+      /**
+       * Thời gian dữ liệu được lưu trong cache sau khi không còn được dùng.
+       * Sau 10 phút không được sử dụng, dữ liệu sẽ bị loại bỏ khỏi cache.
+       */
+      cacheTime: 1000 * 60 * 10,
+
+      /**
+       * Số lần thử lại khi request thất bại (do lỗi mạng/server).
+       */
+      retry: 2,
+
+      /**
+       * Hàm tính delay giữa các lần retry.
+       * Áp dụng exponential backoff, giới hạn tối đa 10 giây.
+       */
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+
+      /**
+       * Tự động refetch khi kết nối internet bị mất rồi được khôi phục.
+       */
+      refetchOnReconnect: true,
+
+      /**
+       * Không tự động refetch mỗi khi component mount.
+       */
+      refetchOnMount: false,
     },
-    body: JSON.stringify(message),
-  });
-}
+    mutations: {
+      /**
+       * Số lần retry cho mutation khi gặp lỗi.
+       */
+      retry: 1,
+    },
+  },
+} as QueryClientConfig);
 
-// Hàm đăng ký và lấy token push
-async function registerForPushNotificationsAsync(): Promise<string | undefined> {
-  if (!Device.isDevice) {
-    alert('Phải dùng thiết bị thật để nhận thông báo!');
-    return;
+/**
+ * Kiểm tra kết nối tới server (Back-end API) có thành công hay không.
+ */
+const isConnected = async (): Promise<boolean> => {
+  try {
+    let gateway = await AsyncStorage.getItem('gateway');
+
+    if (!gateway) {
+      gateway = '192.168.2.103:8018';
+      await AsyncStorage.setItem('gateway', gateway);
+      console.warn('Dùng gateway mặc định:', gateway);
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(`http://${gateway}/api/health`, {
+      method: 'GET',
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    console.log('API (health check): ', response.status);
+    return response.ok;
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('Kết nối tới server bị timeout');
+    } else {
+      console.error('Lỗi kết nối tới server:', error);
+    }
+    return false;
   }
-
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-
-  if (finalStatus !== 'granted') {
-    alert('Không cấp quyền nhận thông báo!');
-    return;
-  }
-
-  const token = (await Notifications.getExpoPushTokenAsync()).data;
-  console.log('📲 Expo Push Token:', token);
-  return token;
-}
+};
 
 export default function App() {
-  const notificationListener = useRef<Notifications.Subscription | null>(null);
-  const responseListener = useRef<Notifications.Subscription | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  usePreloadAssets();
 
   useEffect(() => {
-    // Đăng ký thông báo và gửi thử
-    registerForPushNotificationsAsync().then((token) => {
-      if (token) {
-        sendPushNotification(token);
+    const checkConnection = async () => {
+      const ok = await isConnected();
+      if (!ok) {
+        showToast.error('Không thể kết nối tới server');
+        setHasError(true);
+      } else {
+        setIsReady(true);
       }
-    });
-
-    // Lắng nghe khi app đang foreground và nhận thông báo
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      console.log('Nhận được thông báo:', notification);
-    });
-
-    // Lắng nghe khi user nhấn vào thông báo
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log('Người dùng đã tương tác với thông báo:', response);
-    });
-
-    return () => {
-      if (notificationListener.current)
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      if (responseListener.current)
-        Notifications.removeNotificationSubscription(responseListener.current);
     };
+
+    checkConnection();
   }, []);
 
+  const handleRetry = async () => {
+    setHasError(false);
+    setIsReady(false);
+    const ok = await isConnected();
+    if (ok) {
+      setIsReady(true);
+    } else {
+      setHasError(true);
+    }
+  };
+
+  if (hasError) {
+    return <ConnectionErrorScreen onRetry={handleRetry} />;
+  }
+
+  if (!isReady) {
+    return <LoadingData />;
+  }
+
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <AuthProvider>
-        <AppContent />
-        <Toast config={toastConfig} />
-      </AuthProvider>
-    </KeyboardAvoidingView>
+    <QueryClientProvider client={queryClient}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <AuthProvider>
+          <AppContent />
+          <Toast config={toastConfig} />
+        </AuthProvider>
+      </KeyboardAvoidingView>
+    </QueryClientProvider>
   );
 }

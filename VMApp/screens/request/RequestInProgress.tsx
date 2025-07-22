@@ -1,17 +1,19 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { RequestService } from '@/services/requestService';
+import { SettingService } from '@/services/settingService';
+import { calculateDistance } from '@/utils/requestUtils';
 import { showToast } from '@/utils/toast';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import { ImageType, LocationCheckpoint } from '@/types/LocationCheckpoint';
-import Request from '@/types/Request';
 
 import Header from '@/components/layout/HeaderComponent';
 import LocationProgress from '@/components/request/LocationProgress';
@@ -20,100 +22,49 @@ import RequestHeader from '@/components/request/RequestInProgressHeader';
 import WarningNotice from '@/components/request/WarningNoticeComponent';
 import ErrorComponent from '@/components/ui/ErrorComponent';
 import LoadingData from '@/components/ui/LoadingData';
-import { SettingService } from '@/services/settingService';
-import { calculateDistance } from '@/utils/requestUtils';
 
 const RequestInProgress = () => {
   const route = useRoute();
-  const { user } = useAuth();
-  const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const { requestData: initialRequestData } = route.params as { requestData: Request };
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const { requestId } = route.params as { requestId: number };
 
-  const [requestData, setRequestData] = useState<Request>(initialRequestData);
   const [currentLocationIndex, setCurrentLocationIndex] = useState(0);
   const [checkpoints, setCheckpoints] = useState<{ [key: number]: LocationCheckpoint }>({});
   const [currentImages, setCurrentImages] = useState<ImageType[]>([]);
   const [currentNote, setCurrentNote] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+  const [isCheckPointLoading, setIsCheckPointLoading] = useState(false);
   const [checkInRadius, setCheckInRadius] = useState(5);
 
-  const sortedLocations = requestData.locations.sort((a, b) => a.order - b.order);
-  const currentLocation = sortedLocations[currentLocationIndex];
-  const isLastLocation = currentLocationIndex === sortedLocations.length - 1;
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const isFirstFocus = useRef(true);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (isCompleted) {
-        console.log('Hành trình đã hoàn thành → điều hướng về HistoryStack');
-        navigation.navigate('HistoryStack');
-        return;
-      }
+  const {
+    data: requestData,
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ['history', requestId],
+    queryFn: () => RequestService.getRequestDetails(requestId),
+  });
 
-      if (isFirstFocus.current) {
-        console.log('Lần đầu điều hướng tới màn hình');
-        isFirstFocus.current = false;
-      } else {
-        console.log('Quay trở lại màn hình từ màn hình khác (goBack)');
-      }
+  const sortedLocations = useMemo(() => {
+    if (!requestData?.locations) return [];
+    return requestData.locations.sort((a, b) => a.order - b.order);
+  }, [requestData?.locations]);
 
-      return () => {};
-    }, [isCompleted])
-  );
+  const currentLocation = useMemo(() => {
+    return sortedLocations[currentLocationIndex];
+  }, [sortedLocations, currentLocationIndex]);
 
-  useEffect(() => {
-    requestPermissions();
-  }, []);
+  const isLastLocation = useMemo(() => {
+    return currentLocationIndex === sortedLocations.length - 1;
+  }, [currentLocationIndex, sortedLocations.length]);
 
-  useEffect(() => {
-    const fetchRadius = async () => {
-      try {
-        const data = await SettingService.getSettingById('CHECK_IN_RADIUS');
-        const radius = parseInt(data.settingValue);
-        if (!isNaN(radius)) {
-          setCheckInRadius(radius);
-        }
-      } catch (error) {
-        showToast.error(t('setting.loadRadiusError'));
-      }
-    };
-
-    fetchRadius();
-  }, [requestData]);
-
-  const onRefresh = async () => {
-    try {
-      setRefreshing(true);
-      const data = await RequestService.getRequestDetails(requestData.requestId);
-      setRequestData(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    const fetchCheckPointStatus = async () => {
-      try {
-        const data = await RequestService.checkPointStatus(requestData.requestId);
-        setCurrentLocationIndex(data.length);
-        setCheckpoints(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    if (requestData?.requestId) {
-      fetchCheckPointStatus();
-    }
-  }, [requestData]);
-
-  const requestPermissions = async () => {
+  const requestPermissions = useCallback(async () => {
     let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
     if (locationStatus !== 'granted') {
       showToast.error('Permission to access location was denied.');
@@ -128,26 +79,24 @@ const RequestInProgress = () => {
     if (mediaStatus !== 'granted') {
       showToast.error('Permission to access media library was denied.');
     }
-  };
+  }, []);
 
-  if (requestData == null || requestData.vehicle == null || requestData.user == null) {
-    return <ErrorComponent />;
-  }
+  const handleCheckpoint = useCallback(async () => {
+    if (!requestData || !currentLocation) return;
 
-  const handleCheckpoint = async () => {
     if (currentImages.length === 0) {
-      Alert.alert('Thiếu ảnh', 'Vui lòng chụp ít nhất 1 ảnh tại điểm này', [{ text: 'OK' }]);
+      Alert.alert(
+        t('request.inProgress.imageNeeded.title'),
+        t('request.inProgress.imageNeeded.message'),
+        [{ text: 'OK' }]
+      );
       return;
     }
 
     try {
-      setIsLoading(true);
+      setIsCheckPointLoading(true);
       await sleep(500);
       let location = await Location.getCurrentPositionAsync({});
-
-      console.log(
-        'Địa điểm cần check-in: ' + currentLocation.latitude + ', ' + currentLocation.longitude
-      );
 
       var distance = calculateDistance(
         currentLocation.latitude,
@@ -156,14 +105,7 @@ const RequestInProgress = () => {
         location.coords.longitude
       );
 
-      console.log(
-        'Bạn vừa check-in tại: ' + location.coords.latitude + ', ' + location.coords.longitude
-      );
-
-      console.log('Khoảng cách hai điểm hiện tại là: ' + distance + ' Km');
-
       if (distance > checkInRadius) {
-        console.log('Bạn ở quá xa địa điểm Check-in');
         showToast.error(t('common.error.tooFar', { radius: checkInRadius }));
         return;
       } else {
@@ -194,21 +136,12 @@ const RequestInProgress = () => {
             name: `checkpoint_${currentLocation.id}_${Date.now()}_${index}.jpg`,
           } as any);
         });
-        console.log('Dữ liệu gửi đi:', {
-          latitude: checkpointData.latitude,
-          longitude: checkpointData.longitude,
-          note: currentNote,
-          createdBy: user?.userId,
-          createdAt: checkpointData.createdAt,
-          images: currentImages.map((img, index) => ({
-            uri: img.uri,
-            name: `checkpoint_${currentLocation.id}_${Date.now()}_${index}.jpg`,
-          })),
-        });
 
         const success = await RequestService.checkPoint(requestData.requestId, formData);
         if (success) {
-          showToast.success(`Đã check-in tại ${currentLocation.name}`);
+          showToast.success(
+            `${t('common.success.checkedInAt', { location: currentLocation.name })}`
+          );
 
           setCurrentImages([]);
           setCurrentNote('');
@@ -217,9 +150,15 @@ const RequestInProgress = () => {
             try {
               const response = await RequestService.endUsageVehicle(requestData.requestId);
               setIsCompleted(true);
-              showToast.success('Hoàn thành hành trình!');
+              showToast.success(t('common.success.tripDone'));
+              await Promise.all([
+                queryClient.invalidateQueries({
+                  queryKey: ['history'],
+                }),
+                queryClient.invalidateQueries({ queryKey: ['checkpoints'] }),
+              ]);
               setTimeout(() => {
-                navigation.navigate('RequestDetail', { requestData: response });
+                navigation.navigate('RequestDetail', { requestId: response.requestId });
               }, 2000);
             } catch (error) {
               console.log('End usage error:', error);
@@ -228,16 +167,88 @@ const RequestInProgress = () => {
             setCurrentLocationIndex((prev) => prev + 1);
           }
         } else {
-          showToast.error('Check-in thất bại');
+          showToast.error(t('common.error.checkIn'));
         }
       }
     } catch (error) {
       console.error('Checkpoint error:', error);
-      showToast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+      showToast.error(t('common.error.generic'));
     } finally {
-      setIsLoading(false);
+      setIsCheckPointLoading(false);
     }
-  };
+  }, [
+    currentImages,
+    currentLocation,
+    currentNote,
+    currentLocationIndex,
+    checkInRadius,
+    requestData?.requestId,
+    isLastLocation,
+    t,
+    user?.userId,
+    queryClient,
+    navigation,
+  ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isCompleted && !isFirstFocus.current) {
+        navigation.navigate('HistoryStack');
+        return;
+      }
+
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+      }
+    }, [isCompleted, navigation])
+  );
+
+  useEffect(() => {
+    requestPermissions();
+  }, [requestPermissions]);
+
+  useEffect(() => {
+    const fetchRadius = async () => {
+      try {
+        const data = await SettingService.getSettingById('CHECK_IN_RADIUS');
+        const radius = parseInt(data.settingValue);
+        if (!isNaN(radius)) {
+          setCheckInRadius(radius);
+        }
+      } catch (error) {
+        showToast.error(t('setting.loadRadiusError'));
+      }
+    };
+
+    fetchRadius();
+  }, [t]);
+
+  useEffect(() => {
+    const fetchCheckPointStatus = async () => {
+      if (!requestData?.requestId) return;
+      
+      try {
+        const data = await RequestService.checkPointStatus(requestData.requestId);
+        const completedCount = Object.keys(data).length;
+        setCurrentLocationIndex(Math.min(completedCount, sortedLocations.length - 1));
+        setCheckpoints(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (requestData?.requestId && sortedLocations.length > 0) {
+      fetchCheckPointStatus();
+    }
+  }, [requestData?.requestId, sortedLocations.length]);
+
+  if (isLoading) {
+    return <LoadingData />;
+  }
+
+  if (!requestData || requestData.vehicle == null || requestData.user == null) {
+    return <ErrorComponent />;
+  }
 
   if (isCompleted) {
     return (
@@ -246,10 +257,10 @@ const RequestInProgress = () => {
         <View className="flex-1 items-center justify-center px-6">
           <FontAwesomeIcon icon={faCheckCircle} size={80} color="#22c55e" />
           <Text className="mt-4 text-center text-2xl font-bold text-gray-800">
-            Hoàn thành hành trình!
+            {t('request.inProgress.tripDone.title')}
           </Text>
           <Text className="mt-2 text-center text-gray-600">
-            Bạn đã hoàn thành tất cả {sortedLocations.length} điểm trong lộ trình
+            {t('request.inProgress.tripDone.description', { count: sortedLocations.length })}
           </Text>
         </View>
       </SafeAreaView>
@@ -263,7 +274,7 @@ const RequestInProgress = () => {
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}>
         <View className="px-6 py-4">
           <RequestHeader requestData={requestData} />
 
@@ -274,7 +285,7 @@ const RequestInProgress = () => {
             t={t}
           />
 
-          {isLoading ? (
+          {isCheckPointLoading || isLoading ? (
             <View className="flex-1 py-12">
               <LoadingData />
             </View>

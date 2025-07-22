@@ -1,6 +1,6 @@
 import { showToast } from 'utils/toast';
-import { API_CONFIG } from 'config/apiConfig';
 import { AuthService } from 'services/authService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class BaseApiClient {
   private static onUnauthorized: (() => void) | null = null;
@@ -9,13 +9,18 @@ export class BaseApiClient {
     this.onUnauthorized = handler;
   }
 
-  protected static readonly BASE_URL = API_CONFIG.BASE_URL;
+  private static async getBaseUrl(): Promise<string> {
+    const gateway = await AsyncStorage.getItem('gateway');
+    return `http://${gateway}/api`;
+  }
 
   protected static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers = await AuthService.getAuthHeaders();
+    const baseURL = await this.getBaseUrl();
+    const fullUrl = `${baseURL}${endpoint}`;
 
     console.log('Requesting:', {
-      url: `${this.BASE_URL}${endpoint}`,
+      url: fullUrl,
       method: options.method || 'GET',
       headers: { ...headers, ...options.headers },
       body: options.body,
@@ -23,7 +28,7 @@ export class BaseApiClient {
 
     let response: Response;
     try {
-      response = await fetch(`${this.BASE_URL}${endpoint}`, {
+      response = await fetch(fullUrl, {
         ...options,
         headers: {
           ...options.headers,
@@ -55,7 +60,7 @@ export class BaseApiClient {
         if (text) errorMessage = text;
       }
 
-      showToast.error(response.status === 401 ? 'Unauthorized' : 'Error', errorMessage);
+      showToast.error(response.status === 401 ? 'Unauthorized' : errorMessage);
       throw new Error(errorMessage);
     }
 

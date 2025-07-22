@@ -22,6 +22,7 @@ namespace VMServer.Controllers
         }
 
         // GET: api/setting
+        // Lấy danh sách cài đặt (setting list)
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetSettings()
@@ -31,7 +32,7 @@ namespace VMServer.Controllers
         }
 
         // GET: api/setting/CHECK_IN_RADIUS
-        // Trả về setting theo key
+        // Trả về cài đặt (setting) theo key
         [Authorize]
         [HttpGet("{key}")]
         public async Task<IActionResult> GetSetting(string key)
@@ -43,7 +44,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/setting/CHECK_IN_RADIUS
-        // Cập nhật setting
+        // Cập nhật cài đặt (setting)
         [Authorize]
         [HttpPut("{key}")]
         public async Task<IActionResult> UpdateSetting(string key, [FromBody] UpdateSettingDTO dto)

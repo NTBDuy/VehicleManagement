@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VMServer.Models.DTOs;
@@ -16,31 +17,47 @@ namespace VMServer.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpGet("request")]
-        public async Task<IActionResult> RequestStatistic([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] RequestStatus? status)
+        // GET: api/statistic/requests
+        // Trả về thống kê yêu cầu theo khoảng thời gian và trạng thái (nếu có)
+        [Authorize(Roles = "Administrator, Manager")]
+        [HttpGet("requests")]
+        public async Task<IActionResult> GetRequestsByDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] RequestStatus? status)
         {
-            var query = _dbContext.Requests.Where(r => r.StartTime >= startDate && r.StartTime <= endDate);
+            var filteredRequests = _dbContext.Requests.Where(r => r.StartTime >= startDate && r.StartTime <= endDate);
 
             if (status.HasValue)
             {
-                query = query.Where(r => r.Status == status);
+                filteredRequests = filteredRequests.Where(r => r.Status == status);
             }
 
-            var usage = await query
+            var requestList = await filteredRequests
                 .Include(r => r.User)
                 .Include(r => r.Vehicle)
                 .Include(r => r.ActionByUser)
                 .Include(r => r.Locations)
+                .Select(r => new
+                {
+                    r.RequestId,
+                    r.StartTime,
+                    r.Status,
+                    User = r.User == null ? null : new
+                    {
+                        r.User.FullName
+                    }
+                })
                 .ToListAsync();
 
-            return Ok(usage);
+            return Ok(requestList);
         }
 
+        // GET: api/statistic/vehicle-most-usage
+        // Trả về thống kê phương tiện được sử dụng nhiều nhất trong khoảng thời gian
+        [Authorize(Roles = "Administrator, Manager")]
         [HttpGet("vehicle-most-usage")]
         public async Task<IActionResult> VehicleMostUsage(
-    [FromQuery] DateTime startDate,
-    [FromQuery] DateTime endDate,
-    [FromQuery] RequestStatus? status)
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate,
+            [FromQuery] RequestStatus? status)
         {
             var query = _dbContext.Requests
                 .Where(r => r.StartTime >= startDate && r.StartTime <= endDate);
@@ -65,11 +82,11 @@ namespace VMServer.Controllers
 
             var vehicles = await _dbContext.Vehicles
                 .Where(v => vehicleIds.Contains(v.VehicleId))
-                .ToDictionaryAsync(v => v.VehicleId);
+                .ToDictionaryAsync(v => v.VehicleId, v => v.LicensePlate);
 
             var result = usageList.Select(u => new
             {
-                Vehicle = vehicles.ContainsKey(u.VehicleId) ? vehicles[u.VehicleId] : null,
+                LicensePlate = vehicles.ContainsKey(u.VehicleId) ? vehicles[u.VehicleId] : null,
                 Count = u.Count,
                 TotalDistance = u.TotalDistance
             });
@@ -77,6 +94,9 @@ namespace VMServer.Controllers
             return Ok(result);
         }
 
+        // GET: api/statistic/request-per-day
+        // Trả về thống kê số lượt yêu cầu trên từng ngày
+        [Authorize(Roles = "Administrator, Manager")]
         [HttpGet("request-per-day")]
         public async Task<IActionResult> RequestPerDay([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] RequestStatus? status)
         {
@@ -107,11 +127,17 @@ namespace VMServer.Controllers
             return Ok(result);
         }
 
+        // GET: api/statistic/user-most-request
+        // Trả về thống kê những người dùng đặt yêu cầu 
+        [Authorize(Roles = "Administrator, Manager")]
         [HttpGet("user-most-request")]
-        public async Task<IActionResult> UserMostRequest([FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] RequestStatus? status)
+        public async Task<IActionResult> UserMostRequest(
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate,
+            [FromQuery] RequestStatus? status)
         {
             var query = _dbContext.Requests
-                            .Where(r => r.StartTime >= startDate && r.StartTime <= endDate);
+                .Where(r => r.StartTime >= startDate && r.StartTime <= endDate);
 
             if (status.HasValue)
             {
@@ -132,17 +158,21 @@ namespace VMServer.Controllers
 
             var users = await _dbContext.Users
                 .Where(v => userIds.Contains(v.UserId))
-                .ToDictionaryAsync(v => v.UserId);
+                .ToDictionaryAsync(v => v.UserId, v => v.Username);
 
             var result = list.Select(u => new
             {
-                User = users.ContainsKey(u.UserId) ? users[u.UserId] : null,
+                Username = users.ContainsKey(u.UserId) ? users[u.UserId] : "Unknown",
                 Count = u.Count
             });
 
             return Ok(result);
         }
 
+
+        // GET: api/statistic/vehicle-usage
+        // Trả về thống kê phương tiện được sử dụng nhiều nhất toàn thời gian
+        [Authorize(Roles = "Administrator, Manager")]
         [HttpGet("vehicle-usage")]
         public async Task<IActionResult> VehicleUsage()
         {
@@ -163,7 +193,7 @@ namespace VMServer.Controllers
                 var usage = usageData.FirstOrDefault(u => u.VehicleId == v.VehicleId);
                 return new
                 {
-                    Vehicle = v,
+                    LicensePlate = v.LicensePlate,
                     Count = usage?.RequestCount ?? 0,
                     TotalDistance = usage?.TotalDistance ?? 0
                 };

@@ -1,17 +1,18 @@
+import { userSchema } from '@/validations/userSchema';
 import { faCircleInfo, faEdit, faLock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { UserService } from 'services/userService';
 import { showToast } from 'utils/toast';
-import { userSchema } from '@/validations/userSchema';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Controller, useForm } from 'react-hook-form';
 
-import User from 'types/User';
 import UserFormData from '@/types/UserFormData';
+import User from 'types/User';
 
 import Header from '@/components/layout/HeaderComponent';
 import InputField from '@/components/ui/InputFieldComponent';
@@ -24,6 +25,7 @@ const UserEditScreen = () => {
   const [initialUserData, setInitialUserData] = useState<User>(initialUserFromRoute);
   const [userData, setUserData] = useState<User>(initialUserFromRoute);
   const isRoleChanged = userData.role !== initialUserData.role;
+  const queryClient = useQueryClient();
 
   const updateUserSchema = userSchema(t);
 
@@ -65,6 +67,12 @@ const UserEditScreen = () => {
               const updatedData = { ...userData, ...data };
 
               const result = await UserService.updateUser(userData.userId, updatedData);
+
+              await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['user', userData.userId] }),
+                queryClient.invalidateQueries({ queryKey: ['users'] }),
+              ]);
+
               setUserData(result);
               setInitialUserData(result);
               showToast.success(

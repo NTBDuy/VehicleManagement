@@ -1,25 +1,35 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { useAuth } from 'contexts/AuthContext';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlashList } from '@shopify/flash-list';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { UserService } from 'services/userService';
-import { FlashList } from '@shopify/flash-list';
 
 import Request from 'types/Request';
 
 import Header from '@/components/layout/HeaderComponent';
 import RequestItem from '@/components/request/HistoryRequestItem';
 import EmptyList from '@/components/ui/EmptyListComponent';
+import LoadingData from '@/components/ui/LoadingData';
 
 const RequestHistoryScreen = () => {
-  const { user } = useAuth();
   const { t } = useTranslation();
-  const [userRequest, setUserRequest] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState(4);
-  const [refreshing, setRefreshing] = useState(false);
+  const [activeFilter, setActiveFilter] = useState(6);
   const [currentStatusFilter, setCurrentStatusFilter] = useState<number>();
+
+  const {
+    data: userRequest = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['history'],
+    queryFn: async () => {
+      const data = UserService.getUserRequests();
+      return data;
+    },
+  });
 
   const filteredRequest = useMemo(() => {
     let filtered = [...userRequest];
@@ -74,21 +84,6 @@ const RequestHistoryScreen = () => {
     setCurrentStatusFilter(activeFilter);
   }, [userRequest, searchQuery, activeFilter]);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (user) {
-        fetchRequestByUserID();
-        setActiveFilter(6);
-      }
-    }, [user])
-  );
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setActiveFilter(6);
-    fetchRequestByUserID();
-  }, []);
-
   const handleSearch = (text: string): void => {
     setSearchQuery(text);
   };
@@ -102,19 +97,9 @@ const RequestHistoryScreen = () => {
     setSearchQuery('');
   };
 
-  const fetchRequestByUserID = async () => {
-    try {
-      const data = await UserService.getUserRequests();
-      return setUserRequest(data);
-    } catch (error) {
-      console.error(error);
-      return setUserRequest([]);
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  const renderRequestItem = ({ item }: { item: Request }) => <RequestItem item={item} />;
+  const renderRequestItem = ({ item }: { item: Request }) => (
+    <RequestItem item={item} key={item.requestId} />
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -145,14 +130,18 @@ const RequestHistoryScreen = () => {
             )}
           />
         </View>
-        <FlashList
-          showsVerticalScrollIndicator={false}
-          data={filteredRequest}
-          renderItem={renderRequestItem}
-          ListEmptyComponent={<EmptyList title={t('common.noData.requestHistory')} />}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          estimatedItemSize={80}
-        />
+        {isLoading || isFetching ? (
+          <LoadingData />
+        ) : (
+          <FlashList
+            showsVerticalScrollIndicator={false}
+            data={filteredRequest}
+            renderItem={renderRequestItem}
+            ListEmptyComponent={<EmptyList title={t('common.noData.requestHistory')} />}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
+            estimatedItemSize={80}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

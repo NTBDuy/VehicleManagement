@@ -1,5 +1,5 @@
 import { showToast } from '@/utils/toast';
-import { faCar, faCross, faEye, faEyeSlash, faX } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,7 +7,15 @@ import { useAuth } from 'contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Pressable, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import CountryFlag from 'react-native-country-flag';
 import * as yup from 'yup';
 
@@ -25,9 +33,9 @@ interface LoginType {
 }
 
 const quickLoginRolesVi: QuickLoginRole[] = [
-  { title: 'Admin', Username: 'duc.nguyenvan', password: 'P@ssword123' },
-  { title: 'Employee', Username: 'son.leminh', password: 'P@ssword123' },
-  { title: 'Manager', Username: 'lan.tranthi', password: 'P@ssword123' },
+  { title: 'admin', Username: 'admin', password: 'P@ssword123' },
+  { title: 'manager', Username: 'manager', password: 'P@ssword123' },
+  { title: 'employee', Username: 'son.leminh', password: 'P@ssword123' },
 ];
 
 const LoginScreen = () => {
@@ -38,6 +46,15 @@ const LoginScreen = () => {
   const [showPasswords, setShowPasswords] = useState(false);
   const [countPress, setCountPress] = useState(0);
   const [isOpenTool, setIsOpenTool] = useState(false);
+  const [gateway, setGateway] = useState<string>('192.168.2.103:8018');
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const savedBaseURL = await AsyncStorage.getItem('gateway');
+      if (savedBaseURL) setGateway(savedBaseURL);
+    };
+    loadSettings();
+  }, []);
 
   const loginSchema = yup.object().shape({
     username: yup.string().required(t('validate.required.username')).trim(),
@@ -64,9 +81,11 @@ const LoginScreen = () => {
   useEffect(() => {
     const loadLanguage = async () => {
       const savedLanguage = await AsyncStorage.getItem('language');
-      if (savedLanguage && savedLanguage !== i18n.language) {
-        i18n.changeLanguage(savedLanguage);
+      if (savedLanguage) {
         setCurrentLanguage(savedLanguage);
+        if (savedLanguage !== i18n.language) {
+          await i18n.changeLanguage(savedLanguage);
+        }
       }
     };
     loadLanguage();
@@ -74,6 +93,7 @@ const LoginScreen = () => {
 
   const onSubmit = async (data: LoginType) => {
     try {
+      await AsyncStorage.setItem('gateway', gateway);
       await login({ username: data.username.trim(), password: data.password });
     } catch (error) {
       console.log(error);
@@ -109,25 +129,26 @@ const LoginScreen = () => {
     <SafeAreaView className="flex-1 bg-white">
       <View className="absolute right-6 top-24 z-10 flex-row space-x-2">
         <TouchableOpacity
-          onPress={() => handleLanguageChange('en-US')}
-          className={`rounded-lg p-2 ${currentLanguage === 'en-US' ? 'border-2 border-blue-500 bg-blue-100' : 'bg-gray-100'}`}>
-          <CountryFlag isoCode="us" size={14} />
-        </TouchableOpacity>
-        <TouchableOpacity
           onPress={() => handleLanguageChange('vi-VN')}
           className={`rounded-lg p-2 ${currentLanguage === 'vi-VN' ? 'border-2 border-blue-500 bg-blue-100' : 'bg-gray-100'}`}>
           <CountryFlag isoCode="vn" size={14} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleLanguageChange('en-US')}
+          className={`rounded-lg p-2 ${currentLanguage === 'en-US' ? 'border-2 border-blue-500 bg-blue-100' : 'bg-gray-100'}`}>
+          <CountryFlag isoCode="us" size={14} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View className="flex-1 justify-center px-6 py-8">
           <Pressable onPress={() => handleOpenDevTool()}>
-            <View className="mb-4 items-center">
-              <FontAwesomeIcon icon={faCar} size={48} />
-            </View>
-            <View className="mb-8">
-              <Text className="text-center text-3xl font-bold">{t('common.vms')}</Text>
+            <View className="mb-8 items-center">
+              <Image
+                source={require('@/assets/images/VMS.png')}
+                className="h-24 items-center"
+                resizeMode="contain"
+              />
             </View>
           </Pressable>
           <View className="mb-4">
@@ -179,7 +200,16 @@ const LoginScreen = () => {
           {isOpenTool && (
             <View>
               <View className="mt-6 rounded-2xl border px-4 py-2">
-                <Text className="mb-4">Developer Tool - Quick Login</Text>
+                <Text className="mb-4 font-bold">{t('devTool.title')}</Text>
+
+                <InputField
+                  label={t('devTool.apiBaseUrl')}
+                  value={gateway}
+                  onChangeText={(text) => setGateway(text)}
+                  placeholder="http://192.168.2.103:8018/api"
+                />
+
+                <Text className="mb-2 mt-4 font-semibold">{t('devTool.quickLogin')}:</Text>
                 <View className="mb-2 flex-row justify-between">
                   {quickLoginRolesVi.map((role, index) => (
                     <TouchableOpacity
@@ -189,7 +219,9 @@ const LoginScreen = () => {
                         activeRole === role.title ? 'bg-blue-300' : 'bg-blue-100'
                       }`}
                       onPress={() => handleQuickLogin(role)}>
-                      <Text className="text-center font-medium text-blue-800">{role.title}</Text>
+                      <Text className="text-center font-medium text-blue-800">
+                        {t(`common.role.${role.title}`)}
+                      </Text>
                     </TouchableOpacity>
                   ))}
                 </View>

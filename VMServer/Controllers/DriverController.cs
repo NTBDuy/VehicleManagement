@@ -23,13 +23,22 @@ namespace VMServer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDrivers()
         {
-            var drivers = await _dbContext.Drivers.ToListAsync();
+            var drivers = await _dbContext.Drivers
+                .Where(d => !d.IsDeleted)
+                .Select(d => new
+                {
+                    d.DriverId,
+                    d.FullName,
+                    d.PhoneNumber,
+                    d.IsActive
+                })
+                .ToListAsync();
             return Ok(drivers);
         }
 
         // GET: api/driver/available
         // Lấy danh sách tài xế khả dụng
-        // [Authorize(Roles = "Administrator, Manager")]
+        [Authorize(Roles = "Administrator, Manager")]
         [HttpGet("available")]
         public async Task<IActionResult> GetDriversAvailable([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
         {
@@ -48,7 +57,12 @@ namespace VMServer.Controllers
                 .ToListAsync();
 
             var driversAvailable = await _dbContext.Drivers
-                .Where(a => !assignmentsConflict.Contains(a.DriverId))
+                .Where(a => !assignmentsConflict.Contains(a.DriverId) && !a.IsDeleted)
+                .Select(a => new
+                {
+                    a.DriverId,
+                    a.FullName
+                })
                 .ToListAsync();
 
             return Ok(driversAvailable);
@@ -67,7 +81,9 @@ namespace VMServer.Controllers
             return Ok(driver);
         }
 
-        // [Authorize(Roles = "Administrator, Manager")]
+        // GET: api/driver/{driverId}/requests
+        // Lấy những yêu cầu mà tài xế này được chỉ định
+        [Authorize(Roles = "Administrator, Manager")]
         [HttpGet("{driverId}/requests")]
         public async Task<IActionResult> GetDriverRequest(int driverId)
         {
@@ -122,7 +138,7 @@ namespace VMServer.Controllers
 
             _dbContext.Drivers.Add(newDriver);
             await _dbContext.SaveChangesAsync();
-            return Ok(newDriver);
+            return Ok(newDriver.DriverId);
         }
 
         // PUT: api/driver/{driverId}
@@ -161,6 +177,36 @@ namespace VMServer.Controllers
 
             await _dbContext.SaveChangesAsync();
             return Ok(new { message = $"Driver with ID #{driverId} has been toggled status successfully." });
+        }
+
+        // DELETE: api/driver/{driverId}
+        // Xóa tài xế 
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("{driverId}")]
+        public async Task<IActionResult> DeleteDriver(int driverId)
+        {
+            var driver = await _dbContext.Drivers.FindAsync(driverId);
+            if (driver == null)
+                return NotFound(new { message = $"Driver not found with ID #{driverId}" });
+
+            bool hasRelatedAssignment = await _dbContext.Assignments.AnyAsync(r => r.DriverId == driverId);
+
+            if (hasRelatedAssignment)
+            {
+                driver.PhoneNumber = $"deleted_{driver.PhoneNumber}";
+                driver.LicenseNumber = $"deleted_{driver.LicenseNumber}";
+                driver.IsDeleted = true;
+                driver.LastUpdateAt = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new { message = "Driver has been deactivated due to related records." });
+            }
+
+            _dbContext.Drivers.Remove(driver);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Driver has been permanently deleted." });
         }
     }
 }

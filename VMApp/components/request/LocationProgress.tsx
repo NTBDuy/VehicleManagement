@@ -8,14 +8,14 @@ interface LocationProgressProps {
   currentLocationIndex: number;
   sortedLocations: LocationType[];
   checkpoints: { [key: number]: LocationCheckpoint };
-  t: any
+  t: any;
 }
 
 const LocationProgress = ({
   currentLocationIndex,
   sortedLocations,
   checkpoints,
-  t
+  t,
 }: LocationProgressProps) => {
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -32,7 +32,7 @@ const LocationProgress = ({
           const isCompletedLocation = checkpoints[index] !== undefined;
 
           return (
-            <View key={location.id} className="mb-3 flex-row items-start last:mb-0">
+            <View key={`${location.id}-${index}`} className="mb-3 flex-row items-start last:mb-0">
               <View className="mr-3 items-center">
                 <View
                   className={`h-8 w-8 items-center justify-center rounded-full ${
@@ -75,7 +75,9 @@ const LocationProgress = ({
                 </Text>
                 <Text className="mt-1 text-sm text-gray-500">{location.address}</Text>
                 {location.note && (
-                  <Text className="mt-1 text-xs text-gray-400">{t('common.fields.note')}: {location.note}</Text>
+                  <Text className="mt-1 text-xs text-gray-400">
+                    {t('common.fields.note')}: {location.note}
+                  </Text>
                 )}
                 {isCompletedLocation && (
                   <Text className="mt-1 text-xs text-green-600">

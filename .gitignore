@@ -41,9 +41,6 @@ expo-debug.log
 .cache/
 metro-cache/
 
-# Babel cache
-babel.config.js
-
 # Watchman
 .watchmanconfig
 

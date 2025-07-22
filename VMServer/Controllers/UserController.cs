@@ -28,7 +28,19 @@ namespace VMServer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _dbContext.Users.ToListAsync();
+            var users = await _dbContext.Users
+                .Where(u => u.IsDeleted == false)
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.FullName,
+                    u.Username,
+                    u.Email,
+                    u.PhoneNumber,
+                    u.Role,
+                    u.Status
+                })
+                .ToListAsync();
             return Ok(users);
         }
 
@@ -73,6 +85,14 @@ namespace VMServer.Controllers
 
             var notifications = await _dbContext.Notifications
                 .Where(n => n.UserId == userId)
+                .Select(n => new
+                {
+                    n.NotificationId,
+                    n.Message,
+                    n.IsRead,
+                    n.CreatedAt,
+                    n.Type
+                })
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
 
@@ -151,6 +171,20 @@ namespace VMServer.Controllers
                 .Include(r => r.ActionByUser)
                 .Include(r => r.Locations)
                 .OrderByDescending(r => r.LastUpdateAt)
+                .Select(l => new
+                {
+                    l.RequestId,
+                    l.StartTime,
+                    l.EndTime,
+                    l.Status,
+                    Vehicle = l.Vehicle == null ? null : new
+                    {
+                        l.Vehicle.Type,
+                        l.Vehicle.LicensePlate,
+                        l.Vehicle.Brand,
+                        l.Vehicle.Model
+                    }
+                })
                 .ToListAsync();
 
             return Ok(list);
@@ -162,6 +196,14 @@ namespace VMServer.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNewUser([FromBody] UserDTO dto)
         {
+            var existingUser = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == dto.Email || u.PhoneNumber == dto.PhoneNumber);
+
+            if (existingUser != null)
+            {
+                return BadRequest(new { message = "Người dùng đã tồn tại với mail hoặc số điện thoại này." });
+            }
+
             var newUser = new User
             {
                 Username = dto.Email.Split('@')[0],
@@ -170,14 +212,13 @@ namespace VMServer.Controllers
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
                 Role = dto.Role,
-                Status = true,
                 CreatedAt = DateTime.Now,
                 LastUpdateAt = DateTime.Now
             };
 
             _dbContext.Users.Add(newUser);
             await _dbContext.SaveChangesAsync();
-            return Ok(newUser);
+            return Ok(newUser.UserId);
         }
 
         // PUT: api/user/{userId}
@@ -189,6 +230,16 @@ namespace VMServer.Controllers
             var user = await _dbContext.Users.FindAsync(userId);
             if (user == null)
                 return NotFound(new { message = $"User not found with ID #{userId}" });
+
+            var existingUser = await _dbContext.Users
+                .FirstOrDefaultAsync(u =>
+                    u.UserId != userId && // Tránh trùng chính user hiện tại
+                    (u.Email == dto.Email || u.PhoneNumber == dto.PhoneNumber));
+
+            if (existingUser != null)
+            {
+                return BadRequest(new { message = "Mail hoặc số điện thoại đã bị trùng với người khác." });
+            }
 
             user.FullName = dto.FullName;
             user.Email = dto.Email;
@@ -217,7 +268,7 @@ namespace VMServer.Controllers
         }
 
         // PUT: api/user/information
-        // Cập nhật thông tin người dùng
+        // Cập nhật thông tin cá nhân
         [Authorize]
         [HttpPut("information")]
         public async Task<IActionResult> UpdateUserInformation([FromBody] UpdateUserInformationDTO dto)
@@ -287,6 +338,70 @@ namespace VMServer.Controllers
             await _dbContext.SaveChangesAsync();
 
             return Ok(new { message = "Password changed successfully!" });
+        }
+
+        // DELETE: api/user/{userId}
+        // Xóa người dùng 
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> DeleteUser(int userId)
+        {
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found!" });
+
+            bool hasRelatedRequests = await _dbContext.Requests.AnyAsync(r => r.UserId == userId);
+
+            if (hasRelatedRequests)
+            {
+                user.Email = $"deleted_{user.Email}";
+                user.PhoneNumber = $"deleted_{user.PhoneNumber}";
+                user.IsDeleted = true;
+                user.LastUpdateAt = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new { message = "User has been deactivated due to related records." });
+            }
+
+            _dbContext.Users.Remove(user);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "User has been permanently deleted." });
+        }
+
+        // DELETE: api/user/self-delete
+        // Xóa tài khoản
+        [Authorize]
+        [HttpDelete("self-delete")]
+        public async Task<IActionResult> SelfDelete()
+        {
+            var claimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimUserId, out var userId))
+                return Forbid("Invalid user identity.");
+
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found!" });
+
+            bool hasRelatedRequests = await _dbContext.Requests.AnyAsync(r => r.UserId == userId);
+
+            if (hasRelatedRequests)
+            {
+                user.Email = $"deleted_{user.Email}";
+                user.PhoneNumber = $"deleted_{user.PhoneNumber}";
+                user.IsDeleted = true;
+                user.LastUpdateAt = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new { message = "User has been deactivated due to related records." });
+            }
+
+            _dbContext.Users.Remove(user);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "User has been permanently deleted." });
         }
     }
 }

@@ -40,6 +40,10 @@ namespace VMServer.Controllers
             if (!user.Status)
                 return StatusCode(423, new { message = "The account has been deactivate. Please contact the Admin." });
 
+            if (user.IsDeleted)
+            {
+                return StatusCode(410, new { message = "The account has been permanently deleted." });
+            }
 
             var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
             if (passwordVerificationResult == PasswordVerificationResult.Failed)

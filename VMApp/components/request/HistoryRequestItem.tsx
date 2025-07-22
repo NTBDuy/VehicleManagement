@@ -18,11 +18,11 @@ const RequestItem = ({ item }: RequestItemProps) => {
   const navigation = useNavigation<any>();
 
   const handleViewDetailInProgress = (item: Request) => {
-    navigation.navigate('InProgress', { requestData: item });
+    navigation.navigate('InProgress', { requestId: item.requestId });
   };
 
   const handleViewDetail = (item: Request) => {
-    navigation.navigate('RequestDetail', { requestData: item });
+    navigation.navigate('RequestDetail', { requestId: item.requestId });
   };
 
   return (
@@ -48,7 +48,7 @@ const RequestItem = ({ item }: RequestItemProps) => {
 
         <View className="ml-1 flex-1">
           <Text className="text-base font-semibold text-gray-800">
-            {item.vehicle?.licensePlate}
+            {item.vehicle?.licensePlate.replace(/^deleted_/, '')}
           </Text>
           <Text className="text-sm text-gray-500">
             {item.vehicle?.brand} {item.vehicle?.model}

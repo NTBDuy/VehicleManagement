@@ -1,9 +1,10 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { faCarBurst, faChevronRight, faEllipsisV, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { useCallback, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
@@ -22,14 +23,21 @@ const VehicleManagementScreen = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selected, setSelected] = useState<Vehicle>();
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [currentStatusFilter, setCurrentStatusFilter] = useState('');
+
+  const {
+    data: vehicles = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['vehicles'],
+    queryFn: () => VehicleService.getAllVehicles(),
+  });
 
   const vehicleStat = useMemo(() => {
     const total = vehicles.length;
@@ -67,26 +75,6 @@ const VehicleManagementScreen = () => {
 
     return filtered;
   }, [vehicles, searchQuery, currentStatusFilter]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchVehiclesData();
-    }, [])
-  );
-
-  const fetchVehiclesData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await VehicleService.getAllVehicles();
-      return setVehicles(data);
-    } catch (error) {
-      console.error(error);
-      return setVehicles([]);
-    } finally {
-      setRefreshing(false);
-      setIsLoading(false);
-    }
-  };
 
   const renderBadgeVehicleStatus = ({ status }: { status: number }) => {
     const bgColor = getVehicleBackground(status);
@@ -141,12 +129,12 @@ const VehicleManagementScreen = () => {
       setSelected(vehicle);
       setIsModalVisible(true);
     } else {
-      navigation.navigate('VehicleDetail', { vehicleData: vehicle });
+      navigation.navigate('VehicleDetail', { vehicleId: vehicle.vehicleId });
     }
   };
 
   const handleViewDetail = () => {
-    navigation.navigate('VehicleDetail', { vehicleData: selected });
+    navigation.navigate('VehicleDetail', { vehicleId: selected?.vehicleId });
   };
 
   const handleAddVehicle = () => {
@@ -165,20 +153,12 @@ const VehicleManagementScreen = () => {
     setIsModalVisible(false);
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchVehiclesData();
-  };
-
   const onRemoveVehicle = async () => {
     try {
       if (selected) {
         await VehicleService.deleteVehicle(selected?.vehicleId);
-        showToast.success(
-          `${t('vehicle.toast.remove.success.title')}`,
-          `${t('vehicle.toast.remove.success.message')}`
-        );
-        fetchVehiclesData();
+        showToast.success(`${t('common.success.removeVehicle')}`);
+        refetch();
         handleCloseModal();
       }
     } catch (error) {
@@ -251,7 +231,7 @@ const VehicleManagementScreen = () => {
           )}
         </View>
 
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <LoadingData />
         ) : (
           <FlashList
@@ -260,7 +240,7 @@ const VehicleManagementScreen = () => {
             keyExtractor={(item) => item.vehicleId.toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyList icon={faCarBurst} />}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
             estimatedItemSize={80}
           />
         )}

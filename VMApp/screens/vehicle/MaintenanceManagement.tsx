@@ -3,12 +3,13 @@ import { getMaintenanceBorderColor } from '@/utils/maintenanceUtils';
 import { getVehicleTypeIcon } from '@/utils/vehicleUtils';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useMemo, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { VehicleService } from 'services/vehicleService';
-import { FlashList } from '@shopify/flash-list';
 
 import MaintenanceSchedule from 'types/MaintenanceSchedule';
 
@@ -19,11 +20,18 @@ import LoadingData from '@/components/ui/LoadingData';
 const MaintenanceManagement = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const [maintenance, setMaintenance] = useState<MaintenanceSchedule[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentStatusFilter, setCurrentStatusFilter] = useState(3);
+
+  const {
+    data: maintenance = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['maintenances'],
+    queryFn: () => VehicleService.getAllMaintenance(),
+  });
 
   const filterOptions = [
     { id: 3, name: t('common.status.all') },
@@ -61,30 +69,6 @@ const MaintenanceManagement = () => {
     return filtered;
   }, [maintenance, searchQuery, currentStatusFilter]);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchMaintenanceList();
-    }, [])
-  );
-
-  const fetchMaintenanceList = async () => {
-    try {
-      setIsLoading(true);
-      const response = await VehicleService.getAllMaintenance();
-      setMaintenance(response);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchMaintenanceList();
-  };
-
   const handleSearch = (text: string) => {
     setSearchQuery(text);
   };
@@ -99,7 +83,7 @@ const MaintenanceManagement = () => {
   };
 
   const handleViewDetail = (item: MaintenanceSchedule) => {
-    navigation.navigate('MaintenanceDetails', { maintenanceData: item });
+    navigation.navigate('MaintenanceDetails', { maintenanceId: item.maintenanceId });
   };
 
   const renderMaintenanceItem = ({ item }: { item: MaintenanceSchedule }) => (
@@ -156,16 +140,16 @@ const MaintenanceManagement = () => {
             )}
           />
         </View>
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <LoadingData />
         ) : (
           <View className="flex-1">
             <FlashList
               data={filteredMaintenance}
-              keyExtractor={(item) => item.vehicleId.toString()}
+              keyExtractor={(item) => item.maintenanceId.toString()}
               renderItem={renderMaintenanceItem}
               ListEmptyComponent={<EmptyList />}
-              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+              refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
               estimatedItemSize={80}
             />
           </View>

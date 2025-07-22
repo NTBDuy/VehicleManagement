@@ -1,21 +1,16 @@
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { useCallback, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Dimensions,
-  RefreshControl,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { RequestService } from 'services/requestService';
 import { formatDate } from 'utils/datetimeUtils';
 import { getRequestBorderColor } from 'utils/requestUtils';
 import { getUserInitials } from 'utils/userUtils';
+import { useQueryClient } from '@tanstack/react-query';
 
 import Request from 'types/Request';
 
@@ -28,25 +23,31 @@ import ApproveModal from 'components/modal/ApproveModalComponent';
 import CancelModal from 'components/modal/CancelModalComponent';
 import RejectModal from 'components/modal/RejectModalComponent';
 
-const { width } = Dimensions.get('window');
-
 const RequestScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
-  const [requests, setRequests] = useState<Request[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [isFiltered, setIsFiltered] = useState(false);
   const [currentStatusFilter, setCurrentStatusFilter] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const [selected, setSelected] = useState<Request | null>(null);
   const [isActionModalVisible, setIsActionModalVisible] = useState(false);
   const [isApproveModalVisible, setIsApproveModalVisible] = useState(false);
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+
+  const {
+    data: requests = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['requests'],
+    queryFn: () => RequestService.getAllRequests(),
+  });
 
   const requestStat = useMemo(() => {
     const total = requests.length;
@@ -105,28 +106,9 @@ const RequestScreen = () => {
     return filtered;
   }, [requests, searchQuery, currentStatusFilter]);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchRequestsData();
-    }, [])
-  );
-
-  const fetchRequestsData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await RequestService.getAllRequests();
-      setRequests(data || []);
-    } catch (error) {
-      console.error('Error fetching requests:', error);
-      setRequests([]);
-    } finally {
-      setRefreshing(false);
-      setIsLoading(false);
-    }
-  };
-
   const renderRequestItem = ({ item }: { item: Request }) => (
     <TouchableOpacity
+      key={item.requestId}
       onPress={() => handleRequestOption(item)}
       className={`mb-4 rounded-2xl border-r-2 border-t-2 bg-gray-100 px-4 py-4 ${getRequestBorderColor(item.status)}`}>
       <View className="flex-row items-center">
@@ -140,7 +122,7 @@ const RequestScreen = () => {
           <Text className="text-base font-semibold text-gray-800">
             {item.user?.fullName || 'N/A'}
           </Text>
-          <Text className="text-sm text-gray-500">{item.vehicle?.licensePlate || 'N/A'}</Text>
+          <Text className="text-sm text-gray-500">{item.vehicle?.licensePlate.replace(/^deleted_/, '') || 'N/A'}</Text>
         </View>
 
         <View className="mr-4">
@@ -196,7 +178,7 @@ const RequestScreen = () => {
   const handleViewDetail = () => {
     if (!selected) return;
     setIsActionModalVisible(false);
-    navigation.navigate('RequestDetail', { requestData: selected });
+    navigation.navigate('RequestDetail', { requestId: selected.requestId });
   };
 
   const handleApprove = (): void => {
@@ -227,14 +209,13 @@ const RequestScreen = () => {
     setSelected(null);
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchRequestsData();
-  };
-
-  const onModalSuccess = () => {
+  const onModalSuccess = async () => {
     handleCloseAllModals();
-    onRefresh();
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['requests'] }),
+      queryClient.invalidateQueries({ queryKey: ['history'] }),
+    ]);
+    refetch();
   };
 
   return (
@@ -318,7 +299,7 @@ const RequestScreen = () => {
           </TouchableOpacity>
         )}
 
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <LoadingData />
         ) : (
           <FlashList
@@ -327,7 +308,7 @@ const RequestScreen = () => {
             keyExtractor={(item) => item.requestId?.toString() || Math.random().toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyList />}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} />}
             estimatedItemSize={80}
           />
         )}

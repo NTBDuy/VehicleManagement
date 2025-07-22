@@ -45,6 +45,7 @@ const RequestVehiclePicker = ({
 
   const renderVehicleItem = ({ item }: { item: Vehicle }) => (
     <TouchableOpacity
+      key={item.vehicleId}
       onPress={() => setSelectedVehicle(item)}
       className={`mb-4 flex-row items-center rounded-2xl ${
         selectedVehicle?.vehicleId === item.vehicleId ? 'bg-blue-100' : 'bg-gray-100'
@@ -84,7 +85,7 @@ const RequestVehiclePicker = ({
           />
         </View>
       </View>
-      <View className="mb-20 flex-1 px-2">
+      <View className="mb-2 flex-1 px-2">
         <FlashList
           data={filteredVehicle}
           renderItem={renderVehicleItem}

@@ -11,7 +11,7 @@ export const passwordSchema = (t: any) =>
       .required(t('validate.required.newPassword'))
       .trim()
       .matches(strongPasswordRegex, t('validate.regex.password'))
-      .test('not-same-as-current', t('validate.notSameAsCurrent'), function (value) {
+      .test('not-same-as-current', t('validate.regex.differentPassword'), function (value) {
         return value !== this.parent.currentPassword;
       }),
 

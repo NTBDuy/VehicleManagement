@@ -16,7 +16,7 @@ namespace VMServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "7.0.18")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -175,6 +175,9 @@ namespace VMServer.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("LastUpdateAt")
@@ -418,6 +421,9 @@ namespace VMServer.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("LastUpdateAt")
                         .HasColumnType("datetime2");
 
@@ -469,8 +475,8 @@ namespace VMServer.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("CurrentOdometer")
-                        .HasColumnType("decimal(10,1)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastMaintenance")
                         .HasColumnType("datetime2");
@@ -546,7 +552,7 @@ namespace VMServer.Migrations
                     b.HasOne("VMServer.Models.Entities.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Vehicle");

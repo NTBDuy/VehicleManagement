@@ -28,9 +28,14 @@ export class VehicleService extends BaseApiClient {
     return this.request<MaintenanceSchedule[]>('/vehicle/maintenance');
   }
 
+  // Lấy chi tiết lịch bảo dưỡng
+  static async getMaintenanceDetails(id: number): Promise<MaintenanceSchedule> {
+    return this.request<MaintenanceSchedule>(`/vehicle/maintenance/${id}`);
+  }
+
   // Tạo mới phương tiện
-  static async createVehicle(vehicleData: Partial<Vehicle>): Promise<Vehicle> {
-    return this.request<Vehicle>('/vehicle', {
+  static async createVehicle(vehicleData: Partial<Vehicle>): Promise<number> {
+    return this.request<number>('/vehicle', {
       method: 'POST',
       body: JSON.stringify(vehicleData),
     });
@@ -53,19 +58,16 @@ export class VehicleService extends BaseApiClient {
   }
 
   // Thay đổi lịch bảo dưỡng xe
-  static async rescheduleMaintenance(
-    id: number,
-    maintenanceData: any
-  ): Promise<MaintenanceSchedule> {
-    return this.request<MaintenanceSchedule>(`/vehicle/maintenance/${id}/reschedule`, {
+  static async rescheduleMaintenance(id: number, maintenanceData: any): Promise<void> {
+    return this.request<void>(`/vehicle/maintenance/${id}/reschedule`, {
       method: 'PUT',
       body: JSON.stringify(maintenanceData),
     });
   }
 
   // Cập nhật trạng thái bảo dưỡng
-  static async changeStatusMaintenance(id: number, status: number): Promise<MaintenanceSchedule> {
-    return this.request<MaintenanceSchedule>(`/vehicle/maintenance/${id}/status?status=${status}`, {
+  static async changeStatusMaintenance(id: number, status: number): Promise<void> {
+    return this.request<void>(`/vehicle/maintenance/${id}/status?status=${status}`, {
       method: 'PUT',
     });
   }

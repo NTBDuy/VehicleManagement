@@ -25,6 +25,17 @@ namespace VMServer.Controllers
         public async Task<IActionResult> GetAllVehicle()
         {
             var vehicles = await _dbContext.Vehicles
+                .Where(v => !v.IsDeleted)
+                .Select(v => new VehicleResponseDTO
+                {
+                    VehicleId = v.VehicleId,
+                    LicensePlate = v.LicensePlate,
+                    Type = v.Type,
+                    Brand = v.Brand,
+                    Model = v.Model,
+                    Status = v.Status,
+                    NextMaintenanceId = v.NextMaintenanceId,
+                })
                 .ToListAsync();
 
             return Ok(vehicles);
@@ -45,7 +56,7 @@ namespace VMServer.Controllers
 
         // GET: api/vehicle/available
         // Lấy phương tiện đang khả dụng trong khoảng thời gian
-        // [Authorize]
+        [Authorize]
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableVehicles([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
         {
@@ -56,8 +67,26 @@ namespace VMServer.Controllers
                 .Distinct()
                 .ToListAsync();
 
+
+            var conflictingMaintenanceVehicleIds = await _dbContext.MaintenanceSchedules
+                .Where(m => m.ScheduledDate <= endTime && m.EstimatedEndDate >= startTime)
+                .Select(r => r.VehicleId)
+                .Distinct()
+                .ToListAsync();
+
             var availableVehicles = await _dbContext.Vehicles
-                .Where(v => v.Status == Status.Available && !conflictingVehicleIds.Contains(v.VehicleId))
+                .Where(v => v.Status == Status.Available
+                    && !conflictingVehicleIds.Contains(v.VehicleId)
+                    && !conflictingMaintenanceVehicleIds.Contains(v.VehicleId)
+                    && !v.IsDeleted)
+                .Select(v => new
+                {
+                    v.VehicleId,
+                    v.LicensePlate,
+                    v.Type,
+                    v.Brand,
+                    v.Model
+                })
                 .ToListAsync();
 
             return Ok(availableVehicles);
@@ -88,9 +117,40 @@ namespace VMServer.Controllers
         [HttpGet("maintenance")]
         public async Task<IActionResult> GetAllMaintenance()
         {
+            var maintenances = await _dbContext.MaintenanceSchedules
+                .Include(m => m.Vehicle)
+                .Select(m => new
+                {
+                    m.MaintenanceId,
+                    m.ScheduledDate,
+                    m.Status,
+                    Vehicle = m.Vehicle == null ? null : new
+                    {
+                        m.Vehicle.Type,
+                        m.Vehicle.LicensePlate,
+                        m.Vehicle.Brand,
+                        m.Vehicle.Model
+                    }
+
+                })
+                .OrderBy(m => m.ScheduledDate)
+                .ToListAsync();
+
+            return Ok(maintenances);
+        }
+
+        // GET: api/vehicle/maintenance/{maintenanceId}
+        // Lấy chi tiết lịch bảo dưỡng
+        [Authorize]
+        [HttpGet("maintenance/{maintenanceId}")]
+        public async Task<IActionResult> GetMaintenanceDetail(int maintenanceId)
+        {
             var maintenance = await _dbContext.MaintenanceSchedules
                 .Include(m => m.Vehicle)
-                .ToListAsync();
+                .FirstOrDefaultAsync(m => m.MaintenanceId == maintenanceId);
+
+            if (maintenance == null)
+                return NotFound(new { message = $"Maintenance not found ID #{maintenanceId}" });
 
             return Ok(maintenance);
         }
@@ -140,9 +200,8 @@ namespace VMServer.Controllers
 
             _dbContext.Vehicles.Add(newVehicle);
             await _dbContext.SaveChangesAsync();
-            return Ok(newVehicle);
+            return Ok(newVehicle.VehicleId);
         }
-
 
         // POST: api/vehicle/{vehicleId}/maintenance/schedule
         // Thêm lịch bảo dưỡng cho phương tiện
@@ -178,7 +237,7 @@ namespace VMServer.Controllers
             vehicle.NextMaintenanceId = newSchedule.MaintenanceId;
             vehicle.NextMaintenance = dto.ScheduledDate;
             await _dbContext.SaveChangesAsync();
-            return Ok(newSchedule);
+            return Ok(new { message = "Schedule maintenance successfully!" });
         }
 
         // PUT: api/vehicle/{vehicleId}
@@ -191,11 +250,47 @@ namespace VMServer.Controllers
             if (vehicle == null)
                 return NotFound(new { message = $"Vehicle not found with ID #{vehicleId}" });
 
+            var isExist = await _dbContext.Vehicles
+                .AnyAsync(v =>
+                    v.VehicleId != vehicleId &&
+                    (v.LicensePlate.ToLower() == dto.LicensePlate.ToLower()));
+
+            if (isExist)
+            {
+                return BadRequest(new { message = "Biển số xe đã bị trùng với xe khác." });
+            }
+
             vehicle.LicensePlate = dto.LicensePlate;
             vehicle.Type = dto.Type;
             vehicle.Brand = dto.Brand;
             vehicle.Model = dto.Model;
             vehicle.LastUpdateAt = DateTime.Now;
+
+            await _dbContext.SaveChangesAsync();
+            return Ok(new
+            {
+                Vehicle = new
+                {
+                    vehicle.VehicleId,
+                    vehicle.LicensePlate,
+                    vehicle.Type,
+                    vehicle.Brand,
+                    vehicle.Model
+                }
+            });
+        }
+
+        // PUT: api/vehicle/{vehicleId}
+        // Cập nhật trạng thái phương tiện
+        [Authorize(Roles = "Administrator")]
+        [HttpPut("{vehicleId}/toggle-status")]
+        public async Task<IActionResult> UpdateVehicleStatus(int vehicleId, [FromQuery] Status newStatus)
+        {
+            var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
+            if (vehicle == null)
+                return NotFound(new { message = $"Vehicle not found with ID #{vehicleId}" });
+
+            vehicle.Status = newStatus;
 
             await _dbContext.SaveChangesAsync();
             return Ok(vehicle);
@@ -227,7 +322,7 @@ namespace VMServer.Controllers
             maintenance.LastUpdateAt = DateTime.Now;
 
             await _dbContext.SaveChangesAsync();
-            return Ok(maintenance);
+            return Ok(new { message = "Maintenance has been rescheduled!" });
         }
 
         // PUT: api/vehicle/maintenance/{maintenanceId}/status?=status
@@ -256,7 +351,12 @@ namespace VMServer.Controllers
             maintenance.LastUpdateAt = DateTime.Now;
 
             await _dbContext.SaveChangesAsync();
-            return Ok(maintenance);
+            return Ok(new
+            {
+                message = status == MaintenanceStatus.Pending
+                    ? "Maintenance has begun!"
+                    : "Maintenance has been completed!"
+            });
         }
 
         // DELETE: api/vehicle/{vehicleId}
@@ -268,6 +368,18 @@ namespace VMServer.Controllers
             var vehicle = await _dbContext.Vehicles.FindAsync(vehicleId);
             if (vehicle == null)
                 return NotFound(new { message = $"Vehicle not found with ID #{vehicleId}" });
+
+            bool hasRelatedRequests = await _dbContext.Requests.AnyAsync(r => r.VehicleId == vehicleId);
+
+            if (hasRelatedRequests)
+            {
+                vehicle.LicensePlate = $"deleted_{vehicle.LicensePlate}";
+                vehicle.IsDeleted = true;
+                vehicle.LastUpdateAt = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+                return Ok(new { message = $"Vehicle with ID #{vehicleId} was removed successfully." });
+            }
 
             _dbContext.Vehicles.Remove(vehicle);
             await _dbContext.SaveChangesAsync();

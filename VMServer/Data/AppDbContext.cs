@@ -48,7 +48,7 @@ public class AppDbContext : DbContext
             .HasOne(m => m.Vehicle)
             .WithMany()
             .HasForeignKey(m => m.VehicleId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Notification>()
             .HasOne(n => n.User)
