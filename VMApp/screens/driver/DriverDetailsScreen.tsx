@@ -204,10 +204,8 @@ const DriverDetailsScreen = () => {
   const confirmDeleteAccount = async () => {
     try {
       setIsDeleting(true);
-      await Promise.all([
-        DriverService.removeDriver(driverId),
-        queryClient.invalidateQueries({ queryKey: ['drivers'] }),
-      ]);
+      await DriverService.removeDriver(driverId);
+      await queryClient.invalidateQueries({ queryKey: ['drivers'] });
       navigation.goBack();
 
       showToast.success(`${t('common.success.deleteDriver')}`);

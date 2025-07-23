@@ -171,10 +171,8 @@ const UserDetailsScreen = () => {
   const confirmDeleteAccount = async () => {
     try {
       setIsDeleting(true);
-      await Promise.all([
-        UserService.removeAccount(userId),
-        queryClient.invalidateQueries({ queryKey: ['users'] }),
-      ]);
+      await UserService.removeAccount(userId);
+      await queryClient.invalidateQueries({ queryKey: ['users'] });
       navigation.goBack();
 
       showToast.success(`${t('common.success.deleteAccount')}`);
